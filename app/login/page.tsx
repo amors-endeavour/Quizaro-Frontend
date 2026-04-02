@@ -48,6 +48,18 @@ export default function LoginPage() {
         throw new Error("Role not found in response. Please check your credentials.");
       }
 
+      // Small delay to ensure cookie is set before redirect
+      await new Promise(r => setTimeout(r, 500));
+
+      if (role === "admin") {
+        router.replace("/admin-dashboard");
+      } else {
+        router.replace("/user-dashboard");
+      }
+
+      // Small delay to ensure cookie is set before redirect
+      await new Promise(r => setTimeout(r, 500));
+
       if (role === "admin") {
         router.replace("/admin-dashboard");
       } else {
