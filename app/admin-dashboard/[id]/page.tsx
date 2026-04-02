@@ -2,7 +2,6 @@
 
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
-import AdminSidebar from "@/components/AdminSidebar";
 import API from "@/app/lib/api";
 
 interface Option {
@@ -36,21 +35,6 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
     correctOption: 0,
     explanation: "",
   });
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data } = await API.get("/user/profile", { withCredentials: true });
-        const role = (data?.role || data?.user?.role)?.toLowerCase();
-        if (role !== "admin") {
-          router.replace("/login");
-        }
-      } catch {
-        router.replace("/login");
-      }
-    };
-    checkAuth();
-  }, [router]);
 
   const fetchData = async () => {
     try {
@@ -127,24 +111,18 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
 
   if (loading) {
     return (
-      <div className="flex min-h-screen">
-        <AdminSidebar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-500">Loading...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading questions...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 p-8">
-        <div className="flex items-center justify-between mb-8">
+    <div className="bg-gray-50">
+      <div className="flex items-center justify-between mb-8">
           <div>
             <button
               onClick={() => router.push("/admin-dashboard/tests")}

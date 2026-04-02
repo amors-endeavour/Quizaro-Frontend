@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminNavbar from "@/components/AdminNavbar";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
 
@@ -45,9 +45,42 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+    <div className="min-h-screen bg-gray-50">
+      <AdminNavbar />
+      <main className="max-w-7xl mx-auto p-8">{children}</main>
+    </div>
+  );
+}
+        const data = await res.json();
+        const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
+        if (role !== "admin") {
+          router.replace("/user-dashboard");
+          return;
+        }
+        setIsAuth(true);
+      } catch {
+        router.replace("/login");
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  if (!isAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <AdminNavbar />
+      <main className="max-w-7xl mx-auto p-8">{children}</main>
     </div>
   );
 }

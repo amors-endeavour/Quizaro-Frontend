@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import AdminSidebar from "@/components/AdminSidebar";
 import API from "@/app/lib/api";
 
 interface Attempt {
@@ -24,26 +22,10 @@ interface Attempt {
 }
 
 export default function AttemptsPage() {
-  const router = useRouter();
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [testFilter, setTestFilter] = useState("all");
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data } = await API.get("/user/profile", { withCredentials: true });
-        const role = (data?.role || data?.user?.role)?.toLowerCase();
-        if (role !== "admin") {
-          router.replace("/login");
-        }
-      } catch {
-        router.replace("/login");
-      }
-    };
-    checkAuth();
-  }, [router]);
 
   useEffect(() => {
     const fetchAttempts = async () => {
@@ -83,24 +65,18 @@ export default function AttemptsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen">
-        <AdminSidebar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-500">Loading...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading attempts...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 p-8">
-        <div className="flex items-center justify-between mb-8">
+    <div className="bg-gray-50">
+      <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Attempts</h1>
             <p className="text-gray-500 mt-1">View all test attempt history</p>
