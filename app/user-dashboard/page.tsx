@@ -35,24 +35,29 @@ export default function UserDashboard() {
 
   useEffect(() => {
     const checkAuth = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        router.replace("/login");
+        return;
+      }
+
       try {
         const res = await fetch(`${API_URL}/user/profile`, {
-          credentials: "include",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
         });
 
-        console.log("Profile response:", res.status);
-
         if (!res.ok) {
-          console.log("Profile not ok, redirecting to login");
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("userRole");
           router.replace("/login");
           return;
         }
 
         const data = await res.json();
-        console.log("Profile data:", data);
         
-        const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
-        console.log("User role:", role);
+        const role = (data?.role)?.toString().toLowerCase();
 
         if (role === "admin") {
           router.replace("/admin-dashboard");
@@ -62,7 +67,8 @@ export default function UserDashboard() {
         setUser(data);
         setIsAuthChecked(true);
       } catch (err) {
-        console.error("Auth check error:", err);
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userRole");
         router.replace("/login");
       }
     };
@@ -73,11 +79,16 @@ export default function UserDashboard() {
   useEffect(() => {
     if (!isAuthChecked) return;
     
+    const token = localStorage.getItem("authToken");
+    const authHeaders = {
+      headers: { "Authorization": `Bearer ${token || ""}` }
+    };
+
     const loadData = async () => {
       try {
         const [availableRes, purchasedRes] = await Promise.all([
-          fetch(`${API_URL}/user/tests/available`, { credentials: "include" }),
-          fetch(`${API_URL}/user/tests/purchased`, { credentials: "include" }),
+          fetch(`${API_URL}/user/tests/available`, authHeaders),
+          fetch(`${API_URL}/user/tests/purchased`, authHeaders),
         ]);
 
         if (!availableRes.ok || !purchasedRes.ok) {
@@ -102,9 +113,10 @@ export default function UserDashboard() {
   const handlePurchase = async (testId: string) => {
     setPurchasing(testId);
     try {
+      const token = localStorage.getItem("authToken");
       const res = await fetch(`${API_URL}/test/purchase/${testId}`, {
         method: "POST",
-        credentials: "include",
+        headers: { "Authorization": `Bearer ${token || ""}` },
       });
 
       if (res.ok) {
@@ -121,10 +133,8 @@ export default function UserDashboard() {
   };
 
   const handleLogout = async () => {
-    await fetch(`${API_URL}/user/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userRole");
     router.replace("/login");
   };
 

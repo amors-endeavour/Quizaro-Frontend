@@ -12,11 +12,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     const checkAuth = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        router.replace("/login");
+        return;
+      }
+
       try {
         const res = await fetch(`${API_URL}/user/profile`, {
-          credentials: "include",
           headers: {
-            "Authorization": `Bearer ${localStorage.getItem("authToken") || ""}`
+            "Authorization": `Bearer ${token}`
           }
         });
         if (!res.ok) {
@@ -26,7 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           return;
         }
         const data = await res.json();
-        const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
+        const role = (data?.role)?.toString().toLowerCase();
         if (role !== "admin") {
           router.replace("/user-dashboard");
           return;

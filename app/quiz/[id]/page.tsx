@@ -38,18 +38,23 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
-  const answersRef = useRef(answers);
 
   useEffect(() => {
-    answersRef.current = answers;
-  }, [answers]);
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
 
-  useEffect(() => {
+    const authHeaders = {
+      headers: { "Authorization": `Bearer ${token}` }
+    };
+
     const loadData = async () => {
       try {
         const [testRes, questionsRes] = await Promise.all([
-          fetch(`${API_URL}/test/${id}`, { credentials: "include" }),
-          fetch(`${API_URL}/questions/${id}`, { credentials: "include" }),
+          fetch(`${API_URL}/test/${id}`, authHeaders),
+          fetch(`${API_URL}/questions/${id}`, authHeaders),
         ]);
 
         if (!testRes.ok || !questionsRes.ok) {
@@ -111,11 +116,14 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
       }));
 
       const timeTaken = (test?.duration || 30) * 60 - timeLeft;
+      const token = localStorage.getItem("authToken");
 
       const res = await fetch(`${API_URL}/test/submit/${id}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token || ""}`
+        },
         body: JSON.stringify({ answers: answersArray, timeTaken }),
       });
 

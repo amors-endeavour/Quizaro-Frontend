@@ -33,23 +33,21 @@ export default function LoginPage() {
         throw new Error(data.message || "Login failed");
       }
 
-      let role = data?.role || data?.user?.role;
-      role = role?.toString().toLowerCase();
+      const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
 
       if (!role) {
         throw new Error("Role not found in response.");
       }
 
-      // Store token in localStorage as fallback for cross-origin
       if (data.token) {
         localStorage.setItem("authToken", data.token);
-        localStorage.setItem("userRole", role);
       }
+      localStorage.setItem("userRole", role);
 
       if (role === "admin") {
-        router.replace("/admin-dashboard");
+        router.push("/admin-dashboard");
       } else {
-        router.replace("/user-dashboard");
+        router.push("/user-dashboard");
       }
 
     } catch (err: any) {

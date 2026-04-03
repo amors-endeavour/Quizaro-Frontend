@@ -30,15 +30,9 @@ export default function AdminNavbar() {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await fetch(`${API_URL}/user/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-      router.replace("/login");
-    } catch (err) {
-      router.replace("/login");
-    }
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userRole");
+    router.replace("/login");
   };
 
   const navLinks = [

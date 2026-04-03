@@ -25,8 +25,9 @@ export default function ResultPage() {
   useEffect(() => {
     const fetchResults = async () => {
       try {
+        const token = localStorage.getItem("authToken");
         const res = await fetch(`${API_URL}/user/attempts`, {
-          credentials: "include",
+          headers: { "Authorization": `Bearer ${token || ""}` }
         });
 
         if (res.ok) {
