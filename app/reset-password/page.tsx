@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSearchParams } from "react";
+import { useState } from "react";
 import { Lock, ArrowLeft, Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

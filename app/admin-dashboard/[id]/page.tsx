@@ -110,15 +110,25 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
   };
 
   if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading questions...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-gray-50">
+    <div>
       <div className="flex items-center justify-between mb-8">
         <div>
           <button
             onClick={() => router.push("/admin-dashboard/tests")}
             className="text-sm text-blue-600 hover:text-blue-700 mb-2 flex items-center gap-1"
           >
-            ← Back to Tests
+            &larr; Back to Tests
           </button>
           <h1 className="text-3xl font-bold text-gray-900">{test?.title || "Questions"}</h1>
           <p className="text-gray-500 mt-1">{questions.length} questions</p>
