@@ -29,7 +29,7 @@ export default function TestsPage() {
 
   const fetchTests = async () => {
     try {
-      const { data } = await API.get("/admin/tests", { withCredentials: true });
+      const { data } = await API.get("/admin/tests");
       setTests(data);
     } catch (err) {
       console.error("Failed to fetch tests:", err);
@@ -46,9 +46,9 @@ export default function TestsPage() {
     e.preventDefault();
     try {
       if (editingTest) {
-        await API.put(`/admin/test/${editingTest._id}`, formData, { withCredentials: true });
+        await API.put(`/admin/test/${editingTest._id}`, formData);
       } else {
-        await API.post("/test/create", formData, { withCredentials: true });
+        await API.post("/test/create", formData);
       }
       setShowModal(false);
       setEditingTest(null);
@@ -73,7 +73,7 @@ export default function TestsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this test and all its questions?")) return;
     try {
-      await API.delete(`/admin/test/${id}`, { withCredentials: true });
+      await API.delete(`/admin/test/${id}`);
       fetchTests();
     } catch {
       alert("Failed to delete test");
@@ -92,91 +92,90 @@ export default function TestsPage() {
   }
 
   return (
-    <div className="bg-gray-50">
+    <div>
       <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Tests</h1>
-            <p className="text-gray-500 mt-1">Manage your test series</p>
-          </div>
-          <button
-            onClick={() => {
-              setEditingTest(null);
-              setFormData({ title: "", description: "", duration: 30, price: 0 });
-              setShowModal(true);
-            }}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
-          >
-            + Create Test
-          </button>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Tests</h1>
+          <p className="text-gray-500 mt-1">Manage your test series</p>
         </div>
+        <button
+          onClick={() => {
+            setEditingTest(null);
+            setFormData({ title: "", description: "", duration: 30, price: 0 });
+            setShowModal(true);
+          }}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+        >
+          + Create Test
+        </button>
+      </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          {tests.length === 0 ? (
-            <div className="text-center py-16 text-gray-400">
-              <p className="text-4xl mb-4">📝</p>
-              <p>No tests created yet</p>
-            </div>
-          ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
-                <tr className="text-left text-sm text-gray-500">
-                  <th className="px-6 py-4 font-medium">Title</th>
-                  <th className="px-6 py-4 font-medium">Duration</th>
-                  <th className="px-6 py-4 font-medium">Price</th>
-                  <th className="px-6 py-4 font-medium">Questions</th>
-                  <th className="px-6 py-4 font-medium">Created</th>
-                  <th className="px-6 py-4 font-medium text-right">Actions</th>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        {tests.length === 0 ? (
+          <div className="text-center py-16 text-gray-400">
+            <p className="text-4xl mb-4">📝</p>
+            <p>No tests created yet</p>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr className="text-left text-sm text-gray-500">
+                <th className="px-6 py-4 font-medium">Title</th>
+                <th className="px-6 py-4 font-medium">Duration</th>
+                <th className="px-6 py-4 font-medium">Price</th>
+                <th className="px-6 py-4 font-medium">Questions</th>
+                <th className="px-6 py-4 font-medium">Created</th>
+                <th className="px-6 py-4 font-medium text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {tests.map((test) => (
+                <tr key={test._id} className="hover:bg-gray-50 transition">
+                  <td className="px-6 py-4">
+                    <div>
+                      <p className="font-medium text-gray-900">{test.title}</p>
+                      {test.description && (
+                        <p className="text-sm text-gray-500 truncate max-w-xs">{test.description}</p>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-gray-700">{test.duration} min</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${test.price === 0 ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
+                      {test.price === 0 ? "Free" : `₹${test.price}`}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-gray-700">{test.totalQuestions || 0}</td>
+                  <td className="px-6 py-4 text-gray-500 text-sm">
+                    {new Date(test.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => router.push(`/admin-dashboard/${test._id}`)}
+                        className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-medium hover:bg-green-200 transition"
+                      >
+                        Questions
+                      </button>
+                      <button
+                        onClick={() => handleEdit(test)}
+                        className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm font-medium hover:bg-yellow-200 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(test._id)}
+                        className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {tests.map((test) => (
-                  <tr key={test._id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-gray-900">{test.title}</p>
-                        {test.description && (
-                          <p className="text-sm text-gray-500 truncate max-w-xs">{test.description}</p>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">{test.duration} min</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${test.price === 0 ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
-                        {test.price === 0 ? "Free" : `₹${test.price}`}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">{test.totalQuestions || 0}</td>
-                    <td className="px-6 py-4 text-gray-500 text-sm">
-                      {new Date(test.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => router.push(`/admin-dashboard/${test._id}`)}
-                          className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-medium hover:bg-green-200 transition"
-                        >
-                          Questions
-                        </button>
-                        <button
-                          onClick={() => handleEdit(test)}
-                          className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm font-medium hover:bg-yellow-200 transition"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(test._id)}
-                          className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {showModal && (

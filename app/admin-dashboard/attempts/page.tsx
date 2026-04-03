@@ -30,7 +30,7 @@ export default function AttemptsPage() {
   useEffect(() => {
     const fetchAttempts = async () => {
       try {
-        const { data } = await API.get("/admin/attempts", { withCredentials: true });
+        const { data } = await API.get("/admin/attempts");
         setAttempts(data);
       } catch (err) {
         console.error("Failed to fetch attempts:", err);

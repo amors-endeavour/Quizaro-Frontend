@@ -39,8 +39,8 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
   const fetchData = async () => {
     try {
       const [testRes, questionsRes] = await Promise.all([
-        API.get(`/test/${id}`, { withCredentials: true }),
-        API.get(`/admin/questions/${id}`, { withCredentials: true }),
+        API.get(`/test/${id}`),
+        API.get(`/admin/questions/${id}`),
       ]);
       setTest(testRes.data);
       setQuestions(questionsRes.data);
@@ -66,9 +66,9 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
 
     try {
       if (editingQuestion) {
-        await API.put(`/admin/question/${editingQuestion._id}`, questionData, { withCredentials: true });
+        await API.put(`/admin/question/${editingQuestion._id}`, questionData);
       } else {
-        await API.post(`/question/add/${id}`, questionData, { withCredentials: true });
+        await API.post(`/question/add/${id}`, questionData);
       }
       setShowModal(false);
       setEditingQuestion(null);
@@ -102,7 +102,7 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
   const handleDelete = async (questionId: string) => {
     if (!confirm("Delete this question?")) return;
     try {
-      await API.delete(`/admin/question/${questionId}`, { withCredentials: true });
+      await API.delete(`/admin/question/${questionId}`);
       fetchData();
     } catch {
       alert("Failed to delete question");
