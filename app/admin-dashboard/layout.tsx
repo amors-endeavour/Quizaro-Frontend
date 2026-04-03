@@ -13,8 +13,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API_URL}/user/profile`, { credentials: "include" });
+        const res = await fetch(`${API_URL}/user/profile`, {
+          credentials: "include",
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("authToken") || ""}`
+          }
+        });
         if (!res.ok) {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("userRole");
           router.replace("/login");
           return;
         }
@@ -26,6 +33,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
         setIsAuth(true);
       } catch {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userRole");
         router.replace("/login");
       }
     };

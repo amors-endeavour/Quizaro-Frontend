@@ -29,36 +29,22 @@ export default function LoginPage() {
 
       const data = await res.json();
 
-      console.log("Login response:", res.status, data);
-
       if (!res.ok) {
         throw new Error(data.message || "Login failed");
       }
 
       let role = data?.role || data?.user?.role;
-      if (!role) {
-        role = data?.user?.role;
-      }
       role = role?.toString().toLowerCase();
 
-      console.log("Full response data:", JSON.stringify(data));
-      console.log("Extracted role:", role);
-
       if (!role) {
-        throw new Error("Role not found in response. Please check your credentials.");
+        throw new Error("Role not found in response.");
       }
 
-      // Small delay to ensure cookie is set before redirect
-      await new Promise(r => setTimeout(r, 500));
-
-      if (role === "admin") {
-        router.replace("/admin-dashboard");
-      } else {
-        router.replace("/user-dashboard");
+      // Store token in localStorage as fallback for cross-origin
+      if (data.token) {
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userRole", role);
       }
-
-      // Small delay to ensure cookie is set before redirect
-      await new Promise(r => setTimeout(r, 500));
 
       if (role === "admin") {
         router.replace("/admin-dashboard");
@@ -67,7 +53,6 @@ export default function LoginPage() {
       }
 
     } catch (err: any) {
-      console.error("Login error:", err);
       setError(err.message || "Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
