@@ -16,12 +16,9 @@ export default function AdminSidebar() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    try {
-      await API.post("/user/logout", {}, { withCredentials: true });
-      router.replace("/login");
-    } catch (err) {
-      router.replace("/login");
-    }
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userRole");
+    router.replace("/login");
   };
 
   return (

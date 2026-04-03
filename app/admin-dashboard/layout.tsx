@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminNavbar from "@/components/AdminNavbar";
+import AdminSidebar from "@/components/AdminSidebar";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
 
@@ -20,9 +20,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       try {
         const res = await fetch(`${API_URL}/user/profile`, {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
+          headers: { "Authorization": `Bearer ${token}` }
         });
         if (!res.ok) {
           localStorage.removeItem("authToken");
@@ -59,9 +57,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNavbar />
-      <main className="max-w-7xl mx-auto p-8">{children}</main>
+    <div className="flex min-h-screen bg-gray-50">
+      <AdminSidebar />
+      <main className="flex-1 p-8 overflow-auto">{children}</main>
     </div>
   );
 }

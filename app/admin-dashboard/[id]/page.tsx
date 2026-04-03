@@ -121,7 +121,7 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
   }
 
   return (
-    <div>
+    <div className="bg-gray-50">
       <div className="flex items-center justify-between mb-8">
         <div>
           <button
