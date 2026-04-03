@@ -2,6 +2,7 @@
 
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
+import AdminSidebar from "@/components/AdminSidebar";
 import API from "@/app/lib/api";
 
 interface Option {
@@ -36,11 +37,26 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
     explanation: "",
   });
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await API.get("/user/profile", { withCredentials: true });
+        const role = (data?.role || data?.user?.role)?.toLowerCase();
+        if (role !== "admin") {
+          router.replace("/login");
+        }
+      } catch {
+        router.replace("/login");
+      }
+    };
+    checkAuth();
+  }, [router]);
+
   const fetchData = async () => {
     try {
       const [testRes, questionsRes] = await Promise.all([
-        API.get(`/test/${id}`),
-        API.get(`/admin/questions/${id}`),
+        API.get(`/test/${id}`, { withCredentials: true }),
+        API.get(`/admin/questions/${id}`, { withCredentials: true }),
       ]);
       setTest(testRes.data);
       setQuestions(questionsRes.data);
@@ -66,9 +82,9 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
 
     try {
       if (editingQuestion) {
-        await API.put(`/admin/question/${editingQuestion._id}`, questionData);
+        await API.put(`/admin/question/${editingQuestion._id}`, questionData, { withCredentials: true });
       } else {
-        await API.post(`/question/add/${id}`, questionData);
+        await API.post(`/question/add/${id}`, questionData, { withCredentials: true });
       }
       setShowModal(false);
       setEditingQuestion(null);
@@ -102,7 +118,7 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
   const handleDelete = async (questionId: string) => {
     if (!confirm("Delete this question?")) return;
     try {
-      await API.delete(`/admin/question/${questionId}`);
+      await API.delete(`/admin/question/${questionId}`, { withCredentials: true });
       fetchData();
     } catch {
       alert("Failed to delete question");
@@ -111,105 +127,112 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading questions...</p>
+      <div className="flex min-h-screen">
+        <AdminSidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-500">Loading...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-50">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <button
-            onClick={() => router.push("/admin-dashboard/tests")}
-            className="text-sm text-blue-600 hover:text-blue-700 mb-2 flex items-center gap-1"
-          >
-            &larr; Back to Tests
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">{test?.title || "Questions"}</h1>
-          <p className="text-gray-500 mt-1">{questions.length} questions</p>
-        </div>
-        <button
-          onClick={() => {
-            setEditingQuestion(null);
-            resetForm();
-            setShowModal(true);
-          }}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
-        >
-          + Add Question
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        {questions.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-16 text-center text-gray-400">
-            <p className="text-4xl mb-4">❓</p>
-            <p>No questions added yet</p>
+    <div className="flex min-h-screen bg-gray-50">
+      <AdminSidebar />
+      
+      <div className="flex-1 p-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
             <button
-              onClick={() => setShowModal(true)}
-              className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
+              onClick={() => router.push("/admin-dashboard/tests")}
+              className="text-sm text-blue-600 hover:text-blue-700 mb-2 flex items-center gap-1"
             >
-              Add your first question
+              ← Back to Tests
             </button>
+            <h1 className="text-3xl font-bold text-gray-900">{test?.title || "Questions"}</h1>
+            <p className="text-gray-500 mt-1">{questions.length} questions</p>
           </div>
-        ) : (
-          questions.map((question, index) => (
-            <div key={question._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
-                      {index + 1}
-                    </span>
-                    <h3 className="text-lg font-medium text-gray-900">{question.questionText}</h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 ml-10">
-                    {question.options.map((option, i) => (
-                      <div
-                        key={i}
-                        className={`px-4 py-2 rounded-lg border ${
-                          i === question.correctOption
-                            ? "border-green-500 bg-green-50 text-green-700"
-                            : "border-gray-200 text-gray-700"
-                        }`}
-                      >
-                        <span className="font-medium mr-2">{String.fromCharCode(65 + i)}.</span>
-                        {option.text}
-                        {i === question.correctOption && <span className="ml-2">✓</span>}
-                      </div>
-                    ))}
-                  </div>
-                  {question.explanation && (
-                    <div className="mt-3 ml-10 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <p className="text-sm text-yellow-800">
-                        <span className="font-medium">Explanation:</span> {question.explanation}
-                      </p>
+          <button
+            onClick={() => {
+              setEditingQuestion(null);
+              resetForm();
+              setShowModal(true);
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+          >
+            + Add Question
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {questions.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-16 text-center text-gray-400">
+              <p className="text-4xl mb-4">❓</p>
+              <p>No questions added yet</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Add your first question
+              </button>
+            </div>
+          ) : (
+            questions.map((question, index) => (
+              <div key={question._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        {index + 1}
+                      </span>
+                      <h3 className="text-lg font-medium text-gray-900">{question.questionText}</h3>
                     </div>
-                  )}
-                </div>
-                <div className="flex gap-2 ml-4">
-                  <button
-                    onClick={() => handleEdit(question)}
-                    className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm font-medium hover:bg-yellow-200 transition"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(question._id)}
-                    className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition"
-                  >
-                    Delete
-                  </button>
+                    <div className="grid grid-cols-2 gap-3 ml-10">
+                      {question.options.map((option, i) => (
+                        <div
+                          key={i}
+                          className={`px-4 py-2 rounded-lg border ${
+                            i === question.correctOption
+                              ? "border-green-500 bg-green-50 text-green-700"
+                              : "border-gray-200 text-gray-700"
+                          }`}
+                        >
+                          <span className="font-medium mr-2">{String.fromCharCode(65 + i)}.</span>
+                          {option.text}
+                          {i === question.correctOption && <span className="ml-2">✓</span>}
+                        </div>
+                      ))}
+                    </div>
+                    {question.explanation && (
+                      <div className="mt-3 ml-10 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p className="text-sm text-yellow-800">
+                          <span className="font-medium">Explanation:</span> {question.explanation}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2 ml-4">
+                    <button
+                      onClick={() => handleEdit(question)}
+                      className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm font-medium hover:bg-yellow-200 transition"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(question._id)}
+                      className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
 
       {showModal && (

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
 
@@ -25,9 +26,8 @@ export default function ResultPage() {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const token = localStorage.getItem("authToken");
         const res = await fetch(`${API_URL}/user/attempts`, {
-          headers: { "Authorization": `Bearer ${token || ""}` }
+          credentials: "include",
         });
 
         if (res.ok) {
@@ -70,9 +70,35 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold text-blue-600">Quizaro</h1>
+      <nav className="w-full bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <Link href="/user-dashboard" className="text-blue-600 font-medium hover:text-blue-700">
+              Dashboard
+            </Link>
+            <Link href="/" className="text-gray-600 hover:text-blue-600">
+              Home
+            </Link>
+            <Link href="/tests" className="text-gray-600 hover:text-blue-600">
+              Tests
+            </Link>
+          </div>
+          <button
+            onClick={async () => {
+              try {
+                await fetch(`${API_URL}/user/logout`, {
+                  method: "POST",
+                  credentials: "include",
+                });
+                router.push("/login");
+              } catch {
+                router.push("/login");
+              }
+            }}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-medium"
+          >
+            Logout
+          </button>
         </div>
       </nav>
 

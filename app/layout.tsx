@@ -1,19 +1,23 @@
-import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import "./globals.css";
+import Navbar from "@/components/Navbar";  
 
-export const metadata: Metadata = {
-  title: "Quizaro - Online Quiz Platform",
-  description: "Take quizzes, track your progress, and compete with others",
+export const metadata = {
+  title: "Welcome - Quizaro",
+  description: "Smart Online Test Platform",
 };
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="bg-gray-50 text-gray-800">
+        <Navbar />  
+        {children}
+      </body>
     </html>
   );
 }

@@ -57,7 +57,7 @@ export default function RegisterPage() {
       >
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800">Create Account</h2>
-          <p className="text-gray-500 mt-2">Join Quizaro today</p>
+          <p className="text-gray-500 mt-2">Join us today</p>
         </div>
 
         {error && (

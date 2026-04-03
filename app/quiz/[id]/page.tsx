@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use, useRef } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
@@ -33,28 +33,13 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const answersRef = useRef(answers);
 
   useEffect(() => {
-    answersRef.current = answers;
-  }, [answers]);
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
-
-    const authHeaders = {
-      headers: { "Authorization": `Bearer ${token}` }
-    };
-
     const loadData = async () => {
       try {
         const [testRes, questionsRes] = await Promise.all([
-          fetch(`${API_URL}/test/${id}`, authHeaders),
-          fetch(`${API_URL}/questions/${id}`, authHeaders),
+          fetch(`${API_URL}/test/${id}`, { credentials: "include" }),
+          fetch(`${API_URL}/questions/${id}`, { credentials: "include" }),
         ]);
 
         if (!testRes.ok || !questionsRes.ok) {
@@ -109,22 +94,16 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
     setSubmitting(true);
 
     try {
-      const currentAnswers = answersRef.current;
       const answersArray = questions.map((q) => ({
         questionId: q._id,
-        selectedOption: currentAnswers[q._id] ?? -1,
+        selectedOption: answers[q._id] ?? -1,
       }));
-
-      const timeTaken = (test?.duration || 30) * 60 - timeLeft;
-      const token = localStorage.getItem("authToken");
 
       const res = await fetch(`${API_URL}/test/submit/${id}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token || ""}`
-        },
-        body: JSON.stringify({ answers: answersArray, timeTaken }),
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ answers: answersArray }),
       });
 
       if (res.ok) {

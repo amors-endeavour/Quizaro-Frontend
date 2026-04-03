@@ -1,83 +1,120 @@
+"use client";
+
+import { BookOpen, Target, Trophy } from "lucide-react";
 import Link from "next/link";
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold text-blue-600">
-            Quizaro
-          </Link>
-          <div className="flex gap-4">
-            <Link href="/" className="text-gray-600 hover:text-blue-600 font-medium">
-              Home
-            </Link>
-            <Link href="/tests" className="text-gray-600 hover:text-blue-600 font-medium">
-              Tests
-            </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600 font-medium">
-              Contact
-            </Link>
-            <Link href="/login" className="text-gray-600 hover:text-blue-600 font-medium">
-              Login
-            </Link>
-          </div>
-        </div>
-      </nav>
 
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">About Quizaro</h1>
-        <p className="text-lg text-gray-600 mb-8">
-          Quizaro is an online quiz platform designed to make learning engaging and accessible.
-          Whether you are preparing for exams or just testing your knowledge, Quizaro provides
-          a seamless experience with timed quizzes, instant grading, and competitive leaderboards.
+      {/* HERO */}
+      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-24 px-6 text-center">
+        <h1 className="text-5xl font-bold mb-6">About StudyWeb</h1>
+        <p className="max-w-2xl mx-auto text-lg">
+          StudyWeb is a smart online platform designed to help students prepare
+          for competitive exams through unlimited practice tests, performance
+          analysis, and real-time rankings.
+        </p>
+      </section>
+
+      {/* MISSION */}
+      <section className="py-20 px-6 max-w-6xl mx-auto text-center">
+        <h2 className="text-4xl font-bold mb-6">Our Mission</h2>
+        <p className="text-gray-600 max-w-3xl mx-auto text-lg">
+          Our mission is to make exam preparation smarter, faster, and more
+          effective. We provide thousands of practice questions, detailed
+          explanations, and performance analytics to help aspirants achieve
+          their goals.
+        </p>
+      </section>
+
+      {/* FEATURES */}
+      <section className="py-20 bg-white px-6">
+        <h2 className="text-4xl font-bold text-center mb-16">
+          What We Offer
+        </h2>
+
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+
+          <FeatureCard
+            icon={<BookOpen size={32} />}
+            title="Unlimited Practice"
+            desc="Access thousands of MCQs across multiple competitive exams."
+          />
+
+          <FeatureCard
+            icon={<Target size={32} />}
+            title="Smart Analytics"
+            desc="Track your performance with detailed insights and accuracy reports."
+          />
+
+          <FeatureCard
+            icon={<Trophy size={32} />}
+            title="Live Rankings"
+            desc="Compete with real aspirants and improve your exam performance."
+          />
+
+        </div>
+      </section>
+
+      {/* STATS */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 text-center">
+
+          <Stat number="50K+" label="Students Joined" />
+          <Stat number="10K+" label="Practice Questions" />
+          <Stat number="1K+" label="Tests Conducted" />
+
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="bg-blue-600 text-white text-center py-20 px-6">
+        <h2 className="text-4xl font-bold mb-6">
+          Start Your Preparation Today
+        </h2>
+
+        <p className="mb-8 text-lg">
+          Join thousands of students preparing smarter with StudyWeb.
         </p>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <div className="bg-white rounded-xl shadow-sm p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">For Students</h3>
-            <ul className="space-y-3 text-gray-600">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">✓</span>
-                Browse and purchase test series
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">✓</span>
-                Take timed quizzes with instant results
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">✓</span>
-                Track your progress and improvement
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">✓</span>
-                Compete on leaderboards
-              </li>
-            </ul>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">For Educators</h3>
-            <ul className="space-y-3 text-gray-600">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">✓</span>
-                Create and manage test series
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">✓</span>
-                Add MCQ questions with explanations
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">✓</span>
-                Monitor student attempts and performance
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">✓</span>
-                Set pricing for premium content
-              </li>
-            </ul>
-          </div>
-        </div>
-      </main>
+        <Link
+          href="/register"
+          className="bg-white text-blue-600 px-10 py-4 rounded-xl font-semibold shadow-lg hover:scale-105 transition"
+        >
+          Get Started
+        </Link>
+      </section>
+
+    </div>
+  );
+}
+
+/* Reusable Components */
+
+function FeatureCard({
+  icon,
+  title,
+  desc,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <div className="bg-gray-100 p-8 rounded-2xl shadow hover:shadow-xl transition text-center">
+      <div className="text-blue-600 mb-4 flex justify-center">{icon}</div>
+      <h3 className="text-xl font-bold mb-2">{title}</h3>
+      <p className="text-gray-600">{desc}</p>
+    </div>
+  );
+}
+
+function Stat({ number, label }: { number: string; label: string }) {
+  return (
+    <div>
+      <h3 className="text-4xl font-bold text-blue-600">{number}</h3>
+      <p className="text-gray-600 mt-2">{label}</p>
     </div>
   );
 }

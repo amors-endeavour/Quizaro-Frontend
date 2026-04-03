@@ -1,147 +1,132 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
-
-interface Test {
+interface Question {
   _id: string;
-  title: string;
-  description: string;
-  duration: number;
-  price: number;
-  totalQuestions: number;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
 }
 
-export default function TestDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+const questions: Question[] = [
+  {
+    _id: "1",
+    question: "2 + 2 = ?",
+    options: ["2", "3", "4", "5"],
+    correctAnswer: "4",
+    explanation: "2 + 2 equals 4",
+  },
+  {
+    _id: "2",
+    question: "Capital of India?",
+    options: ["Delhi", "Mumbai", "Chennai", "Kolkata"],
+    correctAnswer: "Delhi",
+    explanation: "Delhi is capital of India",
+  },
+];
+
+export default function TestPage() {
   const router = useRouter();
-  const [test, setTest] = useState<Test | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [purchasing, setPurchasing] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [current, setCurrent] = useState(0);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [testRes, profileRes] = await Promise.all([
-          fetch(`${API_URL}/test/${id}`),
-          fetch(`${API_URL}/user/profile`, { credentials: "include" }),
-        ]);
+  const currentQuestion = questions[current];
 
-        if (testRes.ok) {
-          setTest(await testRes.json());
-        }
-
-        if (profileRes.ok) {
-          const data = await profileRes.json();
-          setUser(data);
-        }
-      } catch (err) {
-        console.error("Failed to load:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [id]);
-
-  const handlePurchase = async () => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-    setPurchasing(true);
-    try {
-      const res = await fetch(`${API_URL}/test/purchase/${id}`, {
-        method: "POST",
-        credentials: "include",
-      });
-      if (res.ok) {
-        router.push(`/quiz/${id}`);
-      } else {
-        const data = await res.json();
-        alert(data.message || "Purchase failed");
-      }
-    } catch {
-      alert("Purchase failed");
-    } finally {
-      setPurchasing(false);
-    }
+  const handleSelect = (option: string) => {
+    setAnswers({
+      ...answers,
+      [currentQuestion._id]: option,
+    });
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading test...</p>
-        </div>
-      </div>
+  const submitTest = () => {
+    // Save result for demo (in real app send to backend)
+    localStorage.setItem(
+      "result",
+      JSON.stringify({ answers, questions })
     );
-  }
 
-  if (!test) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-xl text-gray-500 mb-4">Test not found</p>
-          <Link href="/tests" className="text-blue-600 hover:underline">
-            Back to Tests
-          </Link>
-        </div>
-      </div>
-    );
-  }
+    router.push("/result");
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold text-blue-600">Quizaro</Link>
-          <div className="flex gap-4">
-            <Link href="/tests" className="text-gray-600 hover:text-blue-600 font-medium">All Tests</Link>
-            {user ? (
-              <Link href="/user-dashboard" className="text-gray-600 hover:text-blue-600 font-medium">Dashboard</Link>
-            ) : (
-              <Link href="/login" className="text-gray-600 hover:text-blue-600 font-medium">Login</Link>
-            )}
-          </div>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Test Series
+        </h2>
+
+        {/* Question */}
+        <div>
+          <p className="font-semibold text-lg mb-4">
+            Q{current + 1}. {currentQuestion.question}
+          </p>
+
+          {currentQuestion.options.map((option) => (
+            <div
+              key={option}
+              onClick={() => handleSelect(option)}
+              className={`p-3 mb-3 border rounded cursor-pointer transition
+                ${
+                  answers[currentQuestion._id] === option
+                    ? "bg-blue-100 border-blue-500"
+                    : "hover:bg-gray-50"
+                }`}
+            >
+              {option}
+            </div>
+          ))}
         </div>
-      </nav>
 
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-xl shadow-sm p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{test.title}</h1>
-          {test.description && <p className="text-gray-600 mb-6">{test.description}</p>}
-
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">{test.totalQuestions || 0}</p>
-              <p className="text-sm text-gray-500">Questions</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">{test.duration || 30}</p>
-              <p className="text-sm text-gray-500">Minutes</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">{test.price === 0 ? "Free" : `₹${test.price}`}</p>
-              <p className="text-sm text-gray-500">Price</p>
-            </div>
-          </div>
-
+        {/* Navigation Buttons */}
+        <div className="flex justify-between mt-6">
           <button
-            onClick={handlePurchase}
-            disabled={purchasing}
-            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-lg disabled:opacity-50"
+            disabled={current === 0}
+            onClick={() => setCurrent(current - 1)}
+            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
           >
-            {purchasing ? "Processing..." : user ? (test.price === 0 ? "Start Test" : `Buy for ₹${test.price}`) : "Login to Start"}
+            Previous
           </button>
+
+          {current < questions.length - 1 ? (
+            <button
+              onClick={() => setCurrent(current + 1)}
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              onClick={submitTest}
+              className="px-4 py-2 bg-green-600 text-white rounded"
+            >
+              Submit Test
+            </button>
+          )}
         </div>
-      </main>
+
+        {/* Question Tracker */}
+        <div className="flex gap-2 mt-6 flex-wrap">
+          {questions.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrent(index)}
+              className={`w-8 h-8 rounded text-sm ${
+                current === index
+                  ? "bg-blue-600 text-white"
+                  : answers[questions[index]._id]
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-300"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
