@@ -9,7 +9,16 @@ const API = axios.create({
 });
 
 API.interceptors.request.use(
-  (config) => config,
+  (config) => {
+    // Add auth token if available in localStorage
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
   (error) => Promise.reject(error)
 );
 
@@ -17,6 +26,16 @@ API.interceptors.response.use(
   (response) => response,
   (error) => {
     console.log("API Error:", error?.response?.status, error?.message);
+    
+    // Auto-logout on 401 Unauthorized if in browser
+    if (error?.response?.status === 401 && typeof window !== "undefined") {
+      // Don't auto-redirect from login page to prevent loops
+      if (!window.location.pathname.includes("/login")) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        window.location.href = "/login?redirect=" + encodeURIComponent(window.location.pathname);
+      }
+    }
     return Promise.reject(error);
   }
 );

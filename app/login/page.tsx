@@ -1,257 +1,25 @@
-// "use client";
-
-// import { useState } from "react";
-// import { Mail, Lock, LogIn } from "lucide-react";
-// import { useRouter, useSearchParams } from "next/navigation";
-// import Link from "next/link";
-
-// const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
-
-// export default function LoginPage() {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
-//   const router = useRouter();
-//   const searchParams = useSearchParams();
-//   const redirect = searchParams.get("redirect") || "";
-
-//   const handleLogin = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setError("");
-
-//     try {
-//       console.log("Attempting login with:", email);
-      
-//       const res = await fetch(`${API_URL}/user/login`, {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         credentials: "include",
-//         body: JSON.stringify({ email, password }),
-//       });
-
-//       const data = await res.json();
-
-//       console.log("Login response status:", res.status);
-//       console.log("Login response data:", data);
-
-//       if (!res.ok) {
-//         throw new Error(data.message || `Login failed with status ${res.status}`);
-//       }
-
-//       let role = data?.role || data?.user?.role;
-//       if (!role) {
-//         role = data?.user?.role;
-//       }
-//       role = role?.toString().toLowerCase();
-
-//       console.log("Extracted role:", role);
-
-//       if (!role) {
-//         throw new Error("Role not found in response. Please check your credentials.");
-//       }
-
-//       // Redirect based on role or the redirect parameter
-//       if (role === "admin" || redirect === "/admin-dashboard") {
-//         router.replace("/admin-dashboard");
-//       } else {
-//         router.replace("/user-dashboard");
-//       }
-
-//     } catch (err: any) {
-//       console.error("Login error catch:", err);
-//       console.error("Error message:", err.message);
-//       setError(err.message || "Login failed. Please check your credentials.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 p-4">
-//       <form
-//         onSubmit={handleLogin}
-//         className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md"
-//       >
-//         <div className="text-center mb-8">
-//           <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>
-//           <p className="text-gray-500 mt-2">Sign in to your account</p>
-//         </div>
-
-//         {error && (
-//           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm">
-//             {error}
-//           </div>
-//         )}
-
-//         <div className="space-y-4">
-//           <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
-//             <Mail className="text-gray-400 mr-2" size={20} />
-//             <input
-//               type="email"
-//               placeholder="Email address"
-//               className="w-full p-2 outline-none bg-transparent"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               required
-//             />
-//           </div>
-
-//           <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
-//             <Lock className="text-gray-400 mr-2" size={20} />
-//             <input
-//               type="password"
-//               placeholder="Password"
-//               className="w-full p-2 outline-none bg-transparent"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               required
-//             />
-//           </div>
-
-//           <button
-//             type="submit"
-//             disabled={loading}
-//             className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-//           >
-//             {loading ? (
-//               <>
-//                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-//                 Signing in...
-//               </>
-//             ) : (
-//               <>
-//                 <LogIn size={18} />
-//                 Sign In
-//               </>
-//             )}
-//           </button>
-//         </div>
-
-//         <p className="text-center text-gray-500 mt-6 text-sm">
-//           Don&apos;t have an account?{" "}
-//           <Link href="/register" className="text-blue-600 hover:text-blue-700 font-medium">
-//             Register here
-//           </Link>
-//         </p>
-
-//         <p className="text-center text-gray-500 mt-3 text-sm">
-//           <Link href="/forgot-password" className="text-blue-600 hover:text-blue-700 font-medium">
-//             Forgot Password?
-//           </Link>
-//         </p>
-//       </form>
-//     </div>
-//   );
-// }
-
-
-// "use client";
-
-// import { useState } from "react";
-// import { useRouter, useSearchParams } from "next/navigation";
-// import Link from "next/link";
-
-// const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
-
-// export default function LoginContent() {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
-
-//   const router = useRouter();
-//   const searchParams = useSearchParams();
-//   const redirect = searchParams.get("redirect") || "";
-
-//   const handleLogin = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setError("");
-
-//     try {
-//       const res = await fetch(`${API_URL}/user/login`, {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         credentials: "include",
-//         body: JSON.stringify({ email, password }),
-//       });
-
-//       const data = await res.json();
-
-//       if (!res.ok) {
-//         throw new Error(data.message || "Login failed");
-//       }
-
-//       let role = data?.role || data?.user?.role;
-//       role = role?.toString().toLowerCase();
-
-//       if (!role) throw new Error("Role not found");
-
-//       if (role === "admin" || redirect === "/admin-dashboard") {
-//         router.replace("/admin-dashboard");
-//       } else {
-//         router.replace("/user-dashboard");
-//       }
-
-//     } catch (err: any) {
-//       setError(err.message || "Login failed");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 p-4">
-//       <form onSubmit={handleLogin} className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-
-//         <h2 className="text-3xl font-bold text-center mb-6">Welcome Back</h2>
-
-//         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-
-//         <input type="email" placeholder="Email"
-//           value={email} onChange={(e) => setEmail(e.target.value)}
-//           className="w-full mb-3 p-2 border rounded" required />
-
-//         <input type="password" placeholder="Password"
-//           value={password} onChange={(e) => setPassword(e.target.value)}
-//           className="w-full mb-3 p-2 border rounded" required />
-
-//         <button className="w-full bg-blue-600 text-white py-2 rounded">
-//           {loading ? "Signing in..." : "Sign In"}
-//         </button>
-
-//         <p className="text-sm mt-4 text-center">
-//           <Link href="/forgot-password">Forgot Password?</Link>
-//         </p>
-
-//       </form>
-//     </div>
-//   );
-// }
-
-
 "use client";
 
-import { useState, Suspense } from "react";
+import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Mail, Lock, LogIn } from "lucide-react";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
 
 function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "";
+  const redirect = searchParams?.get("redirect") || "";
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -259,7 +27,10 @@ function LoginForm() {
     try {
       const res = await fetch(`${API_URL}/user/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
@@ -270,66 +41,128 @@ function LoginForm() {
         throw new Error(data.message || "Login failed");
       }
 
-      let role = data?.role || data?.user?.role;
-      role = role?.toString().toLowerCase();
+      // Extract role and handle possible nested structures
+      const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
 
-      if (!role) throw new Error("Role not found");
+      if (!role) {
+        throw new Error("User role not found");
+      }
 
-      if (role === "admin" || redirect === "/admin-dashboard") {
+      // Persist auth status in localStorage as a fallback for cookies
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", data.token || "");
+        localStorage.setItem("role", role);
+        localStorage.setItem("user", JSON.stringify(data.user || {}));
+      }
+
+      // Performance: use router.replace to avoid back-button loops
+      if (role === "admin") {
         router.replace("/admin-dashboard");
+      } else if (redirect) {
+        router.replace(redirect);
       } else {
         router.replace("/user-dashboard");
       }
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      console.error("Login component error:", err);
+      setError(err.message || "An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 p-4">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md"
-      >
-        <h2 className="text-3xl font-bold text-center mb-6">Welcome Back</h2>
+    <div className="flex items-center justify-center min-h-screen bg-[#050816] p-4 font-sans">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full"></div>
+      </div>
 
-        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+      <div className="bg-white/5 border border-white/10 p-8 rounded-3xl shadow-2xl w-full max-w-md backdrop-blur-xl relative z-10">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-black text-white tracking-tight">Welcome Back</h2>
+          <p className="text-gray-400 mt-2 text-sm">Empowering your exam success</p>
+        </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-3 p-2 border rounded"
-          required
-        />
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-xl mb-6 text-sm font-medium">
+            {error}
+          </div>
+        )}
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-3 p-2 border rounded"
-          required
-        />
+        <form onSubmit={handleLogin} className="space-y-5">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">Email Address</label>
+            <div className="flex items-center border border-white/10 rounded-2xl px-4 py-3 bg-white/5 focus-within:border-blue-500/50 transition-all">
+              <Mail className="text-gray-500 mr-3" size={18} />
+              <input
+                type="email"
+                placeholder="name@example.com"
+                className="w-full outline-none bg-transparent text-white placeholder:text-gray-600"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+          </div>
 
-        <button className="w-full bg-blue-600 text-white py-2 rounded">
-          {loading ? "Signing in..." : "Sign In"}
-        </button>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">Password</label>
+            <div className="flex items-center border border-white/10 rounded-2xl px-4 py-3 bg-white/5 focus-within:border-blue-500/50 transition-all">
+              <Lock className="text-gray-500 mr-3" size={18} />
+              <input
+                type="password"
+                placeholder="••••••••"
+                className="w-full outline-none bg-transparent text-white placeholder:text-gray-600"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          </div>
 
-        <p className="text-sm mt-4 text-center">
-          <Link href="/forgot-password">Forgot Password?</Link>
-        </p>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-2xl hover:opacity-90 transition-all disabled:opacity-50 font-bold shadow-lg shadow-blue-900/20 mt-4 group"
+          >
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : (
+              <>
+                <LogIn size={20} className="group-hover:translate-x-1 transition-transform" />
+                Sign In to Dashboard
+              </>
+            )}
+          </button>
+        </form>
+
+        <div className="mt-8 pt-6 border-t border-white/5 text-center space-y-3">
+          <p className="text-gray-500 text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="text-blue-400 hover:text-blue-300 font-bold">
+              Register here
+            </Link>
+          </p>
+          <p className="text-sm">
+            <Link href="/forgot-password" className="text-gray-500 hover:text-white transition-colors">
+              Forgot your password?
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default function LoginContent() {
+export default function LoginPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#050816] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+      </div>
+    }>
       <LoginForm />
     </Suspense>
   );

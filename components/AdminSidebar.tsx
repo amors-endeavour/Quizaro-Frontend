@@ -41,8 +41,14 @@ export default function AdminSidebar() {
         method: "POST",
         credentials: "include",
       });
+      if (typeof window !== "undefined") {
+        localStorage.clear();
+      }
       router.replace("/login");
     } catch (err) {
+      if (typeof window !== "undefined") {
+        localStorage.clear();
+      }
       router.replace("/login");
     }
   };

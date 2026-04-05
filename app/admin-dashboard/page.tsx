@@ -18,6 +18,7 @@ interface RecentAttempt {
   totalMarks: number;
   submittedAt: string;
 }
+import API from "@/app/lib/api";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -30,21 +31,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
-        
-        const res = await fetch(`${API_URL}/user/profile`, {
-          credentials: "include",
-        });
+        const { data } = await API.get("/user/profile");
 
-        console.log("Admin profile response:", res.status);
-
-        if (!res.ok) {
-          console.log("Profile not OK, redirecting to login");
-          router.replace("/login");
-          return;
-        }
-
-        const data = await res.json();
         console.log("Admin profile data:", JSON.stringify(data));
         
         const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
@@ -72,15 +60,13 @@ export default function AdminDashboard() {
     
     const fetchData = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
-        
         const [statsRes, attemptsRes] = await Promise.all([
-          fetch(`${API_URL}/admin/stats`, { credentials: "include" }),
-          fetch(`${API_URL}/admin/attempts`, { credentials: "include" }),
+          API.get("/admin/stats"),
+          API.get("/admin/attempts"),
         ]);
 
-        const statsData = await statsRes.json();
-        const attemptsData = await attemptsRes.json();
+        const statsData = statsRes.data;
+        const attemptsData = attemptsRes.data;
 
         // Handle response - can be array or error object
         const attemptsArray = Array.isArray(attemptsData) ? attemptsData : [];
@@ -89,7 +75,7 @@ export default function AdminDashboard() {
         setRecentAttempts(attemptsArray.slice(0, 5));
       } catch (err: any) {
         console.error("Failed to fetch data:", err);
-        setError(err?.message || "Load Failed");
+        setError(err?.response?.data?.message || err?.message || "Load Failed");
       } finally {
         setLoading(false);
       }

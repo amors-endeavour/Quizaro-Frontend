@@ -107,7 +107,9 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
       });
 
       if (res.ok) {
-        router.push("/result");
+        const data = await res.json();
+        const attemptId = data?.attemptId || data?.result?.attemptId || data?._id || "";
+        router.push(`/result?attemptId=${attemptId}`);
       } else {
         const data = await res.json();
         alert(data.message || "Submission failed");

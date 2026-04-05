@@ -1,84 +1,122 @@
 "use client";
 
-import { Search, FileText, Clock, Trophy } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+
+interface Test {
+  _id: string;
+  title: string;
+  description: string;
+  duration: number;
+  price: number;
+  totalQuestions: number;
+}
 
 export default function TestsPage() {
-  const tests = [
-    {
-      title: "SSC CGL Mock Test",
-      questions: 100,
-      duration: "60 mins",
-    },
-    {
-      title: "Bank PO Practice Test",
-      questions: 80,
-      duration: "45 mins",
-    },
-    {
-      title: "UPSC Prelims Mock",
-      questions: 120,
-      duration: "2 hours",
-    },
-    {
-      title: "Railway NTPC Test",
-      questions: 90,
-      duration: "60 mins",
-    },
-  ];
+  const [tests, setTests] = useState<Test[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_URL}/user/profile`, { credentials: "include" });
+        setIsAuthenticated(res.ok);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    const fetchTests = async () => {
+      try {
+        const res = await fetch(`${API_URL}/tests`);
+        if (res.ok) {
+          const data = await res.json();
+          setTests(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch tests:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTests();
+  }, []);
+
+  const filteredTests = tests.filter((test) =>
+    test.title.toLowerCase().includes(search.toLowerCase()) ||
+    test.description?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#050816] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading tests...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-12">
-      
-      <div className="max-w-6xl mx-auto mb-12">
+    <div className="min-h-screen bg-[#050816] text-white">
+      <Navbar />
+
+      <div className="max-w-6xl mx-auto px-6 py-12">
         <h1 className="text-4xl font-bold mb-3">Practice Tests</h1>
-        <p className="text-gray-600">
+        <p className="text-gray-400 mb-8">
           Attempt mock tests and track your performance.
         </p>
 
-        <div className="mt-6 flex items-center bg-white border rounded-xl px-4 py-3 shadow-sm focus-within:ring-2 focus-within:ring-blue-500">
-          <Search className="text-gray-400 mr-2" size={20} />
+        <div className="mb-12 flex items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-purple-500">
           <input
             type="text"
             placeholder="Search tests..."
-            className="w-full outline-none"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full outline-none bg-transparent text-white placeholder-gray-500"
           />
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
-        {tests.map((test, index) => (
-          <div
-            key={index}
-            className="bg-white p-6 rounded-2xl border hover:shadow-xl hover:-translate-y-1 transition duration-300"
-          >
-            <h3 className="text-xl font-semibold mb-4">{test.title}</h3>
-
-            <div className="space-y-3 text-gray-600 mb-6">
-              <p className="flex items-center gap-2">
-                <FileText size={18} className="text-blue-600" />
-                {test.questions} Questions
-              </p>
-
-              <p className="flex items-center gap-2">
-                <Clock size={18} className="text-blue-600" />
-                {test.duration}
-              </p>
-
-              <p className="flex items-center gap-2">
-                <Trophy size={18} className="text-blue-600" />
-                Rank & Analysis
-              </p>
-            </div>
-
-            <Link
-              href="/login"
-              className="block text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg hover:opacity-90 transition"
-            >
-              Attempt Test
-            </Link>
+        {filteredTests.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-4xl mb-4">📝</p>
+            <p className="text-gray-400 text-lg">No tests available yet</p>
           </div>
-        ))}
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTests.map((test) => (
+              <div
+                key={test._id}
+                className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-purple-500/40 hover:shadow-[0_0_20px_rgba(139,92,246,0.2)] transition duration-300"
+              >
+                <h3 className="text-xl font-semibold mb-3">{test.title}</h3>
+                {test.description && (
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">{test.description}</p>
+                )}
+                <div className="space-y-2 text-gray-400 text-sm mb-6">
+                  <p>{test.totalQuestions || 0} Questions</p>
+                  <p>{test.duration || 30} minutes</p>
+                </div>
+                <Link
+                  href={isAuthenticated ? `/quiz/${test._id}` : "/login"}
+                  className="block text-center bg-gradient-to-r from-purple-500 to-cyan-500 text-white py-3 rounded-xl hover:opacity-90 transition font-medium"
+                >
+                  {isAuthenticated ? "Start Test" : "Login to Attempt"}
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
