@@ -162,7 +162,7 @@ function HeroSection() {
         <div className="flex flex-col sm:flex-row justify-center gap-6 mb-14">
           {/* Path 1: Student */}
           <Link
-            href="/register"
+            href="/user-login"
             className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 rounded-2xl font-bold text-lg shadow-[0_0_40px_rgba(6,182,212,0.4)] hover:shadow-[0_0_60px_rgba(6,182,212,0.6)] hover:scale-105 transition-all duration-300"
           >
             <Users size={20} className="text-white" />
@@ -171,7 +171,7 @@ function HeroSection() {
 
           {/* Path 2: Admin */}
           <Link
-            href="/login?redirect=/admin-dashboard"
+            href="/admin-login"
             className="group inline-flex items-center justify-center gap-3 px-10 py-5 border-2 border-white/20 bg-white/5 backdrop-blur-md rounded-2xl font-bold text-lg hover:bg-white/10 hover:border-white/40 hover:scale-105 transition-all duration-300"
           >
             <Shield size={20} className="text-purple-400" />
