@@ -4,9 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://quizaro-backend-3fkj.onrender.com";
+import API from "@/app/lib/api";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -17,13 +15,9 @@ export default function Navbar() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-        const res = await fetch(`${API_URL}/user/profile`, {
-          credentials: "include",
-          headers: token ? { "Authorization": `Bearer ${token}` } : {}
-        });
-        setIsAuthenticated(res.ok);
-      } catch {
+        const { data } = await API.get("/user/profile");
+        setIsAuthenticated(!!data);
+      } catch (err) {
         setIsAuthenticated(false);
       } finally {
         setCheckingAuth(false);
@@ -34,26 +28,26 @@ export default function Navbar() {
 
   const handleAdminAccess = () => {
     setOpen(false);
-    router.push("/login?redirect=/admin-dashboard");
+    // Directly go to admin dashboard if we're likely an admin
+    const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
+    if (role === "admin") {
+      router.push("/admin-dashboard");
+    } else {
+      router.push("/login?redirect=/admin-dashboard");
+    }
   };
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_URL}/user/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-      if (typeof window !== "undefined") {
-        localStorage.clear();
-      }
-      setIsAuthenticated(false);
-      router.push("/");
+      await API.post("/user/logout");
     } catch {
+      console.log("Remote logout failed, clearing local state anyway");
+    } finally {
       if (typeof window !== "undefined") {
         localStorage.clear();
       }
       setIsAuthenticated(false);
-      router.push("/");
+      router.replace("/login");
     }
   };
 
