@@ -7,6 +7,8 @@ import {
   BarChart3, Trophy, Clock, Flame, Shield, ArrowRight, TrendingUp, 
   CheckCircle, ChevronDown 
 } from "lucide-react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -65,6 +67,22 @@ interface FaqItemProps {
 }
 
 export default function HomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Smart Resume Logic: If logged in, skip the landing page and go to dashboard
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
+
+    if (token && role) {
+      if (role === "admin") {
+        router.replace("/admin-dashboard");
+      } else {
+        router.replace("/user-dashboard");
+      }
+    }
+  }, [router]);
+
   return (
     <div className="min-h-screen bg-[#050816] text-white font-sans overflow-x-hidden">
       <Navbar />
