@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import API from "@/app/lib/api";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -69,12 +70,33 @@ interface FaqItemProps {
 export default function HomePage() {
   const router = useRouter();
 
-  // Redirection is removed here to allow users to see the landing page selection buttons.
-  // We only redirect if they manually choose to go into a dashboard later.
   useEffect(() => {
-    // We can still keep the token check to update the Navbar state,
-    // but we won't force a router.replace here anymore.
-  }, []);
+    const checkSession = async () => {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
+
+      if (!token || !role) return;
+
+      try {
+        // Fast verification
+        await API.get("/user/profile");
+        // If successful, we can safely resume
+        if (role === "admin") {
+          router.replace("/admin-dashboard");
+        } else {
+          router.replace("/user-dashboard");
+        }
+      } catch (err) {
+        // If session is invalid, clear storage so we don't try again
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("role");
+        }
+      }
+    };
+    
+    checkSession();
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-[#050816] text-white font-sans overflow-x-hidden">
