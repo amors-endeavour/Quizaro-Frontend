@@ -13,17 +13,34 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    // 1. Instant check (Optimistic UI)
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (token) {
+      setIsAuthenticated(true);
+      setCheckingAuth(false);
+    } else {
+      // If no token, we can also be sure they are NOT logged in
+      setIsAuthenticated(false);
+      setCheckingAuth(false);
+    }
+
+    // 2. Background verification (Security)
+    const verifyAuth = async () => {
       try {
         const { data } = await API.get("/user/profile");
         setIsAuthenticated(!!data);
       } catch (err) {
         setIsAuthenticated(false);
+        // Clear local state if verification fails
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("role");
+        }
       } finally {
         setCheckingAuth(false);
       }
     };
-    checkAuth();
+    verifyAuth();
   }, []);
 
   const handleAdminAccess = () => {
