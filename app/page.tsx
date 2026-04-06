@@ -69,19 +69,12 @@ interface FaqItemProps {
 export default function HomePage() {
   const router = useRouter();
 
+  // Redirection is removed here to allow users to see the landing page selection buttons.
+  // We only redirect if they manually choose to go into a dashboard later.
   useEffect(() => {
-    // Smart Resume Logic: If logged in, skip the landing page and go to dashboard
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
-
-    if (token && role) {
-      if (role === "admin") {
-        router.replace("/admin-dashboard");
-      } else {
-        router.replace("/user-dashboard");
-      }
-    }
-  }, [router]);
+    // We can still keep the token check to update the Navbar state,
+    // but we won't force a router.replace here anymore.
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#050816] text-white font-sans overflow-x-hidden">
@@ -144,20 +137,24 @@ function HeroSection() {
           50,000+ aspirants.
         </p>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-14">
+        <div className="flex flex-col sm:flex-row justify-center gap-6 mb-14">
+          {/* Path 1: Student */}
           <Link
             href="/register"
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl font-bold text-base shadow-[0_0_40px_rgba(99,102,241,0.5)] hover:shadow-[0_0_60px_rgba(99,102,241,0.7)] hover:scale-105 transition-all duration-300"
+            className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 rounded-2xl font-bold text-lg shadow-[0_0_40px_rgba(6,182,212,0.4)] hover:shadow-[0_0_60px_rgba(6,182,212,0.6)] hover:scale-105 transition-all duration-300"
           >
-            <Zap size={18} className="group-hover:animate-bounce" />
-            Start Free Now
+            <Users size={20} className="text-white" />
+            <span>I am a Student</span>
           </Link>
-          <button className="group inline-flex items-center justify-center gap-2 px-8 py-4 border border-white/15 rounded-2xl font-semibold text-base hover:bg-white/5 hover:border-white/30 transition-all duration-300">
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition">
-              <Play size={14} className="ml-0.5" />
-            </div>
-            Watch Demo
-          </button>
+
+          {/* Path 2: Admin */}
+          <Link
+            href="/login?redirect=/admin-dashboard"
+            className="group inline-flex items-center justify-center gap-3 px-10 py-5 border-2 border-white/20 bg-white/5 backdrop-blur-md rounded-2xl font-bold text-lg hover:bg-white/10 hover:border-white/40 hover:scale-105 transition-all duration-300"
+          >
+            <Shield size={20} className="text-purple-400" />
+            <span>I am an Admin</span>
+          </Link>
         </div>
 
         <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-500">
