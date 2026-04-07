@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import AdminSidebar from "@/components/AdminSidebar";
+import AdminHeader from "@/components/AdminHeader";
+import AdminFolderCard from "@/components/AdminFolderCard";
+import AdminTestCard from "@/components/AdminTestCard";
 import API from "@/app/lib/api";
+import { X } from "lucide-react";
 
 interface Test {
   _id: string;
   title: string;
-  description: string;
-  duration: number;
-  price: number;
-  totalQuestions: number;
+  description?: string;
+  duration?: number;
+  price?: number;
+  totalQuestions?: number;
+  category?: string;
   createdAt: string;
 }
 
@@ -21,247 +26,239 @@ export default function TestsPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingTest, setEditingTest] = useState<Test | null>(null);
+  
+  // Navigation State
+  const [currentFolder, setCurrentFolder] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     duration: 30,
     price: 0,
+    category: "General"
   });
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const fetchTests = async () => {
       try {
-        const { data } = await API.get("/user/profile", { withCredentials: true });
-        const role = (data?.role || data?.user?.role)?.toLowerCase();
-        if (role !== "admin") {
-          router.replace("/login");
-        }
-      } catch {
-        router.replace("/login");
+        const { data } = await API.get("/admin/tests");
+        setTests(data);
+      } catch (err) {
+        console.error("Failed to fetch tests:", err);
+      } finally {
+        setLoading(false);
       }
     };
-    checkAuth();
-  }, [router]);
-
-  const fetchTests = async () => {
-    try {
-      const { data } = await API.get("/admin/tests", { withCredentials: true });
-      setTests(data);
-    } catch (err) {
-      console.error("Failed to fetch tests:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
     fetchTests();
   }, []);
+
+  // Logic: Group tests by category to create "Folders"
+  const folders = useMemo(() => {
+    const groups: Record<string, number> = {};
+    tests.forEach((t) => {
+      const cat = t.category || "General";
+      groups[cat] = (groups[cat] || 0) + 1;
+    });
+    return Object.entries(groups).map(([name, count]) => ({ name, count }));
+  }, [tests]);
+
+  // Logic: Filter tests based on current folder and search
+  const filteredTests = useMemo(() => {
+    return tests.filter((t) => {
+      const matchesFolder = currentFolder ? (t.category || "General") === currentFolder : true;
+      const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesFolder && matchesSearch;
+    });
+  }, [tests, currentFolder, searchQuery]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (editingTest) {
-        await API.put(`/admin/test/${editingTest._id}`, formData, { withCredentials: true });
+        await API.put(`/admin/test/${editingTest._id}`, formData);
       } else {
-        await API.post("/test/create", formData, { withCredentials: true });
+        await API.post("/test/create", formData);
       }
-      setShowModal(false);
-      setEditingTest(null);
-      setFormData({ title: "", description: "", duration: 30, price: 0 });
-      fetchTests();
-    } catch (err) {
+      window.location.reload(); // Refresh to catch changes
+    } catch {
       alert("Failed to save test");
     }
   };
 
-  const handleEdit = (test: Test) => {
-    setEditingTest(test);
-    setFormData({
-      title: test.title,
-      description: test.description || "",
-      duration: test.duration || 30,
-      price: test.price || 0,
-    });
-    setShowModal(true);
-  };
-
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this test and all its questions?")) return;
+    if (!confirm("Are you sure?")) return;
     try {
-      await API.delete(`/admin/test/${id}`, { withCredentials: true });
-      fetchTests();
+      await API.delete(`/admin/test/${id}`);
+      setTests(tests.filter(t => t._id !== id));
     } catch {
-      alert("Failed to delete test");
+      alert("Delete failed");
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen">
-        <AdminSidebar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-500">Loading...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="min-h-screen bg-gray-50 flex items-center justify-center font-bold text-blue-600 animate-pulse">Initializing Library...</div>;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 text-gray-900 font-sans">
       <AdminSidebar />
       
-      <div className="flex-1 p-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Tests</h1>
-            <p className="text-gray-500 mt-1">Manage your test series</p>
-          </div>
-          <button
-            onClick={() => {
-              setEditingTest(null);
-              setFormData({ title: "", description: "", duration: 30, price: 0 });
-              setShowModal(true);
-            }}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
-          >
-            + Create Test
-          </button>
-        </div>
+      <main className="flex-1 overflow-y-auto">
+        <AdminHeader 
+          title={currentFolder || "My Library"}
+          path={[
+            { label: "My Library", href: currentFolder ? "#" : undefined },
+            ...(currentFolder ? [{ label: currentFolder }] : [])
+          ]}
+          onNew={() => {
+            setEditingTest(null);
+            setFormData({ title: "", description: "", duration: 30, price: 0, category: currentFolder || "General" });
+            setShowModal(true);
+          }}
+          onSearchChange={setSearchQuery}
+        />
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          {tests.length === 0 ? (
-            <div className="text-center py-16 text-gray-400">
-              <p className="text-4xl mb-4">📝</p>
-              <p>No tests created yet</p>
+        <div className="p-8">
+          {/* Breadcrumb Info Bar (Image 1/4 Style) */}
+          <div className="flex items-center gap-4 mb-6 text-sm font-bold text-gray-400">
+             <input type="checkbox" className="w-4 h-4 rounded border-gray-300" />
+             <span className="uppercase tracking-widest">
+               {currentFolder ? `Tests (${filteredTests.length})` : `Folders (${folders.length})`}
+             </span>
+          </div>
+
+          {!currentFolder ? (
+            /* FOLDER GRID VIEW */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {folders.length === 0 ? (
+                <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
+                  <p className="text-gray-400 font-bold uppercase tracking-widest">No Folders Created Yet</p>
+                </div>
+              ) : (
+                folders.map((f) => (
+                  <AdminFolderCard 
+                    key={f.name} 
+                    name={f.name} 
+                    count={f.count}
+                    onClick={() => {
+                      setCurrentFolder(f.name);
+                      window.scrollTo(0, 0);
+                    }}
+                  />
+                ))
+              )}
             </div>
           ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
-                <tr className="text-left text-sm text-gray-500">
-                  <th className="px-6 py-4 font-medium">Title</th>
-                  <th className="px-6 py-4 font-medium">Duration</th>
-                  <th className="px-6 py-4 font-medium">Price</th>
-                  <th className="px-6 py-4 font-medium">Questions</th>
-                  <th className="px-6 py-4 font-medium">Created</th>
-                  <th className="px-6 py-4 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {tests.map((test) => (
-                  <tr key={test._id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-gray-900">{test.title}</p>
-                        {test.description && (
-                          <p className="text-sm text-gray-500 truncate max-w-xs">{test.description}</p>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">{test.duration} min</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${test.price === 0 ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
-                        {test.price === 0 ? "Free" : `₹${test.price}`}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">{test.totalQuestions || 0}</td>
-                    <td className="px-6 py-4 text-gray-500 text-sm">
-                      {new Date(test.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => router.push(`/admin-dashboard/${test._id}`)}
-                          className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-medium hover:bg-green-200 transition"
-                        >
-                          Questions
-                        </button>
-                        <button
-                          onClick={() => handleEdit(test)}
-                          className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm font-medium hover:bg-yellow-200 transition"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(test._id)}
-                          className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            /* TESTS LIST VIEW */
+            <div className="flex flex-col gap-4">
+               <button 
+                 onClick={() => setCurrentFolder(null)}
+                 className="w-fit mb-4 text-xs font-black text-blue-600 uppercase tracking-widest hover:underline flex items-center gap-2"
+               >
+                 ← Back to Folders
+               </button>
+               
+               {filteredTests.length === 0 ? (
+                 <div className="py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
+                   <p className="text-gray-400 font-bold uppercase tracking-widest">No Tests in this Folder</p>
+                 </div>
+               ) : (
+                 filteredTests.map((test) => (
+                    <AdminTestCard 
+                      key={test._id}
+                      title={test.title}
+                      description={currentFolder}
+                      date={new Date(test.createdAt).toISOString().split('T')[0].replace(/-/g, '/')}
+                      status="Draft"
+                      onEdit={() => {
+                        setEditingTest(test);
+                        setFormData({
+                          title: test.title,
+                          description: test.description || "",
+                          duration: test.duration || 30,
+                          price: test.price || 0,
+                          category: test.category || "General"
+                        });
+                        setShowModal(true);
+                      }}
+                      onQuestions={() => router.push(`/admin-dashboard/${test._id}`)}
+                      onDelete={() => handleDelete(test._id)}
+                    />
+                 ))
+               )}
+            </div>
           )}
         </div>
-      </div>
+      </main>
 
+      {/* CREATE / EDIT MODAL */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">
-              {editingTest ? "Edit Test" : "Create New Test"}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input
-                  type="text"
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="px-8 py-6 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+               <h3 className="text-xl font-black text-gray-900 tracking-tight uppercase">
+                 {editingTest ? "Edit Settings" : "Create New Content"}
+               </h3>
+               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-900 transition">
+                 <X size={24} />
+               </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Series / Folder Name</label>
+                <input 
+                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold"
+                  value={formData.category}
+                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  placeholder="e.g. Computers, JKSSB Junior Assistant"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Test Title</label>
+                <input 
+                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
                   required
+                  placeholder="e.g. Model Paper 01"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={3}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Duration (min)</label>
-                  <input
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Duration (Min)</label>
+                  <input 
                     type="number"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold"
                     value={formData.duration}
-                    onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    min={1}
+                    onChange={(e) => setFormData({...formData, duration: Number(e.target.value)})}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
-                  <input
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Price (₹)</label>
+                  <input 
                     type="number"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold"
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    min={0}
+                    onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
                   />
                 </div>
               </div>
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
+
+              <div className="flex gap-4 pt-4">
+                <button 
+                  type="button" 
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
+                  className="flex-1 py-4 border-2 border-gray-100 rounded-2xl font-black text-xs uppercase tracking-widest text-gray-400 hover:bg-gray-50 transition"
                 >
                   Cancel
                 </button>
-                <button
+                <button 
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+                  className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition shadow-xl shadow-blue-200"
                 >
-                  {editingTest ? "Update" : "Create"}
+                  {editingTest ? "Update Changes" : "Save and Continue"}
                 </button>
               </div>
             </form>
