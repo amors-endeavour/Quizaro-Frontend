@@ -2,10 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Navbar from "@/components/Navbar";
-
+import UserSidebar from "@/components/UserSidebar";
+import UserHeader from "@/components/UserHeader";
 import API from "@/app/lib/api";
+import { 
+  Play, 
+  Clock, 
+  FileText, 
+  ArrowRight,
+  TrendingUp,
+  Award,
+  Zap,
+  CheckCircle2,
+  Lock
+} from "lucide-react";
 
 interface Test {
   _id: string;
@@ -14,6 +24,7 @@ interface Test {
   duration: number;
   price: number;
   totalQuestions: number;
+  category?: string;
 }
 
 interface PurchasedTest {
@@ -29,224 +40,179 @@ export default function UserDashboard() {
   const [availableTests, setAvailableTests] = useState<Test[]>([]);
   const [purchasedTests, setPurchasedTests] = useState<PurchasedTest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [purchasing, setPurchasing] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const { data } = await API.get("/user/profile");
-
-        const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
-
+        const role = (data?.role || data?.user?.role)?.toLowerCase();
         if (role === "admin") {
           router.replace("/admin-dashboard");
           return;
         }
-
-        setUser(data);
+        setUser(data?.user || data);
         setIsAuthChecked(true);
-      } catch (err) {
-        console.error("User auth error:", err);
-        router.replace("/login");
+      } catch {
+        router.replace("/user-login");
       }
     };
-
     checkAuth();
   }, [router]);
 
   useEffect(() => {
     if (!isAuthChecked) return;
-    
     const loadData = async () => {
       try {
         const [availableRes, purchasedRes] = await Promise.all([
           API.get("/user/tests/available"),
           API.get("/user/tests/purchased"),
         ]);
-
-        setAvailableTests(Array.isArray(availableRes.data) ? availableRes.data : []);
-        setPurchasedTests(Array.isArray(purchasedRes.data) ? purchasedRes.data : []);
+        setAvailableTests(availableRes.data);
+        setPurchasedTests(purchasedRes.data);
       } catch (err) {
-        console.error("Failed to load data:", err);
+        console.error("Data load failed", err);
       } finally {
         setLoading(false);
       }
     };
-
     loadData();
   }, [isAuthChecked]);
 
-  const handlePurchase = async (testId: string) => {
-    setPurchasing(testId);
-    try {
-      await API.post(`/test/purchase/${testId}`);
-      window.location.reload();
-    } catch (err: any) {
-      alert(err?.response?.data?.message || "Purchase failed. Please try again.");
-    } finally {
-      setPurchasing(null);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await API.post("/user/logout");
-    } finally {
-      if (typeof window !== "undefined") {
-        localStorage.clear();
-      }
-      router.replace("/login");
-    }
-  };
-
-  const isExpired = (expiresAt: string) => {
-    return new Date(expiresAt) < new Date();
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#050816]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="min-h-screen bg-[#f3f4f9] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Initializing Classroom...</div>;
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white">
-      <Navbar />
+    <div className="flex h-screen bg-[#f8f9fc] text-gray-900 font-sans overflow-hidden">
+      <UserSidebar userName={user?.name || "Student"} />
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">
-            Welcome, {user?.name || user?.user?.name || "User"}!
-          </h1>
-          <p className="text-gray-400 mt-1">{user?.email || user?.user?.email || ""}</p>
-        </div>
+      <main className="flex-1 overflow-y-auto">
+        <UserHeader 
+          title="Classroom Tests" 
+          breadcrumbs={["Classroom", "Test Series"]} 
+        />
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-            <p className="text-sm text-gray-400">Available Tests</p>
-            <p className="text-3xl font-bold mt-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">{availableTests.length}</p>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-            <p className="text-sm text-gray-400">My Tests</p>
-            <p className="text-3xl font-bold mt-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">{purchasedTests.length}</p>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-            <p className="text-sm text-gray-400">Completed</p>
-            <p className="text-3xl font-bold mt-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
-              {purchasedTests.filter((t) => t.isCompleted).length}
-            </p>
-          </div>
-        </div>
+        <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12">
+          
+          {/* Dashboard Stats Overview (Institutional Style) */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex items-center gap-6">
+                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-50">
+                   <TrendingUp size={28} />
+                </div>
+                <div>
+                   <h3 className="text-2xl font-black text-gray-900 leading-none">{purchasedTests.length} Total</h3>
+                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-2">Active Test Series</p>
+                </div>
+             </div>
+             
+             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex items-center gap-6">
+                <div className="w-16 h-16 bg-green-50 text-green-600 rounded-3xl flex items-center justify-center shadow-lg shadow-green-50">
+                   <Award size={28} />
+                </div>
+                <div>
+                   <h3 className="text-2xl font-black text-gray-900 leading-none">{purchasedTests.filter(t => t.isCompleted).length} Done</h3>
+                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-2">Tests Completed</p>
+                </div>
+             </div>
 
-        <div className="space-y-8">
-          <section>
-            <h2 className="text-xl font-semibold mb-4">Available Tests</h2>
-            {availableTests.length === 0 ? (
-              <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center text-gray-400">
-                <p className="text-4xl mb-2">🎉</p>
-                <p>You&apos;ve purchased all available tests!</p>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {availableTests.map((test) => (
-                  <div key={test._id} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-purple-500/40 transition">
-                    <h3 className="font-semibold mb-2">{test.title}</h3>
-                    {test.description && (
-                      <p className="text-sm text-gray-400 mb-4 line-clamp-2">{test.description}</p>
-                    )}
-                    <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
-                      <span>{test.totalQuestions || 0} Questions</span>
-                      <span>{test.duration || 30} min</span>
+             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex items-center gap-6">
+                <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center shadow-lg shadow-orange-50">
+                   <Zap size={28} />
+                </div>
+                <div>
+                   <h3 className="text-2xl font-black text-gray-900 leading-none">{availableTests.length} New</h3>
+                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-2">Available for Enrollment</p>
+                </div>
+             </div>
+          </section>
+
+          {/* ACTIVE TESTS SECTION (LIST VIEW IMAGE #1 STYLE) */}
+          <section className="space-y-6">
+             <div className="flex items-center justify-between px-4">
+                <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
+                  <Play size={18} fill="currentColor" />
+                  Your Active Classroom
+                </h3>
+             </div>
+
+             <div className="grid grid-cols-1 gap-4">
+                {purchasedTests.length === 0 ? (
+                  <div className="py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
+                    <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">No series purchased yet. Explore the marketplace below.</p>
+                  </div>
+                ) : (
+                  purchasedTests.map((pt) => (
+                    <div key={pt._id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:scale-[1.01] transition-all duration-300 flex flex-col md:flex-row items-center justify-between gap-6 group">
+                       <div className="flex items-center gap-6">
+                          <div className="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100 group-hover:rotate-6 transition-transform">
+                             <FileText size={28} />
+                          </div>
+                          <div>
+                             <h4 className="text-lg font-black text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">{pt.testId.title}</h4>
+                             <div className="flex items-center gap-4 mt-2">
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full">{pt.testId.category || "General"}</span>
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5"><Clock size={12} /> {pt.testId.duration} Min</span>
+                             </div>
+                          </div>
+                       </div>
+                       
+                       <div className="flex items-center gap-4">
+                          {pt.isCompleted ? (
+                             <button
+                               onClick={() => router.push(`/result/${pt.testId._id}`)}
+                               className="px-8 py-3 bg-green-50 text-green-700 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-green-600 hover:text-white transition-all shadow-lg shadow-green-50"
+                             >
+                               <CheckCircle2 size={16} />
+                               View Scorecard
+                             </button>
+                          ) : (
+                             <button
+                               onClick={() => router.push(`/quiz/${pt.testId._id}`)}
+                               className="px-8 py-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 active:scale-95"
+                             >
+                               <Play size={16} fill="white" />
+                               START TEST NOW
+                             </button>
+                          )}
+                       </div>
                     </div>
-                    <button
-                      onClick={() => handlePurchase(test._id)}
-                      disabled={purchasing === test._id}
-                      className="w-full py-2 bg-gradient-to-r from-purple-500 to-cyan-500 text-white rounded-lg hover:opacity-90 transition disabled:opacity-50 font-medium"
-                    >
-                      {purchasing === test._id ? "Purchasing..." : test.price === 0 ? "Start Free" : `Buy ₹${test.price}`}
-                    </button>
+                  ))
+                )}
+             </div>
+          </section>
+
+          {/* MARKETPLACE SECTION (IMAGE #4 STYLE) */}
+          <section className="space-y-6 pt-6">
+             <div className="flex items-center justify-between px-4">
+                <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
+                  <Layers size={18} />
+                  Available Recommendations
+                </h3>
+             </div>
+
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {availableTests.map((test) => (
+                  <div key={test._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col items-center text-center group hover:-translate-y-2 transition-all duration-300">
+                     <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center text-gray-300 mb-6 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-blue-100 transition-all duration-500">
+                        <Lock size={32} />
+                     </div>
+                     <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest leading-relaxed mb-2 px-4 truncate max-w-full">{test.title}</h4>
+                     <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-6 italic">{test.price === 0 ? "FREE SERIES" : `₹${test.price}`}</p>
+                     
+                     <button
+                        onClick={() => router.push(`/quiz/${test._id}`)}
+                        className="w-full py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest group-hover:bg-blue-600 transition shadow-xl"
+                     >
+                       Unlock Now
+                     </button>
                   </div>
                 ))}
-              </div>
-            )}
+             </div>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold mb-4">My Tests</h2>
-            {purchasedTests.length === 0 ? (
-              <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center text-gray-400">
-                <p className="text-4xl mb-2">📚</p>
-                <p>No tests purchased yet</p>
-              </div>
-            ) : (
-              <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-white/5 border-b border-white/10">
-                      <tr className="text-left text-sm text-gray-400">
-                        <th className="px-6 py-4 font-medium">Test</th>
-                        <th className="px-6 py-4 font-medium">Status</th>
-                        <th className="px-6 py-4 font-medium">Expires</th>
-                        <th className="px-6 py-4 font-medium text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {purchasedTests.map((item) => {
-                        const test = item.testId;
-                        const expired = isExpired(item.expiresAt);
-                        return (
-                          <tr key={item._id} className="hover:bg-white/5 transition">
-                            <td className="px-6 py-4">
-                              <p className="font-medium">{test?.title || "Unknown"}</p>
-                              <p className="text-sm text-gray-400">{test?.totalQuestions || 0} Questions</p>
-                            </td>
-                            <td className="px-6 py-4">
-                              {item.isCompleted ? (
-                                <span className="px-2 py-1 bg-green-500/10 text-green-400 border border-green-500/30 rounded-full text-xs font-medium">
-                                  Completed
-                                </span>
-                              ) : expired ? (
-                                <span className="px-2 py-1 bg-red-500/10 text-red-400 border border-red-500/30 rounded-full text-xs font-medium">
-                                  Expired
-                                </span>
-                              ) : (
-                                <span className="px-2 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-full text-xs font-medium">
-                                  Available
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-gray-400 text-sm">
-                              {new Date(item.expiresAt).toLocaleDateString()}
-                            </td>
-                            <td className="px-6 py-4 text-right">
-                              {!item.isCompleted && !expired && (
-                                <Link
-                                  href={`/quiz/${test?._id}`}
-                                  className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:opacity-90 transition text-sm font-medium"
-                                >
-                                  Start Quiz
-                                </Link>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </section>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
