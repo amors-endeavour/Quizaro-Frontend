@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import "./globals.css";
+import HelpButton from "@/components/HelpButton";
 
 export const metadata = {
   title: "Quizaro - Smart Online Test Platform",
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="antialiased">
+        {children}
+        <HelpButton />
+      </body>
     </html>
   );
 }
