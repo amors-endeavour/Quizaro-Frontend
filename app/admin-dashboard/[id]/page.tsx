@@ -2,7 +2,6 @@
 
 import { useEffect, useState, use, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import AdminSidebar from "@/components/AdminSidebar";
 import API from "@/app/lib/api";
 import { 
   ChevronLeft, 
