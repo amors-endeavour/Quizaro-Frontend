@@ -71,31 +71,8 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
-
-      if (!token || !role) return;
-
-      try {
-        // Fast verification
-        await API.get("/user/profile");
-        // If successful, we can safely resume
-        if (role === "admin") {
-          router.replace("/admin-dashboard");
-        } else {
-          router.replace("/user-dashboard");
-        }
-      } catch (err) {
-        // If session is invalid, clear storage so we don't try again
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("token");
-          localStorage.removeItem("role");
-        }
-      }
-    };
-    
-    checkSession();
+    // We remove the automatic redirect to ensure the landing page is always the first entry point
+    // as per the requirement: "Whenever a user/admin opens the link, this should appear."
   }, [router]);
 
   return (
@@ -122,79 +99,88 @@ export default function HomePage() {
 
 /* HERO */
 function HeroSection() {
+  const router = useRouter();
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-24 pb-20 overflow-hidden">
+    <section className="relative min-h-[92vh] flex items-center justify-center pt-32 pb-20 overflow-hidden">
+      {/* Dynamic Background Effects */}
       <div className="absolute inset-0">
-        <div className="absolute w-[900px] h-[900px] bg-[radial-gradient(circle,_#6d28d940_0%,_transparent_70%)] rounded-full top-[-200px] left-1/2 -translate-x-1/2" />
-        <div className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle,_#0891b230_0%,_transparent_70%)] rounded-full bottom-0 left-0 -translate-x-1/3" />
-        <div className="absolute w-[400px] h-[400px] bg-[radial-gradient(circle,_#7c3aed25_0%,_transparent_70%)] rounded-full bottom-10 right-0 translate-x-1/4" />
+        {/* Main Center Glow */}
+        <div className="absolute w-[1200px] h-[800px] bg-[radial-gradient(circle,_#6d28d920_0%,_transparent_70%)] rounded-full top-[-150px] left-1/2 -translate-x-1/2 blur-[80px]" />
+        {/* Side Accents */}
+        <div className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle,_#0ea5e915_0%,_transparent_70%)] rounded-full -bottom-20 left-0 blur-[60px]" />
+        <div className="absolute w-[400px] h-[400px] bg-[radial-gradient(circle,_#7c3aed10_0%,_transparent_70%)] rounded-full bottom-20 right-0 translate-x-1/4 blur-[40px]" />
       </div>
 
+      {/* Grid Overlay */}
       <div
-        className="absolute inset-0 opacity-[0.04]"
+        className="absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage:
             "linear-gradient(#6366f1 1px, transparent 1px), linear-gradient(to right, #6366f1 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
+          backgroundSize: "70px 70px",
         }}
       />
 
-      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300 mb-8 backdrop-blur-sm">
-          <Sparkles size={14} className="text-yellow-400" />
+      <div className="relative z-10 text-center px-6 max-w-6xl mx-auto flex flex-col items-center">
+        {/* Institutional Badge */}
+        <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-12 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-1000">
+          <Sparkles size={14} className="text-yellow-400 animate-pulse" />
           AI-Powered Exam Preparation Platform
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
         </div>
 
-        <h1 className="text-5xl sm:text-7xl md:text-8xl font-black leading-[1.05] mb-6 tracking-tight">
-          Crack Any Exam{" "}
-          <span className="block mt-2 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
+        {/* Master Heading */}
+        <h1 className="text-5xl sm:text-7xl md:text-[6.5rem] font-black leading-[1] mb-10 tracking-tighter animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-100 selection:bg-cyan-500/30">
+          Crack Any Exam <br />
+          <span className="bg-gradient-to-r from-[#22d3ee] via-[#60a5fa] to-[#6366f1] bg-clip-text text-transparent drop-shadow-[0_10px_30px_rgba(34,211,238,0.2)]">
             With Confidence
           </span>
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-          India&apos;s smartest quiz platform. Adaptive AI tests, real-time
-          analytics, live leaderboards — everything you need to outperform
-          50,000+ aspirants.
+        <p className="max-w-2xl text-base sm:text-lg text-gray-400 font-medium leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
+          India's smartest quiz platform. Adaptive AI tests, real-time analytics, live 
+          leaderboards — everything you need to outperform 50,000+ aspirants.
         </p>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-6 mb-14">
-          {/* Path 1: Student */}
-          <Link
-            href="/user-login"
-            className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 rounded-2xl font-bold text-lg shadow-[0_0_40px_rgba(6,182,212,0.4)] hover:shadow-[0_0_60px_rgba(6,182,212,0.6)] hover:scale-105 transition-all duration-300"
+        {/* Action Hub */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-20 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+          <button 
+            onClick={() => router.push("/user-login")}
+            className="group relative flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl font-black text-sm uppercase tracking-widest shadow-[0_20px_50px_rgba(37,99,235,0.3)] hover:shadow-[0_25px_60px_rgba(37,99,235,0.5)] hover:scale-105 transition-all active:scale-95 overflow-hidden"
           >
-            <Users size={20} className="text-white" />
-            <span>I am a Student</span>
-          </Link>
+            <div className="bg-white/10 p-2.5 rounded-xl group-hover:rotate-12 transition-transform"><Users size={20} /></div>
+            I am a Student
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20 rounded-full scale-x-0 group-hover:scale-x-90 transition-transform origin-center" />
+          </button>
 
-          {/* Path 2: Admin */}
-          <Link
-            href="/admin-login"
-            className="group inline-flex items-center justify-center gap-3 px-10 py-5 border-2 border-white/20 bg-white/5 backdrop-blur-md rounded-2xl font-bold text-lg hover:bg-white/10 hover:border-white/40 hover:scale-105 transition-all duration-300"
+          <button 
+            onClick={() => router.push("/admin-login")}
+            className="group flex items-center gap-4 px-12 py-6 bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-white/10 hover:border-white/30 transition-all hover:scale-105 active:scale-95 shadow-2xl"
           >
-            <Shield size={20} className="text-purple-400" />
-            <span>I am an Admin</span>
-          </Link>
+            <div className="bg-white/5 p-2.5 rounded-xl text-gray-400 group-hover:text-cyan-400 transition-colors"><Shield size={20} /></div>
+            I am an Admin
+          </button>
         </div>
 
-        <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <div className="flex -space-x-2">
-              {["bg-blue-500", "bg-purple-500", "bg-cyan-500", "bg-pink-500"].map((c, i) => (
-                <div key={i} className={`w-7 h-7 rounded-full ${c} border-2 border-[#050816] flex items-center justify-center text-[10px] font-bold`}>
-                  {["A", "S", "R", "M"][i]}
-                </div>
-              ))}
-            </div>
-            <span>50,000+ students enrolled</span>
+        {/* Trust Metrics */}
+        <div className="flex flex-col items-center gap-4 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+          <div className="flex items-center -space-x-4">
+             {[1,2,3,4,5].map(i => (
+               <div key={i} className="w-12 h-12 rounded-full border-4 border-[#050816] bg-gray-800 overflow-hidden shadow-xl ring-1 ring-white/10">
+                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 777}`} alt="user" className="w-full h-full object-cover" />
+               </div>
+             ))}
+             <div className="w-12 h-12 rounded-full border-4 border-[#050816] bg-blue-600 flex items-center justify-center text-[10px] font-black shadow-xl ring-1 ring-blue-400/30">+50k</div>
           </div>
-          <div className="flex items-center gap-1">
-            {[1,2,3,4,5].map(i => (
-              <Star key={i} size={14} className="text-yellow-400 fill-yellow-400" />
-            ))}
-            <span className="ml-1">4.9/5 rating</span>
+          <div className="flex flex-col items-center gap-1.5">
+             <span className="text-[11px] text-gray-500 font-black uppercase tracking-widest">50,000+ students enrolled</span>
+             <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                   {[1,2,3,4,5].map(i => <Star key={i} size={14} className={i === 5 ? "text-yellow-500/40" : "text-yellow-500"} fill="currentColor" />)}
+                </div>
+                <span className="text-xs text-gray-400 font-bold font-mono tracking-tighter">4.9/5 rating</span>
+             </div>
           </div>
         </div>
       </div>
