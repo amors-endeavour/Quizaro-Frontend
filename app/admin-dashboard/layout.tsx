@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminSidebar from "@/components/AdminSidebar";
+import { BarChart3 } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [isAuth, setIsAuth] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -59,12 +61,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex min-h-screen bg-[#f8f9fc]">
-      <AdminSidebar />
-      <main className="flex-1 overflow-auto">
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 h-full">
-          {children}
-        </div>
-      </main>
+      <AdminSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      
+      <div className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 overflow-auto">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 h-full relative">
+            {/* Mobile Toggle Button */}
+            <div className="lg:hidden fixed top-4 left-4 z-[60]">
+               <button 
+                 onClick={() => setIsSidebarOpen(true)}
+                 className="p-3 bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/50 text-gray-900"
+               >
+                  <BarChart3 className="rotate-90" size={24} />
+               </button>
+            </div>
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

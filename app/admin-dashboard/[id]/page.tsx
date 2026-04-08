@@ -171,35 +171,35 @@ export default function QuestionsStudio({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="flex-1 flex flex-col min-w-0 h-full">
-        <header className="h-16 bg-white border-b border-gray-200 px-8 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-4">
+        <header className="h-auto min-h-[4rem] bg-white border-b border-gray-200 px-4 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
             <button 
               onClick={() => router.push("/admin-dashboard/tests")}
-              className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition"
+              className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition shrink-0"
             >
               <ChevronLeft size={20} />
             </button>
-            <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-               <span>My Library</span>
+            <div className="flex items-center gap-2 text-[9px] lg:text-[10px] font-black text-gray-400 uppercase tracking-widest overflow-hidden">
+               <span className="hidden sm:inline">My Library</span>
+               <ChevronRight size={10} className="hidden sm:block" />
+               <span className="truncate">{test?.category || "General"}</span>
                <ChevronRight size={10} />
-               <span>{test?.category || "General"}</span>
-               <ChevronRight size={10} />
-               <span className="text-gray-900">{test?.title}</span>
+               <span className="text-gray-900 truncate">{test?.title}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-             <button className="flex items-center gap-2 px-5 py-2 border-2 border-blue-600 text-blue-600 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-blue-50 transition min-w-[120px] justify-center">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+             <button className="flex-1 sm:flex-none flex items-center gap-2 px-4 lg:px-5 py-2 border-2 border-blue-600 text-blue-600 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest hover:bg-blue-50 transition justify-center">
                <Eye size={16} />
-               Preview
+               <span className="hidden xs:inline">Preview</span>
              </button>
-             <div className="w-px h-6 bg-gray-200 mx-1" />
+             <div className="hidden xs:block w-px h-6 bg-gray-200 mx-1" />
              <button 
                onClick={activeTab === "Create Questions" ? handleSaveQuestion : handleUpdateTest}
                disabled={saving}
-               className="px-8 py-2 bg-blue-700 text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-blue-800 shadow-lg shadow-blue-200 flex items-center gap-2 transition"
+               className="flex-1 sm:flex-none px-6 lg:px-8 py-2 bg-blue-700 text-white rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest hover:bg-blue-800 shadow-lg shadow-blue-200 flex items-center gap-2 transition justify-center"
              >
-               {saving ? "Processing..." : <><Save size={16} /> Save</>}
+               {saving ? "Processing..." : <><Save size={16} /><span className="hidden xs:inline">Save</span></>}
              </button>
           </div>
         </header>
