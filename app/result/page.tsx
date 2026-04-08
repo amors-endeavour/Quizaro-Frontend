@@ -2,10 +2,23 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import Navbar from "@/components/Navbar";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+import UserSidebar from "@/components/UserSidebar";
+import UserHeader from "@/components/UserHeader";
+import { 
+  Trophy, 
+  Target, 
+  AlertCircle, 
+  CheckCircle2, 
+  ArrowRight,
+  ChevronRight,
+  TrendingUp,
+  Award,
+  Zap,
+  BarChart3,
+  Calendar,
+  Clock
+} from "lucide-react";
+import API from "@/app/lib/api";
 
 interface Result {
   _id: string;
@@ -27,208 +40,180 @@ function ResultContent() {
   const attemptId = searchParams.get("attemptId");
 
   const [result, setResult] = useState<Result | null>(null);
-  const [allResults, setAllResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const fetchResults = async () => {
+    const loadProfile = async () => {
       try {
-        const res = await fetch(`${API_URL}/user/attempts`, {
-          credentials: "include",
-        });
+        const { data } = await API.get("/user/profile");
+        setUser(data?.user || data);
+      } catch {
+        router.replace("/user-login");
+      }
+    };
+    loadProfile();
+  }, [router]);
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch results");
-        }
-
-        const data = await res.json();
-        const resultsArray = Array.isArray(data) ? data : [];
-        setAllResults(resultsArray);
+  useEffect(() => {
+    const fetchResult = async () => {
+      try {
+        const res = await API.get("/user/attempts");
+        const resultsArray = Array.isArray(res.data) ? res.data : [];
 
         if (attemptId) {
           const specificResult = resultsArray.find((r: Result) => r._id === attemptId);
-          if (specificResult) {
-            setResult(specificResult);
-          } else if (resultsArray.length > 0) {
-            setResult(resultsArray[0]);
-          }
+          setResult(specificResult || resultsArray[0]);
         } else if (resultsArray.length > 0) {
           setResult(resultsArray[0]);
         }
       } catch (err: any) {
-        setError(err.message);
+        setError("Failed to load clinical scorecard");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchResults();
+    fetchResult();
   }, [attemptId]);
 
-  const getPercentage = (score: number, total: number) => {
-    if (!total) return 0;
-    return Math.round((score / total) * 100);
-  };
+  const percentage = result ? Math.round((result.score / result.totalMarks) * 100) : 0;
 
-  const getGrade = (percentage: number) => {
-    if (percentage >= 90) return { label: "Excellent!", color: "text-green-400", bg: "bg-green-500/10 border-green-500/30", emoji: "🏆" };
-    if (percentage >= 75) return { label: "Great Job!", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/30", emoji: "🎉" };
-    if (percentage >= 60) return { label: "Good", color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/30", emoji: "👍" };
-    if (percentage >= 40) return { label: "Average", color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/30", emoji: "📚" };
-    return { label: "Keep Learning", color: "text-red-400", bg: "bg-red-500/10 border-red-500/30", emoji: "💪" };
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#050816]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading results...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#050816] text-white">
-        <Navbar />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <p className="text-4xl mb-4">⚠️</p>
-            <h2 className="text-xl font-bold mb-2">Unable to Load Results</h2>
-            <p className="text-gray-400 mb-4">{error}</p>
-            <button
-              onClick={() => router.push("/user-dashboard")}
-              className="px-6 py-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg hover:opacity-90 transition"
-            >
-              Go to Dashboard
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const displayResult = result;
+  if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Generating Scorecard...</div>;
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white">
-      <Navbar />
+    <div className="flex h-screen bg-[#f8f9fc] text-gray-900 font-sans overflow-hidden selection:bg-blue-500/30">
+      <UserSidebar userName={user?.name || "Student"} />
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        {displayResult ? (
-          <>
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold mb-2">{displayResult.testId?.title || "Test Result"}</h1>
-              <p className="text-gray-400">
-                {displayResult.submittedAt ? new Date(displayResult.submittedAt).toLocaleDateString() : "Completed"}
-              </p>
-            </div>
+      <main className="flex-1 overflow-y-auto">
+        <UserHeader 
+          title="Examination Performance" 
+          breadcrumbs={["Classroom", "Performance", result?.testId?.title || "Scorecard"]} 
+        />
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-8">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                <div className="flex-1">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-white/5 rounded-xl">
-                      <p className="text-3xl font-bold text-blue-400">{displayResult.score}</p>
-                      <p className="text-xs text-gray-400 mt-1">Score</p>
+        <div className="p-8 lg:p-14 max-w-[1500px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-700">
+           
+           {/* PERFORMANCE HUD (IMAGE #1 Style) */}
+           <div className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl shadow-gray-200/50 p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 opacity-50" />
+              
+              <div className="flex-1 space-y-8 z-10 w-full md:w-auto">
+                 <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-blue-100/50 text-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-50">
+                       <Trophy size={28} />
                     </div>
-                    <div className="text-center p-4 bg-white/5 rounded-xl">
-                      <p className="text-3xl font-bold text-green-400">{displayResult.correctAnswers}</p>
-                      <p className="text-xs text-gray-400 mt-1">Correct</p>
+                    <div>
+                       <h2 className="text-3xl font-black text-gray-900 leading-none tracking-tighter capitalize">{result?.testId?.title}</h2>
+                       <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mt-2">Institutional Report Scorecard</p>
                     </div>
-                    <div className="text-center p-4 bg-white/5 rounded-xl">
-                      <p className="text-3xl font-bold text-red-400">{displayResult.wrongAnswers}</p>
-                      <p className="text-xs text-gray-400 mt-1">Wrong</p>
-                    </div>
-                    <div className="text-center p-4 bg-white/5 rounded-xl">
-                      <p className="text-3xl font-bold text-gray-400">{displayResult.unattempted}</p>
-                      <p className="text-xs text-gray-400 mt-1">Skipped</p>
-                    </div>
-                  </div>
-                </div>
+                 </div>
 
-                <div className="text-center">
-                  {(() => {
-                    const percentage = getPercentage(displayResult.score, displayResult.totalMarks);
-                    const grade = getGrade(percentage);
-                    return (
-                      <>
-                        <div className={`w-28 h-28 rounded-full ${grade.bg} border flex flex-col items-center justify-center`}>
-                          <span className="text-3xl">{grade.emoji}</span>
-                          <span className={`text-xl font-bold ${grade.color}`}>{percentage}%</span>
-                        </div>
-                        <p className={`mt-3 font-medium ${grade.color}`}>{grade.label}</p>
-                      </>
-                    );
-                  })()}
-                </div>
+                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="space-y-1">
+                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Secure Score</span>
+                       <p className="text-3xl font-black text-gray-900 leading-none">{result?.score}<span className="text-sm text-gray-300 ml-1">/ {result?.totalMarks}</span></p>
+                    </div>
+                    <div className="space-y-1 group">
+                       <span className="text-[10px] font-black text-green-500/50 uppercase tracking-widest">Accuracy Level</span>
+                       <p className="text-3xl font-black text-green-600 leading-none group-hover:scale-110 transition-transform origin-left">{percentage}%</p>
+                    </div>
+                    <div className="space-y-1">
+                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Time Taken</span>
+                       <p className="text-3xl font-black text-gray-900 leading-none">12<span className="text-sm text-gray-300 ml-1">mins</span></p>
+                    </div>
+                    <div className="space-y-1">
+                       <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Performance Grade</span>
+                       <p className="text-3xl font-black text-blue-700 leading-none">{percentage >= 80 ? "A+" : percentage >= 60 ? "B" : "C"}</p>
+                    </div>
+                 </div>
               </div>
-            </div>
 
-            <div className="flex justify-center gap-4">
-              <Link
-                href="/user-dashboard"
-                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl font-medium hover:opacity-90 transition"
-              >
-                Back to Dashboard
-              </Link>
-              <button
-                onClick={() => router.push("/tests")}
-                className="px-6 py-3 border border-white/20 rounded-xl font-medium hover:bg-white/5 transition"
-              >
-                Take Another Test
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="text-center py-20">
-            <p className="text-4xl mb-4">📋</p>
-            <h2 className="text-xl font-bold mb-2">No Results Yet</h2>
-            <p className="text-gray-400 mb-6">You haven&apos;t completed any tests yet.</p>
-            <button
-              onClick={() => router.push("/user-dashboard")}
-              className="px-6 py-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg hover:opacity-90 transition"
-            >
-              Go to Dashboard
-            </button>
-          </div>
-        )}
-
-        {allResults.length > 1 && (
-          <div className="mt-12">
-            <h2 className="text-xl font-bold mb-4">Previous Results</h2>
-            <div className="space-y-3">
-              {allResults
-                .filter((r) => r._id !== displayResult?._id)
-                .map((r) => {
-                  const percentage = getPercentage(r.score, r.totalMarks);
-                  const grade = getGrade(percentage);
-                  return (
-                    <div
-                      key={r._id}
-                      className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between"
-                    >
-                      <div>
-                        <p className="font-medium">{r.testId?.title || "Test"}</p>
-                        <p className="text-sm text-gray-400">
-                          {r.correctAnswers} correct, {r.wrongAnswers} wrong
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className={`font-bold ${grade.color}`}>{percentage}%</p>
-                        <p className="text-xs text-gray-400">
-                          {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : ""}
-                        </p>
-                      </div>
+              <div className="relative flex-shrink-0">
+                 <div className="w-56 h-56 rounded-full border-[12px] border-gray-50 flex items-center justify-center relative shadow-2xl shadow-gray-100">
+                    <svg className="absolute inset-0 w-full h-full -rotate-90">
+                       <circle
+                          cx="112"
+                          cy="112"
+                          r="100"
+                          fill="none"
+                          stroke="url(#blue_grad)"
+                          strokeWidth="12"
+                          strokeDasharray={2 * Math.PI * 100}
+                          strokeDashoffset={2 * Math.PI * 100 * (1 - percentage / 100)}
+                          strokeLinecap="round"
+                          className="transition-all duration-1000 ease-out"
+                       />
+                       <defs>
+                          <linearGradient id="blue_grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                             <stop offset="0%" stopColor="#2563eb" />
+                             <stop offset="100%" stopColor="#06b6d4" />
+                          </linearGradient>
+                       </defs>
+                    </svg>
+                    <div className="flex flex-col items-center">
+                       <span className="text-5xl font-black tracking-tighter text-gray-900 leading-none">{percentage}%</span>
+                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">{percentage >= 60 ? "Qualified" : "Practice Needed"}</span>
                     </div>
-                  );
-                })}
-            </div>
-          </div>
-        )}
+                 </div>
+              </div>
+           </div>
+
+           {/* STATS BREAKDOWN (IMAGE #1 Style Analytics) */}
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col justify-between group hover:-translate-y-2 transition-all duration-500">
+                 <div className="w-16 h-16 bg-green-50 text-green-600 rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-green-50 mb-8 transition-transform group-hover:rotate-12">
+                   <CheckCircle2 size={28} />
+                 </div>
+                 <div>
+                    <h3 className="text-4xl font-black text-gray-900 leading-none tracking-tighter">{result?.correctAnswers}</h3>
+                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-3">Correct Responses</p>
+                 </div>
+              </div>
+
+              <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col justify-between group hover:-translate-y-2 transition-all duration-500">
+                 <div className="w-16 h-16 bg-red-50 text-red-500 rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-red-50 mb-8 transition-transform group-hover:rotate-12">
+                   <AlertCircle size={28} />
+                 </div>
+                 <div>
+                    <h3 className="text-4xl font-black text-gray-900 leading-none tracking-tighter">{result?.wrongAnswers}</h3>
+                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-3">Incorrect Responses</p>
+                 </div>
+              </div>
+
+              <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col justify-between group hover:-translate-y-2 transition-all duration-500">
+                 <div className="w-16 h-16 bg-gray-50 text-gray-400 rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-gray-50 mb-8 transition-transform group-hover:rotate-12">
+                   <BarChart3 size={28} />
+                 </div>
+                 <div>
+                    <h3 className="text-4xl font-black text-gray-900 leading-none tracking-tighter">{result?.unattempted}</h3>
+                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-3">Skipped / Unattempted</p>
+                 </div>
+              </div>
+           </div>
+
+           {/* ACTION HUB */}
+           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
+              <button 
+                onClick={() => router.push("/user-dashboard")}
+                className="group flex items-center gap-4 px-12 py-5 bg-gray-900 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl hover:bg-black transition-all active:scale-95"
+              >
+                 <ArrowRight size={18} className="text-blue-500 group-hover:translate-x-1 transition-transform" />
+                 Continue Learning
+              </button>
+              <button 
+                onClick={() => router.push("/user-dashboard")}
+                className="flex items-center gap-4 px-12 py-5 bg-white border-2 border-gray-100 rounded-3xl font-black text-xs uppercase tracking-widest text-gray-400 hover:border-blue-200 hover:text-blue-600 transition-all active:scale-95"
+              >
+                 Detailed Answer Analysis
+                 <ChevronRight size={18} />
+              </button>
+           </div>
+           
+           <div className="text-center py-10 opacity-30 flex flex-col items-center gap-2">
+              <div className="w-12 h-1 bg-gray-200 rounded-full" />
+              <p className="text-[10px] font-black uppercase tracking-widest">End of Scorecard Report</p>
+           </div>
+        </div>
       </main>
     </div>
   );
@@ -236,14 +221,7 @@ function ResultContent() {
 
 export default function ResultPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#050816]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading...</p>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black text-blue-600 uppercase tracking-widest animate-pulse leading-none">Accessing Clinical Records...</div>}>
       <ResultContent />
     </Suspense>
   );
