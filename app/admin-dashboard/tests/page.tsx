@@ -99,9 +99,7 @@ export default function TestsPage() {
   if (loading) return <div className="min-h-screen bg-gray-50 flex items-center justify-center font-bold text-blue-600 animate-pulse">Initializing Library...</div>;
 
   return (
-    <div className="flex min-h-screen bg-gray-50 text-gray-900 font-sans">
-      <AdminSidebar />
-      
+    <>
       <main className="flex-1 overflow-y-auto">
         <AdminHeader 
           title={currentFolder || "My Library"}
@@ -265,6 +263,6 @@ export default function TestsPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

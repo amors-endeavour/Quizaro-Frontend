@@ -171,10 +171,7 @@ export default function QuestionsStudio({ params }: { params: Promise<{ id: stri
   if (loading) return <div className="min-h-screen bg-[#f3f4f9] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Initializing Studio...</div>;
 
   return (
-    <div className="flex h-screen bg-[#f3f4f9] text-gray-900 font-sans overflow-hidden">
-      <AdminSidebar />
-
-      <div className="flex-1 flex flex-col min-w-0 h-full">
+    <div className="flex-1 flex flex-col min-w-0 h-full">
         <header className="h-16 bg-white border-b border-gray-200 px-8 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
             <button 
@@ -450,6 +447,5 @@ export default function QuestionsStudio({ params }: { params: Promise<{ id: stri
           </section>
         </div>
       </div>
-    </div>
   );
 }

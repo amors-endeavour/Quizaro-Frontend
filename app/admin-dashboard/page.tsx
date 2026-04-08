@@ -2,7 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminHeader from "@/components/AdminHeader";
+import API from "@/app/lib/api";
+import { 
+  Users, 
+  FileText, 
+  Activity, 
+  ChevronRight, 
+  TrendingUp, 
+  BarChart3,
+  PieChart
+} from "lucide-react";
 
 interface Stats {
   totalUsers: number;
@@ -18,40 +28,28 @@ interface RecentAttempt {
   totalMarks: number;
   submittedAt: string;
 }
-import API from "@/app/lib/api";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats>({ totalUsers: 0, totalTests: 0, totalAttempts: 0 });
   const [recentAttempts, setRecentAttempts] = useState<RecentAttempt[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const { data } = await API.get("/user/profile");
-
-        console.log("Admin profile data:", JSON.stringify(data));
-        
         const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
-        console.log("Admin role check:", role);
-        
         if (role !== "admin") {
-          console.log("Role is not admin, redirecting to login");
-          router.replace("/login");
+          router.replace("/admin-login");
           return;
         }
-        
-        console.log("Admin authenticated, loading dashboard");
         setIsAuthChecked(true);
-      } catch (err: any) {
-        console.error("Admin auth error:", err);
-        router.replace("/login");
+      } catch {
+        router.replace("/admin-login");
       }
     };
-
     checkAuth();
   }, [router]);
 
@@ -62,20 +60,12 @@ export default function AdminDashboard() {
       try {
         const [statsRes, attemptsRes] = await Promise.all([
           API.get("/admin/stats"),
-          API.get("/admin/attempts"),
+          API.get("/admin/attempts/recent"),
         ]);
-
-        const statsData = statsRes.data;
-        const attemptsData = attemptsRes.data;
-
-        // Handle response - can be array or error object
-        const attemptsArray = Array.isArray(attemptsData) ? attemptsData : [];
-        
-        setStats(statsData);
-        setRecentAttempts(attemptsArray.slice(0, 5));
-      } catch (err: any) {
-        console.error("Failed to fetch data:", err);
-        setError(err?.response?.data?.message || err?.message || "Load Failed");
+        setStats(statsRes.data);
+        setRecentAttempts(attemptsRes.data);
+      } catch (err) {
+        console.error("Dashboard data load failed");
       } finally {
         setLoading(false);
       }
@@ -84,135 +74,107 @@ export default function AdminDashboard() {
     fetchData();
   }, [isAuthChecked]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen">
-        <AdminSidebar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-500">Loading dashboard...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-screen">
-        <AdminSidebar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center bg-red-50 border border-red-200 p-6 rounded-lg">
-            <p className="text-red-600 font-medium">Error: {error}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Accessing Console...</div>;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500 mt-1">Admin Dashboard</p>
-        </div>
+    <div className="flex flex-col min-h-full">
+      <AdminHeader 
+        title="Institutional Insights" 
+        path={[{ label: "Console" }, { label: "Overview" }]} 
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Total Users</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalUsers}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-2xl">
-                👥
-              </div>
+      <div className="p-8 lg:p-14 max-w-[1600px] mx-auto w-full space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-700">
+         
+         {/* DASHBOARD STATS (IMAGE #1 Style) */}
+         <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col justify-between group hover:-translate-y-2 transition-all duration-500">
+               <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-50 mb-8 transition-transform group-hover:rotate-12">
+                 <Users size={28} />
+               </div>
+               <div>
+                  <h3 className="text-4xl font-black text-gray-900 leading-none tracking-tighter">{stats.totalUsers}</h3>
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-3">Total Registered Users</p>
+               </div>
             </div>
-          </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Total Tests</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalTests}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">
-                📝
-              </div>
+            <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col justify-between group hover:-translate-y-2 transition-all duration-500">
+               <div className="w-16 h-16 bg-green-50 text-green-600 rounded-3xl flex items-center justify-center shadow-lg shadow-green-50 mb-8 transition-transform group-hover:rotate-12">
+                 <FileText size={28} />
+               </div>
+               <div>
+                  <h3 className="text-4xl font-black text-gray-900 leading-none tracking-tighter">{stats.totalTests}</h3>
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-3">Live Test Series</p>
+               </div>
             </div>
-          </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Total Attempts</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalAttempts}</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-2xl">
-                📋
-              </div>
+            <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col justify-between group hover:-translate-y-2 transition-all duration-500">
+               <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center shadow-lg shadow-orange-50 mb-8 transition-transform group-hover:rotate-12">
+                 <TrendingUp size={28} />
+               </div>
+               <div>
+                  <h3 className="text-4xl font-black text-gray-900 leading-none tracking-tighter">{stats.totalAttempts}</h3>
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-3">Exams Attempted</p>
+               </div>
             </div>
-          </div>
-        </div>
+         </section>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Attempts</h2>
-            <a href="/admin-dashboard/attempts" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-              View All →
-            </a>
-          </div>
-
-          {recentAttempts.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
-              <p>No attempts yet</p>
+         {/* RECENT ACTIVITY TABLE */}
+         <section className="bg-white rounded-[3.5rem] border border-gray-100 shadow-2xl shadow-gray-100/30 overflow-hidden">
+            <div className="px-12 py-10 border-b border-gray-50 flex items-center justify-between">
+               <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <Activity size={18} />
+                  Live Activity Flow
+               </h3>
+               <button onClick={() => router.push("/admin-dashboard/attempts")} className="text-xs font-black text-blue-600 uppercase tracking-widest hover:underline">View All Records</button>
             </div>
-          ) : (
+
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left text-sm text-gray-500 border-b">
-                    <th className="pb-3 font-medium">User</th>
-                    <th className="pb-3 font-medium">Test</th>
-                    <th className="pb-3 font-medium">Score</th>
-                    <th className="pb-3 font-medium">Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {recentAttempts.map((attempt) => (
-                    <tr key={attempt._id} className="text-sm">
-                      <td className="py-4">
-                        <div>
-                          <p className="font-medium text-gray-900">{attempt.userId?.name || "N/A"}</p>
-                          <p className="text-gray-500 text-xs">{attempt.userId?.email || "N/A"}</p>
-                        </div>
-                      </td>
-                      <td className="py-4 text-gray-700">{attempt.testId?.title || "N/A"}</td>
-                      <td className="py-4">
-                        <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                          {attempt.score}/{attempt.totalMarks}
-                        </span>
-                      </td>
-                      <td className="py-4 text-gray-500">
-                        {new Date(attempt.submittedAt).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+               <table className="w-full text-left">
+                  <thead>
+                     <tr className="bg-gray-50/50">
+                        <th className="px-12 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Student Identity</th>
+                        <th className="px-12 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Exam Subject</th>
+                        <th className="px-12 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Performance Score</th>
+                        <th className="px-12 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right pr-16">Status</th>
+                     </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                     {recentAttempts.length === 0 ? (
+                       <tr>
+                         <td colSpan={4} className="px-12 py-20 text-center text-gray-400 font-bold italic">No examination records detected in this cycle.</td>
+                       </tr>
+                     ) : (
+                       recentAttempts.map((attempt) => (
+                         <tr key={attempt._id} className="group hover:bg-gray-50/50 transition-all cursor-pointer">
+                            <td className="px-12 py-8">
+                               <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center font-black text-xs text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition-all">{attempt.userId?.name?.charAt(0)}</div>
+                                  <div>
+                                     <p className="text-xs font-black text-gray-900 uppercase">{attempt.userId?.name}</p>
+                                     <p className="text-[10px] text-gray-400 font-bold mt-1">{attempt.userId?.email}</p>
+                                  </div>
+                               </div>
+                            </td>
+                            <td className="px-12 py-8">
+                               <span className="text-xs font-bold text-gray-600 uppercase">{attempt.testId?.title}</span>
+                            </td>
+                            <td className="px-12 py-8">
+                               <p className="text-xs font-black text-gray-900">{attempt.score}<span className="text-gray-300 ml-1">/ {attempt.totalMarks}</span></p>
+                            </td>
+                            <td className="px-12 py-8 text-right pr-16">
+                               <div className="flex items-center gap-2 justify-end text-green-500 font-black text-[10px] uppercase">
+                                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                                  Certified
+                               </div>
+                            </td>
+                         </tr>
+                       ))
+                     )}
+                  </tbody>
+               </table>
             </div>
-          )}
-        </div>
+         </section>
+
       </div>
     </div>
   );
