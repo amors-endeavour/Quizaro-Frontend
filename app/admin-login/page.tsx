@@ -51,7 +51,7 @@ function AdminLoginForm() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#9333ea15_0%,_transparent_70%)] pointer-events-none" />
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 blur-[100px] rounded-full pointer-events-none" />
       
-      <div className="bg-zinc-950 border border-zinc-900 p-12 rounded-3xl shadow-[0_0_100px_rgba(147,51,234,0.05)] w-full max-w-sm relative z-10 box-border overflow-hidden group">
+      <div className="bg-zinc-950 border border-zinc-900 p-12 rounded-3xl shadow-[0_0_100px_rgba(147,51,234,0.05)] w-full max-w-sm relative z-10 box-border overflow-hidden group animate-in fade-in zoom-in duration-700">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 animate-pulse" />
         
         <div className="text-center mb-12">

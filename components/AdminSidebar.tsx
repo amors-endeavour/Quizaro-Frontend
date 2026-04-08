@@ -24,7 +24,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="w-64 min-h-screen bg-white border-r border-gray-200 flex flex-col sticky top-0">
+    <div className="w-64 min-h-screen bg-white border-r border-gray-200 flex flex-col sticky top-0 animate-in slide-in-from-left duration-700">
       {/* Brand Section */}
       <div className="p-6 border-b border-gray-100 flex items-center gap-3">
         <div className="w-10 h-10 bg-[#2563eb] rounded-lg flex items-center justify-center text-white font-bold text-xl">

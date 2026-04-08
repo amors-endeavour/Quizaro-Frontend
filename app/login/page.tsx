@@ -79,7 +79,7 @@ function LoginForm() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full"></div>
       </div>
 
-      <div className="bg-white/5 border border-white/10 p-8 rounded-3xl shadow-2xl w-full max-w-md backdrop-blur-xl relative z-10">
+      <div className="bg-white/5 border border-white/10 p-8 rounded-3xl shadow-2xl w-full max-w-md backdrop-blur-xl relative z-10 animate-in fade-in zoom-in duration-700">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-black text-white tracking-tight">Welcome Back</h2>
           <p className="text-gray-400 mt-2 text-sm">Empowering your exam success</p>
