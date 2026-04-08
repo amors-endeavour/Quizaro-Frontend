@@ -14,7 +14,8 @@ import {
   Award,
   Zap,
   CheckCircle2,
-  Lock
+  Lock,
+  Layers
 } from "lucide-react";
 
 interface Test {
