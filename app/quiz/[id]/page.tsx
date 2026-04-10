@@ -45,6 +45,15 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+
+  const handleQuestionChange = (nextIndex: number) => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setCurrentQuestion(nextIndex);
+      setIsExiting(false);
+    }, 200);
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -194,7 +203,7 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
               {questions.map((q, idx) => (
                 <button
                   key={q._id}
-                  onClick={() => setCurrentQuestion(idx)}
+                  onClick={() => handleQuestionChange(idx)}
                   className={`w-full aspect-square rounded-2xl font-black text-xs transition-all duration-300 flex items-center justify-center border-2 ${
                     idx === currentQuestion 
                       ? "bg-blue-600 text-white border-blue-100 shadow-xl shadow-blue-100 scale-110 z-10" 
@@ -238,7 +247,10 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
         <section className="flex-1 overflow-y-auto p-12 lg:px-24 scroll-smooth">
            <div className="max-w-4xl mx-auto space-y-12">
               
-              <div className="bg-white rounded-[3rem] border border-gray-100 shadow-[0_30px_70px_rgba(0,0,0,0.03)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
+              <div 
+                key={currentQuestion}
+                className={`bg-white rounded-[3rem] border border-gray-100 shadow-[0_30px_70px_rgba(0,0,0,0.03)] overflow-hidden transition-all duration-300 ${isExiting ? "opacity-0 translate-x-10 scale-95" : "animate-in fade-in slide-in-from-left-10 duration-700"}`}
+              >
                  {/* Question Header */}
                  <div className="px-12 py-8 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -294,7 +306,7 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
               {/* Navigation Controls */}
               <div className="flex items-center justify-between px-4">
                  <button
-                   onClick={() => setCurrentQuestion((p) => Math.max(0, p - 1))}
+                   onClick={() => handleQuestionChange(Math.max(0, currentQuestion - 1))}
                    disabled={currentQuestion === 0}
                    className="flex items-center gap-3 px-8 py-4 bg-white border-2 border-gray-100 rounded-[2rem] text-[10px] font-black text-gray-400 uppercase tracking-widest hover:border-blue-200 hover:text-blue-600 disabled:opacity-0 transition-all active:scale-95"
                  >
@@ -304,7 +316,7 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
 
                  {currentQuestion < questions.length - 1 ? (
                    <button
-                     onClick={() => setCurrentQuestion((p) => p + 1)}
+                     onClick={() => handleQuestionChange(currentQuestion + 1)}
                      className="group flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[2rem] text-[10px] font-black text-white uppercase tracking-widest shadow-2xl shadow-blue-100 hover:scale-105 transition-all active:scale-95"
                    >
                      Next Question

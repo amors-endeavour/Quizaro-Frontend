@@ -93,10 +93,11 @@ export default function UserDashboard() {
           breadcrumbs={["Classroom", "Test Series"]} 
         />
 
-        <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12">
+        <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
           
           {/* Dashboard Stats Overview (Institutional Style) */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
+             {/* ... stats cards ... */}
              <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex items-center gap-6">
                 <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-50">
                    <TrendingUp size={28} />
@@ -128,8 +129,8 @@ export default function UserDashboard() {
              </div>
           </section>
 
-          {/* ACTIVE TESTS SECTION (LIST VIEW IMAGE #1 STYLE) */}
-          <section className="space-y-6">
+          {/* ACTIVE TESTS SECTION */}
+          <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
              <div className="flex items-center justify-between px-4">
                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
                   <Play size={18} fill="currentColor" />
@@ -161,7 +162,7 @@ export default function UserDashboard() {
                        <div className="flex items-center gap-4">
                           {pt.isCompleted ? (
                              <button
-                               onClick={() => router.push(`/result/${pt.testId._id}`)}
+                               onClick={() => router.push(`/result?attemptId=${pt._id}`)}
                                className="px-8 py-3 bg-green-50 text-green-700 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-green-600 hover:text-white transition-all shadow-lg shadow-green-50"
                              >
                                <CheckCircle2 size={16} />
@@ -183,8 +184,8 @@ export default function UserDashboard() {
              </div>
           </section>
 
-          {/* MARKETPLACE SECTION (IMAGE #4 STYLE) */}
-          <section className="space-y-6 pt-6">
+          {/* MARKETPLACE SECTION */}
+          <section className="space-y-6 pt-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
              <div className="flex items-center justify-between px-4">
                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
                   <Layers size={18} />

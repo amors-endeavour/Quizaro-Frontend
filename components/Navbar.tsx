@@ -55,6 +55,8 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
+    // Show a quick exit feedback
+    setCheckingAuth(true); // Re-use the pulse skeleton
     try {
       await API.post("/user/logout");
     } catch {
@@ -64,7 +66,9 @@ export default function Navbar() {
         localStorage.clear();
       }
       setIsAuthenticated(false);
-      router.replace("/login");
+      setTimeout(() => {
+        router.replace("/login");
+      }, 300);
     }
   };
 
