@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+import API from "@/app/lib/api";
 
 export default function AdminNavbar() {
   const pathname = usePathname();
@@ -15,15 +15,12 @@ export default function AdminNavbar() {
   useEffect(() => {
     const fetchUserName = async () => {
       try {
-        const res = await fetch(`${API_URL}/user/profile`, {
-          credentials: "include",
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setUserName(data.name || "Admin");
-        }
+        const { data } = await API.get("/user/profile");
+        // Handle potential nested data structure
+        const name = data?.name || data?.user?.name || "Admin";
+        setUserName(name);
       } catch (err) {
-        console.error("Failed to fetch user:", err);
+        console.error("Failed to fetch user name:", err);
       }
     };
     fetchUserName();

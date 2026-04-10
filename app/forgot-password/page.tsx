@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Mail, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+import API from "@/app/lib/api";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -21,26 +21,19 @@ export default function ForgotPasswordPage() {
     setResetLink("");
 
     try {
-      const res = await fetch(`${API_URL}/user/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const { data } = await API.post("/user/forgot-password", { email });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to send reset link");
-      }
-
-      setMessage(data.message);
+      setMessage(data.message || "Reset link sent successfully.");
+      
       // For demo purposes - in production, link is sent via email
       if (data.resetLink) {
         setResetLink(data.resetLink);
       }
 
     } catch (err: any) {
-      setError(err.message || "Failed to send reset link. Please try again.");
+      console.error("Forgot password error:", err);
+      const msg = err?.response?.data?.message || err.message || "Failed to send reset link.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

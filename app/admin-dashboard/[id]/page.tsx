@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect, useState, use, useMemo } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
+import AdminHeader from "@/components/AdminHeader";
 import API from "@/app/lib/api";
 import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Save, 
-  Eye, 
-  Settings, 
   Plus, 
   Trash2, 
-  CheckCircle2, 
+  FileEdit,
   AlertCircle,
-  FileText,
   PieChart,
   Layers,
   ArrowDownToLine,
@@ -22,90 +17,88 @@ import {
   Clock,
   Target,
   Users,
-  Lock
+  Lock,
+  Mail,
+  MoreVertical,
+  ChevronLeft
 } from "lucide-react";
-
-interface Option {
-  text: string;
-}
 
 interface Question {
   _id?: string;
-  questionText: string;
-  options: Option[];
+  text: string;
+  type: "mcq" | "descriptive";
+  options: { text: string }[];
   correctOption: number;
-  explanation?: string;
-  marks?: number;
-  negativeMarks?: number;
-  difficulty?: "Easy" | "Medium" | "Hard";
+  points: number;
+  section?: string;
 }
 
-interface Test {
-  _id: string;
+interface TestSettings {
   title: string;
-  duration?: number;
-  category?: string;
-  description?: string;
+  duration: number;
+  passingCriteria: number;
+  allowedAttempts: number;
+  isStrict: boolean;
+  shuffleOptions: boolean;
+  instructions: string;
+  category: string;
 }
 
-export default function QuestionsStudio({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function QuestionStudio({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const id = resolvedParams.id;
   const router = useRouter();
-  const [test, setTest] = useState<Test | null>(null);
+  const [activeTab, setActiveTab] = useState("Questions");
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState("Create Questions");
-
-  // Editor State for current question
-  const [currentQuestion, setCurrentQuestion] = useState<Question>({
-    questionText: "",
-    options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
-    correctOption: 0,
-    explanation: "",
-    marks: 1,
-    negativeMarks: 0.25,
-    difficulty: "Medium"
-  });
-
-  const [testSettings, setTestSettings] = useState({
+  const [testSettings, setTestSettings] = useState<TestSettings>({
     title: "",
     duration: 30,
-    category: "General",
-    instructions: "",
-    isStrict: false,
     passingCriteria: 40,
+    allowedAttempts: 1,
+    isStrict: false,
     shuffleOptions: true,
-    allowedAttempts: 1
+    instructions: "",
+    category: "General"
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  // Editor State
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState<Question>({
+    text: "",
+    type: "mcq",
+    options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
+    correctOption: 0,
+    points: 1,
+    section: "General"
   });
 
-  const fetchData = async () => {
-    try {
-      const [testRes, questionsRes] = await Promise.all([
-        API.get(`/test/${id}`),
-        API.get(`/admin/questions/${id}`),
-      ]);
-      setTest(testRes.data);
-      setTestSettings({
-        title: testRes.data.title,
-        duration: testRes.data.duration || 30,
-        category: testRes.data.category || "General",
-        instructions: testRes.data.description || "",
-        isStrict: testRes.data.isStrict || false,
-        passingCriteria: testRes.data.passingCriteria || 40,
-        shuffleOptions: testRes.data.shuffleOptions ?? true,
-        allowedAttempts: testRes.data.allowedAttempts || 1
-      });
+  const [bulkData, setBulkData] = useState("");
 
-      const qData = questionsRes.data;
+  const loadData = async () => {
+    try {
+      const [testRes, qRes] = await Promise.all([
+        API.get(`/test/${id}`),
+        API.get(`/admin/questions/${id}`)
+      ]);
+      
+      const qData = qRes.data.map((q: any) => ({
+        ...q,
+        text: q.questionText || q.text || "" // Handle both variants
+      }));
+
       setQuestions(qData);
-      if (qData.length > 0 && currentIndex < qData.length) {
-        setCurrentQuestion(qData[currentIndex]);
-      } else if (qData.length > 0) {
-        setCurrentQuestion(qData[0]);
-        setCurrentIndex(0);
-      }
+      setTestSettings({
+        title: testRes.data.title || "",
+        duration: testRes.data.duration || 30,
+        passingCriteria: testRes.data.passingCriteria || 40,
+        allowedAttempts: testRes.data.allowedAttempts || 1,
+        isStrict: testRes.data.isStrict || false,
+        shuffleOptions: testRes.data.shuffleOptions ?? true,
+        instructions: testRes.data.description || "",
+        category: testRes.data.category || "General"
+      });
     } catch (err) {
       console.error("Studio data fetch failed:", err);
     } finally {
@@ -113,416 +106,370 @@ export default function QuestionsStudio({ params }: { params: Promise<{ id: stri
     }
   };
 
-  useEffect(() => { fetchData(); }, [id]);
+  useEffect(() => {
+    loadData();
+  }, [id]);
 
   const handleUpdateTest = async () => {
     setSaving(true);
     try {
       await API.put(`/admin/test/${id}`, {
-        title: testSettings.title,
-        duration: testSettings.duration,
-        category: testSettings.category,
+        ...testSettings,
         description: testSettings.instructions
       });
-      fetchData();
-      alert("Test settings updated successfully!");
+      alert("Institutional update published successfully.");
+      loadData();
     } catch {
-      alert("Test update failed");
+      alert("Update failed.");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleSwitch = (index: number) => {
-    if (index < 0 || index > questions.length) return;
-    
-    if (index === questions.length) {
-      setCurrentQuestion({
-        questionText: "",
-        options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
-        correctOption: 0,
-        explanation: "",
-        marks: 1,
-        negativeMarks: 0.25,
-        difficulty: "Medium"
-      });
-    } else {
-      setCurrentQuestion(questions[index]);
-    }
-    setCurrentIndex(index);
-    setActiveTab("Create Questions");
-  };
-
-  const handleSaveQuestion = async () => {
-    setSaving(true);
+  const handleSaveQuestion = async (q: Question) => {
     try {
-      if (currentQuestion._id) {
-        await API.put(`/admin/question/${currentQuestion._id}`, currentQuestion);
+      if (q._id) {
+        await API.put(`/admin/question/${q._id}`, { ...q, questionText: q.text });
       } else {
-        await API.post(`/question/add/${id}`, currentQuestion);
+        await API.post(`/question/add/${id}`, { ...q, questionText: q.text });
       }
-      await fetchData();
+      loadData();
+      setIsEditing(false);
     } catch {
       alert("Save failed");
-    } finally {
-      setSaving(false);
     }
   };
 
-  const handleDeleteQuestion = async () => {
-    if (!currentQuestion._id) return;
-    if (!confirm("Delete this question?")) return;
+  const handleDeleteQuestion = async (qId: string) => {
+    if (!confirm("Are you sure?")) return;
     try {
-      await API.delete(`/admin/question/${currentQuestion._id}`);
-      fetchData();
+      await API.delete(`/admin/question/${qId}`);
+      loadData();
     } catch {
       alert("Delete failed");
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#f3f4f9] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Initializing Studio...</div>;
+  const handleBulkImport = async () => {
+    try {
+      const parsed = JSON.parse(bulkData);
+      if (Array.isArray(parsed)) {
+        await Promise.all(parsed.map(q => API.post(`/question/add/${id}`, { ...q, questionText: q.text || q.questionText })));
+        setBulkData("");
+        setActiveTab("Questions");
+        loadData();
+        alert(`${parsed.length} questions merged successfully.`);
+      }
+    } catch {
+      alert("Invalid JSON format.");
+    }
+  };
+
+  if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Synthesizing Studio Environment...</div>;
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 h-full">
-        <header className="h-auto min-h-[4rem] bg-white border-b border-gray-200 px-4 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0">
-          <div className="flex items-center gap-4 w-full sm:w-auto">
-            <button 
-              onClick={() => router.push("/admin-dashboard/tests")}
-              className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition shrink-0"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <div className="flex items-center gap-2 text-[9px] lg:text-[10px] font-black text-gray-400 uppercase tracking-widest overflow-hidden">
-               <span className="hidden sm:inline">My Library</span>
-               <ChevronRight size={10} className="hidden sm:block" />
-               <span className="truncate">{test?.category || "General"}</span>
-               <ChevronRight size={10} />
-               <span className="text-gray-900 truncate">{test?.title}</span>
-            </div>
-          </div>
+    <div className="flex flex-col min-h-full">
+      <AdminHeader 
+        title="Question Studio" 
+        path={[{ label: "Library", href: "/admin-dashboard/tests" }, { label: testSettings.title }]} 
+      />
 
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-             <button className="flex-1 sm:flex-none flex items-center gap-2 px-4 lg:px-5 py-2 border-2 border-blue-600 text-blue-600 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest hover:bg-blue-50 transition justify-center">
-               <Eye size={16} />
-               <span className="hidden xs:inline">Preview</span>
-             </button>
-             <div className="hidden xs:block w-px h-6 bg-gray-200 mx-1" />
-             <button 
-               onClick={activeTab === "Create Questions" ? handleSaveQuestion : handleUpdateTest}
-               disabled={saving}
-               className="flex-1 sm:flex-none px-6 lg:px-8 py-2 bg-blue-700 text-white rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest hover:bg-blue-800 shadow-lg shadow-blue-200 flex items-center gap-2 transition justify-center"
-             >
-               {saving ? "Processing..." : <><Save size={16} /><span className="hidden xs:inline">Save</span></>}
-             </button>
-          </div>
-        </header>
-
-        <div className="flex-1 flex overflow-hidden">
-          <aside className="w-72 bg-white border-r border-gray-100 overflow-y-auto hidden xl:block p-4">
-             <ul className="space-y-1">
-                {[
-                  { label: "Create Questions", icon: <Plus size={18} /> },
-                  { label: "Grading", icon: <PieChart size={18} /> },
-                  { label: "Test Sections", icon: <Layers size={18} /> },
-                  { label: "Import Questions", icon: <ArrowDownToLine size={18} /> },
-                  { label: "Test Settings", icon: <Settings size={18} /> },
-                ].map((item) => (
-                  <li key={item.label}>
-                    <button 
-                      onClick={() => setActiveTab(item.label)}
-                      className={`w-full flex items-center justify-between px-4 py-4 rounded-xl transition-all ${activeTab === item.label ? "bg-blue-50 text-blue-700 shadow-sm" : "text-gray-500 hover:bg-gray-50"}`}
-                    >
-                       <div className="flex items-center gap-4">
-                         <span className={activeTab === item.label ? "text-blue-600" : "text-gray-400"}>{item.icon}</span>
-                         <span className="text-xs font-black uppercase tracking-widest">{item.label}</span>
-                       </div>
-                       <ChevronRight size={14} className={activeTab === item.label ? "text-blue-400" : "text-gray-300"} />
-                    </button>
-                  </li>
-                ))}
-             </ul>
-
-             <div className="mt-8 p-6 bg-gray-200/30 rounded-[2rem] border border-gray-100">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Test Details</h4>
-                  <button onClick={() => setActiveTab("Test Settings")} className="text-blue-600"><Settings size={12} /></button>
-                </div>
+      <div className="p-10 lg:p-14 max-w-[1700px] mx-auto w-full flex flex-col lg:flex-row gap-12">
+          
+          {/* NAVIGATION WING */}
+          <div className="w-full lg:w-80 flex flex-col gap-3">
+             {[
+               { id: "Questions", label: "Questions Registry", icon: <Layers size={18} /> },
+               { id: "Settings", label: "Global Parameters", icon: <Shield size={18} /> },
+               { id: "Import", label: "Batch Ingestion", icon: <ArrowDownToLine size={18} /> }
+             ].map((tab) => (
+                <button 
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-8 py-5 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] text-left transition-all border flex items-center gap-4 ${activeTab === tab.id ? "bg-blue-600 text-white border-blue-600 shadow-2xl shadow-blue-200" : "bg-white border-gray-100 text-gray-400 hover:border-blue-200 hover:text-gray-900"}`}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </button>
+             ))}
+             
+             <div className="mt-8 p-8 bg-blue-50/50 rounded-[2.5rem] border border-blue-50">
+                <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Paper Census</p>
                 <div className="space-y-4">
-                   <div className="flex items-center gap-3">
-                      <HelpCircle size={14} className="text-blue-500" />
-                      <span className="text-[11px] font-bold text-gray-700">{test?.duration || 0} mins Duration</span>
+                   <div className="flex justify-between items-end">
+                      <span className="text-[11px] font-bold text-gray-500 uppercase">Items</span>
+                      <span className="text-xl font-black text-gray-900 leading-none">{questions.length}</span>
                    </div>
-                   <div className="flex items-center gap-3">
-                      <Layers size={14} className="text-blue-500" />
-                      <span className="text-[11px] font-bold text-gray-700 truncate capitalize">{test?.category || "General"}</span>
+                   <div className="flex justify-between items-end">
+                      <span className="text-[11px] font-bold text-gray-500 uppercase">Weightage</span>
+                      <span className="text-xl font-black text-gray-900 leading-none">{questions.reduce((a, b) => a + (b.points || 0), 0)}</span>
                    </div>
                 </div>
+                {activeTab === "Settings" && (
+                  <button 
+                    onClick={handleUpdateTest}
+                    disabled={saving}
+                    className="w-full py-4 mt-8 bg-gray-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-gray-200"
+                  >
+                    {saving ? "Syncing..." : "Sync Settings"}
+                  </button>
+                )}
              </div>
-          </aside>
+          </div>
 
-          <section className="flex-1 overflow-y-auto p-12 lg:px-20 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="max-w-4xl mx-auto">
-              
-              {activeTab === "Create Questions" ? (
-                /* QUESTION EDITOR */
-                <>
-                  <div className="flex items-center justify-between mb-8 px-4">
-                     <div className="flex items-center gap-4">
-                        <button 
-                          onClick={() => handleSwitch(currentIndex - 1)}
-                          disabled={currentIndex === 0}
-                          className="w-10 h-10 border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-200 disabled:opacity-20 transition shadow-sm bg-white"
-                        >
-                          <ChevronLeft size={20} />
-                        </button>
-                        <span className="text-xs font-black uppercase tracking-widest text-gray-900">
-                          Question {currentIndex + 1} of {questions.length}
-                        </span>
-                        <button 
-                          onClick={() => handleSwitch(currentIndex + 1)}
-                          className="w-10 h-10 border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-200 transition shadow-sm bg-white"
-                        >
-                          <ChevronRight size={20} />
-                        </button>
-                     </div>
-                     <button 
-                        onClick={() => handleSwitch(questions.length)}
-                        className="flex items-center gap-2 text-xs font-black text-blue-600 uppercase tracking-widest hover:bg-blue-50 px-4 py-2 rounded-lg transition"
-                      >
-                       <Plus size={16} />
-                       Add Blank Question
-                     </button>
-                  </div>
-
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-[0_30px_70px_rgba(0,0,0,0.03)] overflow-hidden">
-                    <div className="px-10 py-6 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <span className="text-sm font-black text-gray-900 border-r border-gray-200 pr-4 uppercase tracking-widest">
-                            Multiple Choice
-                          </span>
-                          <div className="flex items-center gap-2">
-                              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-md text-[10px] font-black tracking-widest">+ {currentQuestion.marks || 1.0}</span>
-                              <span className="px-3 py-1 bg-red-100 text-red-600 rounded-md text-[10px] font-black tracking-widest">- {currentQuestion.negativeMarks || 0.25}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Difficulty</span>
-                          <select 
-                            value={currentQuestion.difficulty || "Medium"}
-                            onChange={(e) => setCurrentQuestion({...currentQuestion, difficulty: e.target.value as any})}
-                            className="bg-white border border-gray-200 rounded-lg px-4 py-1.5 text-xs font-bold outline-none focus:border-blue-400 transition"
-                          >
-                              <option>Easy</option>
-                              <option>Medium</option>
-                              <option>Hard</option>
-                          </select>
-                        </div>
-                    </div>
-
-                    <div className="p-10 space-y-10">
-                        <textarea 
-                          value={currentQuestion.questionText}
-                          onChange={(e) => setCurrentQuestion({...currentQuestion, questionText: e.target.value})}
-                          className="w-full bg-gray-50/50 border border-transparent rounded-2xl px-8 py-6 outline-none focus:border-blue-100 focus:bg-white transition-all text-xl font-bold min-h-[160px] resize-none placeholder:text-gray-300"
-                          placeholder="Type your question text here..."
-                        />
-
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between opacity-40">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Answer Options</h3>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Select correct answer</span>
-                          </div>
-
-                          <div className="space-y-3">
-                              {currentQuestion.options.map((opt, i) => (
-                                <div key={i} className="flex items-center gap-4 group">
-                                  <div 
-                                    onClick={() => setCurrentQuestion({...currentQuestion, correctOption: i})}
-                                    className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center cursor-pointer transition-all ${currentQuestion.correctOption === i ? "border-green-500 bg-green-500 text-white shadow-lg shadow-green-100" : "border-gray-100 group-hover:border-blue-300 bg-white"}`}
-                                  >
-                                    {currentQuestion.correctOption === i ? <CheckCircle2 size={20} /> : <span className="text-xs font-bold">{String.fromCharCode(65+i)}</span>}
-                                  </div>
-                                  <input 
-                                    value={opt.text}
-                                    onChange={(e) => {
-                                      const newOpts = [...currentQuestion.options];
-                                      newOpts[i].text = e.target.value;
-                                      setCurrentQuestion({...currentQuestion, options: newOpts});
-                                    }}
-                                    placeholder={`Option ${i+1}`}
-                                    className={`flex-1 bg-gray-50/50 border border-gray-100 rounded-2xl px-6 py-4 outline-none transition-all font-bold text-sm ${currentQuestion.correctOption === i ? "border-green-100 bg-green-50/5" : "focus:border-blue-200 focus:bg-white"}`}
-                                  />
-                                  <button 
-                                    onClick={() => {
-                                      const newOpts = currentQuestion.options.filter((_, idx) => idx !== i);
-                                      setCurrentQuestion({...currentQuestion, options: newOpts});
-                                    }}
-                                    className="p-2 text-red-100 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
-                                  >
-                                    <Trash2 size={18} />
-                                  </button>
-                                </div>
-                              ))}
-                          </div>
-
-                          <button 
-                            onClick={() => setCurrentQuestion({...currentQuestion, options: [...currentQuestion.options, { text: "" }]})}
-                            className="bg-gray-100 text-gray-500 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition shadow-sm"
-                          >
-                            Add new option
-                          </button>
-                        </div>
-                    </div>
-                  </div>
-                </>
-              ) : activeTab === "Test Settings" ? (
-                <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-100/30 overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
-                   <div className="px-12 py-10 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
-                      <div>
-                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Global Test Parameters</h3>
-                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Configure institutional standards for this paper</p>
-                      </div>
-                      <Shield size={20} className="text-blue-600" />
+          {/* MAIN CANVAS */}
+          <div className="flex-1 w-full">
+              {activeTab === "Questions" ? (
+                <div className="space-y-8 animate-in fade-in slide-in-from-right-10 duration-700">
+                   <div className="flex items-center justify-between">
+                       <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Active Item Registry</h3>
+                       <button 
+                         onClick={() => {
+                           setCurrentQuestion({ text: "", type: "mcq", options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }], correctOption: 0, points: 1, section: "General" });
+                           setIsEditing(true);
+                         }}
+                         className="px-8 py-3.5 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition shadow-xl shadow-blue-100"
+                       >
+                         Append New Item
+                       </button>
                    </div>
-                   
-                   <div className="p-12 space-y-12">
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Exam Title</label>
-                        <input 
-                          value={testSettings.title}
-                          onChange={(e) => setTestSettings({...testSettings, title: e.target.value})}
-                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-xl"
-                        />
+
+                   {questions.length === 0 ? (
+                      <div className="bg-white rounded-[3.5rem] border border-dashed border-gray-200 py-32 flex flex-col items-center justify-center text-center">
+                         <HelpCircle size={48} className="text-gray-200 mb-6" />
+                         <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Awaiting Paper Content</p>
                       </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="space-y-3">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Duration (Min)</label>
-                          <div className="relative">
-                            <Clock className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                            <input 
-                              type="number"
-                              value={testSettings.duration}
-                              onChange={(e) => setTestSettings({...testSettings, duration: Number(e.target.value)})}
-                              className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-3">
-                          <label className="text-[10px) font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Passing %</label>
-                          <div className="relative">
-                            <Target className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                            <input 
-                              type="number"
-                              value={testSettings.passingCriteria}
-                              onChange={(e) => setTestSettings({...testSettings, passingCriteria: Number(e.target.value)})}
-                              className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-3">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Attempt Limit</label>
-                          <div className="relative">
-                            <Users className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                            <input 
-                              type="number"
-                              value={testSettings.allowedAttempts}
-                              onChange={(e) => setTestSettings({...testSettings, allowedAttempts: Number(e.target.value)})}
-                              className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
-                            />
-                          </div>
-                        </div>
+                   ) : (
+                      <div className="flex flex-col gap-6">
+                        {questions.map((q, idx) => (
+                           <div key={idx} className="bg-white rounded-[2.5rem] border border-gray-100 p-8 flex items-center justify-between group hover:border-blue-200 hover:shadow-2xl transition-all">
+                              <div className="flex items-center gap-6">
+                                 <div className="w-12 h-12 bg-gray-50 text-gray-400 rounded-2xl flex items-center justify-center font-black text-xs font-mono">{idx + 1}</div>
+                                 <div>
+                                    <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-1 block">[{q.section || "General"}]</span>
+                                    <p className="text-sm font-black text-gray-900 uppercase tracking-tight truncate max-w-md">{q.text}</p>
+                                 </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                 <button onClick={() => {
+                                   setCurrentQuestion(q);
+                                   setIsEditing(true);
+                                 }} className="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><FileEdit size={16} /></button>
+                                 <button onClick={() => handleDeleteQuestion(q._id!)} className="w-10 h-10 rounded-xl bg-gray-50 text-red-100 hover:bg-red-600 hover:text-white transition-all"><Trash2 size={16} /></button>
+                              </div>
+                           </div>
+                        ))}
                       </div>
+                   )}
+                </div>
+              ) : activeTab === "Settings" ? (
+                <div className="bg-white rounded-[4rem] border border-gray-100 shadow-2xl shadow-gray-100/30 overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
+                    <div className="px-12 py-11 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
+                       <div>
+                          <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Global Test Parameters</h3>
+                          <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Configure institutional standards</p>
+                       </div>
+                       <Shield size={22} className="text-blue-600" />
+                    </div>
+                    
+                    <div className="p-14 space-y-12">
+                       <div className="space-y-4">
+                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Exam Nomenclature</label>
+                         <input 
+                           value={testSettings.title}
+                           onChange={(e) => setTestSettings({...testSettings, title: e.target.value})}
+                           className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-10 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-2xl tracking-tighter"
+                         />
+                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                         <button 
-                           onClick={() => setTestSettings({...testSettings, isStrict: !testSettings.isStrict})}
-                           className={`p-8 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${testSettings.isStrict ? "bg-red-50/50 border-red-100" : "bg-white border-gray-100 hover:border-blue-100"}`}
-                         >
-                            <div className="flex items-center gap-6 text-left">
-                               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${testSettings.isStrict ? "bg-red-500 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-blue-600 group-hover:text-white"}`}>
-                                  <Lock size={24} />
-                               </div>
-                               <div>
-                                  <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest">Strict Mode</h4>
-                                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Enable AI Proctoring Control</p>
-                               </div>
-                            </div>
-                            <div className={`w-12 h-6 rounded-full relative transition-colors ${testSettings.isStrict ? "bg-red-500" : "bg-gray-200"}`}>
-                               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${testSettings.isStrict ? "left-7" : "left-1"}`} />
-                            </div>
-                         </button>
-
-                         <button 
-                           onClick={() => setTestSettings({...testSettings, shuffleOptions: !testSettings.shuffleOptions})}
-                           className={`p-8 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${testSettings.shuffleOptions ? "bg-blue-50/50 border-blue-100" : "bg-white border-gray-100 hover:border-blue-100"}`}
-                         >
-                            <div className="flex items-center gap-6 text-left">
-                               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${testSettings.shuffleOptions ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-blue-600 group-hover:text-white"}`}>
-                                  <Layers size={24} />
-                               </div>
-                               <div>
-                                  <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest">Randomize Order</h4>
-                                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Shuffle questions for students</p>
-                               </div>
-                            </div>
-                            <div className={`w-12 h-6 rounded-full relative transition-colors ${testSettings.shuffleOptions ? "bg-blue-600" : "bg-gray-200"}`}>
-                               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${testSettings.shuffleOptions ? "left-7" : "left-1"}`} />
-                            </div>
-                         </button>
-                      </div>
-
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Test Instructions</label>
-                        <textarea 
-                          value={testSettings.instructions}
-                          onChange={(e) => setTestSettings({...testSettings, instructions: e.target.value})}
-                          className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold min-h-[160px] resize-none text-gray-600"
-                          placeholder="Type instructions for students..."
-                        />
-                      </div>
-
-                      <div className="pt-8 border-t border-gray-100 flex items-center justify-between">
-                         <div className="flex items-center gap-2 text-red-500 bg-red-50 px-4 py-2 rounded-xl text-[10px] font-black uppercase animate-pulse">
-                            <AlertCircle size={14} />
-                            Danger Zone Below
+                       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                         <div className="space-y-4">
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Duration (Min)</label>
+                           <input 
+                             type="number"
+                             value={testSettings.duration}
+                             onChange={(e) => setTestSettings({...testSettings, duration: Number(e.target.value)})}
+                             className="w-full bg-gray-50 border border-gray-100 rounded-[1.8rem] px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                           />
                          </div>
-                         <button 
-                           onClick={handleUpdateTest}
-                           className="px-14 py-5 bg-[#2563eb] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-700 transition shadow-2xl shadow-blue-200 active:scale-95"
-                         >
-                           Publish Institutional Update
-                         </button>
-                      </div>
-                   </div>
+
+                         <div className="space-y-4">
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Passing %</label>
+                           <input 
+                             type="number"
+                             value={testSettings.passingCriteria}
+                             onChange={(e) => setTestSettings({...testSettings, passingCriteria: Number(e.target.value)})}
+                             className="w-full bg-gray-50 border border-gray-100 rounded-[1.8rem] px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                           />
+                         </div>
+
+                         <div className="space-y-4">
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Attempt Limit</label>
+                           <input 
+                             type="number"
+                             value={testSettings.allowedAttempts}
+                             onChange={(e) => setTestSettings({...testSettings, allowedAttempts: Number(e.target.value)})}
+                             className="w-full bg-gray-50 border border-gray-100 rounded-[1.8rem] px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                           />
+                         </div>
+                       </div>
+
+                       <div className="flex flex-col gap-6">
+                          <div className="flex items-center justify-between p-8 bg-gray-50 rounded-[2rem] border border-gray-100">
+                             <div>
+                                <h4 className="text-xs font-black text-gray-900 uppercase tracking-widest">Strict Mode</h4>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Enable AI Proctoring Control</p>
+                             </div>
+                             <button 
+                               onClick={() => setTestSettings({...testSettings, isStrict: !testSettings.isStrict})}
+                               className={`w-14 h-7 rounded-full relative transition-all ${testSettings.isStrict ? "bg-red-500" : "bg-gray-200"}`}
+                             >
+                                <div className={`absolute top-1.5 w-4 h-4 bg-white rounded-full transition-all ${testSettings.isStrict ? "left-8" : "left-2"}`} />
+                             </button>
+                          </div>
+
+                          <div className="flex items-center justify-between p-8 bg-gray-50 rounded-[2rem] border border-gray-100">
+                             <div>
+                                <h4 className="text-xs font-black text-gray-900 uppercase tracking-widest">Randomize Options</h4>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Shuffle choices for each student</p>
+                             </div>
+                             <button 
+                               onClick={() => setTestSettings({...testSettings, shuffleOptions: !testSettings.shuffleOptions})}
+                               className={`w-14 h-7 rounded-full relative transition-all ${testSettings.shuffleOptions ? "bg-blue-600" : "bg-gray-200"}`}
+                             >
+                                <div className={`absolute top-1.5 w-4 h-4 bg-white rounded-full transition-all ${testSettings.shuffleOptions ? "left-8" : "left-2"}`} />
+                             </button>
+                          </div>
+                       </div>
+
+                       <div className="space-y-4">
+                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Test Instructions</label>
+                         <textarea 
+                           value={testSettings.instructions}
+                           onChange={(e) => setTestSettings({...testSettings, instructions: e.target.value})}
+                           className="w-full bg-gray-50 border border-gray-100 rounded-[2.5rem] px-10 py-8 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold min-h-[180px] resize-none text-gray-600 leading-relaxed"
+                           placeholder="Specify rules for this assessment..."
+                         />
+                       </div>
+                    </div>
                 </div>
               ) : (
-                <div className="py-20 text-center bg-white rounded-[2.5rem] border border-dashed border-gray-200">
-                   <h3 className="text-xl font-black text-gray-400 uppercase tracking-widest">Coming Soon</h3>
-                   <p className="text-gray-400 mt-2 font-bold">{activeTab} is currently under construction.</p>
+                <div className="bg-white rounded-[4rem] border border-gray-100 shadow-2xl shadow-gray-100/30 p-16 space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                   <div className="space-y-2">
+                       <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">Institutional Batch Ingestion</h3>
+                       <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Paste JSON array to merge content</p>
+                   </div>
+                   <textarea 
+                     value={bulkData}
+                     onChange={(e) => setBulkData(e.target.value)}
+                     placeholder='[{"text": "Sample Issue", "options": [{"text": "A"}], "correctOption": 0, "points": 1, "section": "Quant"}]'
+                     className="w-full h-80 bg-gray-50 border border-gray-100 rounded-[2.5rem] p-12 font-mono text-xs font-black text-blue-600 outline-none focus:border-blue-500 transition-all shadow-inner"
+                   />
+                   <button 
+                     onClick={handleBulkImport}
+                     className="px-14 py-5 bg-gray-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-2xl shadow-gray-200 active:scale-95"
+                   >
+                     Batch Merging Process
+                   </button>
                 </div>
               )}
-
-              {activeTab === "Create Questions" && (
-                <div className="mt-12 flex items-center justify-between px-4">
-                  <button 
-                    onClick={handleDeleteQuestion}
-                    className="flex items-center gap-2 text-xs font-black text-red-300 uppercase tracking-widest hover:text-red-600 transition"
-                  >
-                    <Trash2 size={16} />
-                    Delete this question
-                  </button>
-                  <div className="flex items-center gap-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                      <span>Saved in {test?.category || "General"}</span>
-                      <span className="text-blue-500 underline underline-offset-4 decoration-dotted">Live Preview</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
-        </div>
+          </div>
       </div>
+
+      {/* ITEM EDITOR MODAL */}
+      {isEditing && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-2xl z-50 flex items-center justify-center p-6 lg:p-12 overflow-y-auto">
+           <div className="bg-white rounded-[4rem] w-full max-w-5xl overflow-hidden shadow-2xl border border-gray-100">
+              <div className="px-16 py-12 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
+                 <div>
+                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">Item Construction</h3>
+                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Design logical assessment points</p>
+                 </div>
+                 <button onClick={() => setIsEditing(false)} className="w-14 h-14 bg-white shadow-xl rounded-2xl flex items-center justify-center text-gray-400 hover:text-gray-900 text-3xl font-light transition-all active:scale-95">×</button>
+              </div>
+
+              <div className="p-16 grid grid-cols-1 lg:grid-cols-2 gap-16">
+                 <div className="space-y-10">
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Stem / Prompt</label>
+                       <textarea 
+                         value={currentQuestion.text}
+                         onChange={(e) => setCurrentQuestion({...currentQuestion, text: e.target.value})}
+                         className="w-full h-40 bg-gray-50 border border-gray-100 rounded-3xl p-8 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-lg leading-relaxed shadow-inner"
+                         placeholder="Formulate your prompt..."
+                       />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-8">
+                       <div className="space-y-4">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Point Valuation</label>
+                          <input 
+                            type="number"
+                            value={currentQuestion.points}
+                            onChange={(e) => setCurrentQuestion({...currentQuestion, points: Number(e.target.value)})}
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-xl"
+                          />
+                       </div>
+                       <div className="space-y-4">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Logical Section</label>
+                          <input 
+                            value={currentQuestion.section}
+                            onChange={(e) => setCurrentQuestion({...currentQuestion, section: e.target.value})}
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                            placeholder="e.g. Quant"
+                          />
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="space-y-8">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Option Spectrum</label>
+                    <div className="space-y-4 max-h-[300px] overflow-y-auto pr-4">
+                       {currentQuestion.options.map((opt, i) => (
+                          <div key={i} className="flex gap-4">
+                             <button 
+                               onClick={() => setCurrentQuestion({...currentQuestion, correctOption: i})}
+                               className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xs transition-all ${currentQuestion.correctOption === i ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-300"}`}
+                             >
+                                {String.fromCharCode(65 + i)}
+                             </button>
+                             <input 
+                               value={opt.text}
+                               onChange={(e) => {
+                                 const newOpts = [...currentQuestion.options];
+                                 newOpts[i].text = e.target.value;
+                                 setCurrentQuestion({...currentQuestion, options: newOpts});
+                               }}
+                               className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-8 py-4 outline-none focus:border-blue-200"
+                             />
+                             <button 
+                               onClick={() => {
+                                 const newOpts = currentQuestion.options.filter((_, idx) => idx !== i);
+                                 setCurrentQuestion({...currentQuestion, options: newOpts});
+                               }}
+                               className="p-4 text-red-200 hover:text-red-500"
+                             >
+                                <Trash2 size={20} />
+                             </button>
+                          </div>
+                       ))}
+                    </div>
+                    <button 
+                      onClick={() => setCurrentQuestion({...currentQuestion, options: [...currentQuestion.options, { text: "" }]})}
+                      className="w-full py-4 bg-gray-50 border border-dashed border-gray-200 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-400"
+                    >
+                      Append choice
+                    </button>
+
+                    <div className="pt-8 border-t border-gray-50 flex gap-4">
+                       <button onClick={() => setIsEditing(false)} className="flex-1 py-5 border-2 border-gray-100 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-400">Abort</button>
+                       <button onClick={() => handleSaveQuestion(currentQuestion)} className="flex-2 px-12 py-5 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl">Commit Item</button>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+    </div>
   );
 }

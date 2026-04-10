@@ -5,7 +5,7 @@ import { User, Mail, Lock, UserPlus, LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+import API from "@/app/lib/api";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -27,29 +27,15 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/user/register`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
+      const { data } = await API.post("/user/register", { name, email, password });
 
       // Auto-login upon successful registration
-      const role = (data?.role || data?.user?.role || "student").toString().toLowerCase();
+      const role = (data?.role || data?.user?.role || data?.data?.role || "student").toString().toLowerCase();
 
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token || "");
         localStorage.setItem("role", role);
-        localStorage.setItem("user", JSON.stringify(data.user || {}));
+        localStorage.setItem("user", JSON.stringify(data.user || data.data?.user || {}));
       }
 
       // Registration is almost always for students
@@ -57,7 +43,8 @@ export default function RegisterPage() {
 
     } catch (err: any) {
       console.error("Registration error:", err);
-      setError(err.message || "Registration failed. Please try again.");
+      const msg = err?.response?.data?.message || err.message || "Registration failed. Please try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

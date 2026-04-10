@@ -59,22 +59,20 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
     const loadData = async () => {
       try {
         const [testRes, questionsRes] = await Promise.all([
-          fetch(`${API_URL}/test/${id}`, { credentials: "include" }),
-          fetch(`${API_URL}/questions/${id}`, { credentials: "include" }),
+          API.get(`/test/${id}`),
+          API.get(`/questions/${id}`),
         ]);
 
-        if (!testRes.ok || !questionsRes.ok) {
-          throw new Error("Failed to load clinical quiz data");
-        }
-
-        const testData = await testRes.json();
-        const questionsData = await questionsRes.json();
+        const testData = testRes.data;
+        const questionsData = questionsRes.data;
 
         setTest(testData);
         setQuestions(questionsData);
         setTimeLeft((testData.duration || 30) * 60);
       } catch (err: any) {
-        setError(err.message);
+        console.error("Quiz load failed:", err);
+        const msg = err?.response?.data?.message || err.message || "Failed to load clinical quiz data";
+        setError(msg);
       } finally {
         setLoading(false);
       }
@@ -119,24 +117,16 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
         selectedOption: answers[q._id] ?? -1,
       }));
 
-      const res = await fetch(`${API_URL}/test/submit/${id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ answers: answersArray }),
+      const { data } = await API.post(`/test/submit/${id}`, {
+        answers: answersArray,
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        const attemptId = data?.attemptId || data?.result?.attemptId || data?._id || "";
-        router.push(`/result?attemptId=${attemptId}`);
-      } else {
-        const data = await res.json();
-        alert(data.message || "Final Submission failed");
-        setSubmitting(false);
-      }
-    } catch {
-      alert("Platform connection error. Please try again.");
+      const attemptId = data?.attemptId || data?.result?.attemptId || data?._id || data?.data?.attemptId || "";
+      router.push(`/result?attemptId=${attemptId}`);
+    } catch (err: any) {
+      console.error("Quiz submission failed:", err);
+      const msg = err?.response?.data?.message || err.message || "Platform connection error. Please try again.";
+      alert(msg);
       setSubmitting(false);
     }
   };

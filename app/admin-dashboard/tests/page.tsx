@@ -16,6 +16,7 @@ interface Test {
   price?: number;
   totalQuestions?: number;
   category?: string;
+  status?: "Draft" | "Published";
   createdAt: string;
 }
 
@@ -85,23 +86,55 @@ export default function TestsPage() {
     }
   };
 
+  const [selectedTests, setSelectedTests] = useState<string[]>([]);
+
+  const handleToggleSelect = (id: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedTests([...selectedTests, id]);
+    } else {
+      setSelectedTests(selectedTests.filter(sid => sid !== id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedTests.length} tests?`)) return;
+    try {
+      await Promise.all(selectedTests.map(id => API.delete(`/admin/test/${id}`)));
+      setTests(tests.filter(t => !selectedTests.includes(t._id)));
+      setSelectedTests([]);
+    } catch {
+      alert("Batch delete failed");
+    }
+  };
+
+  const handleStatusToggle = async (id: string, newStatus: string) => {
+     try {
+       // Optimistic update for UI smoothness
+       setTests(tests.map(t => t._id === id ? { ...t, status: newStatus as any } : t));
+       await API.put(`/admin/test/${id}`, { status: newStatus });
+     } catch {
+       console.error("Status update failed");
+     }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure?")) return;
     try {
       await API.delete(`/admin/test/${id}`);
       setTests(tests.filter(t => t._id !== id));
+      setSelectedTests(selectedTests.filter(sid => sid !== id));
     } catch {
       alert("Delete failed");
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-gray-50 flex items-center justify-center font-bold text-blue-600 animate-pulse">Initializing Library...</div>;
+  if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Accessing Library Grid...</div>;
 
   return (
-    <>
+    <div className="flex flex-col min-h-full relative">
       <main className="flex-1 overflow-y-auto">
         <AdminHeader 
-          title={currentFolder || "My Library"}
+          title={currentFolder || "Institutional Library"}
           path={[
             { label: "My Library", href: currentFolder ? "#" : undefined },
             ...(currentFolder ? [{ label: currentFolder }] : [])
@@ -114,21 +147,59 @@ export default function TestsPage() {
           onSearchChange={setSearchQuery}
         />
 
-        <div className="p-8">
-          {/* Breadcrumb Info Bar (Image 1/4 Style) */}
-          <div className="flex items-center gap-4 mb-6 text-sm font-bold text-gray-400">
-             <input type="checkbox" className="w-4 h-4 rounded border-gray-300" />
-             <span className="uppercase tracking-widest">
-               {currentFolder ? `Tests (${filteredTests.length})` : `Folders (${folders.length})`}
-             </span>
+        <div className="p-10 lg:p-14 max-w-[1700px] mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-700">
+          
+          {/* BATCH ACTION BAR (FLOATING) */}
+          {selectedTests.length > 0 && (
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-8 py-5 rounded-[2.5rem] shadow-2xl flex items-center gap-8 animate-in slide-in-from-bottom-20 duration-500">
+               <div className="flex items-center gap-3 pr-8 border-r border-white/10">
+                  <span className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-xs">{selectedTests.length}</span>
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Selection Active</p>
+               </div>
+               
+               <div className="flex items-center gap-6">
+                  <button className="text-[10px] font-black uppercase tracking-widest hover:text-blue-400 transition-colors">Move to Series</button>
+                  <button onClick={handleBulkDelete} className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors">Batch Delete</button>
+                  <button onClick={() => setSelectedTests([])} className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Clear Selection</button>
+               </div>
+            </div>
+          )}
+
+          {/* FOLDER INFO HUD */}
+          <div className="flex items-center justify-between mb-4">
+             <div className="flex items-center gap-6">
+                <div 
+                  onClick={() => {
+                    if (selectedTests.length === filteredTests.length) setSelectedTests([]);
+                    else setSelectedTests(filteredTests.map(t => t._id));
+                  }}
+                  className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center cursor-pointer transition-all ${selectedTests.length === filteredTests.length && filteredTests.length > 0 ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-100" : "border-gray-200"}`}
+                >
+                  {selectedTests.length === filteredTests.length && filteredTests.length > 0 && <div className="w-2 h-2 bg-white rounded-full" />}
+                </div>
+                <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-3">
+                   {currentFolder ? "Tests in Context" : "Institutional Folders"}
+                   <span className="text-gray-200">/</span>
+                   <span className="text-gray-900 tracking-tighter normal-case font-black text-xs">{currentFolder || "Overview"}</span>
+                </h3>
+             </div>
+             
+             {currentFolder && (
+               <button 
+                 onClick={() => setCurrentFolder(null)}
+                 className="px-6 py-2.5 bg-gray-50 text-gray-400 hover:bg-white hover:shadow-xl rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+               >
+                 ← Back to Archive
+               </button>
+             )}
           </div>
 
           {!currentFolder ? (
             /* FOLDER GRID VIEW */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
               {folders.length === 0 ? (
-                <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
-                  <p className="text-gray-400 font-bold uppercase tracking-widest">No Folders Created Yet</p>
+                <div className="col-span-full py-32 text-center bg-white rounded-[3rem] border border-dashed border-gray-200 transition-all hover:bg-gray-50">
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">No Series Containers Detected</p>
                 </div>
               ) : (
                 folders.map((f) => (
@@ -146,17 +217,10 @@ export default function TestsPage() {
             </div>
           ) : (
             /* TESTS LIST VIEW */
-            <div className="flex flex-col gap-4">
-               <button 
-                 onClick={() => setCurrentFolder(null)}
-                 className="w-fit mb-4 text-xs font-black text-blue-600 uppercase tracking-widest hover:underline flex items-center gap-2"
-               >
-                 ← Back to Folders
-               </button>
-               
+            <div className="flex flex-col gap-6">
                {filteredTests.length === 0 ? (
-                 <div className="py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
-                   <p className="text-gray-400 font-bold uppercase tracking-widest">No Tests in this Folder</p>
+                 <div className="py-32 text-center bg-white rounded-[3rem] border border-dashed border-gray-200">
+                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">No Modules in this Archive</p>
                  </div>
                ) : (
                  filteredTests.map((test) => (
@@ -165,7 +229,10 @@ export default function TestsPage() {
                       title={test.title}
                       description={currentFolder}
                       date={new Date(test.createdAt).toISOString().split('T')[0].replace(/-/g, '/')}
-                      status="Draft"
+                      status={test.status || "Draft"}
+                      isSelected={selectedTests.includes(test._id)}
+                      onSelect={(val) => handleToggleSelect(test._id, val)}
+                      onStatusToggle={(ns) => handleStatusToggle(test._id, ns)}
                       onEdit={() => {
                         setEditingTest(test);
                         setFormData({
@@ -262,6 +329,6 @@ export default function TestsPage() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

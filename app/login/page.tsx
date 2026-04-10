@@ -4,9 +4,7 @@ import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, LogIn } from "lucide-react";
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+import API from "@/app/lib/api";
 
 function LoginForm() {
   const router = useRouter();
@@ -25,34 +23,21 @@ function LoginForm() {
     setError("");
 
     try {
-      const res = await fetch(`${API_URL}/user/login`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed");
-      }
+      // Use localized API (axios) for better CORS/Credentials handling
+      const { data } = await API.post("/user/login", { email, password });
 
       // Extract role and handle possible nested structures
-      const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
+      const role = (data?.role || data?.user?.role || data?.data?.role)?.toString().toLowerCase();
 
       if (!role) {
-        throw new Error("User role not found");
+        throw new Error("User role not identified. Please contact support.");
       }
 
-      // Persist auth status in localStorage as a fallback for cookies
+      // Persist auth status
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token || "");
         localStorage.setItem("role", role);
-        localStorage.setItem("user", JSON.stringify(data.user || {}));
+        localStorage.setItem("user", JSON.stringify(data.user || data.data?.user || {}));
       }
 
       // Performance: use router.replace to avoid back-button loops
@@ -65,7 +50,9 @@ function LoginForm() {
       }
     } catch (err: any) {
       console.error("Login component error:", err);
-      setError(err.message || "An unexpected error occurred. Please try again.");
+      // Fallback for axios error objects
+      const msg = err?.response?.data?.message || err.message || "An unexpected error occurred.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

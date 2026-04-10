@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+import API from "@/app/lib/api";
 
 interface Test {
   _id: string;
@@ -25,8 +25,8 @@ export default function TestsPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API_URL}/user/profile`, { credentials: "include" });
-        setIsAuthenticated(res.ok);
+        await API.get("/user/profile");
+        setIsAuthenticated(true);
       } catch {
         setIsAuthenticated(false);
       }
@@ -37,11 +37,8 @@ export default function TestsPage() {
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const res = await fetch(`${API_URL}/tests`);
-        if (res.ok) {
-          const data = await res.json();
-          setTests(Array.isArray(data) ? data : []);
-        }
+        const { data } = await API.get("/tests");
+        setTests(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to fetch tests:", err);
       } finally {

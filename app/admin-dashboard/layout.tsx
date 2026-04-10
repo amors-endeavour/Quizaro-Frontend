@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminSidebar from "@/components/AdminSidebar";
 import { BarChart3 } from "lucide-react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+import AdminSidebar from "@/components/AdminSidebar";
+import API from "@/app/lib/api";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -15,25 +14,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(`${API_URL}/user/profile`, {
-          credentials: "include",
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
-        if (!res.ok) {
-          router.replace("/login");
-          return;
-        }
-        const data = await res.json();
-        const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
+        const { data } = await API.get("/user/profile");
+        const role = (data?.role || data?.user?.role || data?.data?.role)?.toString().toLowerCase();
+
         if (role !== "admin") {
           router.replace("/user-dashboard");
           return;
         }
         setIsAuth(true);
-      } catch {
+      } catch (err: any) {
+        console.error("Layout auth check failed:", err);
         router.replace("/login");
       }
     };

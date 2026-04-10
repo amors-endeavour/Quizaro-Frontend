@@ -3,6 +3,7 @@ import axios from "axios";
 const API = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com",
   withCredentials: true,
+  timeout: 30000, 
   headers: {
     "Content-Type": "application/json",
   },

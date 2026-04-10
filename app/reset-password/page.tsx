@@ -5,7 +5,7 @@ import { Lock, ArrowLeft, Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+import API from "@/app/lib/api";
 
 export default function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState("");
@@ -45,20 +45,10 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/user/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, newPassword }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to reset password");
-      }
+      const { data } = await API.post("/user/reset-password", { token, newPassword });
 
       setSuccess(true);
-      setMessage(data.message);
+      setMessage(data.message || "Password successfully reset!");
 
       // Redirect to login after 3 seconds
       setTimeout(() => {
@@ -66,7 +56,9 @@ export default function ResetPasswordPage() {
       }, 3000);
 
     } catch (err: any) {
-      setError(err.message || "Failed to reset password. Please try again.");
+      console.error("Reset password error:", err);
+      const msg = err?.response?.data?.message || err.message || "Failed to reset password.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
