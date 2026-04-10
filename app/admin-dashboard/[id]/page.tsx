@@ -17,7 +17,12 @@ import {
   PieChart,
   Layers,
   ArrowDownToLine,
-  HelpCircle
+  HelpCircle,
+  Shield,
+  Clock,
+  Target,
+  Users,
+  Lock
 } from "lucide-react";
 
 interface Option {
@@ -68,7 +73,11 @@ export default function QuestionsStudio({ params }: { params: Promise<{ id: stri
     title: "",
     duration: 30,
     category: "General",
-    instructions: ""
+    instructions: "",
+    isStrict: false,
+    passingCriteria: 40,
+    shuffleOptions: true,
+    allowedAttempts: 1
   });
 
   const fetchData = async () => {
@@ -82,7 +91,11 @@ export default function QuestionsStudio({ params }: { params: Promise<{ id: stri
         title: testRes.data.title,
         duration: testRes.data.duration || 30,
         category: testRes.data.category || "General",
-        instructions: testRes.data.description || ""
+        instructions: testRes.data.description || "",
+        isStrict: testRes.data.isStrict || false,
+        passingCriteria: testRes.data.passingCriteria || 40,
+        shuffleOptions: testRes.data.shuffleOptions ?? true,
+        allowedAttempts: testRes.data.allowedAttempts || 1
       });
 
       const qData = questionsRes.data;
@@ -363,59 +376,124 @@ export default function QuestionsStudio({ params }: { params: Promise<{ id: stri
                   </div>
                 </>
               ) : activeTab === "Test Settings" ? (
-                /* TEST SETTINGS STUDIO */
-                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-[0_30px_70px_rgba(0,0,0,0.03)] overflow-hidden animate-in zoom-in duration-300">
-                   <div className="p-12 space-y-8">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Series / Folder Folder</label>
-                        <input 
-                          value={testSettings.category}
-                          onChange={(e) => setTestSettings({...testSettings, category: e.target.value})}
-                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 transition-all font-black"
-                        />
+                <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-100/30 overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
+                   <div className="px-12 py-10 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
+                      <div>
+                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Global Test Parameters</h3>
+                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Configure institutional standards for this paper</p>
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Test Title</label>
+                      <Shield size={20} className="text-blue-600" />
+                   </div>
+                   
+                   <div className="p-12 space-y-12">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Exam Title</label>
                         <input 
                           value={testSettings.title}
                           onChange={(e) => setTestSettings({...testSettings, title: e.target.value})}
-                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 transition-all font-black text-xl"
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-xl"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-8">
-                        <div className="space-y-2">
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Duration (Min)</label>
-                          <input 
-                            type="number"
-                            value={testSettings.duration}
-                            onChange={(e) => setTestSettings({...testSettings, duration: Number(e.target.value)})}
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 transition-all font-black"
-                          />
+                          <div className="relative">
+                            <Clock className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input 
+                              type="number"
+                              value={testSettings.duration}
+                              onChange={(e) => setTestSettings({...testSettings, duration: Number(e.target.value)})}
+                              className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                            />
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Test Tags</label>
-                          <input 
-                            value={testSettings.category.toUpperCase()} 
-                            disabled
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none font-black text-blue-600 opacity-50"
-                          />
+
+                        <div className="space-y-3">
+                          <label className="text-[10px) font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Passing %</label>
+                          <div className="relative">
+                            <Target className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input 
+                              type="number"
+                              value={testSettings.passingCriteria}
+                              onChange={(e) => setTestSettings({...testSettings, passingCriteria: Number(e.target.value)})}
+                              className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Attempt Limit</label>
+                          <div className="relative">
+                            <Users className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input 
+                              type="number"
+                              value={testSettings.allowedAttempts}
+                              onChange={(e) => setTestSettings({...testSettings, allowedAttempts: Number(e.target.value)})}
+                              className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="space-y-2">
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         <button 
+                           onClick={() => setTestSettings({...testSettings, isStrict: !testSettings.isStrict})}
+                           className={`p-8 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${testSettings.isStrict ? "bg-red-50/50 border-red-100" : "bg-white border-gray-100 hover:border-blue-100"}`}
+                         >
+                            <div className="flex items-center gap-6 text-left">
+                               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${testSettings.isStrict ? "bg-red-500 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-blue-600 group-hover:text-white"}`}>
+                                  <Lock size={24} />
+                               </div>
+                               <div>
+                                  <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest">Strict Mode</h4>
+                                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Enable AI Proctoring Control</p>
+                               </div>
+                            </div>
+                            <div className={`w-12 h-6 rounded-full relative transition-colors ${testSettings.isStrict ? "bg-red-500" : "bg-gray-200"}`}>
+                               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${testSettings.isStrict ? "left-7" : "left-1"}`} />
+                            </div>
+                         </button>
+
+                         <button 
+                           onClick={() => setTestSettings({...testSettings, shuffleOptions: !testSettings.shuffleOptions})}
+                           className={`p-8 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${testSettings.shuffleOptions ? "bg-blue-50/50 border-blue-100" : "bg-white border-gray-100 hover:border-blue-100"}`}
+                         >
+                            <div className="flex items-center gap-6 text-left">
+                               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${testSettings.shuffleOptions ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-blue-600 group-hover:text-white"}`}>
+                                  <Layers size={24} />
+                               </div>
+                               <div>
+                                  <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest">Randomize Order</h4>
+                                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Shuffle questions for students</p>
+                               </div>
+                            </div>
+                            <div className={`w-12 h-6 rounded-full relative transition-colors ${testSettings.shuffleOptions ? "bg-blue-600" : "bg-gray-200"}`}>
+                               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${testSettings.shuffleOptions ? "left-7" : "left-1"}`} />
+                            </div>
+                         </button>
+                      </div>
+
+                      <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Test Instructions</label>
                         <textarea 
                           value={testSettings.instructions}
                           onChange={(e) => setTestSettings({...testSettings, instructions: e.target.value})}
-                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 transition-all font-bold min-h-[160px] resize-none"
+                          className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold min-h-[160px] resize-none text-gray-600"
                           placeholder="Type instructions for students..."
                         />
                       </div>
-                      <div className="pt-4 flex justify-end">
+
+                      <div className="pt-8 border-t border-gray-100 flex items-center justify-between">
+                         <div className="flex items-center gap-2 text-red-500 bg-red-50 px-4 py-2 rounded-xl text-[10px] font-black uppercase animate-pulse">
+                            <AlertCircle size={14} />
+                            Danger Zone Below
+                         </div>
                          <button 
                            onClick={handleUpdateTest}
-                           className="px-12 py-4 bg-blue-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-800 transition shadow-xl shadow-blue-200"
+                           className="px-14 py-5 bg-[#2563eb] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-700 transition shadow-2xl shadow-blue-200 active:scale-95"
                          >
-                           Update Test Details
+                           Publish Institutional Update
                          </button>
                       </div>
                    </div>
