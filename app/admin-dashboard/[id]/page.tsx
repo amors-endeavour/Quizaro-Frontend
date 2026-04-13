@@ -240,22 +240,22 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                          <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Awaiting Paper Content</p>
                       </div>
                    ) : (
-                      <div className="flex flex-col gap-6">
+                       <div className="flex flex-col gap-6">
                         {questions.map((q, idx) => (
-                           <div key={idx} className="bg-white rounded-[2.5rem] border border-gray-100 p-8 flex items-center justify-between group hover:border-blue-200 hover:shadow-2xl transition-all">
-                              <div className="flex items-center gap-6">
-                                 <div className="w-12 h-12 bg-gray-50 text-gray-400 rounded-2xl flex items-center justify-center font-black text-xs font-mono">{idx + 1}</div>
-                                 <div>
-                                    <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-1 block">[{q.section || "General"}]</span>
-                                    <p className="text-sm font-black text-gray-900 uppercase tracking-tight truncate max-w-md">{q.text}</p>
+                           <div key={idx} className="bg-white rounded-[2.5rem] border border-gray-100 p-10 flex items-center justify-between group hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-50/50 transition-all duration-500">
+                              <div className="flex items-center gap-8">
+                                 <div className="w-16 h-16 bg-gray-50 text-gray-400 rounded-2xl flex items-center justify-center font-black text-xs font-mono group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-sm">{idx + 1}</div>
+                                 <div className="space-y-1.5">
+                                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-lg">Sector: {q.section || "General"}</span>
+                                    <p className="text-lg font-black text-gray-900 tracking-tight line-clamp-1 max-w-2xl italic">{q.text}</p>
                                  </div>
                               </div>
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-4">
                                  <button onClick={() => {
                                    setCurrentQuestion(q);
                                    setIsEditing(true);
-                                 }} className="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><FileEdit size={16} /></button>
-                                 <button onClick={() => handleDeleteQuestion(q._id!)} className="w-10 h-10 rounded-xl bg-gray-50 text-red-100 hover:bg-red-600 hover:text-white transition-all"><Trash2 size={16} /></button>
+                                 }} className="w-14 h-14 rounded-2xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm active:scale-90"><FileEdit size={20} /></button>
+                                 <button onClick={() => handleDeleteQuestion(q._id!)} className="w-14 h-14 rounded-2xl bg-gray-50 text-red-100 hover:bg-red-500 hover:text-white transition-all shadow-sm active:scale-90"><Trash2 size={20} /></button>
                               </div>
                            </div>
                         ))}
@@ -377,9 +377,9 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
       </div>
 
       {/* ITEM EDITOR MODAL */}
-      {isEditing && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-2xl z-50 flex items-center justify-center p-6 lg:p-12 overflow-y-auto">
-           <div className="bg-white rounded-[4rem] w-full max-w-5xl overflow-hidden shadow-2xl border border-gray-100">
+       {isEditing && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-3xl z-50 flex items-center justify-center p-6 lg:p-12 overflow-y-auto animate-in fade-in duration-500">
+           <div className="bg-[#f8f9fc] rounded-[4rem] w-full max-w-6xl overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.25)] border border-white/20 flex flex-col max-h-[90vh]">
               <div className="px-16 py-12 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
                  <div>
                     <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">Item Construction</h3>

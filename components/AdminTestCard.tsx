@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, MoreVertical, CheckCircle2, FileEdit, Trash2 } from "lucide-react";
+import { FileText, MoreVertical, CheckCircle2, FileEdit, Trash2, Download } from "lucide-react";
 
 interface AdminTestCardProps {
   title: string;
@@ -13,6 +13,7 @@ interface AdminTestCardProps {
   onEdit: () => void;
   onQuestions: () => void;
   onDelete: () => void;
+  onExport?: () => void;
 }
 
 export default function AdminTestCard({ 
@@ -25,7 +26,8 @@ export default function AdminTestCard({
   onStatusToggle,
   onEdit, 
   onQuestions, 
-  onDelete 
+  onDelete,
+  onExport
 }: AdminTestCardProps) {
   
   const statusColors = {
@@ -90,6 +92,13 @@ export default function AdminTestCard({
               className="w-10 h-10 border border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-100 rounded-xl flex items-center justify-center transition-all group/opt"
             >
               <MoreVertical size={16} className="group-hover/opt:scale-125 transition-transform" />
+            </button>
+            <button 
+               onClick={onExport}
+               className="w-10 h-10 border border-gray-100 text-gray-400 hover:text-purple-600 hover:border-purple-100 rounded-xl flex items-center justify-center transition-all group/opt"
+               title="Export JSON"
+            >
+              <Download size={16} className="group-hover/opt:scale-125 transition-transform" />
             </button>
             <button 
               onClick={onDelete}

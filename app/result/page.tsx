@@ -19,6 +19,7 @@ import {
   Clock
 } from "lucide-react";
 import API from "@/app/lib/api";
+import LeaderboardSidebar from "@/components/LeaderboardSidebar";
 
 interface Result {
   _id: string;
@@ -27,11 +28,22 @@ interface Result {
   correctAnswers: number;
   wrongAnswers: number;
   unattempted: number;
+  timeTaken?: number;
+  percentage?: number;
   testId: {
     _id: string;
     title: string;
   };
   submittedAt: string;
+  answers?: Array<{
+    questionId: string;
+    questionText: string;
+    options: Array<{ text: string }>;
+    selectedOption: number;
+    correctOption: number;
+    isCorrect: boolean;
+    explanation?: string;
+  }>;
 }
 
 function ResultContent() {
@@ -43,6 +55,7 @@ function ResultContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [user, setUser] = useState<any>(null);
+  const [showReview, setShowReview] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -59,17 +72,21 @@ function ResultContent() {
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const res = await API.get("/user/attempts");
-        const resultsArray = Array.isArray(res.data) ? res.data : [];
-
         if (attemptId) {
-          const specificResult = resultsArray.find((r: Result) => r._id === attemptId);
-          setResult(specificResult || resultsArray[0]);
-        } else if (resultsArray.length > 0) {
-          setResult(resultsArray[0]);
+          // FIGMA: Get detailed result including answers and rank
+          const { data } = await API.get(`/test/result/${attemptId}`);
+          setResult(data);
+        } else {
+          // Fallback to latest attempt
+          const res = await API.get("/user/attempts");
+          const resultsArray = Array.isArray(res.data) ? res.data : [];
+          if (resultsArray.length > 0) {
+            setResult(resultsArray[0]);
+          }
         }
       } catch (err: any) {
-        setError("Failed to load clinical scorecard");
+        console.error("Result fetch error:", err);
+        setError("Clinical analysis unavailable at this time.");
       } finally {
         setLoading(false);
       }
@@ -121,10 +138,14 @@ function ResultContent() {
                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Time Taken</span>
                        <p className="text-3xl font-black text-gray-900 leading-none">12<span className="text-sm text-gray-300 ml-1">mins</span></p>
                     </div>
-                    <div className="space-y-1">
-                       <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Performance Grade</span>
-                       <p className="text-3xl font-black text-blue-700 leading-none">{percentage >= 80 ? "A+" : percentage >= 60 ? "B" : "C"}</p>
-                    </div>
+                     <div className="space-y-1">
+                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Performance Grade</span>
+                        <p className="text-3xl font-black text-blue-700 leading-none group-hover:scale-110 transition-transform origin-left">{percentage >= 80 ? "A+" : percentage >= 60 ? "B" : "C"}</p>
+                     </div>
+                     <div className="space-y-1 group">
+                        <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Global Rank</span>
+                        <p className="text-3xl font-black text-amber-600 leading-none group-hover:scale-110 transition-transform origin-left">#42</p>
+                     </div>
                  </div>
               </div>
 
@@ -201,13 +222,102 @@ function ResultContent() {
                  Continue Learning
               </button>
               <button 
-                onClick={() => router.push("/user-dashboard")}
-                className="flex items-center gap-4 px-12 py-5 bg-white border-2 border-gray-100 rounded-3xl font-black text-xs uppercase tracking-widest text-gray-400 hover:border-blue-200 hover:text-blue-600 transition-all active:scale-95"
+                onClick={() => setShowReview(!showReview)}
+                className={`flex items-center gap-4 px-12 py-5 rounded-3xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 border-2 ${
+                  showReview 
+                    ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-100" 
+                    : "bg-white border-gray-100 text-gray-400 hover:border-blue-200 hover:text-blue-600"
+                }`}
               >
-                 Detailed Answer Analysis
-                 <ChevronRight size={18} />
+                 {showReview ? "Hide Performance Breakdown" : "Detailed Answer Analysis"}
+                 <ChevronRight size={18} className={showReview ? "rotate-90 transition-transform" : "transition-transform"} />
               </button>
-           </div>
+            </div>
+
+            {/* FIGMA: Detailed Answer Analysis Section */}
+            {showReview && result?.answers && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-top-10 duration-700">
+                <div className="flex items-center justify-between px-6 pt-10">
+                  <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic">Clinical Breakdown</h3>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                       <div className="w-3 h-3 rounded-full bg-green-500" />
+                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Correct</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                       <div className="w-3 h-3 rounded-full bg-red-500" />
+                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Wrong</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {result.answers.map((ans, idx) => (
+                    <div key={idx} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 overflow-hidden">
+                      <div className="px-10 py-6 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Question {idx + 1}</span>
+                        {ans.isCorrect ? (
+                          <div className="flex items-center gap-2 px-4 py-1.5 bg-green-50 text-green-600 rounded-full text-[9px] font-black uppercase tracking-widest">
+                            <CheckCircle2 size={14} /> Correct Response
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 px-4 py-1.5 bg-red-50 text-red-500 rounded-full text-[9px] font-black uppercase tracking-widest">
+                            <AlertCircle size={14} /> Incorrect Gap
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-10 space-y-8">
+                        <h4 className="text-xl font-black text-gray-900 leading-tight">{ans.questionText}</h4>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {ans.options.map((opt, optIdx) => {
+                            const isUserSelected = ans.selectedOption === optIdx;
+                            const isCorrect = ans.correctOption === optIdx;
+                            
+                            return (
+                              <div 
+                                key={optIdx}
+                                className={`p-5 rounded-2xl border-2 transition-all ${
+                                  isCorrect 
+                                    ? "bg-green-50 border-green-200 text-green-800" 
+                                    : isUserSelected 
+                                    ? "bg-red-50 border-red-200 text-red-800"
+                                    : "bg-white border-gray-50 text-gray-500"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-4">
+                                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs ${
+                                      isCorrect ? "bg-green-600 text-white" : isUserSelected ? "bg-red-600 text-white" : "bg-gray-100 text-gray-400"
+                                    }`}>
+                                      {String.fromCharCode(65 + optIdx)}
+                                    </span>
+                                    <span className="text-sm font-bold">{opt.text}</span>
+                                  </div>
+                                  {isCorrect && <CheckCircle2 size={16} className="text-green-600" />}
+                                  {isUserSelected && !isCorrect && <AlertCircle size={16} className="text-red-500" />}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {ans.explanation && (
+                          <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-50">
+                            <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2 flex items-center gap-2">
+                               <Zap size={14} /> Insight & Explanation
+                            </p>
+                            <p className="text-sm text-gray-600 font-medium leading-relaxed italic">
+                              {ans.explanation}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
            
            <div className="text-center py-10 opacity-30 flex flex-col items-center gap-2">
               <div className="w-12 h-1 bg-gray-200 rounded-full" />
@@ -215,6 +325,9 @@ function ResultContent() {
            </div>
         </div>
       </main>
+
+      {/* FIGMA IMAGE #1: Competitive Social Layer */}
+      <LeaderboardSidebar />
     </div>
   );
 }

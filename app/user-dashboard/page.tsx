@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import UserSidebar from "@/components/UserSidebar";
 import UserHeader from "@/components/UserHeader";
 import API from "@/app/lib/api";
+import LeaderboardSidebar from "@/components/LeaderboardSidebar";
 import { 
   Play, 
   Clock, 
@@ -26,6 +27,9 @@ interface Test {
   price: number;
   totalQuestions: number;
   category?: string;
+  seriesId?: string;
+  paperNumber?: number;
+  difficulty?: string;
 }
 
 interface PurchasedTest {
@@ -36,10 +40,22 @@ interface PurchasedTest {
   isCompleted: boolean;
 }
 
+interface Series {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  isFinite: boolean;
+  maxPapers: number;
+}
+
 export default function UserDashboard() {
   const router = useRouter();
   const [availableTests, setAvailableTests] = useState<Test[]>([]);
   const [purchasedTests, setPurchasedTests] = useState<PurchasedTest[]>([]);
+  const [series, setSeries] = useState<Series[]>([]);
+  const [search, setSearch] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All");
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
@@ -66,12 +82,14 @@ export default function UserDashboard() {
     if (!isAuthChecked) return;
     const loadData = async () => {
       try {
-        const [availableRes, purchasedRes] = await Promise.all([
+        const [availableRes, purchasedRes, seriesRes] = await Promise.all([
           API.get("/user/tests/available"),
           API.get("/user/tests/purchased"),
+          API.get("/series")
         ]);
         setAvailableTests(availableRes.data);
         setPurchasedTests(purchasedRes.data);
+        setSeries(seriesRes.data);
       } catch (err) {
         console.error("Data load failed", err);
       } finally {
@@ -80,6 +98,16 @@ export default function UserDashboard() {
     };
     loadData();
   }, [isAuthChecked]);
+
+  // Combined logic for search and filter
+  const filteredSeries = series.filter(s => {
+    const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase()) || 
+                          s.description.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = filterCategory === "All" || s.category === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const categories = ["All", ...Array.from(new Set(series.map(s => s.category)))];
 
   if (loading) return <div className="min-h-screen bg-[#f3f4f9] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Initializing Classroom...</div>;
 
@@ -95,46 +123,73 @@ export default function UserDashboard() {
 
         <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
           
-          {/* Dashboard Stats Overview (Institutional Style) */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
-             {/* ... stats cards ... */}
-             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex items-center gap-6">
-                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-50">
-                   <TrendingUp size={28} />
-                </div>
-                <div>
-                   <h3 className="text-2xl font-black text-gray-900 leading-none">{purchasedTests.length} Total</h3>
-                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-2">Active Test Series</p>
-                </div>
+          {/* SEARCH & FILTER HUD */}
+          <section className="flex flex-col md:flex-row gap-6 items-center justify-between">
+             <div className="relative w-full md:w-96 group">
+                <input 
+                  type="text" 
+                  placeholder="Search series or topics..." 
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full bg-white border border-gray-100 rounded-3xl px-8 py-5 outline-none focus:border-blue-400 focus:shadow-2xl focus:shadow-blue-50/50 transition-all font-bold text-sm tracking-tight"
+                />
              </div>
-             
-             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex items-center gap-6">
-                <div className="w-16 h-16 bg-green-50 text-green-600 rounded-3xl flex items-center justify-center shadow-lg shadow-green-50">
-                   <Award size={28} />
-                </div>
-                <div>
-                   <h3 className="text-2xl font-black text-gray-900 leading-none">{purchasedTests.filter(t => t.isCompleted).length} Done</h3>
-                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-2">Tests Completed</p>
-                </div>
-             </div>
-
-             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex items-center gap-6">
-                <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center shadow-lg shadow-orange-50">
-                   <Zap size={28} />
-                </div>
-                <div>
-                   <h3 className="text-2xl font-black text-gray-900 leading-none">{availableTests.length} New</h3>
-                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-2">Available for Enrollment</p>
-                </div>
+             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide w-full md:w-auto">
+                {categories.map(cat => (
+                  <button 
+                    key={cat}
+                    onClick={() => setFilterCategory(cat)}
+                    className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${filterCategory === cat ? "bg-blue-600 text-white shadow-xl shadow-blue-100" : "bg-white text-gray-400 border border-gray-100 hover:border-blue-200"}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
              </div>
           </section>
 
-          {/* ACTIVE TESTS SECTION */}
+          {/* ACTIVE SERIES PROGRESS */}
           <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
              <div className="flex items-center justify-between px-4">
                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
                   <Play size={18} fill="currentColor" />
-                  Your Active Classroom
+                  Your Series Progress
+                </h3>
+             </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {series.map(s => {
+                  const papersInSeries = purchasedTests.filter(pt => pt.testId.seriesId === s._id);
+                  if (papersInSeries.length === 0) return null;
+                  const completed = papersInSeries.filter(pt => pt.isCompleted).length;
+                  const total = papersInSeries.length;
+                  const progress = Math.round((completed / total) * 100);
+
+                  return (
+                    <div key={s._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 group">
+                       <div className="flex items-center justify-between mb-6">
+                          <div>
+                             <h4 className="text-lg font-black text-gray-900 tracking-tight">{s.title}</h4>
+                             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">{completed} of {total} Papers Completed</p>
+                          </div>
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xs ${progress === 100 ? "bg-green-50 text-green-600" : "bg-blue-50 text-blue-600"}`}>
+                             {progress}%
+                          </div>
+                       </div>
+                       <div className="w-full h-3 bg-gray-50 rounded-full overflow-hidden mb-6">
+                          <div className={`h-full transition-all duration-1000 ${progress === 100 ? "bg-green-500" : "bg-blue-600"}`} style={{ width: `${progress}%` }} />
+                       </div>
+                    </div>
+                  );
+                })}
+             </div>
+          </section>
+
+          {/* ACTIVE PAPERS REGISTRY */}
+          <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+             <div className="flex items-center justify-between px-4">
+                <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
+                  <Layers size={18} />
+                  Individual Paper Registry
                 </h3>
              </div>
 
@@ -184,29 +239,31 @@ export default function UserDashboard() {
              </div>
           </section>
 
-          {/* MARKETPLACE SECTION */}
+          {/* MARKETPLACE: SERIES BROWSER */}
           <section className="space-y-6 pt-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
              <div className="flex items-center justify-between px-4">
                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
-                  <Layers size={18} />
-                  Available Recommendations
+                  <Zap size={18} />
+                  Institutional Global Catalog
                 </h3>
              </div>
 
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {availableTests.map((test) => (
-                  <div key={test._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col items-center text-center group hover:-translate-y-2 transition-all duration-300">
-                     <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center text-gray-300 mb-6 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-blue-100 transition-all duration-500">
-                        <Lock size={32} />
+                {filteredSeries.map((s) => (
+                  <div key={s._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col group hover:-translate-y-2 transition-all duration-300">
+                     <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-50 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <Layers size={24} />
                      </div>
-                     <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest leading-relaxed mb-2 px-4 truncate max-w-full">{test.title}</h4>
-                     <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-6 italic">{test.price === 0 ? "FREE SERIES" : `₹${test.price}`}</p>
+                     <h4 className="text-lg font-black text-gray-900 tracking-tight leading-none mb-2">{s.title}</h4>
+                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">{s.category}</p>
+                     
+                     <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 italic">{s.description || "A comprehensive series of academic papers for institutional evaluation."}</p>
                      
                      <button
-                        onClick={() => router.push(`/quiz/${test._id}`)}
-                        className="w-full py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest group-hover:bg-blue-600 transition shadow-xl"
+                        onClick={() => router.push(`/tests?seriesId=${s._id}`)}
+                        className="w-full py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition shadow-xl"
                      >
-                       Unlock Now
+                       Explore {s.isFinite ? `${s.maxPapers} Papers` : "Papers"}
                      </button>
                   </div>
                 ))}
@@ -215,6 +272,9 @@ export default function UserDashboard() {
 
         </div>
       </main>
+      
+      {/* FIGMA: Global Ranking Side Panel */}
+      <LeaderboardSidebar />
     </div>
   );
 }

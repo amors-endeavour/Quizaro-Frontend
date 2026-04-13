@@ -81,6 +81,30 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
     loadData();
   }, [id]);
 
+  // FIGMA ALIGNMENT: Proctoring & Anti-Cheating
+  useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => e.preventDefault();
+    const handleCopyPaste = (e: ClipboardEvent) => e.preventDefault();
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && ["c", "v", "x", "s", "p"].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+      if (e.key === "F12") e.preventDefault();
+    };
+
+    document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("copy", handleCopyPaste);
+    document.addEventListener("paste", handleCopyPaste);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("copy", handleCopyPaste);
+      document.removeEventListener("paste", handleCopyPaste);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   useEffect(() => {
     if (timeLeft <= 0 && !loading && questions.length > 0) {
       handleSubmit();
@@ -324,6 +348,16 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
               </div>
            </div>
         </section>
+      </div>
+
+      {/* FIGMA STYLE #2: Persistent Support HUD */}
+      <div className="fixed bottom-8 right-8 z-[100]">
+         <button className="flex items-center gap-3 px-6 py-3 bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/50 hover:bg-gray-50 transition-all group">
+            <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+               <Info size={16} />
+            </div>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-gray-900 transition-colors">Report Technical Issue</span>
+         </button>
       </div>
 
     </div>
