@@ -257,13 +257,33 @@ export default function UserDashboard() {
                      <h4 className="text-lg font-black text-gray-900 tracking-tight leading-none mb-2">{s.title}</h4>
                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">{s.category}</p>
                      
-                     <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 italic">{s.description || "A comprehensive series of academic papers for institutional evaluation."}</p>
+                     <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 italic">{s.description || "A comprehensive series of academic papers."}</p>
                      
                      <button
                         onClick={() => router.push(`/tests?seriesId=${s._id}`)}
                         className="w-full py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition shadow-xl"
                      >
                        Explore {s.isFinite ? `${s.maxPapers} Papers` : "Papers"}
+                     </button>
+                  </div>
+                ))}
+
+                {/* STANDALONE PAPERS IN CATALOG */}
+                {availableTests.filter(t => !t.seriesId).map((test) => (
+                  <div key={test._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col group hover:-translate-y-2 transition-all duration-300">
+                     <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-emerald-50 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <FileText size={24} />
+                     </div>
+                     <h4 className="text-lg font-black text-gray-900 tracking-tight leading-none mb-2">{test.title}</h4>
+                     <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-6 border border-emerald-100 px-3 py-1 rounded-full w-fit">Direct Session</p>
+                     
+                     <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 italic">{test.description || "Individual academic assessment paper."}</p>
+                     
+                     <button
+                        onClick={() => router.push(`/quiz/${test._id}`)}
+                        className="w-full py-4 bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition shadow-xl shadow-emerald-100"
+                     >
+                       Begin Session
                      </button>
                   </div>
                 ))}
