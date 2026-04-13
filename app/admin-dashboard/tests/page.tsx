@@ -187,23 +187,39 @@ export default function TestsPage() {
           const text = event.target?.result as string;
 
           if (isCSV) {
-            // Basic CSV Parser: "Title, Description, Duration\nQuestion,A,B,C,D,CorrectIndex,Explanation"
+            // Advanced CSV Parser: Handles quoted strings with commas efficiently
+            // Format: Title, Description, Duration
+            // Question, A, B, C, D, CorrectIndex(0-3), Explanation
             const lines = text.split("\n").filter(l => l.trim());
             const [testInfo, ...qLines] = lines;
-            const [title, description, duration] = testInfo.split(",").map(s => s.trim());
+            
+            // Regex to split by comma but ignore commas inside quotes
+            const splitCsv = (str: string) => {
+              const matches = str.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+              return matches ? matches.map(m => m.replace(/^"|"$/g, '').trim()) : str.split(",").map(s => s.trim());
+            };
+
+            const [title, description, duration] = splitCsv(testInfo);
 
             const questions = qLines.map(line => {
-              const [qText, a, b, c, d, correct, expl] = line.split(",").map(s => s.trim());
+              const parts = splitCsv(line);
+              // Expected 7 parts: Q, A, B, C, D, Index, Expl
+              const [qText, a, b, c, d, correct, expl] = parts;
               return {
                 questionText: qText,
-                options: [a, b, c, d],
-                correctAnswer: Number(correct),
-                explanation: expl
+                options: [
+                  { text: a || "Option A" },
+                  { text: b || "Option B" },
+                  { text: c || "Option C" },
+                  { text: d || "Option D" }
+                ],
+                correctOption: Number(correct) || 0,
+                explanation: expl || ""
               };
             });
 
             importData = {
-              test: { title, description, duration: Number(duration) || 30 },
+              test: { title: title || "Imported Paper", description: description || "No description provided", duration: Number(duration) || 30 },
               questions
             };
           } else {
