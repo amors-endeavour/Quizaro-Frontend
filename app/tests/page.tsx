@@ -61,6 +61,24 @@ export default function TestsPage() {
     checkAuth();
   }, []);
 
+  const handleLaunchPaper = async (testId: string) => {
+    if (!isAuthenticated) {
+      router.push("/user-login");
+      return;
+    }
+    try {
+      setLoading(true);
+      // Attempt auto-registration if it's an institutional/free catalog
+      await API.post(`/test/purchase/${testId}`).catch(() => {
+        // Ignore "already purchased" errors
+      });
+      router.push(`/quiz/${testId}`);
+    } catch {
+      alert("System Handshake Failed: Registry access restricted.");
+      setLoading(false);
+    }
+  }
+
   const filteredTests = tests.filter((test) =>
     test.title.toLowerCase().includes(search.toLowerCase()) ||
     test.description?.toLowerCase().includes(search.toLowerCase())
@@ -134,7 +152,7 @@ export default function TestsPage() {
                    </div>
                    
                    <button
-                    onClick={() => router.push(isAuthenticated ? `/quiz/${test._id}` : "/user-login")}
+                    onClick={() => handleLaunchPaper(test._id)}
                     className="px-10 py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl active:scale-95"
                    >
                     {isAuthenticated ? "Launch Paper" : "Authenticate to Begin"}

@@ -107,6 +107,17 @@ export default function UserDashboard() {
     return matchesSearch && matchesCategory;
   });
 
+  const handleJoinSession = async (testId: string) => {
+    try {
+      setLoading(true);
+      await API.post(`/test/purchase/${testId}`);
+      router.push(`/quiz/${testId}`);
+    } catch (err) {
+      alert("Registration Failed: Please ensure your account has access credentials.");
+      setLoading(false);
+    }
+  };
+
   const categories = ["All", ...Array.from(new Set(series.map(s => s.category)))];
 
   if (loading) return <div className="min-h-screen bg-[#f3f4f9] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Initializing Classroom...</div>;
@@ -280,7 +291,7 @@ export default function UserDashboard() {
                      <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 italic">{test.description || "Individual academic assessment paper."}</p>
                      
                      <button
-                        onClick={() => router.push(`/quiz/${test._id}`)}
+                        onClick={() => handleJoinSession(test._id)}
                         className="w-full py-4 bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition shadow-xl shadow-emerald-100"
                      >
                        Begin Session
