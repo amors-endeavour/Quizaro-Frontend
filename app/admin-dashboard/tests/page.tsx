@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
 import AdminFolderCard from "@/components/AdminFolderCard";
 import AdminTestCard from "@/components/AdminTestCard";
+import AnalyticsModal from "@/components/AnalyticsModal";
 import API from "@/app/lib/api";
 import { X } from "lucide-react";
 
@@ -60,6 +61,8 @@ export default function TestsPage() {
     maxPapers: 5
   });
 
+  const [selectedAnalyticsTest, setSelectedAnalyticsTest] = useState<{ id: string; title: string } | null>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -106,8 +109,8 @@ export default function TestsPage() {
         await API.post("/test/create", formData);
       }
       window.location.reload();
-    } catch {
-      alert("Failed to save test");
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Failed to save test");
     }
   };
 
@@ -382,6 +385,7 @@ export default function TestsPage() {
                       onQuestions={() => router.push(`/admin-dashboard/${test._id}`)}
                       onDelete={() => handleDelete(test._id)}
                       onExport={() => handleExport(test._id)}
+                      onAnalytics={() => setSelectedAnalyticsTest({ id: test._id, title: test.title })}
                     />
                  ))
                )}
@@ -389,6 +393,15 @@ export default function TestsPage() {
           )}
         </div>
       </main>
+
+      {/* ANALYTICS MODAL */}
+      {selectedAnalyticsTest && (
+        <AnalyticsModal 
+          testId={selectedAnalyticsTest.id}
+          testTitle={selectedAnalyticsTest.title}
+          onClose={() => setSelectedAnalyticsTest(null)}
+        />
+      )}
 
       {/* CREATE / EDIT MODAL (TEST PAPER) */}
       {showModal && (
