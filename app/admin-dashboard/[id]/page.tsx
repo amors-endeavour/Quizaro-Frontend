@@ -278,7 +278,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                          <input 
                            value={testSettings.title}
                            onChange={(e) => setTestSettings({...testSettings, title: e.target.value})}
-                           className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-10 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-2xl tracking-tighter"
+                           className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-10 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-2xl tracking-tighter text-gray-900"
                          />
                        </div>
 
@@ -347,7 +347,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                          <textarea 
                            value={testSettings.instructions}
                            onChange={(e) => setTestSettings({...testSettings, instructions: e.target.value})}
-                           className="w-full bg-gray-50 border border-gray-100 rounded-[2.5rem] px-10 py-8 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold min-h-[180px] resize-none text-gray-600 leading-relaxed"
+                           className="w-full bg-gray-50 border border-gray-100 rounded-[2.5rem] px-10 py-8 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold min-h-[180px] resize-none text-gray-900 leading-relaxed"
                            placeholder="Specify rules for this assessment..."
                          />
                        </div>
@@ -395,7 +395,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                        <textarea 
                          value={currentQuestion.text}
                          onChange={(e) => setCurrentQuestion({...currentQuestion, text: e.target.value})}
-                         className="w-full h-40 bg-gray-50 border border-gray-100 rounded-3xl p-8 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-lg leading-relaxed shadow-inner"
+                         className="w-full h-40 bg-gray-50 border border-gray-100 rounded-3xl p-8 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-lg leading-relaxed shadow-inner text-gray-900"
                          placeholder="Formulate your prompt..."
                        />
                     </div>
@@ -407,7 +407,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                             type="number"
                             value={currentQuestion.points}
                             onChange={(e) => setCurrentQuestion({...currentQuestion, points: Number(e.target.value)})}
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-xl"
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-xl text-gray-900"
                           />
                        </div>
                        <div className="space-y-4">
@@ -415,7 +415,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                           <input 
                             value={currentQuestion.section}
                             onChange={(e) => setCurrentQuestion({...currentQuestion, section: e.target.value})}
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-gray-900"
                             placeholder="e.g. Quant"
                           />
                        </div>
@@ -440,7 +440,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                                  newOpts[i].text = e.target.value;
                                  setCurrentQuestion({...currentQuestion, options: newOpts});
                                }}
-                               className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-8 py-4 outline-none focus:border-blue-200"
+                               className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-8 py-4 outline-none focus:border-blue-200 text-gray-900 font-bold"
                              />
                              <button 
                                onClick={() => {
