@@ -1,6 +1,6 @@
 "use client";
 
-import { Folder, MoreVertical, LayoutGrid } from "lucide-react";
+import { Folder, MoreVertical, LayoutGrid, Trash2 } from "lucide-react";
 
 interface AdminFolderCardProps {
   name: string;
@@ -28,6 +28,19 @@ export default function AdminFolderCard({ name, count, onClick, onEdit, onDelete
         <span className="mt-2 text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full">
           {count} Items
         </span>
+      )}
+
+      {onDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+          className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all opacity-0 group-hover:opacity-100"
+          title="Delete Series"
+        >
+          <Trash2 size={18} />
+        </button>
       )}
     </div>
   );

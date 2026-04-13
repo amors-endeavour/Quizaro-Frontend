@@ -124,6 +124,17 @@ export default function TestsPage() {
     }
   };
 
+  const handleDeleteSeries = async (id: string, name: string) => {
+    if (!confirm(`CRITICAL ACTION: Are you sure you want to delete the series "${name}"? This will permanently remove ALL papers and questions within this series. This cannot be undone.`)) return;
+    
+    try {
+      await API.delete(`/admin/series/${id}`);
+      window.location.reload();
+    } catch {
+      alert("Failed to delete series. Please ensure all connections are stable.");
+    }
+  };
+
   const handleBulkDelete = async () => {
     if (!confirm(`Are you sure you want to delete ${selectedTests.length} tests?`)) return;
     try {
@@ -327,6 +338,7 @@ export default function TestsPage() {
                       setCurrentSeriesId(s._id);
                       window.scrollTo(0, 0);
                     }}
+                    onDelete={() => handleDeleteSeries(s._id, s.title)}
                   />
                 ))
               )}
