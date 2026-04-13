@@ -19,6 +19,7 @@ interface Test {
   category?: string;
   seriesId?: string;
   paperNumber?: number;
+  difficulty?: string;
   status?: "Draft" | "Published";
   createdAt: string;
 }
