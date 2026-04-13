@@ -146,7 +146,5 @@ export default function TestsPage() {
         )}
       </div>
     </div>
-      </div>
-    </div>
   );
 }

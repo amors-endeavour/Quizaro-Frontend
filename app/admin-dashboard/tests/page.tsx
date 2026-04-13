@@ -213,6 +213,30 @@ export default function TestsPage() {
   if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Accessing Library Grid...</div>;
 
   return (
+    <div className="flex flex-col min-h-screen relative bg-[#f8f9fc]">
+      <main className="flex-1 overflow-y-auto">
+        <AdminHeader 
+          title={currentSeriesId ? series.find(s => s._id === currentSeriesId)?.title || "Papers" : "Institutional Library"}
+          path={[
+            { label: "Series Catalog", href: currentSeriesId ? "#" : undefined },
+            ...(currentSeriesId ? [{ label: series.find(s => s._id === currentSeriesId)?.title || "Papers" }] : [])
+          ]}
+          onNew={() => {
+            setEditingTest(null);
+            setFormData({
+              title: "",
+              description: "",
+              duration: 30,
+              price: 0,
+              seriesId: currentSeriesId || "",
+              paperNumber: tests.filter(t => t.seriesId === currentSeriesId).length + 1,
+              difficulty: "Medium"
+            });
+            setShowModal(true);
+          }}
+          onSearchChange={setSearchQuery}
+        />
+
         <div className="p-10 lg:p-14 max-w-[1700px] mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-700">
           
           {/* BATCH ACTION BAR (FLOATING) */}
