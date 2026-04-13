@@ -302,14 +302,34 @@ export default function TestsPage() {
                    />
                 </div>
 
-                {!currentSeriesId && (
-                   <button 
-                     onClick={() => setShowSeriesModal(true)}
-                     className="px-6 py-2.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
-                   >
-                     + New Series
-                   </button>
-                )}
+                 {!currentSeriesId && (
+                   <>
+                    <button 
+                      onClick={() => {
+                        setEditingTest(null);
+                        setFormData({
+                          title: "",
+                          description: "",
+                          duration: 30,
+                          price: 0,
+                          seriesId: "",
+                          paperNumber: 1,
+                          difficulty: "Medium"
+                        });
+                        setShowModal(true);
+                      }}
+                      className="px-6 py-2.5 bg-zinc-900 text-white hover:bg-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                    >
+                      + New Paper
+                    </button>
+                    <button 
+                      onClick={() => setShowSeriesModal(true)}
+                      className="px-6 py-2.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                    >
+                      + New Series
+                    </button>
+                   </>
+                 )}
                 {currentSeriesId && (
                   <button 
                     onClick={() => setCurrentSeriesId(null)}
@@ -324,23 +344,54 @@ export default function TestsPage() {
           {!currentSeriesId ? (
             /* SERIES GRID VIEW */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
-              {series.length === 0 ? (
+              {series.length === 0 && tests.filter(t => !t.seriesId).length === 0 ? (
                 <div className="col-span-full py-32 text-center bg-white rounded-[3rem] border border-dashed border-gray-200">
-                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">No Series Containers Detected</p>
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">No Series or Papers Detected</p>
                 </div>
               ) : (
-                series.map((s) => (
-                  <AdminFolderCard 
-                    key={s._id} 
-                    name={s.title} 
-                    count={tests.filter(t => t.seriesId === s._id).length}
-                    onClick={() => {
-                      setCurrentSeriesId(s._id);
-                      window.scrollTo(0, 0);
-                    }}
-                    onDelete={() => handleDeleteSeries(s._id, s.title)}
-                  />
-                ))
+                <>
+                  {series.map((s) => (
+                    <AdminFolderCard 
+                      key={s._id} 
+                      name={s.title} 
+                      count={tests.filter(t => t.seriesId === s._id).length}
+                      onClick={() => {
+                        setCurrentSeriesId(s._id);
+                        window.scrollTo(0, 0);
+                      }}
+                      onDelete={() => handleDeleteSeries(s._id, s.title)}
+                    />
+                  ))}
+                  
+                  {/* Standalone Papers displayed as cards in the main view */}
+                  {tests.filter(t => !t.seriesId).map((test) => (
+                    <div key={test._id} className="col-span-full xl:col-span-2">
+                       <AdminTestCard 
+                        title={test.title}
+                        description={test.description}
+                        date={new Date(test.createdAt).toLocaleDateString()}
+                        status={test.totalQuestions > 0 ? "Published" : "Draft"}
+                        onEdit={() => {
+                          setEditingTest(test);
+                          setFormData({
+                            title: test.title,
+                            description: test.description || "",
+                            duration: test.duration || 30,
+                            price: test.price || 0,
+                            seriesId: "",
+                            paperNumber: test.paperNumber || 1,
+                            difficulty: "Medium"
+                          });
+                          setShowModal(true);
+                        }}
+                        onQuestions={() => router.push(`/admin-dashboard/${test._id}`)}
+                        onDelete={() => handleDelete(test._id)}
+                        onExport={() => handleExport(test._id)}
+                        onAnalytics={() => setSelectedAnalyticsTest({ id: test._id, title: test.title })}
+                       />
+                    </div>
+                  ))}
+                </>
               )}
             </div>
           ) : (
