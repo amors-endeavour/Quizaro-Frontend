@@ -421,7 +421,7 @@ export default function TestsPage() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Paper Identity</label>
                   <input 
-                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
                     required
@@ -432,7 +432,7 @@ export default function TestsPage() {
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Sequence Index</label>
                   <input 
                     type="number"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
                     value={formData.paperNumber}
                     onChange={(e) => setFormData({...formData, paperNumber: Number(e.target.value)})}
                     required
@@ -445,7 +445,7 @@ export default function TestsPage() {
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Duration (Min)</label>
                   <input 
                     type="number"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
                     value={formData.duration}
                     onChange={(e) => setFormData({...formData, duration: Number(e.target.value)})}
                   />
@@ -454,7 +454,7 @@ export default function TestsPage() {
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Enrollment Fee (₹)</label>
                   <input 
                     type="number"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
                     value={formData.price}
                     onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
                   />
@@ -496,7 +496,7 @@ export default function TestsPage() {
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Series Title</label>
                 <input 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
                   value={seriesFormData.title}
                   onChange={(e) => setSeriesFormData({...seriesFormData, title: e.target.value})}
                   required
@@ -507,7 +507,7 @@ export default function TestsPage() {
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Series Description</label>
                 <textarea 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold min-h-[100px]"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold min-h-[100px] text-gray-900"
                   value={seriesFormData.description}
                   onChange={(e) => setSeriesFormData({...seriesFormData, description: e.target.value})}
                   placeholder="Describe the learning path..."

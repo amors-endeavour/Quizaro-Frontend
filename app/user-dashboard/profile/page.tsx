@@ -1,0 +1,138 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import UserSidebar from "@/components/UserSidebar";
+import UserHeader from "@/components/UserHeader";
+import API from "@/app/lib/api";
+import { 
+  User, 
+  Mail, 
+  Shield, 
+  Calendar,
+  Camera,
+  LogOut,
+  ChevronRight
+} from "lucide-react";
+
+export default function ProfilePage() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data } = await API.get("/user/profile");
+        setUser(data.user || data);
+      } catch (err) {
+        console.error("Profile fetch failed", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/user-login";
+  };
+
+  if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Reticulating Account Details...</div>;
+
+  return (
+    <div className="flex h-screen bg-[#f8f9fc] text-gray-900 font-sans overflow-hidden">
+      <UserSidebar userName={user?.name || "Student"} />
+
+      <main className="flex-1 overflow-y-auto">
+        <UserHeader 
+          title="Student Profile" 
+          breadcrumbs={["Student", "Account Settings"]} 
+        />
+
+        <div className="p-8 lg:p-12 max-w-[1000px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+           
+           {/* AVATAR HERO */}
+           <div className="bg-white rounded-[3rem] p-12 border border-gray-100 shadow-2xl shadow-gray-100/50 flex flex-col items-center text-center relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-5" />
+              
+              <div className="relative mt-8">
+                 <div className="w-32 h-32 bg-blue-600 rounded-[2.5rem] flex items-center justify-center text-white text-5xl font-black shadow-2xl shadow-blue-100 rotate-6 group-hover:rotate-0 transition-transform duration-500">
+                    {user?.name?.[0] || "S"}
+                 </div>
+                 <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-600 shadow-xl transition-all">
+                    <Camera size={18} />
+                 </button>
+              </div>
+
+              <h2 className="mt-8 text-3xl font-black text-gray-900 uppercase tracking-tighter">{user?.name}</h2>
+              <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] mt-2 italic shadow-sm bg-blue-50 px-4 py-1.5 rounded-full inline-block">
+                 Institutional Candidate
+              </p>
+           </div>
+
+           {/* ACCOUNT GRID */}
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 space-y-8">
+                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-3">
+                    <User size={16} /> Basic Identity
+                 </h3>
+                 <div className="space-y-6">
+                    <div className="flex items-center gap-6">
+                       <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400"><User size={20} /></div>
+                       <div>
+                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Full Name</p>
+                          <p className="text-sm font-black text-gray-900">{user?.name}</p>
+                       </div>
+                    </div>
+                    <div className="flex items-center gap-6">
+                       <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400"><Mail size={20} /></div>
+                       <div>
+                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Email Address</p>
+                          <p className="text-sm font-black text-gray-900">{user?.email}</p>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 space-y-8">
+                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-3">
+                    <Shield size={16} /> Security & System
+                 </h3>
+                 <div className="space-y-6">
+                    <div className="flex items-center gap-6">
+                       <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400"><Shield size={20} /></div>
+                       <div>
+                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Account Status</p>
+                          <p className="text-sm font-black text-green-600 flex items-center gap-2">Verified Academic <ChevronRight size={14} /></p>
+                       </div>
+                    </div>
+                    <div className="flex items-center gap-6">
+                       <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400"><Calendar size={20} /></div>
+                       <div>
+                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Registration Date</p>
+                          <p className="text-sm font-black text-gray-900">May 14, 2024</p>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+
+           {/* ACTIONS */}
+           <div className="flex flex-col md:flex-row gap-6">
+              <button 
+                className="flex-1 py-6 bg-gray-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3"
+              >
+                Request Data Correction
+              </button>
+              <button 
+                onClick={handleLogout}
+                className="flex-1 py-6 border-2 border-red-50 text-red-500 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-red-50 transition-all flex items-center justify-center gap-3"
+              >
+                <LogOut size={18} /> Close Session
+              </button>
+           </div>
+        </div>
+      </main>
+    </div>
+  );
+}

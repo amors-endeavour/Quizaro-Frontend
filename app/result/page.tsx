@@ -74,7 +74,7 @@ function ResultContent() {
       try {
         if (attemptId) {
           // FIGMA: Get detailed result including answers and rank
-          const { data } = await API.get(`/test/result/${attemptId}`);
+          const { data } = await API.get(`/result/${attemptId}`);
           setResult(data);
         } else {
           // Fallback to latest attempt
