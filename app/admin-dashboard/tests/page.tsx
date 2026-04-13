@@ -370,7 +370,7 @@ export default function TestsPage() {
                         title={test.title}
                         description={test.description}
                         date={new Date(test.createdAt).toLocaleDateString()}
-                        status={(test.totalQuestions || 0) > 0 ? "Published" : "Draft"}
+                        status={(test.status || (test.totalQuestions || 0) > 0 ? "Published" : "Draft") as any}
                         onEdit={() => {
                           setEditingTest(test);
                           setFormData({
@@ -380,7 +380,7 @@ export default function TestsPage() {
                             price: test.price || 0,
                             seriesId: "",
                             paperNumber: test.paperNumber || 1,
-                            difficulty: "Medium"
+                            difficulty: test.difficulty || "Medium"
                           });
                           setShowModal(true);
                         }}
@@ -441,7 +441,7 @@ export default function TestsPage() {
                           price: test.price || 0,
                           seriesId: test.seriesId || "",
                           paperNumber: test.paperNumber || 1,
-                          difficulty: "Medium"
+                          difficulty: test.difficulty || "Medium"
                         });
                         setShowModal(true);
                       }}
