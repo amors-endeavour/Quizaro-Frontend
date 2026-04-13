@@ -95,8 +95,8 @@ export default function TestsPage() {
     try {
       await API.post("/admin/series/create", seriesFormData);
       window.location.reload();
-    } catch {
-      alert("Failed to create series");
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Failed to create series");
     }
   };
 
