@@ -106,7 +106,10 @@ function AdminLoginForm() {
             className="w-full bg-white text-black py-4 rounded-2xl font-black text-xs uppercase tracking-[0.3em] transition-all hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 mt-4 shadow-xl"
           >
             {loading ? (
-              <div className="w-5 h-5 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin mx-auto" />
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-5 h-5 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin mx-auto" />
+                <span className="text-[8px] font-black animate-pulse opacity-50">Connecting to Private Server...</span>
+              </div>
             ) : (
               "Initialize Access"
             )}

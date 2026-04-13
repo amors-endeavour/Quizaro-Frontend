@@ -106,11 +106,14 @@ function UserLoginForm() {
             className="w-full relative group overflow-hidden bg-gradient-to-r from-cyan-600 to-blue-600 text-white py-4 rounded-2xl font-black text-lg transition-all active:scale-95 disabled:opacity-50 mt-4 shadow-xl shadow-cyan-900/20"
           >
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-            <span className="relative flex items-center justify-center gap-2">
+            <span className="relative flex flex-col items-center gap-1">
               {loading ? (
-                <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                <>
+                  <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span className="text-[10px] font-black animate-pulse opacity-60">Waking up secure server...</span>
+                </>
               ) : (
-                <>Enter Classroom <ArrowRight size={20} /></>
+                <div className="flex items-center gap-2">Enter Classroom <ArrowRight size={20} /></div>
               )}
             </span>
           </button>
