@@ -370,7 +370,7 @@ export default function TestsPage() {
                         title={test.title}
                         description={test.description}
                         date={new Date(test.createdAt).toLocaleDateString()}
-                        status={test.totalQuestions > 0 ? "Published" : "Draft"}
+                        status={(test.totalQuestions || 0) > 0 ? "Published" : "Draft"}
                         onEdit={() => {
                           setEditingTest(test);
                           setFormData({
