@@ -47,28 +47,81 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
   const [submitting, setSubmitting] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
+  const [questionTimeLeft, setQuestionTimeLeft] = useState<number | null>(null);
+
   const handleQuestionChange = (nextIndex: number) => {
     setIsExiting(true);
     setTimeout(() => {
       setCurrentQuestion(nextIndex);
       setIsExiting(false);
+      
+      // RESET QUESTION TIMER 🔥
+      if (test?.questionTimer && test.questionTimer > 0) {
+        setQuestionTimeLeft(test.questionTimer);
+      }
     }, 200);
   };
 
   useEffect(() => {
+    if (test?.questionTimer && questionTimeLeft === null) {
+      setQuestionTimeLeft(test.questionTimer);
+    }
+  }, [test, questionTimeLeft]);
+
+  useEffect(() => {
+    if (questionTimeLeft === null || questionTimeLeft <= 0 || loading) return;
+
+    const qTimer = setInterval(() => {
+      setQuestionTimeLeft((prev) => {
+        if (prev && prev > 0) return prev - 1;
+        
+        // AUTO ADVANCE ON TIMEOUT 🔥
+        if (prev === 1) {
+          if (currentQuestion < questions.length - 1) {
+            handleQuestionChange(currentQuestion + 1);
+          } else {
+            handleSubmit();
+          }
+        }
+        return 0;
+      });
+    }, 1000);
+
+    return () => clearInterval(qTimer);
+  }, [questionTimeLeft, loading, currentQuestion, questions.length]);
+
+  useEffect(() => {
     const loadData = async () => {
       try {
-        const [testRes, questionsRes] = await Promise.all([
+        const [testRes, questionsRes, statusRes] = await Promise.all([
           API.get(`/test/${id}`),
           API.get(`/questions/${id}`),
+          API.get(`/user/test/status/${id}`)
         ]);
 
         const testData = testRes.data;
         const questionsData = questionsRes.data;
+        const statusData = statusRes.data;
 
         setTest(testData);
         setQuestions(questionsData);
-        setTimeLeft((testData.duration || 30) * 60);
+
+        // PERSISTENCE LOGIC 🔥
+        if (statusData.purchased) {
+          if (statusData.timeRemaining !== null) {
+            setTimeLeft(statusData.timeRemaining);
+          } else {
+            setTimeLeft((testData.duration || 30) * 60);
+          }
+
+          if (statusData.draftAnswers?.length > 0) {
+            const restoredAnswers: Record<string, number> = {};
+            statusData.draftAnswers.forEach((ans: any) => {
+              restoredAnswers[ans.questionId] = ans.selectedOption;
+            });
+            setAnswers(restoredAnswers);
+          }
+        }
       } catch (err: any) {
         console.error("Quiz load failed:", err);
         const msg = err?.response?.data?.message || err.message || "Failed to load clinical quiz data";
@@ -80,6 +133,30 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
 
     loadData();
   }, [id]);
+
+  // PERIODIC PROGRESS SYNC 🔥
+  useEffect(() => {
+    if (loading || submitting || timeLeft <= 0) return;
+
+    const syncInterval = setInterval(async () => {
+      try {
+        const answersArray = questions.map((q) => ({
+          questionId: q._id,
+          selectedOption: answers[q._id] ?? -1,
+        }));
+
+        await API.post(`/user/test/sync/${id}`, {
+          testId: id,
+          timeRemaining: timeLeft,
+          draftAnswers: answersArray
+        });
+      } catch (err) {
+        console.error("Progress sync failed:", err);
+      }
+    }, 10000); // Every 10 seconds
+
+    return () => clearInterval(syncInterval);
+  }, [id, timeLeft, answers, questions, loading, submitting]);
 
   // FIGMA ALIGNMENT: Proctoring & Anti-Cheating
   useEffect(() => {
@@ -112,7 +189,10 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
     }
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft((prev) => {
+        if (prev <= 0) return 0;
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
@@ -136,10 +216,18 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
     setSubmitting(true);
 
     try {
-      const answersArray = questions.map((q) => ({
-        questionId: q._id,
-        selectedOption: answers[q._id] ?? -1,
-      }));
+      const answersArray = questions.map((q) => {
+        const localIndex = answers[q._id];
+        // If localIndex exists, find originalIndex from the options array
+        const selectedOption = localIndex !== undefined 
+          ? (q.options[localIndex] as any)?.originalIndex ?? localIndex 
+          : -1;
+
+        return {
+          questionId: q._id,
+          selectedOption: selectedOption,
+        };
+      });
 
       const { data } = await API.post(`/test/submit/${id}`, {
         answers: answersArray,
@@ -273,6 +361,12 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Multiple Choice Question</span>
                     </div>
                     <div className="flex items-center gap-3">
+                       {questionTimeLeft !== null && test?.questionTimer && (
+                          <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-xl border border-amber-100 mr-4">
+                             <Zap size={14} className="text-amber-600 animate-pulse" />
+                             <span className="text-[10px] font-black text-amber-600 uppercase tabular-nums">{questionTimeLeft}s Left</span>
+                          </div>
+                       )}
                        <CheckCircle2 size={18} className={answers[question?._id] !== undefined ? "text-green-500" : "text-gray-200"} />
                     </div>
                  </div>

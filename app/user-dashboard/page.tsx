@@ -78,18 +78,53 @@ export default function UserDashboard() {
     checkAuth();
   }, [router]);
 
+  const [recommendations, setRecommendations] = useState<Series[]>([]);
+
   useEffect(() => {
     if (!isAuthChecked) return;
     const loadData = async () => {
       try {
-        const [availableRes, purchasedRes, seriesRes] = await Promise.all([
+        const [availableRes, purchasedRes, seriesRes, attemptsRes] = await Promise.all([
           API.get("/user/tests/available"),
           API.get("/user/tests/purchased"),
-          API.get("/series")
+          API.get("/series"),
+          API.get("/user/attempts")
         ]);
+        
         setAvailableTests(availableRes.data);
         setPurchasedTests(purchasedRes.data);
         setSeries(seriesRes.data);
+
+        // RECOMMENDATION ENGINE 🔥
+        const attempts = attemptsRes.data;
+        if (attempts.length > 0) {
+           const categoryStats: Record<string, { total: number, count: number }> = {};
+           attempts.forEach((att: any) => {
+              const cat = att.testId?.category || "General";
+              if (!categoryStats[cat]) categoryStats[cat] = { total: 0, count: 0 };
+              categoryStats[cat].total += att.percentage || 0;
+              categoryStats[cat].count += 1;
+           });
+
+           // Find lowest performing category
+           let weakestCat = "General";
+           let lowestAvg = 100;
+           Object.keys(categoryStats).forEach(cat => {
+              const avg = categoryStats[cat].total / categoryStats[cat].count;
+              if (avg < lowestAvg) {
+                 lowestAvg = avg;
+                 weakestCat = cat;
+              }
+           });
+
+           // Get unpurchased series in this category
+           const recs = seriesRes.data.filter((s: any) => 
+             s.category === weakestCat && 
+             !purchasedRes.data.some((pt: any) => pt.testId.seriesId === s._id)
+           ).slice(0, 2);
+           
+           setRecommendations(recs);
+        }
       } catch (err) {
         console.error("Data load failed", err);
       } finally {
@@ -194,6 +229,42 @@ export default function UserDashboard() {
                 })}
              </div>
           </section>
+          
+          {/* PERSONALIZED IMPROVEMENT HUB (NEW) 🔥 */}
+          {recommendations.length > 0 && (
+            <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+               <div className="flex items-center justify-between px-4">
+                  <h3 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em] flex items-center gap-3">
+                    <TrendingUp size={18} />
+                    Personalization: Focus Required
+                  </h3>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
+                  {recommendations.map(s => (
+                    <div key={s._id} className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[2.5rem] shadow-2xl shadow-blue-200 group relative overflow-hidden">
+                       <div className="relative z-10">
+                          <span className="px-3 py-1 bg-white/20 text-white rounded-lg text-[9px] font-black uppercase tracking-widest mb-4 inline-block backdrop-blur-md">Recommended for Growth</span>
+                          <h4 className="text-xl font-black text-white tracking-tight mb-2">{s.title}</h4>
+                          <p className="text-[11px] text-blue-100 font-bold mb-8 italic line-clamp-2">Based on your performance in {s.category}, we suggest mastering this series next.</p>
+                          
+                          <button
+                            onClick={() => router.push(`/tests?seriesId=${s._id}`)}
+                            className="bg-white text-blue-600 px-8 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl"
+                          >
+                             Enforce Subject Mastery
+                          </button>
+                       </div>
+                       
+                       {/* Decorative BG pattern */}
+                       <div className="absolute -right-10 -bottom-10 opacity-10 group-hover:rotate-12 transition-transform duration-700">
+                          <Award size={200} />
+                       </div>
+                    </div>
+                  ))}
+               </div>
+            </section>
+          )}
 
           {/* ACTIVE PAPERS REGISTRY */}
           <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">

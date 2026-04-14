@@ -42,6 +42,7 @@ interface TestSettings {
   shuffleOptions: boolean;
   instructions: string;
   category: string;
+  questionTimer: number;
 }
 
 export default function QuestionStudio({ params }: { params: Promise<{ id: string }> }) {
@@ -58,7 +59,8 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
     isStrict: false,
     shuffleOptions: true,
     instructions: "",
-    category: "General"
+    category: "General",
+    questionTimer: 0
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -97,7 +99,8 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
         isStrict: testRes.data.isStrict || false,
         shuffleOptions: testRes.data.shuffleOptions ?? true,
         instructions: testRes.data.description || "",
-        category: testRes.data.category || "General"
+        category: testRes.data.category || "General",
+        questionTimer: testRes.data.questionTimer || 0
       });
     } catch (err) {
       console.error("Studio data fetch failed:", err);
@@ -339,6 +342,21 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                              >
                                 <div className={`absolute top-1.5 w-4 h-4 bg-white rounded-full transition-all ${testSettings.shuffleOptions ? "left-8" : "left-2"}`} />
                              </button>
+                          </div>
+                       </div>
+
+                       <div className="flex flex-col gap-6">
+                          <div className="flex items-center justify-between p-8 bg-gray-50 rounded-[2rem] border border-gray-100 italic">
+                             <div>
+                                <h4 className="text-xs font-black text-gray-900 uppercase tracking-widest">Question Pacing</h4>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Set limit per question (0 to disable)</p>
+                             </div>
+                             <input 
+                               type="number"
+                               value={testSettings.questionTimer}
+                               onChange={(e) => setTestSettings({...testSettings, questionTimer: Number(e.target.value)})}
+                               className="w-24 bg-white border border-gray-100 rounded-xl px-4 py-2 font-black text-center text-blue-600 outline-none focus:border-blue-400 transition-all"
+                             />
                           </div>
                        </div>
 
