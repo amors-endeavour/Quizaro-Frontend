@@ -32,6 +32,7 @@ interface Test {
   _id: string;
   title: string;
   duration: number;
+  questionTimer?: number;
 }
 
 export default function QuizPage({ params }: { params: Promise<{ id: string }> }) {
