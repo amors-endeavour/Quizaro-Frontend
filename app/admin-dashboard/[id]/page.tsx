@@ -292,7 +292,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                              type="number"
                              value={testSettings.duration}
                              onChange={(e) => setTestSettings({...testSettings, duration: Number(e.target.value)})}
-                             className="w-full bg-gray-50 border border-gray-100 rounded-[1.8rem] px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                             className="w-full bg-gray-50 border border-gray-100 rounded-[1.8rem] px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-gray-900"
                            />
                          </div>
 
@@ -302,7 +302,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                              type="number"
                              value={testSettings.passingCriteria}
                              onChange={(e) => setTestSettings({...testSettings, passingCriteria: Number(e.target.value)})}
-                             className="w-full bg-gray-50 border border-gray-100 rounded-[1.8rem] px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                             className="w-full bg-gray-50 border border-gray-100 rounded-[1.8rem] px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-gray-900"
                            />
                          </div>
 
@@ -312,7 +312,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                              type="number"
                              value={testSettings.allowedAttempts}
                              onChange={(e) => setTestSettings({...testSettings, allowedAttempts: Number(e.target.value)})}
-                             className="w-full bg-gray-50 border border-gray-100 rounded-[1.8rem] px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black"
+                             className="w-full bg-gray-50 border border-gray-100 rounded-[1.8rem] px-8 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-gray-900"
                            />
                          </div>
                        </div>
