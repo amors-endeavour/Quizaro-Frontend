@@ -11,7 +11,8 @@ import {
   Play,
   FileText,
   Info,
-  LogOut
+  LogOut,
+  Zap
 } from "lucide-react";
 import API from "@/app/lib/api";
 
