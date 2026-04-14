@@ -503,9 +503,8 @@ export default function TestsPage() {
                   className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold appearance-none"
                   value={formData.seriesId}
                   onChange={(e) => setFormData({...formData, seriesId: e.target.value})}
-                  required
                 >
-                  <option value="">Select Target Series</option>
+                  <option value="">No Series (Standalone Paper)</option>
                   {series.map(s => <option key={s._id} value={s._id}>{s.title}</option>)}
                 </select>
               </div>
@@ -604,6 +603,17 @@ export default function TestsPage() {
                   value={seriesFormData.description}
                   onChange={(e) => setSeriesFormData({...seriesFormData, description: e.target.value})}
                   placeholder="Describe the learning path..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Academic Category</label>
+                <input 
+                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
+                  value={seriesFormData.category}
+                  onChange={(e) => setSeriesFormData({...seriesFormData, category: e.target.value})}
+                  required
+                  placeholder="e.g. Mathematics, English, etc."
                 />
               </div>
 

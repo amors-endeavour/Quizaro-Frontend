@@ -107,6 +107,25 @@ export default function TestsPage() {
               <p className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">
                 {seriesId ? "Institutional Series Sequence" : "Complete Platform Assessment Catalog"}
               </p>
+              {seriesId && isAuthenticated && (
+                <button 
+                  onClick={async () => {
+                    try {
+                      setLoading(true);
+                      const { data } = await API.post(`/user/series/purchase/${seriesId}`);
+                      alert(data.message);
+                      window.location.reload();
+                    } catch (err: any) {
+                      alert(err?.response?.data?.message || "Failed to join series");
+                      setLoading(false);
+                    }
+                  }}
+                  className="mt-6 px-10 py-4 bg-blue-600 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition shadow-2xl shadow-blue-100 flex items-center gap-3 w-fit"
+                >
+                  <div className="w-5 h-5 bg-white/20 rounded-lg flex items-center justify-center">✓</div>
+                  Enroll in Full Series Sequence
+                </button>
+              )}
            </div>
            
            <div className="w-full md:w-96 relative">
