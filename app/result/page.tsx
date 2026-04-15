@@ -126,7 +126,7 @@ function ResultContent() {
                     </div>
                  </div>
 
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                  <div className="grid grid-cols-2 lg:grid-cols-5 gap-8">
                      <div className="space-y-1">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Secure Score</span>
                         <p className="text-3xl font-black text-gray-900 leading-none">{result?.score}<span className="text-sm text-gray-300 ml-1">/ {result?.totalMarks}</span></p>

@@ -73,7 +73,7 @@ export default function LeaderboardSidebar() {
                 </div>
                 <div>
                   <p className={`text-[11px] font-black tracking-tight ${user.rank === 1 ? "text-white" : "text-gray-900"}`}>{user.name}</p>
-                  <p className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${user.rank === 1 ? "text-blue-100" : "text-gray-400"}`}>Score: {user.score}%</p>
+                  <p className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${user.rank === 1 ? "text-blue-100" : "text-gray-600"}`}>Score: {user.score}%</p>
                 </div>
               </div>
 
@@ -94,7 +94,7 @@ export default function LeaderboardSidebar() {
           </div>
           <div>
             <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Your Position</p>
-            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">Percentile: {userStats.percentile}%</p>
+            <p className="text-[9px] text-blue-600 font-black uppercase tracking-widest mt-1">Percentile: {userStats.percentile}%</p>
           </div>
         </div>
       )}
