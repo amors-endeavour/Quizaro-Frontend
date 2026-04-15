@@ -95,7 +95,7 @@ function ResultContent() {
     fetchResult();
   }, [attemptId]);
 
-  const percentage = result ? Math.round((result.score / result.totalMarks) * 100) : 0;
+  const percentage = result?.totalMarks ? Math.round((result.score / result.totalMarks) * 100) : 0;
 
   if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Generating Scorecard...</div>;
 
@@ -144,7 +144,13 @@ function ResultContent() {
                      </div>
                       <div className="space-y-1">
                          <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Performance Grade</span>
-                         <p className="text-3xl font-black text-blue-700 leading-none">{percentage >= 80 ? "A+" : percentage >= 60 ? "B" : "C"}</p>
+                         <p className="text-3xl font-black text-blue-700 leading-none">
+                            {percentage >= 90 ? "S" : 
+                             percentage >= 80 ? "A+" : 
+                             percentage >= 70 ? "A" : 
+                             percentage >= 55 ? "B" : 
+                             percentage >= 40 ? "C" : "F"}
+                         </p>
                       </div>
                       <div className="space-y-1 group">
                          <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Global Rank</span>
