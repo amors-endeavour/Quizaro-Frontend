@@ -30,6 +30,7 @@ interface Result {
   unattempted: number;
   timeTaken?: number;
   percentage?: number;
+  rank?: number;
   testId: {
     _id: string;
     title: string;
@@ -125,28 +126,31 @@ function ResultContent() {
                     </div>
                  </div>
 
-                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div className="space-y-1">
-                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Secure Score</span>
-                       <p className="text-3xl font-black text-gray-900 leading-none">{result?.score}<span className="text-sm text-gray-300 ml-1">/ {result?.totalMarks}</span></p>
-                    </div>
-                    <div className="space-y-1 group">
-                       <span className="text-[10px] font-black text-green-500/50 uppercase tracking-widest">Accuracy Level</span>
-                       <p className="text-3xl font-black text-green-600 leading-none group-hover:scale-110 transition-transform origin-left">{percentage}%</p>
-                    </div>
-                    <div className="space-y-1">
-                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Time Taken</span>
-                       <p className="text-3xl font-black text-gray-900 leading-none">12<span className="text-sm text-gray-300 ml-1">mins</span></p>
-                    </div>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
                      <div className="space-y-1">
-                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Performance Grade</span>
-                        <p className="text-3xl font-black text-blue-700 leading-none group-hover:scale-110 transition-transform origin-left">{percentage >= 80 ? "A+" : percentage >= 60 ? "B" : "C"}</p>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Secure Score</span>
+                        <p className="text-3xl font-black text-gray-900 leading-none">{result?.score}<span className="text-sm text-gray-300 ml-1">/ {result?.totalMarks}</span></p>
                      </div>
                      <div className="space-y-1 group">
-                        <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Global Rank</span>
-                        <p className="text-3xl font-black text-amber-600 leading-none group-hover:scale-110 transition-transform origin-left">#42</p>
+                        <span className="text-[10px] font-black text-green-600 uppercase tracking-widest">Accuracy Level</span>
+                        <p className="text-3xl font-black text-green-600 leading-none group-hover:scale-110 transition-transform origin-left">{percentage}%</p>
                      </div>
-                 </div>
+                     <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Time Taken</span>
+                        <p className="text-3xl font-black text-gray-900 leading-none">
+                          {result?.timeTaken ? Math.floor(result.timeTaken / 60) : "0"}
+                          <span className="text-sm text-gray-300 ml-1">mins</span>
+                        </p>
+                     </div>
+                      <div className="space-y-1">
+                         <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Performance Grade</span>
+                         <p className="text-3xl font-black text-blue-700 leading-none">{percentage >= 80 ? "A+" : percentage >= 60 ? "B" : "C"}</p>
+                      </div>
+                      <div className="space-y-1 group">
+                         <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Global Rank</span>
+                         <p className="text-4xl font-black text-amber-600 leading-none group-hover:scale-110 transition-transform origin-left">#{result?.rank || "N/A"}</p>
+                      </div>
+                  </div>
               </div>
 
               <div className="relative flex-shrink-0">
