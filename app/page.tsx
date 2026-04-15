@@ -138,7 +138,7 @@ function HeroSection() {
           </span>
         </h1>
 
-        <p className="max-w-2xl text-base sm:text-lg text-gray-400 font-medium leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
+        <p className="max-w-2xl text-base sm:text-lg text-gray-300 font-medium leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
           India's smartest quiz platform. Adaptive AI tests, real-time analytics, live 
           leaderboards — everything you need to outperform 50,000+ aspirants.
         </p>
@@ -197,7 +197,7 @@ function TrustedBySection() {
       </p>
       <div className="flex gap-12 animate-marquee whitespace-nowrap">
         {[...brands, ...brands].map((b, i) => (
-          <span key={i} className="text-gray-600 font-semibold text-sm hover:text-gray-400 transition-colors cursor-default">
+          <span key={i} className="text-gray-500 font-semibold text-sm hover:text-gray-300 transition-colors cursor-default">
             {b}
           </span>
         ))}
@@ -226,7 +226,7 @@ function StatsSection() {
             <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-1">
               {s.value}
             </div>
-            <div className="text-gray-500 text-sm">{s.label}</div>
+            <div className="text-gray-400 text-sm">{s.label}</div>
           </div>
         ))}
       </div>
@@ -312,7 +312,7 @@ function FeatureCard({ icon, title, desc, tag }: FeatureCardProps) {
         )}
 
         <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
-        <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+        <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
       </div>
     </div>
   );
