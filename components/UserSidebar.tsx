@@ -11,11 +11,14 @@ import {
   LogOut,
   HelpCircle,
   Bell,
-  CheckCircle2
+  CheckCircle2,
+  AlertCircle
 } from "lucide-react";
+import { useState } from "react";
 
 export default function UserSidebar({ userName = "Student" }: { userName: string }) {
   const pathname = usePathname();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const navItems = [
     { href: "/user-dashboard", label: "My Tests", icon: <BookOpen size={20} /> },
@@ -77,20 +80,47 @@ export default function UserSidebar({ userName = "Student" }: { userName: string
       {/* Footer Support */}
       <div className="p-6 border-t border-gray-50 mt-auto">
         <button
-          onClick={() => {
-            if (typeof window !== "undefined") {
-              const confirmLogout = confirm("Confirm Logout?");
-              if (!confirmLogout) return;
-              localStorage.clear();
-              window.location.href = "/user-login";
-            }
-          }}
+          onClick={() => setShowLogoutModal(true)}
           className="w-full flex items-center gap-4 px-6 py-4 text-red-500 hover:bg-red-50 rounded-2xl transition-all text-xs font-black uppercase tracking-widest"
         >
           <LogOut size={18} />
           Sign Out
         </button>
       </div>
+
+      {/* INSTITUTIONAL LOGOUT MODAL 🔥 */}
+      {showLogoutModal && (
+         <div className="fixed inset-0 z-[500] bg-gray-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+            <div className="bg-white rounded-[3.5rem] p-12 max-w-sm w-full shadow-2xl text-center space-y-8 animate-in zoom-in-95 duration-300 border border-gray-100">
+               <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-xl shadow-red-50/50">
+                  <LogOut size={32} />
+               </div>
+               <div className="space-y-4">
+                  <h3 className="text-xl font-black text-gray-900 tracking-tighter uppercase italic">Terminate Session</h3>
+                  <p className="text-[11px] font-bold text-gray-500 leading-relaxed uppercase tracking-widest">
+                     Are you certain you want to sign out? Your current session intelligence will be banked and cleared.
+                  </p>
+               </div>
+               <div className="flex flex-col gap-3">
+                  <button 
+                    onClick={() => {
+                        localStorage.clear();
+                        window.location.href = "/user-login";
+                    }}
+                    className="w-full py-5 bg-gray-900 border border-gray-900 hover:bg-red-600 hover:border-red-600 text-white rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
+                  >
+                     Confirm Sign Out
+                  </button>
+                  <button 
+                    onClick={() => setShowLogoutModal(false)}
+                    className="w-full py-5 bg-gray-50 text-gray-400 hover:bg-gray-100 rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+                  >
+                     Stay Signed In
+                  </button>
+               </div>
+            </div>
+         </div>
+      )}
     </div>
   );
 }

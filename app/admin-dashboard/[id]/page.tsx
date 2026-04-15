@@ -64,6 +64,8 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState<{show: boolean, type: 'delete' | 'save', targetId?: string}>({show: false, type: 'delete'});
+  const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'error'} | null>(null);
 
   // Editor State
   const [isEditing, setIsEditing] = useState(false);
@@ -120,36 +122,47 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
         ...testSettings,
         description: testSettings.instructions
       });
-      alert("Institutional update published successfully.");
+      setStatusMsg({ text: "Institutional parameters synchronized successfully.", type: 'success' });
+      setTimeout(() => setStatusMsg(null), 3000);
       loadData();
     } catch {
-      alert("Update failed.");
+      setStatusMsg({ text: "Parameter synchronization failed.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
     } finally {
       setSaving(false);
     }
   };
 
   const handleSaveQuestion = async (q: Question) => {
+    setSaving(true);
     try {
       if (q._id) {
         await API.put(`/admin/question/${q._id}`, { ...q, questionText: q.text });
       } else {
         await API.post(`/question/add/${id}`, { ...q, questionText: q.text });
       }
+      setStatusMsg({ text: "Assessment item preserved successfully.", type: 'success' });
+      setTimeout(() => setStatusMsg(null), 3000);
       loadData();
       setIsEditing(false);
     } catch {
-      alert("Save failed");
+      setStatusMsg({ text: "Failed to preserve assessment item.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDeleteQuestion = async (qId: string) => {
-    if (!confirm("Are you sure?")) return;
     try {
       await API.delete(`/admin/question/${qId}`);
+      setStatusMsg({ text: "Item expunged from registry.", type: 'success' });
+      setTimeout(() => setStatusMsg(null), 3000);
       loadData();
+      setShowConfirmModal({ show: false, type: 'delete' });
     } catch {
-      alert("Delete failed");
+      setStatusMsg({ text: "Expunge operation failed.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
@@ -161,10 +174,12 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
         setBulkData("");
         setActiveTab("Questions");
         loadData();
-        alert(`${parsed.length} questions merged successfully.`);
+        setStatusMsg({ text: `${parsed.length} items merged into registry.`, type: 'success' });
+        setTimeout(() => setStatusMsg(null), 3000);
       }
     } catch {
-      alert("Invalid JSON format.");
+      setStatusMsg({ text: "JSON parsing failure - verification required.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
@@ -258,7 +273,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                                    setCurrentQuestion(q);
                                    setIsEditing(true);
                                  }} className="w-14 h-14 rounded-2xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm active:scale-90"><FileEdit size={20} /></button>
-                                 <button onClick={() => handleDeleteQuestion(q._id!)} className="w-14 h-14 rounded-2xl bg-gray-50 text-red-100 hover:bg-red-500 hover:text-white transition-all shadow-sm active:scale-90"><Trash2 size={20} /></button>
+                                 <button onClick={() => setShowConfirmModal({ show: true, type: 'delete', targetId: q._id })} className="w-14 h-14 rounded-2xl bg-gray-50 text-red-100 hover:bg-red-500 hover:text-white transition-all shadow-sm active:scale-90"><Trash2 size={20} /></button>
                               </div>
                            </div>
                         ))}
@@ -487,6 +502,47 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
               </div>
            </div>
         </div>
+      )}
+
+      {/* INSTITUTIONAL STATUS HUD 🔥 */}
+      {statusMsg && (
+        <div className={`fixed bottom-10 left-10 z-[300] px-8 py-5 rounded-[2rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4 ${statusMsg.type === 'success' ? "bg-white border-green-100 text-green-600" : "bg-white border-red-100 text-red-600"}`}>
+           <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-50" : "bg-red-50"}`}>
+              {statusMsg.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+           </div>
+           <p className="text-[10px] font-black uppercase tracking-widest leading-none">{statusMsg.text}</p>
+        </div>
+      )}
+
+      {/* CONFIRMATION OVERLAY 🔥 */}
+      {showConfirmModal.show && (
+         <div className="fixed inset-0 z-[400] bg-gray-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+            <div className="bg-white rounded-[4rem] p-12 max-w-lg w-full shadow-[0_50px_100px_rgba(0,0,0,0.1)] text-center space-y-8 animate-in zoom-in-95 duration-300">
+               <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[2rem] flex items-center justify-center mx-auto shadow-xl shadow-red-50/50">
+                  <AlertCircle size={32} />
+               </div>
+               <div className="space-y-4">
+                  <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Expunge Assessment Item</h3>
+                  <p className="text-sm font-bold text-gray-500 leading-relaxed italic">
+                     Are you certain you want to permanently expunge this item from the institutional registry? This action cannot be rescinded.
+                  </p>
+               </div>
+               <div className="flex flex-col gap-4">
+                  <button 
+                    onClick={() => handleDeleteQuestion(showConfirmModal.targetId!)}
+                    className="w-full py-5 bg-red-600 hover:bg-red-700 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl shadow-red-100 transition-all active:scale-95"
+                  >
+                     Confirm Expunge
+                  </button>
+                  <button 
+                    onClick={() => setShowConfirmModal({ show: false, type: 'delete' })}
+                    className="w-full py-5 bg-gray-50 text-gray-400 hover:bg-gray-100 rounded-3xl font-black text-xs uppercase tracking-widest transition-all"
+                  >
+                     Cancel Operation
+                  </button>
+               </div>
+            </div>
+         </div>
       )}
     </div>
   );

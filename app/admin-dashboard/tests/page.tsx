@@ -39,6 +39,8 @@ export default function TestsPage() {
   const [showModal, setShowModal] = useState(false);
   const [showSeriesModal, setShowSeriesModal] = useState(false);
   const [editingTest, setEditingTest] = useState<Test | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState<{show: boolean, type: 'delete' | 'series_delete' | 'bulk_delete', targetId?: string, targetName?: string}>({show: false, type: 'delete'});
+  const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'error'} | null>(null);
   
   // Navigation State
   const [currentSeriesId, setCurrentSeriesId] = useState<string | null>(null);
@@ -95,9 +97,11 @@ export default function TestsPage() {
     e.preventDefault();
     try {
       await API.post("/admin/series/create", seriesFormData);
-      window.location.reload();
+      setStatusMsg({ text: "Series generated successfully.", type: 'success' });
+      setTimeout(() => window.location.reload(), 1500);
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Failed to create series");
+      setStatusMsg({ text: err?.response?.data?.message || "Generation failure.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
@@ -109,9 +113,11 @@ export default function TestsPage() {
       } else {
         await API.post("/test/create", formData);
       }
-      window.location.reload();
+      setStatusMsg({ text: "Paper metadata preserved.", type: 'success' });
+      setTimeout(() => window.location.reload(), 1500);
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Failed to save test");
+      setStatusMsg({ text: "Reservation error detected.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
@@ -125,25 +131,28 @@ export default function TestsPage() {
     }
   };
 
-  const handleDeleteSeries = async (id: string, name: string) => {
-    if (!confirm(`CRITICAL ACTION: Are you sure you want to delete the series "${name}"? This will permanently remove ALL papers and questions within this series. This cannot be undone.`)) return;
-    
+  const handleDeleteSeries = async (id: string) => {
     try {
       await API.delete(`/admin/series/${id}`);
-      window.location.reload();
+      setStatusMsg({ text: "Series and nested papers expunged.", type: 'success' });
+      setTimeout(() => window.location.reload(), 2000);
     } catch {
-      alert("Failed to delete series. Please ensure all connections are stable.");
+      setStatusMsg({ text: "Expunge operation blocked.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
   const handleBulkDelete = async () => {
-    if (!confirm(`Are you sure you want to delete ${selectedTests.length} tests?`)) return;
     try {
       await Promise.all(selectedTests.map(id => API.delete(`/admin/test/${id}`)));
       setTests(tests.filter(t => !selectedTests.includes(t._id)));
       setSelectedTests([]);
+      setShowConfirmModal({ show: false, type: 'bulk_delete' });
+      setStatusMsg({ text: "Batch papers expunged.", type: 'success' });
+      setTimeout(() => setStatusMsg(null), 3000);
     } catch {
-      alert("Batch delete failed");
+      setStatusMsg({ text: "Batch operation failure.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
@@ -158,13 +167,16 @@ export default function TestsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure?")) return;
     try {
       await API.delete(`/admin/test/${id}`);
       setTests(tests.filter(t => t._id !== id));
       setSelectedTests(selectedTests.filter(sid => sid !== id));
+      setShowConfirmModal({ show: false, type: 'delete' });
+      setStatusMsg({ text: "Single item expunged.", type: 'success' });
+      setTimeout(() => setStatusMsg(null), 3000);
     } catch {
-      alert("Delete failed");
+      setStatusMsg({ text: "Operation failed.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
@@ -279,7 +291,7 @@ export default function TestsPage() {
                </div>
                
                <div className="flex items-center gap-6">
-                  <button onClick={handleBulkDelete} className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors">Batch Delete</button>
+                  <button onClick={() => setShowConfirmModal({ show: true, type: 'bulk_delete' })} className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors">Batch Delete</button>
                   <button onClick={() => setSelectedTests([])} className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Clear Selection</button>
                </div>
             </div>
@@ -376,7 +388,7 @@ export default function TestsPage() {
                         setCurrentSeriesId(s._id);
                         window.scrollTo(0, 0);
                       }}
-                      onDelete={() => handleDeleteSeries(s._id, s.title)}
+                      onDelete={() => setShowConfirmModal({ show: true, type: 'series_delete', targetId: s._id, targetName: s.title })}
                     />
                   ))}
                   
@@ -402,7 +414,7 @@ export default function TestsPage() {
                           setShowModal(true);
                         }}
                         onQuestions={() => router.push(`/admin-dashboard/${test._id}`)}
-                        onDelete={() => handleDelete(test._id)}
+                        onDelete={() => setShowConfirmModal({ show: true, type: 'delete', targetId: test._id })}
                         onExport={() => handleExport(test._id)}
                         onAnalytics={() => setSelectedAnalyticsTest({ id: test._id, title: test.title })}
                        />
@@ -463,7 +475,7 @@ export default function TestsPage() {
                         setShowModal(true);
                       }}
                       onQuestions={() => router.push(`/admin-dashboard/${test._id}`)}
-                      onDelete={() => handleDelete(test._id)}
+                      onDelete={() => setShowConfirmModal({ show: true, type: 'delete', targetId: test._id })}
                       onExport={() => handleExport(test._id)}
                       onAnalytics={() => setSelectedAnalyticsTest({ id: test._id, title: test.title })}
                     />
@@ -635,6 +647,57 @@ export default function TestsPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* INSTITUTIONAL STATUS HUD 🔥 */}
+      {statusMsg && (
+        <div className={`fixed bottom-10 left-10 z-[300] px-8 py-5 rounded-[2rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4 ${statusMsg.type === 'success' ? "bg-white border-green-100 text-green-600" : "bg-white border-red-100 text-red-600"}`}>
+           <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-50" : "bg-red-50"}`}>
+              {statusMsg.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+           </div>
+           <p className="text-[10px] font-black uppercase tracking-widest leading-none">{statusMsg.text}</p>
+        </div>
+      )}
+
+      {/* CONFIRMATION OVERLAY 🔥 */}
+      {showConfirmModal.show && (
+         <div className="fixed inset-0 z-[400] bg-gray-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+            <div className="bg-white rounded-[4rem] p-12 max-w-lg w-full shadow-[0_50px_100px_rgba(0,0,0,0.1)] text-center space-y-8 animate-in zoom-in-95 duration-300">
+               <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[2rem] flex items-center justify-center mx-auto shadow-xl shadow-red-50/50">
+                  <AlertCircle size={32} />
+               </div>
+               <div className="space-y-4">
+                  <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">{showConfirmModal.type === 'series_delete' ? "Expunge Series Catalog" : "Expunge Assessment"}</h3>
+                  <p className="text-sm font-bold text-gray-500 leading-relaxed italic">
+                     {showConfirmModal.type === 'series_delete' 
+                       ? `Are you certain you want to permanently expunge "${showConfirmModal.targetName}"? This will terminate all nested papers and student metrics. This action is final.` 
+                       : showConfirmModal.type === 'bulk_delete'
+                       ? `Are you certain you want to expunge ${selectedTests.length} selected items from the registry?`
+                       : "Are you certain you want to permanently expunge this assessment from the registry?"}
+                  </p>
+               </div>
+               <div className="flex flex-col gap-4">
+                  <button 
+                    onClick={
+                      showConfirmModal.type === 'series_delete' 
+                        ? () => handleDeleteSeries(showConfirmModal.targetId!) 
+                        : showConfirmModal.type === 'bulk_delete'
+                        ? handleBulkDelete
+                        : () => handleDelete(showConfirmModal.targetId!)
+                    }
+                    className="w-full py-5 bg-red-600 hover:bg-red-700 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl shadow-red-100 transition-all active:scale-95"
+                  >
+                     Confirm Expunge
+                  </button>
+                  <button 
+                    onClick={() => setShowConfirmModal({ show: false, type: 'delete' })}
+                    className="w-full py-5 bg-gray-50 text-gray-400 hover:bg-gray-100 rounded-3xl font-black text-xs uppercase tracking-widest transition-all"
+                  >
+                     Cancel Operation
+                  </button>
+               </div>
+            </div>
+         </div>
       )}
     </div>
   );

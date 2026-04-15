@@ -28,6 +28,7 @@ export default function TestsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'alert' | 'error'} | null>(null);
 
   useEffect(() => {
     const fetchContext = async () => {
@@ -73,13 +74,15 @@ export default function TestsPage() {
       router.push(`/quiz/${testId}`);
     } catch (err: any) {
       if (err.response?.status === 402) {
-         alert("Premium Paper: Transaction or manual administrative clearance required to start this assessment.");
+         setStatusMsg({ text: "Premium Paper: Transaction or manual administrative clearance required.", type: 'alert' });
+         setTimeout(() => setStatusMsg(null), 5000);
       } else if (err.response?.status === 400) {
          // Already purchased, just redirect
          router.push(`/quiz/${testId}`);
          return;
       } else {
-         alert("System Handshake Failed: Registry access restricted.");
+         setStatusMsg({ text: "System Handshake Failed: Registry access restricted.", type: 'error' });
+         setTimeout(() => setStatusMsg(null), 3000);
       }
       setLoading(false);
     }
@@ -118,11 +121,9 @@ export default function TestsPage() {
                   onClick={async () => {
                     try {
                       setLoading(true);
-                      const { data } = await API.post(`/user/series/purchase/${seriesId}`);
-                      alert(data.message);
-                      window.location.reload();
                     } catch (err: any) {
-                      alert(err?.response?.data?.message || "Failed to join series");
+                      setStatusMsg({ text: err?.response?.data?.message || "Series enrollment failed.", type: 'error' });
+                      setTimeout(() => setStatusMsg(null), 3000);
                       setLoading(false);
                     }
                   }}
@@ -196,6 +197,15 @@ export default function TestsPage() {
           </div>
         )}
       </div>
+      {/* INSTITUTIONAL STATUS HUD 🔥 */}
+      {statusMsg && (
+        <div className={`fixed bottom-10 left-10 z-[300] px-8 py-5 rounded-[2rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4 ${statusMsg.type === 'success' ? "bg-white border-green-100 text-green-600" : statusMsg.type === 'alert' ? "bg-white border-amber-100 text-amber-600" : "bg-white border-red-100 text-red-600"}`}>
+           <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-50" : statusMsg.type === 'alert' ? "bg-amber-50" : "bg-red-50"}`}>
+              <div className="w-1.5 h-1.5 rounded-full bg-current" />
+           </div>
+           <p className="text-[10px] font-black uppercase tracking-widest leading-none">{statusMsg.text}</p>
+        </div>
+      )}
     </div>
   );
 }
