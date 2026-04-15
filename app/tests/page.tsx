@@ -69,12 +69,18 @@ export default function TestsPage() {
     try {
       setLoading(true);
       // Attempt auto-registration if it's an institutional/free catalog
-      await API.post(`/test/purchase/${testId}`).catch(() => {
-        // Ignore "already purchased" errors
-      });
+      await API.post(`/test/purchase/${testId}`);
       router.push(`/quiz/${testId}`);
-    } catch {
-      alert("System Handshake Failed: Registry access restricted.");
+    } catch (err: any) {
+      if (err.response?.status === 402) {
+         alert("Premium Paper: Transaction or manual administrative clearance required to start this assessment.");
+      } else if (err.response?.status === 400) {
+         // Already purchased, just redirect
+         router.push(`/quiz/${testId}`);
+         return;
+      } else {
+         alert("System Handshake Failed: Registry access restricted.");
+      }
       setLoading(false);
     }
   }
@@ -169,12 +175,20 @@ export default function TestsPage() {
                       <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Questions</span>
                       <span className="text-lg font-black text-gray-900 tracking-tighter">{test.totalQuestions || 0}</span>
                    </div>
+
+                   {/* PRICE BADGE 🔥 */}
+                   {test.price > 0 && (
+                      <div className="flex flex-col items-end">
+                         <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Access Fee</span>
+                         <span className="text-lg font-black text-amber-600 tracking-tighter">₹{test.price}</span>
+                      </div>
+                   )}
                    
                    <button
                     onClick={() => handleLaunchPaper(test._id)}
-                    className="px-10 py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl active:scale-95"
+                    className={`px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95 ${test.price > 0 ? "bg-amber-600 text-white hover:bg-amber-700 shadow-amber-50" : "bg-gray-900 text-white hover:bg-blue-600 shadow-gray-100"}`}
                    >
-                    {isAuthenticated ? "Launch Paper" : "Authenticate to Begin"}
+                    {!isAuthenticated ? "Authenticate to Begin" : test.price > 0 ? `Unlock Paper` : "Launch Paper"}
                    </button>
                 </div>
               </div>

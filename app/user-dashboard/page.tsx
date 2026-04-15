@@ -145,10 +145,14 @@ export default function UserDashboard() {
   const handleJoinSession = async (testId: string) => {
     try {
       setLoading(true);
-      await API.post(`/test/purchase/${testId}`);
+      const res = await API.post(`/test/purchase/${testId}`);
       router.push(`/quiz/${testId}`);
-    } catch (err) {
-      alert("Registration Failed: Please ensure your account has access credentials.");
+    } catch (err: any) {
+      if (err.response?.status === 402) {
+         alert("Premium Paper: This assessment requires a valid access token or transaction. Please contact your administrator for institutional clearance.");
+      } else {
+         alert("Registration Failed: Please ensure your account has active access credentials.");
+      }
       setLoading(false);
     }
   };
@@ -352,20 +356,30 @@ export default function UserDashboard() {
 
                 {/* STANDALONE PAPERS IN CATALOG */}
                 {availableTests.filter(t => !t.seriesId).map((test) => (
-                  <div key={test._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col group hover:-translate-y-2 transition-all duration-300">
-                     <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-emerald-50 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                  <div key={test._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col group hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                     {/* PREMIUM BADGE 🔥 */}
+                     {test.price > 0 && (
+                        <div className="absolute top-6 right-6 flex items-center gap-1.5 px-3 py-1 bg-amber-50 rounded-full border border-amber-100">
+                           <Lock size={10} className="text-amber-600" />
+                           <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Premium</span>
+                        </div>
+                     )}
+
+                     <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg transition-all ${test.price > 0 ? "bg-amber-50 text-amber-600 shadow-amber-50 group-hover:bg-amber-600 group-hover:text-white" : "bg-emerald-50 text-emerald-600 shadow-emerald-50 group-hover:bg-emerald-600 group-hover:text-white"}`}>
                         <FileText size={24} />
                      </div>
                      <h4 className="text-lg font-black text-gray-900 tracking-tight leading-none mb-2">{test.title}</h4>
-                     <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-6 border border-emerald-100 px-3 py-1 rounded-full w-fit">Direct Session</p>
+                     <p className={`text-[10px] font-black uppercase tracking-widest mb-6 border px-3 py-1 rounded-full w-fit ${test.price > 0 ? "text-amber-500 border-amber-100" : "text-emerald-500 border-emerald-100"}`}>
+                        {test.price > 0 ? `₹${test.price} Access Fee` : "Direct Session"}
+                     </p>
                      
                      <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 italic">{test.description || "Individual academic assessment paper."}</p>
                      
                      <button
                         onClick={() => handleJoinSession(test._id)}
-                        className="w-full py-4 bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition shadow-xl shadow-emerald-100"
+                        className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition shadow-xl ${test.price > 0 ? "bg-amber-600 text-white hover:bg-amber-700 shadow-amber-100" : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-100"}`}
                      >
-                       Begin Session
+                       {test.price > 0 ? `Unlock Paper (₹${test.price})` : "Begin Session"}
                      </button>
                   </div>
                 ))}
