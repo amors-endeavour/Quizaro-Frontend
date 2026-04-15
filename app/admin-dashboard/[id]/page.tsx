@@ -9,6 +9,7 @@ import {
   Trash2, 
   FileEdit,
   AlertCircle,
+  CheckCircle2,
   PieChart,
   Layers,
   ArrowDownToLine,

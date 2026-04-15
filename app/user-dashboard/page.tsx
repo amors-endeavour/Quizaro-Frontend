@@ -16,7 +16,8 @@ import {
   Zap,
   CheckCircle2,
   Lock,
-  Layers
+  Layers,
+  AlertCircle
 } from "lucide-react";
 
 interface Test {
@@ -399,7 +400,7 @@ export default function UserDashboard() {
       {statusMsg && (
         <div className={`fixed bottom-10 left-10 z-[300] px-8 py-5 rounded-[2rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4 ${statusMsg.type === 'success' ? "bg-white border-green-100 text-green-600" : statusMsg.type === 'alert' ? "bg-white border-amber-100 text-amber-600" : "bg-white border-red-100 text-red-600"}`}>
            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-50" : statusMsg.type === 'alert' ? "bg-amber-50" : "bg-red-50"}`}>
-              <div className="w-1.5 h-1.5 rounded-full bg-current" />
+              {statusMsg.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
            </div>
            <p className="text-[10px] font-black uppercase tracking-widest leading-none">{statusMsg.text}</p>
         </div>

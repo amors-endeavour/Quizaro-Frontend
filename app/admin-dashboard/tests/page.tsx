@@ -7,7 +7,7 @@ import AdminFolderCard from "@/components/AdminFolderCard";
 import AdminTestCard from "@/components/AdminTestCard";
 import AnalyticsModal from "@/components/AnalyticsModal";
 import API from "@/app/lib/api";
-import { X } from "lucide-react";
+import { X, AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface Test {
   _id: string;
