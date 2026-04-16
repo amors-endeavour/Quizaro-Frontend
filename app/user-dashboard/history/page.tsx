@@ -77,7 +77,7 @@ export default function PerformancePage() {
     
     // Fill previous slots with null string so the dotted line originates from the last real point correctly
     // or just pass 'predicted' alongside 'score' for the last node so the line connects natively.
-    chartData[n-1].predicted = chartData[n-1].score; // tie it
+    (chartData[n-1] as any).predicted = chartData[n-1].score; // tie it
     chartData.push({
       date: "Next",
       predicted: predictedScore,
