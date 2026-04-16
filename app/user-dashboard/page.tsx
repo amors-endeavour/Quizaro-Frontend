@@ -1,4 +1,6 @@
 "use client";
+import CalendarHeatmap from 'react-calendar-heatmap';
+import 'react-calendar-heatmap/dist/styles.css';
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -69,6 +71,7 @@ export default function UserDashboard() {
   // Phase 3.1 & 3.2 — Gamification & Favorites State
   const [gamification, setGamification] = useState<any>(null);
   const [favorites, setFavorites] = useState<any[]>([]);
+  const [heatmapValues, setHeatmapValues] = useState<{date: string, count: number}[]>([]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -109,8 +112,19 @@ export default function UserDashboard() {
         setGamification(badgeRes.data);
         setFavorites(favRes.data);
 
-        // RECOMMENDATION ENGINE 🔥
+        // RECOMMENDATION ENGINE & HEATMAP 🔥
         const attempts = attemptsRes.data;
+
+        // Calculate heatmap values
+        const attemptStats: Record<string, number> = {};
+        attempts.forEach((a: any) => {
+          if (a.submittedAt || a.createdAt) {
+            const d = new Date(a.submittedAt || a.createdAt).toISOString().split('T')[0];
+            attemptStats[d] = (attemptStats[d] || 0) + 1;
+          }
+        });
+        setHeatmapValues(Object.keys(attemptStats).map(k => ({ date: k, count: attemptStats[k] })));
+
         if (attempts.length > 0) {
            const categoryStats: Record<string, { total: number, count: number }> = {};
            attempts.forEach((att: any) => {
@@ -208,33 +222,65 @@ export default function UserDashboard() {
 
         <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
           
-          {/* GAMIFICATION HUD */}
+          {/* GAMIFICATION HUD & PERFORMANCE TRACKER */}
           {gamification && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-indigo-900 to-indigo-800 p-8 rounded-[2.5rem] flex items-center justify-between shadow-2xl shadow-indigo-900/20 text-white relative overflow-hidden">
-                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 blur-2xl rounded-full" />
-                <div className="z-10">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200 mb-2">Current Level</p>
-                  <p className="text-4xl font-black">{gamification.level || 1}</p>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                {/* Active Streak Counter */}
+                <div className="bg-gradient-to-br from-amber-500 to-orange-500 p-8 rounded-[2.5rem] flex items-center justify-between shadow-2xl shadow-orange-500/20 text-white relative overflow-hidden">
+                  <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 blur-2xl rounded-full" />
+                  <div className="z-10">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-100 mb-2">Active Streak</p>
+                    <p className="text-4xl font-black">{gamification.streak || 0} <span className="text-sm font-bold opacity-80">Days</span></p>
+                  </div>
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center z-10 animate-pulse"><Flame size={32} /></div>
                 </div>
-                <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center z-10"><Sparkles size={32} className="text-indigo-200" /></div>
+
+                {/* Badges Showcase */}
+                <div className="lg:col-span-2 bg-white border border-gray-100 p-8 rounded-[2.5rem] flex flex-col justify-center shadow-xl shadow-gray-100 overflow-hidden">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">Earned Badges Showcase</p>
+                  <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                    {gamification.badges && gamification.badges.length > 0 ? (
+                      gamification.badges.map((badge: any, i: number) => (
+                        <div key={i} className="flex flex-col items-center gap-2 group flex-shrink-0">
+                          <div className="w-16 h-16 bg-blue-50 border border-blue-100 text-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-50 group-hover:-translate-y-1 transition-transform cursor-help pb-1" title={badge.description || badge.name}>
+                            <Award size={28} />
+                          </div>
+                          <span className="text-[9px] font-black text-gray-900 uppercase tracking-tight">{badge.name}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs font-bold text-gray-300 italic">No badges earned yet. Complete tests to begin.</p>
+                    )}
+                  </div>
+                </div>
+
               </div>
-              <div className="bg-gradient-to-br from-amber-500 to-orange-500 p-8 rounded-[2.5rem] flex items-center justify-between shadow-2xl shadow-orange-500/20 text-white relative overflow-hidden">
-                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 blur-2xl rounded-full" />
-                <div className="z-10">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-amber-100 mb-2">Active Streak</p>
-                  <p className="text-4xl font-black">{gamification.streak || 0} <span className="text-sm font-bold opacity-80">Days</span></p>
+
+              {/* Performance Heatmap */}
+              <div className="bg-white border border-gray-100 p-8 rounded-[2.5rem] flex flex-col justify-center shadow-xl shadow-gray-100">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 rounded-xl bg-green-50 text-green-600 flex items-center justify-center"><CheckCircle2 size={16} /></div>
+                  <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em]">Activity Heatmap</h3>
                 </div>
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center z-10"><Flame size={32} /></div>
-              </div>
-              <div className="bg-white border border-gray-100 p-8 rounded-[2.5rem] flex items-center justify-between shadow-xl shadow-gray-100 flex-1">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Total Score Points</p>
-                  <p className="text-4xl font-black text-gray-900 flex items-baseline gap-2">
-                    {gamification.points || 0} <span className="text-xs text-blue-600 font-black uppercase tracking-widest">XP</span>
-                  </p>
+                <div className="w-full overflow-x-auto">
+                  <div className="min-w-[700px] heatmap-container">
+                    <CalendarHeatmap
+                      startDate={new Date(new Date().setMonth(new Date().getMonth() - 5))}
+                      endDate={new Date()}
+                      values={heatmapValues}
+                      classForValue={(value) => {
+                        if (!value || value.count === 0) return 'color-empty opacity-20';
+                        return `color-scale-${Math.min(value.count, 4)} text-green-500`;
+                      }}
+                      tooltipDataAttrs={(value: any) => {
+                         if (!value || !value.date) return null;
+                         return { 'data-tooltip': `${value.date}: ${value.count} tests` };
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center"><Award size={28} className="text-blue-600" /></div>
               </div>
             </div>
           )}

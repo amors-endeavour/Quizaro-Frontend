@@ -14,11 +14,17 @@ import {
   CheckCircle2,
   AlertCircle
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import API from "@/app/lib/api";
 
 export default function UserSidebar({ userName = "Student" }: { userName: string }) {
   const pathname = usePathname();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [gamification, setGamification] = useState<any>(null);
+
+  useEffect(() => {
+    API.get("/user/badges").then(res => setGamification(res.data)).catch(console.error);
+  }, []);
 
   const navItems = [
     { href: "/user-dashboard", label: "My Tests", icon: <BookOpen size={20} /> },
@@ -41,12 +47,33 @@ export default function UserSidebar({ userName = "Student" }: { userName: string
 
       {/* User Hello Card */}
       <div className="p-6">
-        <div className="bg-gray-50 rounded-[2rem] p-6 border border-gray-100">
-           <div className="flex items-center gap-3 mb-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-md shadow-green-100" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Online Now</span>
+        <div className="bg-gray-50 rounded-[2rem] p-6 border border-gray-100 flex flex-col items-center text-center">
+           <div className="w-20 h-20 bg-blue-100/50 rounded-3xl flex items-center justify-center mb-4 text-blue-600 shadow-inner">
+             {gamification?.avatarUrl ? (
+               <img src={gamification.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-3xl" />
+             ) : (
+               <User size={32} />
+             )}
            </div>
-           <h2 className="text-base font-black text-gray-900 capitalize truncate">Hello, {userName}!</h2>
+           <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-md shadow-green-200" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Online</span>
+           </div>
+           <h2 className="text-xl font-black text-gray-900 capitalize tracking-tight leading-none mb-4">{userName}</h2>
+           
+           {/* Phase 3.5 Points & Level Display */}
+           {gamification && (
+             <div className="flex w-full divide-x border-t border-gray-200 pt-4">
+               <div className="flex-1 flex flex-col items-center">
+                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Level</span>
+                 <span className="text-sm font-black text-indigo-600">{gamification.level || 1}</span>
+               </div>
+               <div className="flex-1 flex flex-col items-center">
+                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">XP points</span>
+                 <span className="text-sm font-black text-blue-600">{gamification.points || 0}</span>
+               </div>
+             </div>
+           )}
         </div>
       </div>
 

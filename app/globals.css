@@ -17,3 +17,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* GitHub Calendar Heatmap Overrides */
+.react-calendar-heatmap rect {
+  rx: 3px;
+}
+.color-empty { fill: #f3f4f6; } /* Tailwind gray-100 */
+.color-scale-1 { fill: #86efac; } /* Tailwind green-300 */
+.color-scale-2 { fill: #4ade80; } /* Tailwind green-400 */
+.color-scale-3 { fill: #22c55e; } /* Tailwind green-500 */
+.color-scale-4 { fill: #16a34a; } /* Tailwind green-600 */
