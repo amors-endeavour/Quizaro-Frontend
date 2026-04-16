@@ -58,6 +58,10 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
 
   const [questionTimeLeft, setQuestionTimeLeft] = useState<number | null>(null);
 
+  // Guest Mode State
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [guestScore, setGuestScore] = useState(0);
+
   // Phase 3.3 — Engagement States 🔥
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
   const [hint, setHint] = useState<string | null>(null);
@@ -321,6 +325,37 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
           selectedOption: selectedOption,
         };
       });
+
+      });
+
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (token === "guest_session") {
+        // Evaluate score locally
+        let correctAnswers = 0;
+        answersArray.forEach(ans => {
+           const question = questions.find(q => q._id === ans.questionId);
+           if (question) {
+              const selectedOriginal = ans.selectedOption;
+              const isCorrectFlag = (question.options as any).find((o: any) => o.originalIndex === selectedOriginal && o.isCorrect === true);
+              if (selectedOriginal !== -1 && isCorrectFlag) {
+                 correctAnswers++;
+              }
+           }
+        });
+        
+        const finalScore = correctAnswers * 4; // Arbitrary 4 points per correct answer
+        
+        sessionStorage.setItem('guestAttempt', JSON.stringify({
+           testId: id,
+           answers: answersArray,
+           score: finalScore,
+           totalMarks: questions.length * 4
+        }));
+        setGuestScore(finalScore);
+        setShowGuestModal(true);
+        setSubmitting(false);
+        return;
+      }
 
       const { data } = await API.post(`/test/submit/${id}`, {
         answers: answersArray,
@@ -630,6 +665,30 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* GUEST MODE CTA MODAL */}
+      {showGuestModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
+           <div className="bg-white rounded-[4rem] p-16 max-w-lg w-full text-center shadow-[0_0_100px_rgba(37,99,235,0.2)] border border-gray-100 flex flex-col items-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-50 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+              
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-3xl flex items-center justify-center mb-8 shadow-2xl shadow-blue-200 relative z-10 rotate-3"><Star size={40} fill="currentColor" /></div>
+              
+              <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter mb-4 relative z-10">You Scored <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">{guestScore}</span>!</h3>
+              <p className="text-xs font-bold text-gray-500 mb-10 max-w-[300px] leading-relaxed relative z-10">You've completed the assessment natively! To save your performance trajectory and access deep historical analytics, register immediately.</p>
+              
+              <div className="flex flex-col gap-4 w-full relative z-10">
+                 <button onClick={() => router.push("/register")} className="w-full py-5 bg-gray-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl hover:bg-black hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <Zap size={16} className="text-blue-400" /> Sign Up to Save Result
+                 </button>
+                 <button onClick={() => { localStorage.clear(); router.push("/"); }} className="w-full py-4 text-gray-400 hover:text-gray-900 rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all">
+                    Discard & Return Home
+                 </button>
+              </div>
+           </div>
         </div>
       )}
 

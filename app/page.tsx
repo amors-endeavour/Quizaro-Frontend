@@ -146,12 +146,27 @@ function HeroSection() {
         {/* Action Hub */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-20 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
           <button 
-            onClick={() => router.push("/user-login")}
+            onClick={() => router.push("/login")}
             className="group relative flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl font-black text-sm uppercase tracking-widest shadow-[0_20px_50px_rgba(37,99,235,0.3)] hover:shadow-[0_25px_60px_rgba(37,99,235,0.5)] hover:scale-105 transition-all active:scale-95 overflow-hidden"
           >
             <div className="bg-white/10 p-2.5 rounded-xl group-hover:rotate-12 transition-transform"><Users size={20} /></div>
             I am a Student
             <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20 rounded-full scale-x-0 group-hover:scale-x-90 transition-transform origin-center" />
+          </button>
+
+          <button 
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                localStorage.setItem("token", "guest_session");
+                localStorage.setItem("role", "student");
+                localStorage.setItem("user", JSON.stringify({ name: "Guest User", email: "guest@quizaro.app" }));
+                router.push("/user-dashboard");
+              }
+            }}
+            className="group flex items-center gap-4 px-12 py-6 bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-white/20 hover:border-white/40 transition-all hover:scale-105 active:scale-95 shadow-2xl"
+          >
+            <div className="bg-white/5 p-2.5 rounded-xl text-yellow-400 group-hover:rotate-12 transition-transform"><Zap size={20} /></div>
+            Try as Guest
           </button>
 
           <button 
