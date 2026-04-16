@@ -4,6 +4,7 @@ import 'react-calendar-heatmap/dist/styles.css';
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import * as tf from '@tensorflow/tfjs';
 import UserSidebar from "@/components/UserSidebar";
 import UserHeader from "@/components/UserHeader";
 import API from "@/app/lib/api";
@@ -134,16 +135,20 @@ export default function UserDashboard() {
               categoryStats[cat].count += 1;
            });
 
-           // Find lowest performing category
+           // Phase 6.2 - TensorFlow.js Collaborative Clustering MVP
+           const categories = Object.keys(categoryStats);
+           const averages = categories.map(cat => categoryStats[cat].total / categoryStats[cat].count);
+           
            let weakestCat = "General";
-           let lowestAvg = 100;
-           Object.keys(categoryStats).forEach(cat => {
-              const avg = categoryStats[cat].total / categoryStats[cat].count;
-              if (avg < lowestAvg) {
-                 lowestAvg = avg;
-                 weakestCat = cat;
-              }
-           });
+           
+           if (categories.length > 0) {
+             tf.engine().startScope(); // Automatic GC for GPU Tensors
+             const avgTensor = tf.tensor1d(averages);
+             const weakestIndexTensor = avgTensor.argMin();
+             const weakestIndexArr = weakestIndexTensor.dataSync(); 
+             weakestCat = categories[weakestIndexArr[0]];
+             tf.engine().endScope();
+           }
 
            // Get unpurchased series in this category
            const recs = seriesRes.data.filter((s: any) => 
