@@ -17,7 +17,8 @@ import {
   Flag,
   Lightbulb,
   Eye,
-  EyeOff
+  EyeOff,
+  Star
 } from "lucide-react";
 import API from "@/app/lib/api";
 
@@ -324,8 +325,6 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
           questionId: q._id,
           selectedOption: selectedOption,
         };
-      });
-
       });
 
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
