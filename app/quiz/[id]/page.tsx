@@ -120,8 +120,16 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
         ]);
 
         const testData = testRes.data;
-        const questionsData = questionsRes.data;
+        let questionsData = questionsRes.data;
         const statusData = statusRes.data;
+
+        // FISHER YATES SHUFFLE 🔥
+        if (testData.shuffleQuestions) {
+           for (let i = questionsData.length - 1; i > 0; i--) {
+               const j = Math.floor(Math.random() * (i + 1));
+               [questionsData[i], questionsData[j]] = [questionsData[j], questionsData[i]];
+           }
+        }
 
         setTest(testData);
         setQuestions(questionsData);
@@ -180,6 +188,18 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
 
   // FIGMA ALIGNMENT: Proctoring & Anti-Cheating
   useEffect(() => {
+    // ENFORCE FULLSCREEN 🔥
+    const enterFullscreen = async () => {
+      try {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (err) {
+        console.error("Fullscreen denial:", err);
+      }
+    };
+    enterFullscreen();
+
     const handleContextMenu = (e: MouseEvent) => e.preventDefault();
     const handleCopyPaste = (e: ClipboardEvent) => e.preventDefault();
     const handleKeyDown = (e: KeyboardEvent) => {
