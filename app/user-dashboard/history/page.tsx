@@ -13,6 +13,8 @@ import {
   FileText
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Papa from 'papaparse';
 
 interface Attempt {
   _id: string;
@@ -48,6 +50,31 @@ export default function PerformancePage() {
   }, []);
 
   if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Aggregating Metrics...</div>;
+
+  const chartData = [...attempts].sort((a,b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()).map(a => ({
+    date: new Date(a.createdAt).toLocaleDateString(),
+    score: Math.round(parseFloat(a.percentage))
+  }));
+
+  const handleExportCSV = () => {
+    const csvData = attempts.map(a => ({
+      TestName: a.testId?.title || 'Unknown',
+      Score: a.score,
+      Percentage: Math.round(parseFloat(a.percentage)) + '%',
+      TimeTakenSeconds: a.timeTaken,
+      Date: new Date(a.createdAt).toLocaleString()
+    }));
+    const csv = Papa.unparse(csvData);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'Quizaro_Performance_History.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
 
   return (
     <div className="flex h-screen bg-[#f8f9fc] text-gray-900 font-sans overflow-hidden">
@@ -98,10 +125,34 @@ export default function PerformancePage() {
 
            {/* ATTEMPT REGISTRY */}
            <section className="space-y-6">
-              <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3 px-4">
-                 <Calendar size={18} />
-                 Assessment History
-              </h3>
+              <div className="flex items-center justify-between px-4">
+                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
+                    <Calendar size={18} />
+                    Assessment History
+                 </h3>
+                 <button 
+                   onClick={handleExportCSV}
+                   className="px-6 py-3 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition shadow-xl flex items-center gap-2"
+                 >
+                   Export CSV
+                 </button>
+              </div>
+
+              {chartData.length > 1 && (
+                <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 h-80 mb-8">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                      <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 900 }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 900 }} domain={[0, 100]} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', fontWeight: 900, textTransform: 'uppercase', fontSize: '10px' }} 
+                      />
+                      <Line type="monotone" dataKey="score" stroke="#2563eb" strokeWidth={4} activeDot={{ r: 8, fill: '#2563eb', stroke: '#fff', strokeWidth: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
 
               <div className="space-y-4">
                 {attempts.length === 0 ? (
