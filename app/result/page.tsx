@@ -16,7 +16,8 @@ import {
   Zap,
   BarChart3,
   Calendar,
-  Clock
+  Clock,
+  Download
 } from "lucide-react";
 import API from "@/app/lib/api";
 import LeaderboardSidebar from "@/components/LeaderboardSidebar";
@@ -96,6 +97,24 @@ function ResultContent() {
   }, [attemptId]);
 
   const percentage = result?.totalMarks ? Math.round((result.score / result.totalMarks) * 100) : 0;
+
+  const handleDownloadPDF = async () => {
+    if (!result?._id) return;
+    try {
+      const response = await API.get(`/result/${result._id}/export`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Scorecard_${result?.testId?.title || "Test"}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (err) {
+      alert("Failed to download PDF scorecard.");
+    }
+  };
 
   if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Generating Scorecard...</div>;
 
@@ -226,14 +245,14 @@ function ResultContent() {
            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
               <button 
                 onClick={() => router.push("/user-dashboard")}
-                className="group flex items-center gap-4 px-12 py-5 bg-gray-900 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl hover:bg-black transition-all active:scale-95"
+                className="group flex items-center gap-4 px-10 py-5 bg-gray-900 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl hover:bg-black transition-all active:scale-95"
               >
                  <ArrowRight size={18} className="text-blue-500 group-hover:translate-x-1 transition-transform" />
                  Continue Learning
               </button>
               <button 
                 onClick={() => setShowReview(!showReview)}
-                className={`flex items-center gap-4 px-12 py-5 rounded-3xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 border-2 ${
+                className={`flex items-center gap-4 px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 border-2 ${
                   showReview 
                     ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-100" 
                     : "bg-white border-gray-100 text-gray-400 hover:border-blue-200 hover:text-blue-600"
@@ -241,6 +260,13 @@ function ResultContent() {
               >
                  {showReview ? "Hide Performance Breakdown" : "Detailed Answer Analysis"}
                  <ChevronRight size={18} className={showReview ? "rotate-90 transition-transform" : "transition-transform"} />
+              </button>
+              <button 
+                onClick={handleDownloadPDF}
+                className="group flex items-center gap-3 px-10 py-5 bg-amber-50 text-amber-600 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-amber-100 transition-all active:scale-95 border border-amber-100 shadow-xl shadow-amber-50"
+              >
+                 <Download size={18} className="group-hover:-translate-y-1 transition-transform" />
+                 Download PDF Scorecard
               </button>
             </div>
 

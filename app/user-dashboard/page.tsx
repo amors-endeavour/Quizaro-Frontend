@@ -17,7 +17,11 @@ import {
   CheckCircle2,
   Lock,
   Layers,
-  AlertCircle
+  AlertCircle,
+  Bookmark,
+  Sparkles,
+  Flame,
+  Star
 } from "lucide-react";
 
 interface Test {
@@ -62,6 +66,10 @@ export default function UserDashboard() {
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'alert' | 'error'} | null>(null);
 
+  // Phase 3.1 & 3.2 — Gamification & Favorites State
+  const [gamification, setGamification] = useState<any>(null);
+  const [favorites, setFavorites] = useState<any[]>([]);
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -86,16 +94,20 @@ export default function UserDashboard() {
     if (!isAuthChecked) return;
     const loadData = async () => {
       try {
-        const [availableRes, purchasedRes, seriesRes, attemptsRes] = await Promise.all([
+        const [availableRes, purchasedRes, seriesRes, attemptsRes, badgeRes, favRes] = await Promise.all([
           API.get("/user/tests/available"),
           API.get("/user/tests/purchased"),
           API.get("/series"),
-          API.get("/user/attempts")
+          API.get("/user/attempts"),
+          API.get("/user/badges"),
+          API.get("/user/favorites")
         ]);
         
         setAvailableTests(availableRes.data);
         setPurchasedTests(purchasedRes.data);
         setSeries(seriesRes.data);
+        setGamification(badgeRes.data);
+        setFavorites(favRes.data);
 
         // RECOMMENDATION ENGINE 🔥
         const attempts = attemptsRes.data;
@@ -137,12 +149,15 @@ export default function UserDashboard() {
   }, [isAuthChecked]);
 
   // Combined logic for search and filter
-  const filteredSeries = series.filter(s => {
-    const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase()) || 
-                          s.description.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = filterCategory === "All" || s.category === filterCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredSeries = filterCategory === "Favorites"
+    ? favorites.filter(s => s.title.toLowerCase().includes(search.toLowerCase()) || s.description.toLowerCase().includes(search.toLowerCase()))
+    : series.filter(s => {
+        const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase()) || 
+                              s.description.toLowerCase().includes(search.toLowerCase());
+        const matchesCategory = filterCategory === "All" || s.category === filterCategory;
+        return matchesSearch && matchesCategory;
+      });
+
 
   const handleJoinSession = async (testId: string) => {
     try {
@@ -161,7 +176,23 @@ export default function UserDashboard() {
     }
   };
 
-  const categories = ["All", ...Array.from(new Set(series.map(s => s.category)))];
+  const handleToggleFavorite = async (seriesId: string) => {
+    try {
+      await API.post(`/user/favorites/${seriesId}`);
+      // Optimistic update
+      const isFav = favorites.find((f: any) => f._id === seriesId);
+      if (isFav) {
+        setFavorites(favorites.filter((f: any) => f._id !== seriesId));
+      } else {
+        const fullSeries = series.find(s => s._id === seriesId);
+        if (fullSeries) setFavorites([...favorites, fullSeries]);
+      }
+    } catch (err) {
+      console.error("Favorite toggle failed", err);
+    }
+  };
+
+  const categories = ["All", "Favorites", ...Array.from(new Set(series.map(s => s.category)))];
 
   if (loading) return <div className="min-h-screen bg-[#f3f4f9] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Initializing Classroom...</div>;
 
@@ -177,6 +208,37 @@ export default function UserDashboard() {
 
         <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
           
+          {/* GAMIFICATION HUD */}
+          {gamification && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gradient-to-br from-indigo-900 to-indigo-800 p-8 rounded-[2.5rem] flex items-center justify-between shadow-2xl shadow-indigo-900/20 text-white relative overflow-hidden">
+                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 blur-2xl rounded-full" />
+                <div className="z-10">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200 mb-2">Current Level</p>
+                  <p className="text-4xl font-black">{gamification.level || 1}</p>
+                </div>
+                <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center z-10"><Sparkles size={32} className="text-indigo-200" /></div>
+              </div>
+              <div className="bg-gradient-to-br from-amber-500 to-orange-500 p-8 rounded-[2.5rem] flex items-center justify-between shadow-2xl shadow-orange-500/20 text-white relative overflow-hidden">
+                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 blur-2xl rounded-full" />
+                <div className="z-10">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-amber-100 mb-2">Active Streak</p>
+                  <p className="text-4xl font-black">{gamification.streak || 0} <span className="text-sm font-bold opacity-80">Days</span></p>
+                </div>
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center z-10"><Flame size={32} /></div>
+              </div>
+              <div className="bg-white border border-gray-100 p-8 rounded-[2.5rem] flex items-center justify-between shadow-xl shadow-gray-100 flex-1">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Total Score Points</p>
+                  <p className="text-4xl font-black text-gray-900 flex items-baseline gap-2">
+                    {gamification.points || 0} <span className="text-xs text-blue-600 font-black uppercase tracking-widest">XP</span>
+                  </p>
+                </div>
+                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center"><Award size={28} className="text-blue-600" /></div>
+              </div>
+            </div>
+          )}
+
           {/* SEARCH & FILTER HUD */}
           <section className="flex flex-col md:flex-row gap-6 items-center justify-between">
              <div className="relative w-full md:w-96 group">
@@ -340,7 +402,15 @@ export default function UserDashboard() {
 
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {filteredSeries.map((s) => (
-                  <div key={s._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col group hover:-translate-y-2 transition-all duration-300">
+                  <div key={s._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col group hover:-translate-y-2 transition-all duration-300 relative">
+                     <button 
+                        onClick={() => handleToggleFavorite(s._id)}
+                        className={`absolute top-6 right-6 w-10 h-10 rounded-2xl flex items-center justify-center transition-all z-10 ${
+                          favorites.some(f => f._id === s._id) ? "bg-amber-50 text-amber-500 shadow-lg shadow-amber-50" : "bg-gray-50 text-gray-300 hover:text-amber-500 hover:bg-amber-50"
+                        }`}
+                     >
+                        <Bookmark size={16} fill={favorites.some(f => f._id === s._id) ? "currentColor" : "none"} />
+                     </button>
                      <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-50 group-hover:bg-blue-600 group-hover:text-white transition-all">
                         <Layers size={24} />
                      </div>
