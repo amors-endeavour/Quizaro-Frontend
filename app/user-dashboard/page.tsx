@@ -280,8 +280,8 @@ export default function UserDashboard() {
                         return `color-scale-${Math.min(value.count, 4)} text-green-500`;
                       }}
                       tooltipDataAttrs={(value: any) => {
-                         if (!value || !value.date) return null;
-                         return { 'data-tooltip': `${value.date}: ${value.count} tests` };
+                         if (!value || !value.date) return { 'data-tooltip': 'No assessments' } as any;
+                         return { 'data-tooltip': `${value.date}: ${value.count} tests` } as any;
                       }}
                     />
                   </div>
