@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import AdminHeader from "@/components/AdminHeader";
 import API from "@/app/lib/api";
+import io from "socket.io-client";
 import { 
   BarChart3, 
   TrendingUp, 
@@ -51,6 +52,20 @@ export default function ReportsDashboard() {
 
   useEffect(() => {
     fetchReports();
+
+    const socket = io(process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com", {
+      transports: ["websocket"]
+    });
+
+    socket.on("admin:attemptUpdate", (data) => {
+      console.log("Real-time telemetry event received:", data);
+      // Immediately fresh data from API to sync the UI correctly
+      fetchReports();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const handleExport = (type: 'csv' | 'pdf') => {

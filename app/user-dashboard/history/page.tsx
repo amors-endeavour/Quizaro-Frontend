@@ -51,10 +51,39 @@ export default function PerformancePage() {
 
   if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Aggregating Metrics...</div>;
 
-  const chartData = [...attempts].sort((a,b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()).map(a => ({
+  let chartData = [...attempts].sort((a,b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()).map((a, i) => ({
     date: new Date(a.createdAt).toLocaleDateString(),
-    score: Math.round(parseFloat(a.percentage))
+    score: Math.round(parseFloat(a.percentage)),
+    index: i + 1
   }));
+
+  // Phase 6.3 - Predictive Score Analytics (Linear Regression MVP)
+  if (chartData.length >= 3) {
+    const n = chartData.length;
+    let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+    
+    chartData.forEach(p => {
+      sumX += p.index;
+      sumY += p.score;
+      sumXY += p.index * p.score;
+      sumXX += p.index * p.index;
+    });
+
+    const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    const b = (sumY - m * sumX) / n;
+
+    const nextIndex = n + 1;
+    const predictedScore = Math.min(100, Math.max(0, Math.round(m * nextIndex + b)));
+    
+    // Fill previous slots with null string so the dotted line originates from the last real point correctly
+    // or just pass 'predicted' alongside 'score' for the last node so the line connects natively.
+    chartData[n-1].predicted = chartData[n-1].score; // tie it
+    chartData.push({
+      date: "Next",
+      predicted: predictedScore,
+      index: nextIndex
+    } as any);
+  }
 
   const handleExportCSV = () => {
     const csvData = attempts.map(a => ({
@@ -149,6 +178,9 @@ export default function PerformancePage() {
                         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', fontWeight: 900, textTransform: 'uppercase', fontSize: '10px' }} 
                       />
                       <Line type="monotone" dataKey="score" stroke="#2563eb" strokeWidth={4} activeDot={{ r: 8, fill: '#2563eb', stroke: '#fff', strokeWidth: 4 }} />
+                      {chartData.length >= 3 && (
+                        <Line type="monotone" dataKey="predicted" stroke="#8b5cf6" strokeWidth={4} strokeDasharray="5 5" activeDot={{ r: 8, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 4 }} />
+                      )}
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
