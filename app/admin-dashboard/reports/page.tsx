@@ -30,13 +30,18 @@ interface Attempt {
 
 export default function ReportsDashboard() {
   const [attempts, setAttempts] = useState<Attempt[]>([]);
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedAttempt, setSelectedAttempt] = useState<Attempt | null>(null);
 
   const fetchReports = async () => {
     try {
-      const { data } = await API.get("/admin/attempts/recent");
-      setAttempts(data);
+      const [attemptRes, statsRes] = await Promise.all([
+        API.get("/admin/attempts/recent"),
+        API.get("/admin/stats")
+      ]);
+      setAttempts(attemptRes.data);
+      setStats(statsRes.data);
     } catch (err) {
       console.error("Failed to fetch reports:", err);
     } finally {
@@ -77,10 +82,10 @@ export default function ReportsDashboard() {
         {/* LIVE METRICS */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
            {[
-             { label: "Active Cohort", val: "1,294", icon: <Users size={24} />, color: "blue" },
-             { label: "Completion Velocity", val: "84.2%", icon: <TrendingUp size={24} />, color: "green" },
-             { label: "Incident Rate", val: "0.4%", icon: <AlertCircle size={24} />, color: "red" },
-             { label: "Avg Efficiency", val: "42m", icon: <Clock size={24} />, color: "orange" }
+             { label: "Active Cohort (Weekly)", val: `${stats?.activeThisWeek || 0}`, icon: <Users size={24} />, color: "blue" },
+             { label: "Completion Velocity / Avg Marks", val: `${stats?.avgScore || 0}%`, icon: <TrendingUp size={24} />, color: "green" },
+             { label: "Incident Rate", val: `${stats?.incidentRate || '0.0'}%`, icon: <AlertCircle size={24} />, color: "red" },
+             { label: "Avg Efficiency", val: `${stats?.avgTime || 0}m`, icon: <Clock size={24} />, color: "orange" }
            ].map((m) => (
              <div key={m.label} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col justify-between group hover:border-blue-200 transition-all duration-500">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform ${

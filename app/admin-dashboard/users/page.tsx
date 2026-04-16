@@ -13,7 +13,10 @@ import {
   CheckCircle2,
   AlertCircle,
   TrendingUp,
-  Zap
+  Zap,
+  UserX,
+  UserCheck,
+  Eye
 } from "lucide-react";
 
 interface Series {
@@ -26,12 +29,22 @@ interface Test {
   title: string;
 }
 
+interface PlatformUser {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  isBanned: boolean;
+  createdAt: string;
+}
+
 export default function StudentAccessPage() {
   const [email, setEmail] = useState("");
   const [series, setSeries] = useState<Series[]>([]);
   const [tests, setTests] = useState<Test[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState("");
   const [selectedTestId, setSelectedTestId] = useState("");
+  const [users, setUsers] = useState<PlatformUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -39,12 +52,14 @@ export default function StudentAccessPage() {
   useEffect(() => {
     const loadCatalog = async () => {
       try {
-        const [seriesRes, testsRes] = await Promise.all([
+        const [seriesRes, testsRes, usersRes] = await Promise.all([
           API.get("/admin/series"),
-          API.get("/admin/tests")
+          API.get("/admin/tests"),
+          API.get("/admin/users")
         ]);
         setSeries(seriesRes.data);
         setTests(testsRes.data);
+        setUsers(usersRes.data);
       } catch (err) {
         console.error("Catalog load failed", err);
       }
@@ -72,6 +87,24 @@ export default function StudentAccessPage() {
       setError(err?.response?.data?.message || "Granting process failed.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleBan = async (userId: string, isBanned: boolean) => {
+    try {
+      await API.put(`/admin/user/${userId}/ban`);
+      setUsers(users.map(u => u._id === userId ? { ...u, isBanned: !isBanned } : u));
+    } catch (err) {
+      console.error("Ban action failed", err);
+    }
+  };
+
+  const changeRole = async (userId: string, newRole: string) => {
+    try {
+      await API.post(`/admin/grant-role`, { userId, role: newRole });
+      setUsers(users.map(u => u._id === userId ? { ...u, role: newRole } : u));
+    } catch (err) {
+      console.error("Role assignment failed", err);
     }
   };
 
@@ -192,6 +225,57 @@ export default function StudentAccessPage() {
               </div>
            </div>
         </div>
+
+         {/* USER REGISTRY TABLE */}
+         <div className="bg-white rounded-[3.5rem] border border-gray-100 shadow-2xl shadow-gray-200/50 p-12 lg:p-16">
+            <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight flex items-center gap-4 mb-8">
+               <Users size={24} className="text-blue-600" /> Platform Security & Identity Matrix
+            </h3>
+            <div className="overflow-x-auto">
+               <table className="w-full text-left">
+                  <thead>
+                     <tr className="bg-gray-50/50">
+                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 rounded-l-3xl">Candidate</th>
+                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Security / Role</th>
+                        <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Registered</th>
+                        <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-widest text-gray-400 rounded-r-3xl">Moderation Action</th>
+                     </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                     {users.map(u => (
+                        <tr key={u._id} className="hover:bg-gray-50/30 transition-all">
+                           <td className="px-8 py-6">
+                              <p className="text-sm font-black text-gray-900 uppercase tracking-wide">{u.name}</p>
+                              <p className="text-[10px] font-bold text-gray-400">{u.email}</p>
+                           </td>
+                           <td className="px-8 py-6">
+                              <select 
+                                value={u.role || "student"}
+                                onChange={(e) => changeRole(u._id, e.target.value)}
+                                className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl outline-none appearance-none cursor-pointer border ${u.role === 'admin' ? 'bg-purple-50 text-purple-600 border-purple-100' : 'bg-gray-50 text-gray-600 border-gray-100'} hover:opacity-80 transition-opacity`}
+                              >
+                                <option value="student">Student Status</option>
+                                <option value="admin">Admin Authority</option>
+                              </select>
+                           </td>
+                           <td className="px-8 py-6 text-xs font-black text-gray-900">{new Date(u.createdAt).toLocaleDateString()}</td>
+                           <td className="px-8 py-6 text-right flex items-center justify-end gap-3">
+                              <button className="p-3 bg-gray-50 text-gray-400 hover:text-blue-600 rounded-xl transition-all" title="View Detailed Activity Logs">
+                                 <Eye size={16} />
+                              </button>
+                              <button 
+                                onClick={() => toggleBan(u._id, u.isBanned)}
+                                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all flex items-center gap-2 ${u.isBanned ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}
+                              >
+                                 {u.isBanned ? <><UserCheck size={14}/> Remove Suspension</> : <><UserX size={14}/> Enforce Ban</>}
+                              </button>
+                           </td>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
+            </div>
+         </div>
 
       </div>
     </div>
