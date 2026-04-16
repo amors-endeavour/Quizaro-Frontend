@@ -12,7 +12,12 @@ import {
   FileText,
   Info,
   LogOut,
-  Zap
+  Zap,
+  Bookmark,
+  Flag,
+  Lightbulb,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import API from "@/app/lib/api";
 
@@ -52,6 +57,17 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   const [questionTimeLeft, setQuestionTimeLeft] = useState<number | null>(null);
+
+  // Phase 3.3 — Engagement States 🔥
+  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+  const [hint, setHint] = useState<string | null>(null);
+  const [showHint, setShowHint] = useState(false);
+  const [hintLoading, setHintLoading] = useState(false);
+  const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set());
+  const [showFlagModal, setShowFlagModal] = useState(false);
+  const [tabSwitchWarnings, setTabSwitchWarnings] = useState(0);
+  const [showAntiCheatHUD, setShowAntiCheatHUD] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleQuestionChange = (nextIndex: number) => {
     setIsExiting(true);
@@ -186,6 +202,59 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
     };
   }, []);
 
+  // TAB-SWITCH ANTI-CHEAT MONITOR 🔥
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && !loading && !submitting) {
+        setTabSwitchWarnings(prev => {
+          const next = prev + 1;
+          setShowAntiCheatHUD(true);
+          setTimeout(() => setShowAntiCheatHUD(false), 4000);
+          if (next >= 3) {
+            handleSubmit(); // Force submit on 3rd violation
+          }
+          return next;
+        });
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [loading, submitting]);
+
+  // HINT FETCHER 🔥
+  const fetchHint = async (questionId: string) => {
+    setHintLoading(true);
+    setShowHint(true);
+    setHint(null);
+    try {
+      const { data } = await API.get(`/question/hint/${questionId}`);
+      setHint(data.hint || data.message);
+    } catch {
+      setHint("Hint unavailable for this question.");
+    } finally {
+      setHintLoading(false);
+    }
+  };
+
+  // BOOKMARK TOGGLE 🔥
+  const toggleBookmark = (questionId: string) => {
+    setBookmarks(prev => {
+      const next = new Set(prev);
+      next.has(questionId) ? next.delete(questionId) : next.add(questionId);
+      return next;
+    });
+  };
+
+  // FLAG QUESTION 🔥
+  const submitFlag = async (questionId: string) => {
+    try {
+      await API.post(`/question/flag/${questionId}`);
+      setFlaggedQuestions(prev => new Set([...prev, questionId]));
+    } catch { /* silent fail */ } finally {
+      setShowFlagModal(false);
+    }
+  };
+
   useEffect(() => {
     if (timeLeft <= 0 && !loading && questions.length > 0) {
       handleSubmit();
@@ -242,7 +311,8 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
     } catch (err: any) {
       console.error("Quiz submission failed:", err);
       const msg = err?.response?.data?.message || err.message || "Platform connection error. Please try again.";
-      alert(msg);
+      setSubmitError(msg);
+      setTimeout(() => setSubmitError(null), 5000);
       setSubmitting(false);
     }
   };
@@ -263,6 +333,9 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
   );
 
   const question = questions[currentQuestion];
+  const isBookmarked = bookmarks.has(question?._id);
+  const isFlagged = flaggedQuestions.has(question?._id);
+  const bookmarkCount = bookmarks.size;
   const progress = ((Object.keys(answers).length) / questions.length) * 100;
 
   return (
@@ -310,15 +383,20 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
                 <button
                   key={q._id}
                   onClick={() => handleQuestionChange(idx)}
-                  className={`w-full aspect-square rounded-2xl font-black text-xs transition-all duration-300 flex items-center justify-center border-2 ${
+                  className={`w-full aspect-square rounded-2xl font-black text-xs transition-all duration-300 flex items-center justify-center border-2 relative ${
                     idx === currentQuestion 
                       ? "bg-blue-600 text-white border-blue-100 shadow-xl shadow-blue-100 scale-110 z-10" 
                       : answers[q._id] !== undefined
                       ? "bg-green-50 text-green-700 border-green-100 hover:bg-green-100"
+                      : bookmarks.has(q._id)
+                      ? "bg-amber-50 text-amber-600 border-amber-100"
                       : "bg-gray-50 text-gray-400 border-gray-50 hover:bg-gray-100"
                   }`}
                 >
                   {(idx + 1).toString().padStart(2, "0")}
+                  {bookmarks.has(q._id) && idx !== currentQuestion && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full" />
+                  )}
                 </button>
               ))}
            </div>
@@ -331,6 +409,10 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
               <div className="flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
                 <span className="text-[11px] font-black text-gray-600 uppercase">Unanswered: {questions.length - Object.keys(answers).length}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                <span className="text-[11px] font-black text-amber-600 uppercase">Bookmarked: {bookmarkCount}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
@@ -490,6 +572,46 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-gray-900 transition-colors">Report Technical Issue</span>
          </button>
       </div>
+
+      {/* ANTI-CHEAT TAB WARNING 🔥 */}
+      {showAntiCheatHUD && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[400] bg-red-600 text-white px-10 py-5 rounded-[2rem] shadow-2xl animate-in slide-in-from-top-4 duration-300 flex items-center gap-4">
+          <AlertCircle size={20} />
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-widest">Tab Switch Detected — Warning {tabSwitchWarnings}/3</p>
+            <p className="text-[10px] opacity-70 mt-0.5">{tabSwitchWarnings >= 3 ? "Auto-submitting..." : "3rd violation will auto-submit your paper."}</p>
+          </div>
+        </div>
+      )}
+
+      {/* SUBMIT ERROR HUD 🔥 */}
+      {submitError && (
+        <div className="fixed bottom-10 left-10 z-[400] bg-white border border-red-100 text-red-600 px-8 py-5 rounded-[2rem] shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4">
+          <div className="w-8 h-8 bg-red-50 rounded-xl flex items-center justify-center"><AlertCircle size={16} /></div>
+          <p className="text-[10px] font-black uppercase tracking-widest">{submitError}</p>
+        </div>
+      )}
+
+      {/* FLAG CONFIRMATION MODAL 🔥 */}
+      {showFlagModal && (
+        <div className="fixed inset-0 z-[500] bg-gray-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="bg-white rounded-[3.5rem] p-12 max-w-sm w-full shadow-2xl text-center space-y-8 animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-xl"><Flag size={32} /></div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-black text-gray-900 tracking-tighter uppercase">Report Question</h3>
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Flag this question for administrative review? This helps us improve content quality.</p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button onClick={() => submitFlag(question._id)} className="w-full py-5 bg-gray-900 text-white rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all active:scale-95">
+                Confirm Report
+              </button>
+              <button onClick={() => setShowFlagModal(false)} className="w-full py-5 bg-gray-50 text-gray-400 rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
