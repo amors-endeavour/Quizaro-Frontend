@@ -75,108 +75,104 @@ export default function UserDashboard() {
   const [heatmapValues, setHeatmapValues] = useState<{date: string, count: number}[]>([]);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      // Handle token from URL (Social Login Redirect)
+    const initDashboard = async () => {
+      // 1. Handle Token Handoff (Social Login)
       if (typeof window !== "undefined") {
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get("token");
         if (urlToken) {
           localStorage.setItem("token", urlToken);
-          // Clean up URL
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       }
 
+      // 2. Safety Timeout (Ensures UI doesn't hang forever)
+      const safetyTimeout = setTimeout(() => {
+        setLoading(false);
+        setIsAuthChecked(true);
+      }, 8000);
+
       try {
-        const { data } = await API.get("/user/profile");
-        const role = (data?.role || data?.user?.role)?.toLowerCase();
+        // 3. Identity Handshake
+        const { data: profile } = await API.get("/user/profile");
+        const role = (profile?.role || profile?.user?.role)?.toLowerCase();
+        
         if (role === "admin") {
           router.replace("/admin-dashboard");
           return;
         }
-        setUser(data?.user || data);
+
+        setUser(profile?.user || profile);
         setIsAuthChecked(true);
-      } catch {
-        router.replace("/user-login");
-      }
-    };
-    checkAuth();
-  }, [router]);
 
-  const [recommendations, setRecommendations] = useState<Series[]>([]);
+        // 4. Sequence Data Loading (More robust than Promise.all for high-latency connections)
+        try {
+          const [available, purchased, seriesList, attempts, badges, favs] = await Promise.all([
+            API.get("/user/tests/available"),
+            API.get("/user/tests/purchased"),
+            API.get("/series"),
+            API.get("/user/attempts"),
+            API.get("/user/badges"),
+            API.get("/user/favorites")
+          ]);
 
-  useEffect(() => {
-    if (!isAuthChecked) return;
-    const loadData = async () => {
-      try {
-        const [availableRes, purchasedRes, seriesRes, attemptsRes, badgeRes, favRes] = await Promise.all([
-          API.get("/user/tests/available"),
-          API.get("/user/tests/purchased"),
-          API.get("/series"),
-          API.get("/user/attempts"),
-          API.get("/user/badges"),
-          API.get("/user/favorites")
-        ]);
-        
-        setAvailableTests(availableRes.data);
-        setPurchasedTests(purchasedRes.data);
-        setSeries(seriesRes.data);
-        setGamification(badgeRes.data);
-        setFavorites(favRes.data);
+          setAvailableTests(available.data);
+          setPurchasedTests(purchased.data);
+          setSeries(seriesList.data);
+          setGamification(badges.data);
+          setFavorites(favs.data);
 
-        // RECOMMENDATION ENGINE & HEATMAP 🔥
-        const attempts = attemptsRes.data;
+          // Build Insights
+          const attemptData = attempts.data || [];
+          const attemptStats: Record<string, number> = {};
+          attemptData.forEach((a: any) => {
+            const dStr = a.submittedAt || a.createdAt;
+            if (dStr) {
+               const d = new Date(dStr).toISOString().split('T')[0];
+               attemptStats[d] = (attemptStats[d] || 0) + 1;
+            }
+          });
+          setHeatmapValues(Object.keys(attemptStats).map(k => ({ date: k, count: attemptStats[k] })));
 
-        // Calculate heatmap values
-        const attemptStats: Record<string, number> = {};
-        attempts.forEach((a: any) => {
-          if (a.submittedAt || a.createdAt) {
-            const d = new Date(a.submittedAt || a.createdAt).toISOString().split('T')[0];
-            attemptStats[d] = (attemptStats[d] || 0) + 1;
+          // TFJS Logic (Protected against empty data)
+          if (attemptData.length > 0) {
+             const categoryStats: Record<string, { total: number, count: number }> = {};
+             attemptData.forEach((att: any) => {
+                const cat = att.testId?.category || "General";
+                if (!categoryStats[cat]) categoryStats[cat] = { total: 0, count: 0 };
+                categoryStats[cat].total += att.percentage || 0;
+                categoryStats[cat].count += 1;
+             });
+
+             const categories = Object.keys(categoryStats);
+             if (categories.length > 0) {
+                const averages = categories.map(cat => categoryStats[cat].total / categoryStats[cat].count);
+                tf.engine().startScope();
+                const weakestIndex = tf.tensor1d(averages).argMin().dataSync()[0];
+                const weakestCat = categories[weakestIndex];
+                
+                const recs = seriesList.data.filter((s: any) => 
+                  s.category === weakestCat && 
+                  !purchased.data.some((pt: any) => pt.testId.seriesId === s._id)
+                ).slice(0, 2);
+                setRecommendations(recs);
+                tf.engine().endScope();
+             }
           }
-        });
-        setHeatmapValues(Object.keys(attemptStats).map(k => ({ date: k, count: attemptStats[k] })));
-
-        if (attempts.length > 0) {
-           const categoryStats: Record<string, { total: number, count: number }> = {};
-           attempts.forEach((att: any) => {
-              const cat = att.testId?.category || "General";
-              if (!categoryStats[cat]) categoryStats[cat] = { total: 0, count: 0 };
-              categoryStats[cat].total += att.percentage || 0;
-              categoryStats[cat].count += 1;
-           });
-
-           // Phase 6.2 - TensorFlow.js Collaborative Clustering MVP
-           const categories = Object.keys(categoryStats);
-           const averages = categories.map(cat => categoryStats[cat].total / categoryStats[cat].count);
-           
-           let weakestCat = "General";
-           
-           if (categories.length > 0) {
-             tf.engine().startScope(); // Automatic GC for GPU Tensors
-             const avgTensor = tf.tensor1d(averages);
-             const weakestIndexTensor = avgTensor.argMin();
-             const weakestIndexArr = weakestIndexTensor.dataSync(); 
-             weakestCat = categories[weakestIndexArr[0]];
-             tf.engine().endScope();
-           }
-
-           // Get unpurchased series in this category
-           const recs = seriesRes.data.filter((s: any) => 
-             s.category === weakestCat && 
-             !purchasedRes.data.some((pt: any) => pt.testId.seriesId === s._id)
-           ).slice(0, 2);
-           
-           setRecommendations(recs);
+        } catch (dataErr) {
+          console.error("Secondary Data Load Failed:", dataErr);
         }
-      } catch (err) {
-        console.error("Data load failed", err);
+      } catch (authErr) {
+        console.error("Authentication check failed:", authErr);
+        router.replace("/user-login");
       } finally {
+        clearTimeout(safetyTimeout);
         setLoading(false);
       }
     };
-    loadData();
-  }, [isAuthChecked]);
+
+    initDashboard();
+  }, [router]);
 
   // Combined logic for search and filter
   const filteredSeries = filterCategory === "Favorites"
