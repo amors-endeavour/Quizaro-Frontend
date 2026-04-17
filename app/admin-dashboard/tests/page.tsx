@@ -368,7 +368,7 @@ export default function TestsPage() {
                   </button>
                 )}
              </div>
-          </div>v>
+          </div>
 
           {!currentSeriesId ? (
             /* SERIES GRID VIEW */
