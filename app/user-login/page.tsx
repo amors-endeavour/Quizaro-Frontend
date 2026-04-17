@@ -38,7 +38,8 @@ function UserLoginForm() {
       if (role === "admin") {
         router.replace("/admin-dashboard");
       } else if (redirect) {
-        router.replace(redirect);
+        const target = redirect.startsWith("/") ? redirect : "/user-dashboard";
+        router.replace(target);
       } else {
         router.replace("/user-dashboard");
       }

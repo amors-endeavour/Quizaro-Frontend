@@ -44,7 +44,9 @@ function LoginForm() {
       if (role === "admin") {
         router.replace("/admin-dashboard");
       } else if (redirect) {
-        router.replace(redirect);
+        // Ensure redirect is a relative path to prevent external injection
+        const target = redirect.startsWith("/") ? redirect : "/user-dashboard";
+        router.replace(target);
       } else {
         router.replace("/user-dashboard");
       }

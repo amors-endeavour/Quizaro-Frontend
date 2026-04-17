@@ -253,10 +253,10 @@ export default function TestsPage() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Accessing Library Grid...</div>;
+  if (loading) return <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black animate-pulse text-cyan-400 uppercase tracking-widest leading-none text-xs text-center">Accessing Institutional <br/> Library Grid...</div>;
 
   return (
-    <div className="flex flex-col min-h-screen relative bg-[#f8f9fc]">
+    <div className="flex flex-col min-h-screen relative bg-[#050816] text-white selection:bg-cyan-500/30">
       <main className="flex-1 overflow-y-auto">
         <AdminHeader 
           title={currentSeriesId ? series.find(s => s._id === currentSeriesId)?.title || "Papers" : "Institutional Library"}
@@ -284,35 +284,35 @@ export default function TestsPage() {
           
           {/* BATCH ACTION BAR (FLOATING) */}
           {selectedTests.length > 0 && (
-            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-8 py-5 rounded-[2.5rem] shadow-2xl flex items-center gap-8 animate-in slide-in-from-bottom-20 duration-500">
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-white/10 backdrop-blur-2xl text-white px-8 py-5 rounded-[2.5rem] shadow-2xl flex items-center gap-8 animate-in slide-in-from-bottom-20 duration-500 border border-white/20">
                <div className="flex items-center gap-3 pr-8 border-r border-white/10">
-                  <span className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-xs">{selectedTests.length}</span>
-                  <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Selection Active</p>
+                  <span className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center font-black text-xs shadow-lg shadow-cyan-900/40">{selectedTests.length}</span>
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-60 italic">Selection Active</p>
                </div>
                
                <div className="flex items-center gap-6">
-                  <button onClick={() => setShowConfirmModal({ show: true, type: 'bulk_delete' })} className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors">Batch Delete</button>
-                  <button onClick={() => setSelectedTests([])} className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Clear Selection</button>
+                  <button onClick={() => setShowConfirmModal({ show: true, type: 'bulk_delete' })} className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors italic">Batch Expunge</button>
+                  <button onClick={() => setSelectedTests([])} className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Reset</button>
                </div>
             </div>
           )}
 
           {/* FOLDER INFO HUD */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 animate-in fade-in slide-in-from-top-4 duration-500">
              <div className="flex items-center gap-6">
                 <div 
                   onClick={() => {
                     if (selectedTests.length === filteredTests.length) setSelectedTests([]);
                     else setSelectedTests(filteredTests.map(t => t._id));
                   }}
-                  className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center cursor-pointer transition-all ${selectedTests.length === filteredTests.length && filteredTests.length > 0 ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-100" : "border-gray-200"}`}
+                  className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center cursor-pointer transition-all ${selectedTests.length === filteredTests.length && filteredTests.length > 0 ? "bg-cyan-600 border-cyan-400 shadow-lg shadow-cyan-900/40" : "border-white/10 bg-white/5"}`}
                 >
-                  {selectedTests.length === filteredTests.length && filteredTests.length > 0 && <div className="w-2 h-2 bg-white rounded-full" />}
+                  {selectedTests.length === filteredTests.length && filteredTests.length > 0 && <div className="w-2 h-2 bg-white rounded-full shadow-[0_0_8px_white]" />}
                 </div>
-                <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-3">
-                   {currentSeriesId ? "Papers in Series" : "Institutional Quiz Series"}
-                   <span className="text-gray-200">/</span>
-                   <span className="text-gray-900 tracking-tighter normal-case font-black text-xs">
+                <h3 className="text-sm font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-3 italic">
+                   {currentSeriesId ? "Papers" : "Institutional Catalogs"}
+                   <span className="text-gray-800">/</span>
+                   <span className="text-white tracking-tighter normal-case font-black text-xs italic">
                      {currentSeriesId ? series.find(s => s._id === currentSeriesId)?.title : "Overview"}
                    </span>
                 </h3>
@@ -320,8 +320,8 @@ export default function TestsPage() {
              
              <div className="flex gap-4">
                 <div className="relative group">
-                   <button className="px-6 py-2.5 bg-gray-50 text-gray-900 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:shadow-xl transition-all">
-                     Import Paper
+                   <button className="px-6 py-2.5 bg-white/5 text-gray-400 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 hover:text-white hover:border-white/20 transition-all italic">
+                     Import Registry
                    </button>
                    <input 
                       type="file" 
@@ -331,7 +331,7 @@ export default function TestsPage() {
                    />
                 </div>
 
-                 {!currentSeriesId && (
+                  {!currentSeriesId && (
                    <>
                     <button 
                       onClick={() => {
@@ -347,13 +347,13 @@ export default function TestsPage() {
                         });
                         setShowModal(true);
                       }}
-                      className="px-6 py-2.5 bg-zinc-900 text-white hover:bg-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                      className="px-6 py-2.5 bg-white text-black hover:bg-cyan-400 hover:text-black rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic shadow-xl shadow-cyan-900/10"
                     >
                       + New Paper
                     </button>
                     <button 
                       onClick={() => setShowSeriesModal(true)}
-                      className="px-6 py-2.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                      className="px-6 py-2.5 bg-cyan-600/10 text-cyan-400 border border-cyan-400/20 hover:bg-cyan-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic shadow-lg shadow-black/20"
                     >
                       + New Series
                     </button>
@@ -362,20 +362,20 @@ export default function TestsPage() {
                 {currentSeriesId && (
                   <button 
                     onClick={() => setCurrentSeriesId(null)}
-                    className="px-6 py-2.5 bg-gray-50 text-gray-400 hover:bg-white hover:shadow-xl rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                    className="px-6 py-2.5 bg-white/5 text-gray-500 border border-white/5 hover:border-white/10 hover:text-white hover:bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic"
                   >
-                    ← Back to Catalog
+                    ← Catalog Grid
                   </button>
                 )}
              </div>
-          </div>
+          </div>v>
 
           {!currentSeriesId ? (
             /* SERIES GRID VIEW */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
               {series.length === 0 && tests.filter(t => !t.seriesId).length === 0 ? (
-                <div className="col-span-full py-32 text-center bg-white rounded-[3rem] border border-dashed border-gray-200">
-                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">No Series or Papers Detected</p>
+                <div className="col-span-full py-40 text-center bg-white/5 rounded-[4rem] border border-dashed border-white/10 animate-pulse">
+                  <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest italic tracking-[0.3em]">Institutional Repository Empty</p>
                 </div>
               ) : (
                 <>
@@ -440,15 +440,15 @@ export default function TestsPage() {
                     });
                     setShowModal(true);
                   }}
-                  className="w-full py-8 border-2 border-dashed border-gray-100 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 text-gray-300 hover:border-blue-200 hover:text-blue-500 transition-all group"
+                  className="w-full py-12 border-2 border-dashed border-white/5 rounded-[3rem] flex flex-col items-center justify-center gap-4 text-gray-600 hover:border-cyan-400/30 hover:text-cyan-400 transition-all group bg-white/[0.02] backdrop-blur-sm"
                >
-                  <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">+</div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">Add New Paper to this Series</span>
+                  <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-cyan-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all">+</div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] italic">Synthesize New Assessment Node</span>
                </button>
 
                {filteredTests.length === 0 ? (
-                 <div className="py-20 text-center">
-                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest italic opacity-50">Empty Series Sequence</p>
+                 <div className="py-24 text-center bg-white/5 rounded-[3rem] border border-dashed border-white/5">
+                   <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.3em] italic opacity-50 underline decoration-cyan-400/30 underline-offset-8">Empty Intelligence Sequence</p>
                  </div>
                ) : (
                  filteredTests.sort((a,b) => (a.paperNumber || 0) - (b.paperNumber || 0)).map((test) => (
@@ -497,46 +497,46 @@ export default function TestsPage() {
 
       {/* CREATE / EDIT MODAL (TEST PAPER) */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-[3rem] w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div className="px-10 py-8 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-               <h3 className="text-xl font-black text-gray-900 tracking-tight uppercase">
-                 {editingTest ? "Assessment Calibration" : "New Paper Construction"}
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0f1d] border border-white/10 rounded-[4rem] w-full max-w-xl overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300">
+            <div className="px-10 py-10 bg-white/5 border-b border-white/10 flex items-center justify-between">
+               <h3 className="text-xl font-black text-white tracking-tight uppercase italic">
+                 {editingTest ? "Node Calibration" : "Construction Hub"}
                </h3>
-               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-900 transition">
-                 <X size={24} />
+               <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-white transition-colors duration-300">
+                 <X size={28} />
                </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-10 space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Parent Series Assignment</label>
+            <form onSubmit={handleSubmit} className="p-12 space-y-8">
+              <div className="space-y-3">
+                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Intelligence Sequence Assignment</label>
                 <select 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold appearance-none"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-cyan-400 appearance-none"
                   value={formData.seriesId}
                   onChange={(e) => setFormData({...formData, seriesId: e.target.value})}
                 >
-                  <option value="">No Series (Standalone Paper)</option>
-                  {series.map(s => <option key={s._id} value={s._id}>{s.title}</option>)}
+                  <option value="" className="bg-[#0a0f1d]">Standalone Intelligence Node</option>
+                  {series.map(s => <option key={s._id} value={s._id} className="bg-[#0a0f1d]">{s.title}</option>)}
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Paper Identity</label>
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Node Identity</label>
                   <input 
-                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-white placeholder:text-gray-700"
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
                     required
                     placeholder="e.g. Model Paper 01"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Sequence Index</label>
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Sequence Rank</label>
                   <input 
                     type="number"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-white"
                     value={formData.paperNumber}
                     onChange={(e) => setFormData({...formData, paperNumber: Number(e.target.value)})}
                     required
@@ -544,40 +544,40 @@ export default function TestsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Duration (Min)</label>
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Duration (Min)</label>
                   <input 
                     type="number"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-white"
                     value={formData.duration}
                     onChange={(e) => setFormData({...formData, duration: Number(e.target.value)})}
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Enrollment Fee (₹)</label>
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Registry Fee (₹)</label>
                   <input 
                     type="number"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-amber-500"
                     value={formData.price}
                     onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
                   />
                 </div>
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-6 pt-6">
                 <button 
                   type="button" 
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-4 border-2 border-gray-200 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-400 hover:bg-gray-50 transition"
+                  className="flex-1 py-5 border-2 border-white/5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest text-gray-600 hover:bg-white/5 hover:text-white transition duration-300"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
-                  className="flex-1 py-4 bg-gray-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 transition shadow-xl"
+                  className="flex-1 py-5 bg-white text-black rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-all duration-300 shadow-2xl shadow-cyan-900/20 active:scale-95"
                 >
-                  {editingTest ? "Update Changes" : "Save and Continue"}
+                  {editingTest ? "Preserve Evolution" : "Initialize Node"}
                 </button>
               </div>
             </form>
@@ -587,20 +587,20 @@ export default function TestsPage() {
 
       {/* CREATE SERIES MODAL */}
       {showSeriesModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-[3rem] w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div className="px-10 py-8 bg-blue-600 text-white flex items-center justify-between">
-               <h3 className="text-xl font-black tracking-tight uppercase">New Series Construction</h3>
-               <button onClick={() => setShowSeriesModal(false)} className="text-white/60 hover:text-white transition">
-                 <X size={24} />
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0f1d] border border-white/10 rounded-[4rem] w-full max-w-xl overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300">
+            <div className="px-10 py-10 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex items-center justify-between">
+               <h3 className="text-xl font-black tracking-tight uppercase italic">Intelligence Catalyst Construction</h3>
+               <button onClick={() => setShowSeriesModal(false)} className="text-white/40 hover:text-white transition-colors duration-300">
+                 <X size={28} />
                </button>
             </div>
             
-            <form onSubmit={handleSeriesSubmit} className="p-10 space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Series Title</label>
+            <form onSubmit={handleSeriesSubmit} className="p-12 space-y-8">
+              <div className="space-y-3">
+                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Series Taxonomy</label>
                 <input 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-white placeholder:text-gray-700"
                   value={seriesFormData.title}
                   onChange={(e) => setSeriesFormData({...seriesFormData, title: e.target.value})}
                   required
@@ -608,20 +608,20 @@ export default function TestsPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Series Description</label>
+              <div className="space-y-3">
+                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Neural Pathway Description</label>
                 <textarea 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold min-h-[100px] text-gray-900"
+                  className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-gray-400 min-h-[120px] placeholder:text-gray-700 italic"
                   value={seriesFormData.description}
                   onChange={(e) => setSeriesFormData({...seriesFormData, description: e.target.value})}
                   placeholder="Describe the learning path..."
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Academic Category</label>
+              <div className="space-y-3">
+                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Academic Domain</label>
                 <input 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all font-bold text-gray-900"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-white placeholder:text-gray-700"
                   value={seriesFormData.category}
                   onChange={(e) => setSeriesFormData({...seriesFormData, category: e.target.value})}
                   required
@@ -629,19 +629,19 @@ export default function TestsPage() {
                 />
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-6 pt-6">
                 <button 
                   type="button" 
                   onClick={() => setShowSeriesModal(false)}
-                  className="flex-1 py-4 border-2 border-gray-200 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-400 hover:bg-gray-50 transition"
+                  className="flex-1 py-5 border-2 border-white/5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest text-gray-600 hover:bg-white/5 hover:text-white transition duration-300"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
-                  className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition shadow-xl shadow-blue-200"
+                  className="flex-1 py-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all duration-300 shadow-2xl shadow-blue-900/40 border border-white/10"
                 >
-                  Generate Series
+                  Synthesize Series
                 </button>
               </div>
             </form>
@@ -651,32 +651,32 @@ export default function TestsPage() {
 
       {/* INSTITUTIONAL STATUS HUD 🔥 */}
       {statusMsg && (
-        <div className={`fixed bottom-10 left-10 z-[300] px-8 py-5 rounded-[2rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4 ${statusMsg.type === 'success' ? "bg-white border-green-100 text-green-600" : "bg-white border-red-100 text-red-600"}`}>
-           <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-50" : "bg-red-50"}`}>
-              {statusMsg.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+        <div className={`fixed bottom-10 left-10 z-[300] px-8 py-6 rounded-[2.5rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-5 backdrop-blur-2xl ${statusMsg.type === 'success' ? "bg-white/5 border-cyan-400/20 text-cyan-400 shadow-cyan-900/10" : "bg-white/5 border-red-400/20 text-red-500 shadow-red-900/10"}`}>
+           <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-cyan-400/10" : "bg-red-400/10"}`}>
+              {statusMsg.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
            </div>
-           <p className="text-[10px] font-black uppercase tracking-widest leading-none">{statusMsg.text}</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.2em] leading-none italic">{statusMsg.text}</p>
         </div>
       )}
 
       {/* CONFIRMATION OVERLAY 🔥 */}
       {showConfirmModal.show && (
-         <div className="fixed inset-0 z-[400] bg-gray-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-            <div className="bg-white rounded-[4rem] p-12 max-w-lg w-full shadow-[0_50px_100px_rgba(0,0,0,0.1)] text-center space-y-8 animate-in zoom-in-95 duration-300">
-               <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[2rem] flex items-center justify-center mx-auto shadow-xl shadow-red-50/50">
-                  <AlertCircle size={32} />
+         <div className="fixed inset-0 z-[400] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+            <div className="bg-[#0a0f1d] border border-white/10 rounded-[4rem] p-16 max-w-lg w-full shadow-[0_50px_100px_rgba(0,0,0,0.8)] text-center space-y-10 animate-in zoom-in-95 duration-300">
+               <div className="w-24 h-24 bg-red-400/10 text-red-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl shadow-red-950/20 border border-red-500/20">
+                  <AlertCircle size={40} className="animate-pulse" />
                </div>
                <div className="space-y-4">
-                  <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">{showConfirmModal.type === 'series_delete' ? "Expunge Series Catalog" : "Expunge Assessment"}</h3>
+                  <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">{showConfirmModal.type === 'series_delete' ? "Expunge Registry" : "Expunge Node"}</h3>
                   <p className="text-sm font-bold text-gray-500 leading-relaxed italic">
                      {showConfirmModal.type === 'series_delete' 
-                       ? `Are you certain you want to permanently expunge "${showConfirmModal.targetName}"? This will terminate all nested papers and student metrics. This action is final.` 
+                       ? `Are you certain you want to permanently expunge "${showConfirmModal.targetName}"? This will terminate all nested intelligence nodes and student analytics. This operation is non-reversible.` 
                        : showConfirmModal.type === 'bulk_delete'
-                       ? `Are you certain you want to expunge ${selectedTests.length} selected items from the registry?`
-                       : "Are you certain you want to permanently expunge this assessment from the registry?"}
+                       ? `Are you certain you want to expunge ${selectedTests.length} selected assets from the intelligence core?`
+                       : "Are you certain you want to permanently expunge this assessment node from the registry?"}
                   </p>
                </div>
-               <div className="flex flex-col gap-4">
+               <div className="flex flex-col gap-6">
                   <button 
                     onClick={
                       showConfirmModal.type === 'series_delete' 
@@ -685,15 +685,15 @@ export default function TestsPage() {
                         ? handleBulkDelete
                         : () => handleDelete(showConfirmModal.targetId!)
                     }
-                    className="w-full py-5 bg-red-600 hover:bg-red-700 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl shadow-red-100 transition-all active:scale-95"
+                    className="w-full py-6 bg-red-600 hover:bg-red-700 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest shadow-2xl shadow-red-900/20 transition-all active:scale-95 duration-300"
                   >
-                     Confirm Expunge
+                     Confirm Expunge Operation
                   </button>
                   <button 
                     onClick={() => setShowConfirmModal({ show: false, type: 'delete' })}
-                    className="w-full py-5 bg-gray-50 text-gray-400 hover:bg-gray-100 rounded-3xl font-black text-xs uppercase tracking-widest transition-all"
+                    className="w-full py-6 bg-white/5 text-gray-500 hover:text-white hover:bg-white/10 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all duration-300 border border-white/5"
                   >
-                     Cancel Operation
+                     Abort Operation
                   </button>
                </div>
             </div>

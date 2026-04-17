@@ -97,7 +97,7 @@ export default function TestsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#050816] flex items-center justify-center">
-        <div className="text-center font-black text-blue-500 tracking-widest uppercase animate-pulse">
+        <div className="text-center font-black text-cyan-400 tracking-widest uppercase animate-pulse leading-none text-xs">
            Initializing Intelligence Registry...
         </div>
       </div>
@@ -105,16 +105,16 @@ export default function TestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] text-gray-900 font-sans">
+    <div className="min-h-screen bg-[#050816] text-white font-sans selection:bg-cyan-500/30">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-8 py-16">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
+      <div className="max-w-7xl mx-auto px-8 py-20">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-20 animate-in fade-in slide-in-from-top-10 duration-700">
            <div className="space-y-4">
-              <h1 className="text-5xl font-black tracking-tighter text-gray-900 uppercase">
-                {seriesTitle || "Global Paper Registry"}
+              <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-white uppercase italic">
+                {seriesTitle || "Intelligence Registry"}
               </h1>
-              <p className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">
+              <p className="text-sm font-bold text-gray-500 uppercase tracking-[0.4em] italic mb-2">
                 {seriesId ? "Institutional Series Sequence" : "Complete Platform Assessment Catalog"}
               </p>
               {seriesId && isAuthenticated && (
@@ -122,75 +122,81 @@ export default function TestsPage() {
                   onClick={async () => {
                     try {
                       setLoading(true);
+                      // Series enrollment logic here
                     } catch (err: any) {
                       setStatusMsg({ text: err?.response?.data?.message || "Series enrollment failed.", type: 'error' });
                       setTimeout(() => setStatusMsg(null), 3000);
                       setLoading(false);
                     }
                   }}
-                  className="mt-6 px-10 py-4 bg-blue-600 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition shadow-2xl shadow-blue-100 flex items-center gap-3 w-fit"
+                  className="mt-6 px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-[0_15px_40px_rgba(37,99,235,0.3)] flex items-center gap-4 w-fit border border-white/10"
                 >
-                  <div className="w-5 h-5 bg-white/20 rounded-lg flex items-center justify-center">✓</div>
-                  Enroll in Full Series Sequence
+                  <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center shadow-lg">✓</div>
+                  Enroll in Intelligence Sequence
                 </button>
               )}
            </div>
            
-           <div className="w-full md:w-96 relative">
+           <div className="w-full md:w-96 relative group">
               <input
                 type="text"
-                placeholder="Locate specific papers..."
+                placeholder="Locate intelligence nodes..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-white border border-gray-100 rounded-3xl px-8 py-5 outline-none focus:border-blue-400 focus:shadow-2xl focus:shadow-blue-50/50 transition-all font-bold text-sm"
+                className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 focus:shadow-[0_0_30px_rgba(34,211,238,0.1)] transition-all font-bold text-sm text-white placeholder:text-gray-600 shadow-2xl shadow-black/20"
               />
+              <div className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 group-hover:text-cyan-400 transition-colors">
+                <AlertCircle size={18} />
+              </div>
            </div>
         </div>
 
         {filteredTests.length === 0 ? (
-          <div className="text-center py-32 bg-white rounded-[3rem] border border-dashed border-gray-200">
-            <p className="text-xs font-black text-gray-300 uppercase tracking-widest">No matching assessment items found.</p>
+          <div className="text-center py-40 bg-white/5 rounded-[4rem] border border-dashed border-white/10 animate-pulse">
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">No matching intellectual assets found in registry.</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             {filteredTests.map((test) => (
               <div
                 key={test._id}
-                className="bg-white rounded-[2.5rem] border border-gray-100 p-10 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-50/50 transition-all duration-500 group flex flex-col"
+                className="bg-white/5 backdrop-blur-xl rounded-[3rem] border border-white/5 p-10 hover:border-cyan-400/30 hover:shadow-[0_30px_70px_rgba(0,0,0,0.5)] transition-all duration-500 group flex flex-col relative overflow-hidden"
               >
-                <div className="flex items-center gap-5 mb-8">
-                   <div className="w-14 h-14 bg-gray-50 text-gray-400 rounded-2xl flex items-center justify-center font-black text-xs font-mono group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                
+                <div className="flex items-center gap-5 mb-8 relative z-10">
+                   <div className="w-14 h-14 bg-white/5 border border-white/5 text-gray-500 rounded-2xl flex items-center justify-center font-black text-xs font-mono group-hover:bg-cyan-600 group-hover:text-white group-hover:border-cyan-400 transition-all shadow-xl group-hover:shadow-cyan-900/40">
                       {test.paperNumber ? `P${test.paperNumber}` : "★"}
                    </div>
                    <div>
-                      <h3 className="text-lg font-black text-gray-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors uppercase">{test.title}</h3>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2 italic">{test.duration || 30} Min Assessment</p>
+                      <h3 className="text-lg font-black text-white tracking-tight leading-none group-hover:text-cyan-400 transition-colors uppercase italic">{test.title}</h3>
+                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-2 italic">{test.duration || 30} Min Assessment</p>
                    </div>
                 </div>
 
                 {test.description && (
-                  <p className="text-gray-500 font-bold text-[11px] mb-8 line-clamp-2 leading-relaxed italic">{test.description}</p>
+                  <p className="text-gray-400 font-bold text-[11px] mb-8 line-clamp-2 leading-relaxed italic relative z-10">{test.description}</p>
                 )}
 
-                <div className="mt-auto pt-8 border-t border-gray-50 flex items-center justify-between">
+                <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between relative z-10">
                    <div className="flex flex-col">
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Questions</span>
-                      <span className="text-lg font-black text-gray-900 tracking-tighter">{test.totalQuestions || 0}</span>
+                      <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Nodes</span>
+                      <span className="text-lg font-black text-white tracking-tighter">{test.totalQuestions || 0}</span>
                    </div>
 
                    {/* PRICE BADGE 🔥 */}
                    {test.price > 0 && (
                       <div className="flex flex-col items-end">
-                         <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Access Fee</span>
-                         <span className="text-lg font-black text-amber-600 tracking-tighter">₹{test.price}</span>
+                         <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Registry Fee</span>
+                         <span className="text-lg font-black text-amber-500 tracking-tighter drop-shadow-[0_0_10px_rgba(245,158,11,0.3)]">₹{test.price}</span>
                       </div>
                    )}
                    
                    <button
                     onClick={() => handleLaunchPaper(test._id)}
-                    className={`px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95 ${test.price > 0 ? "bg-amber-600 text-white hover:bg-amber-700 shadow-amber-50" : "bg-gray-900 text-white hover:bg-blue-600 shadow-gray-100"}`}
+                    className={`px-10 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all shadow-2xl active:scale-95 border border-white/10 ${test.price > 0 ? "bg-amber-600 text-white hover:bg-amber-700 shadow-amber-950/20" : "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:scale-105 shadow-blue-900/20"}`}
                    >
-                    {!isAuthenticated ? "Authenticate to Begin" : test.price > 0 ? `Unlock Paper` : "Launch Paper"}
+                    {!isAuthenticated ? "Authenticate" : test.price > 0 ? `Unlock Paper` : "Initialize Paper"}
                    </button>
                 </div>
               </div>
@@ -200,11 +206,11 @@ export default function TestsPage() {
       </div>
       {/* INSTITUTIONAL STATUS HUD 🔥 */}
       {statusMsg && (
-        <div className={`fixed bottom-10 left-10 z-[300] px-8 py-5 rounded-[2rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4 ${statusMsg.type === 'success' ? "bg-white border-green-100 text-green-600" : statusMsg.type === 'alert' ? "bg-white border-amber-100 text-amber-600" : "bg-white border-red-100 text-red-600"}`}>
-           <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-50" : statusMsg.type === 'alert' ? "bg-amber-50" : "bg-red-50"}`}>
+        <div className={`fixed bottom-10 left-10 z-[300] px-8 py-5 rounded-[2rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4 backdrop-blur-xl ${statusMsg.type === 'success' ? "bg-white/5 border-cyan-400/20 text-cyan-400" : statusMsg.type === 'alert' ? "bg-white/5 border-amber-400/20 text-amber-400" : "bg-white/5 border-red-400/20 text-red-500"}`}>
+           <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-cyan-400/10" : statusMsg.type === 'alert' ? "bg-amber-400/10" : "bg-red-400/10"}`}>
               {statusMsg.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
            </div>
-           <p className="text-[10px] font-black uppercase tracking-widest leading-none">{statusMsg.text}</p>
+           <p className="text-[10px] font-black uppercase tracking-widest leading-none italic">{statusMsg.text}</p>
         </div>
       )}
     </div>

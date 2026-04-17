@@ -371,17 +371,17 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-white flex flex-col items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Initializing Secure Environment...</div>;
+  if (loading) return <div className="min-h-screen bg-[#050816] flex flex-col items-center justify-center font-black text-cyan-400 animate-pulse tracking-widest uppercase">Initializing Secure Environment...</div>;
 
   if (error) return (
-    <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center p-8">
-      <div className="bg-white p-12 rounded-[3rem] shadow-2xl shadow-gray-200 text-center max-w-lg border border-gray-100">
-         <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-red-50">
+    <div className="min-h-screen bg-[#050816] flex items-center justify-center p-8">
+      <div className="bg-white/5 backdrop-blur-xl p-12 rounded-[3rem] shadow-2xl text-center max-w-lg border border-white/10">
+         <div className="w-20 h-20 bg-red-400/10 text-red-400 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-red-950/20">
            <AlertCircle size={32} />
          </div>
-         <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Access Error</h2>
+         <h2 className="text-2xl font-black text-white mb-4 tracking-tight uppercase italic">Access Violation</h2>
          <p className="text-gray-500 font-bold mb-8 italic">{error}</p>
-         <button onClick={() => router.push("/user-dashboard")} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-black transition">Return Dashboard</button>
+         <button onClick={() => router.push("/user-dashboard")} className="w-full py-4 bg-cyan-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-cyan-700 transition shadow-xl shadow-cyan-900/20">Return Dashboard</button>
       </div>
     </div>
   );
@@ -393,30 +393,30 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
   const progress = ((Object.keys(answers).length) / questions.length) * 100;
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] text-gray-900 font-sans flex flex-col overflow-hidden selection:bg-blue-500/30">
+    <div className="min-h-screen bg-[#050816] text-white font-sans flex flex-col overflow-hidden selection:bg-cyan-500/30">
       
       {/* PROFESSIONAL EXAMINATION HEADER */}
-      <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 shrink-0 z-30 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+      <header className="h-20 bg-[#050816]/60 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-8 shrink-0 z-30 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
         <div className="flex items-center gap-6">
-           <div className="w-12 h-12 bg-gray-900 rounded-2xl flex items-center justify-center text-white font-black text-xl">Q</div>
+           <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl shadow-blue-900/20">Q</div>
            <div>
-              <h1 className="text-xs font-black text-gray-900 uppercase tracking-widest">{test?.title}</h1>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-1">Institutional Paper-01</p>
+              <h1 className="text-xs font-black text-white uppercase tracking-widest">{test?.title}</h1>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-1">Institutional Intelligence Paper</p>
            </div>
         </div>
 
         <div className="flex items-center gap-10">
            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Answered Progress</span>
-              <div className="w-48 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                 <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${progress}%` }} />
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Intelligence Threshold</span>
+              <div className="w-48 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                 <div className="h-full bg-cyan-500 transition-all duration-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]" style={{ width: `${progress}%` }} />
               </div>
            </div>
 
-           <div className={`px-8 py-3 rounded-2xl border-2 flex items-center gap-4 transition-all duration-500 ${timeLeft < 300 ? "bg-red-50 border-red-100 text-red-600 animate-pulse" : "bg-gray-50 border-gray-100 text-gray-700"}`}>
-              <Clock size={20} className={timeLeft < 300 ? "text-red-500" : "text-blue-600"} />
+           <div className={`px-8 py-3 rounded-2xl border-2 flex items-center gap-4 transition-all duration-500 backdrop-blur-md ${timeLeft < 300 ? "bg-red-400/10 border-red-400/20 text-red-400 animate-pulse" : "bg-white/5 border-white/10 text-gray-300"}`}>
+              <Clock size={20} className={timeLeft < 300 ? "text-red-400" : "text-cyan-400"} />
               <div className="flex flex-col">
-                 <span className="text-[9px] font-black uppercase tracking-widest opacity-50">Time Remaining</span>
+                 <span className="text-[9px] font-black uppercase tracking-widest opacity-50">Grid Time Leak</span>
                  <span className="text-lg font-mono font-black tracking-tighter leading-none">{formatTime(timeLeft)}</span>
               </div>
            </div>
@@ -426,10 +426,10 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
       <div className="flex-1 flex overflow-hidden">
         
         {/* LEFT NAVIGATOR (SIDEBAR STYLE IMAGE #3) */}
-        <aside className="w-80 bg-white border-r border-gray-100 overflow-y-auto hidden lg:block p-8">
+        <aside className="w-80 bg-[#050816] border-r border-white/10 overflow-y-auto hidden lg:block p-8">
            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-gray-400">Question Palette</h3>
-              <span className="px-3 py-1 bg-gray-100 rounded-full text-[10px] font-black">{questions.length} Items</span>
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-gray-500">Grid Navigator</h3>
+              <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black text-cyan-400">{questions.length} Nodes</span>
            </div>
 
            <div className="grid grid-cols-4 gap-3">
@@ -439,45 +439,45 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
                   onClick={() => handleQuestionChange(idx)}
                   className={`w-full aspect-square rounded-2xl font-black text-xs transition-all duration-300 flex items-center justify-center border-2 relative ${
                     idx === currentQuestion 
-                      ? "bg-blue-600 text-white border-blue-100 shadow-xl shadow-blue-100 scale-110 z-10" 
+                      ? "bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-white/20 shadow-xl shadow-blue-900/30 scale-110 z-10" 
                       : answers[q._id] !== undefined
-                      ? "bg-green-50 text-green-700 border-green-100 hover:bg-green-100"
+                      ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/20 hover:bg-cyan-500/20"
                       : bookmarks.has(q._id)
-                      ? "bg-amber-50 text-amber-600 border-amber-100"
-                      : "bg-gray-50 text-gray-400 border-gray-50 hover:bg-gray-100"
+                      ? "bg-amber-400/10 text-amber-500 border-amber-400/20"
+                      : "bg-white/5 text-gray-600 border-white/5 hover:border-white/10 hover:text-gray-400"
                   }`}
                 >
                   {(idx + 1).toString().padStart(2, "0")}
                   {bookmarks.has(q._id) && idx !== currentQuestion && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full" />
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
                   )}
                 </button>
               ))}
            </div>
 
-           <div className="mt-12 p-6 bg-blue-50/50 rounded-[2.5rem] border border-blue-50 space-y-4">
+           <div className="mt-12 p-6 bg-white/5 rounded-[2.5rem] border border-white/5 space-y-4 backdrop-blur-md shadow-xl shadow-black/20">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                <span className="text-[11px] font-black text-gray-900 uppercase">Answered: {Object.keys(answers).length}</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                <span className="text-[11px] font-black text-gray-300 uppercase">Answered: {Object.keys(answers).length}</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
-                <span className="text-[11px] font-black text-gray-600 uppercase">Unanswered: {questions.length - Object.keys(answers).length}</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                <span className="text-[11px] font-black text-gray-500 uppercase">Unanswered: {questions.length - Object.keys(answers).length}</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                <span className="text-[11px] font-black text-amber-600 uppercase">Bookmarked: {bookmarkCount}</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+                <span className="text-[11px] font-black text-amber-500 uppercase">Bookmarked: {bookmarkCount}</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                <span className="text-[11px] font-black text-blue-600 uppercase tracking-widest">Active Question</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                <span className="text-[11px] font-black text-blue-400 uppercase tracking-widest">Active Question</span>
               </div>
            </div>
 
            <div className="mt-auto pt-10">
               <button 
                 onClick={() => setShowExitModal(true)}
-                className="w-full flex items-center gap-4 px-6 py-4 text-red-500 hover:bg-red-50 rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest"
+                className="w-full flex items-center gap-4 px-6 py-4 text-red-400 hover:bg-red-400/10 rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-transparent hover:border-red-400/20"
               >
                  <LogOut size={18} />
                  Terminate Session
@@ -491,29 +491,29 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
               
               <div 
                 key={currentQuestion}
-                className={`bg-white rounded-[3rem] border border-gray-100 shadow-[0_30px_70px_rgba(0,0,0,0.03)] overflow-hidden transition-all duration-300 ${isExiting ? "opacity-0 translate-x-10 scale-95" : "animate-in fade-in slide-in-from-left-10 duration-700"}`}
+                className={`bg-white/5 backdrop-blur-2xl rounded-[3rem] border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 ${isExiting ? "opacity-0 translate-x-10 scale-95" : "animate-in fade-in slide-in-from-left-10 duration-700"}`}
               >
                  {/* Question Header */}
-                 <div className="px-12 py-8 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
+                 <div className="px-12 py-8 bg-white/5 border-b border-white/5 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                       <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-xl">Question {currentQuestion + 1}</span>
-                       <div className="w-px h-6 bg-gray-200" />
-                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Multiple Choice Question</span>
+                       <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-400/10 border border-cyan-400/20 px-4 py-2 rounded-xl shadow-lg shadow-cyan-900/10">Active Node {currentQuestion + 1}</span>
+                       <div className="w-px h-6 bg-white/10" />
+                       <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Institutional Multiple Choice Matrix</span>
                     </div>
                     <div className="flex items-center gap-3">
                        {questionTimeLeft !== null && test?.questionTimer && (
-                          <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-xl border border-amber-100 mr-4">
-                             <Zap size={14} className="text-amber-600 animate-pulse" />
-                             <span className="text-[10px] font-black text-amber-600 uppercase tabular-nums">{questionTimeLeft}s Left</span>
+                          <div className="flex items-center gap-2 px-4 py-2 bg-amber-400/10 rounded-xl border border-amber-400/20 mr-4">
+                             <Zap size={14} className="text-amber-500 animate-pulse" />
+                             <span className="text-[10px] font-black text-amber-500 uppercase tabular-nums">{questionTimeLeft}s Left</span>
                           </div>
                        )}
-                       <CheckCircle2 size={18} className={answers[question?._id] !== undefined ? "text-green-500" : "text-gray-200"} />
+                       <CheckCircle2 size={18} className={answers[question?._id] !== undefined ? "text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]" : "text-white/5"} />
                     </div>
                  </div>
 
                  {/* Question Body */}
                  <div className="p-12 lg:p-16">
-                    <h2 className="text-2xl md:text-3xl font-black text-gray-900 leading-[1.2] mb-14 selection:bg-blue-500 selection:text-white">
+                    <h2 className="text-2xl md:text-3xl font-black text-white leading-[1.2] mb-14 selection:bg-cyan-500 selection:text-white tracking-tight">
                        {question?.questionText}
                     </h2>
 
@@ -524,15 +524,15 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
                            onClick={() => handleAnswerSelect(question._id, i)}
                            className={`w-full group flex items-center justify-between p-6 rounded-[2rem] border-2 transition-all duration-300 transform-gpu active:scale-[0.98] ${
                              answers[question._id] === i
-                               ? "bg-blue-600 border-blue-100 text-white shadow-2xl shadow-blue-200 translate-x-3"
-                               : "bg-white border-gray-50 text-gray-600 hover:border-blue-200 hover:bg-gray-50"
+                               ? "bg-cyan-600 border-cyan-400 text-white shadow-2xl shadow-cyan-900/20 translate-x-3"
+                               : "bg-white/5 border-white/5 text-gray-400 hover:border-cyan-400/30 hover:bg-white/10"
                            }`}
                          >
                            <div className="flex items-center gap-6">
                               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm transition-all duration-300 ${
                                 answers[question._id] === i
                                   ? "bg-white/20 text-white"
-                                  : "bg-gray-100 text-gray-400 group-hover:bg-blue-100 group-hover:text-blue-600"
+                                  : "bg-white/5 border border-white/5 text-gray-500 group-hover:bg-cyan-400 group-hover:text-white group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.4)]"
                               }`}>
                                 {String.fromCharCode(65 + i)}
                               </div>
@@ -541,7 +541,7 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
                               </span>
                            </div>
                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                             answers[question._id] === i ? "border-white bg-white text-blue-600" : "border-gray-100 group-hover:border-blue-200"
+                             answers[question._id] === i ? "border-white bg-white text-cyan-800" : "border-white/5 group-hover:border-cyan-400/50"
                            }`}>
                              {answers[question._id] === i && <CheckCircle2 size={14} strokeWidth={4} />}
                            </div>
@@ -556,27 +556,27 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
                  <button
                    onClick={() => handleQuestionChange(Math.max(0, currentQuestion - 1))}
                    disabled={currentQuestion === 0}
-                   className="flex items-center gap-3 px-8 py-4 bg-white border-2 border-gray-100 rounded-[2rem] text-[10px] font-black text-gray-400 uppercase tracking-widest hover:border-blue-200 hover:text-blue-600 disabled:opacity-0 transition-all active:scale-95"
+                   className="flex items-center gap-3 px-8 py-4 bg-white/5 border-2 border-white/10 rounded-[2rem] text-[10px] font-black text-gray-500 uppercase tracking-widest hover:border-cyan-400/30 hover:text-cyan-400 disabled:opacity-0 transition-all active:scale-95 shadow-xl shadow-black/20"
                  >
                    <ChevronLeft size={16} />
-                   Previous Question
+                   Retrace Logic
                  </button>
 
                  {currentQuestion < questions.length - 1 ? (
                    <button
                      onClick={() => handleQuestionChange(currentQuestion + 1)}
-                     className="group flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[2rem] text-[10px] font-black text-white uppercase tracking-widest shadow-2xl shadow-blue-100 hover:scale-105 transition-all active:scale-95"
+                     className="group flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[2rem] text-[10px] font-black text-white uppercase tracking-widest shadow-[0_15px_40px_rgba(37,99,235,0.4)] hover:scale-105 transition-all active:scale-95 border border-white/10"
                    >
-                     Next Question
+                     Advance Sequence
                      <ChevronRight size={16} />
                    </button>
                  ) : (
                    <button
                      onClick={handleSubmit}
                      disabled={submitting}
-                     className="px-12 py-5 bg-green-600 text-white rounded-[2.5rem] text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-green-100 animate-bounce hover:animate-none hover:bg-green-700 transition-all"
+                     className="px-12 py-5 bg-cyan-600 text-white rounded-[2.5rem] text-[11px] font-black uppercase tracking-widest shadow-[0_15px_50px_rgba(8,145,178,0.5)] animate-pulse hover:animate-none hover:bg-cyan-700 transition-all"
                    >
-                     {submitting ? "Processing Final Submission..." : "Complete & Close Test"}
+                     {submitting ? "Codifying Results..." : "Complete Intelligence Loop"}
                    </button>
                  )}
               </div>
@@ -586,31 +586,31 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
 
       {/* MODALS: EXIT & SUBMIT 🔥 */}
       {(showExitModal || showSubmitModal) && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-300">
-           <div className="bg-white rounded-[3.5rem] p-12 max-w-lg w-full shadow-2xl space-y-8 animate-in zoom-in-95 duration-300">
-              <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto shadow-xl ${showExitModal ? "bg-red-50 text-red-600 shadow-red-50" : "bg-blue-50 text-blue-600 shadow-blue-50"}`}>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#02040a]/90 backdrop-blur-xl animate-in fade-in duration-300">
+           <div className="bg-[#050816] border border-white/10 rounded-[3.5rem] p-12 max-w-lg w-full shadow-[0_0_100px_rgba(37,99,235,0.2)] space-y-8 animate-in zoom-in-95 duration-300">
+              <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto shadow-2xl ${showExitModal ? "bg-red-400/10 text-red-500 shadow-red-950/20" : "bg-cyan-400/10 text-cyan-400 shadow-cyan-950/20"}`}>
                  {showExitModal ? <LogOut size={32} /> : <CheckCircle2 size={32} />}
               </div>
               <div className="text-center space-y-4">
-                 <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">{showExitModal ? "Confirm Termination" : "Submit Examination"}</h3>
-                 <p className="text-sm font-bold text-gray-500 leading-relaxed italic">
+                 <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">{showExitModal ? "Confirm Termination" : "Submit Intelligence"}</h3>
+                 <p className="text-sm font-bold text-gray-400 leading-relaxed italic">
                     {showExitModal 
                       ? "Are you sure you want to end this performance session? Progress will be saved, but active timer parameters may be restricted upon re-entry." 
-                      : `You have answered ${Object.keys(answers).length} out of ${questions.length} questions. Finalize and generate your clinical scorecard now?`}
+                      : `You have answered ${Object.keys(answers).length} out of ${questions.length} nodes. Finalize and generate your institutional scorecard?`}
                  </p>
               </div>
               <div className="flex flex-col gap-4">
                  <button 
                    onClick={showExitModal ? () => router.push("/user-dashboard") : handleSubmit}
-                   className={`w-full py-5 rounded-3xl font-black text-xs uppercase tracking-widest text-white shadow-xl transition-all ${showExitModal ? "bg-red-600 hover:bg-red-700 shadow-red-100" : "bg-blue-600 hover:bg-blue-700 shadow-blue-100"}`}
+                   className={`w-full py-5 rounded-3xl font-black text-xs uppercase tracking-widest text-white shadow-2xl transition-all ${showExitModal ? "bg-red-600 hover:bg-red-700 shadow-red-900/40" : "bg-cyan-600 hover:bg-cyan-700 shadow-cyan-900/40"}`}
                  >
-                    {showExitModal ? "Confirm & Exit" : "Yes, Submit Now"}
+                    {showExitModal ? "Confirm Termination" : "Finalize Submission"}
                  </button>
                  <button 
                     onClick={() => { setShowExitModal(false); setShowSubmitModal(false); }}
-                    className="w-full py-5 bg-gray-50 text-gray-400 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-gray-100 transition-all"
+                    className="w-full py-5 bg-white/5 border border-white/5 text-gray-500 rounded-3xl font-black text-xs uppercase tracking-widest hover:border-white/10 hover:text-white transition-all"
                  >
-                    Nevermind, Resume Test
+                    Abort, Resume Loop
                  </button>
               </div>
            </div>
@@ -619,11 +619,11 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
 
       {/* FIGMA STYLE #2: Persistent Support HUD */}
       <div className="fixed bottom-8 right-8 z-[100]">
-         <button className="flex items-center gap-3 px-6 py-3 bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/50 hover:bg-gray-50 transition-all group">
-            <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+         <button className="flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl shadow-2xl hover:bg-white/10 transition-all group">
+            <div className="w-8 h-8 bg-white/10 text-cyan-400 rounded-xl flex items-center justify-center group-hover:bg-cyan-600 group-hover:text-white transition-all">
                <Info size={16} />
             </div>
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-gray-900 transition-colors">Report Technical Issue</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest group-hover:text-white transition-colors">Emergency Protocol</span>
          </button>
       </div>
 
@@ -640,26 +640,26 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
 
       {/* SUBMIT ERROR HUD 🔥 */}
       {submitError && (
-        <div className="fixed bottom-10 left-10 z-[400] bg-white border border-red-100 text-red-600 px-8 py-5 rounded-[2rem] shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4">
-          <div className="w-8 h-8 bg-red-50 rounded-xl flex items-center justify-center"><AlertCircle size={16} /></div>
+        <div className="fixed bottom-10 left-10 z-[400] bg-[#050816] border border-red-400/20 text-red-500 px-8 py-5 rounded-[2rem] shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4 backdrop-blur-xl">
+          <div className="w-8 h-8 bg-red-400/10 rounded-xl flex items-center justify-center"><AlertCircle size={16} /></div>
           <p className="text-[10px] font-black uppercase tracking-widest">{submitError}</p>
         </div>
       )}
 
       {/* FLAG CONFIRMATION MODAL 🔥 */}
       {showFlagModal && (
-        <div className="fixed inset-0 z-[500] bg-gray-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="bg-white rounded-[3.5rem] p-12 max-w-sm w-full shadow-2xl text-center space-y-8 animate-in zoom-in-95 duration-300">
-            <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-xl"><Flag size={32} /></div>
+        <div className="fixed inset-0 z-[500] bg-[#02040a]/90 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="bg-[#050816] border border-white/10 rounded-[3.5rem] p-12 max-w-sm w-full shadow-2xl text-center space-y-8 animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-red-400/10 text-red-400 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-xl border border-red-400/20"><Flag size={32} /></div>
             <div className="space-y-4">
-              <h3 className="text-xl font-black text-gray-900 tracking-tighter uppercase">Report Question</h3>
-              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Flag this question for administrative review? This helps us improve content quality.</p>
+              <h3 className="text-xl font-black text-white tracking-tighter uppercase">Report Anomaly</h3>
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Flag this node for administrative audit? This helps us maintain content integrity.</p>
             </div>
             <div className="flex flex-col gap-3">
-              <button onClick={() => submitFlag(question._id)} className="w-full py-5 bg-gray-900 text-white rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all active:scale-95">
-                Confirm Report
+              <button onClick={() => submitFlag(question._id)} className="w-full py-5 bg-cyan-600 text-white rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-cyan-700 transition-all active:scale-95 shadow-xl shadow-cyan-900/20">
+                Initiate Report
               </button>
-              <button onClick={() => setShowFlagModal(false)} className="w-full py-5 bg-gray-50 text-gray-400 rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all">
+              <button onClick={() => setShowFlagModal(false)} className="w-full py-5 bg-white/5 text-gray-500 border border-white/5 rounded-3xl font-black text-[10px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all">
                 Cancel
               </button>
             </div>
@@ -669,22 +669,22 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
 
       {/* GUEST MODE CTA MODAL */}
       {showGuestModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
-           <div className="bg-white rounded-[4rem] p-16 max-w-lg w-full text-center shadow-[0_0_100px_rgba(37,99,235,0.2)] border border-gray-100 flex flex-col items-center relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-50 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        <div className="fixed inset-0 bg-[#02040a]/95 backdrop-blur-2xl z-[500] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
+           <div className="bg-[#050816] border border-white/10 rounded-[4rem] p-16 max-w-lg w-full text-center shadow-[0_0_150px_rgba(37,99,235,0.3)] flex flex-col items-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-cyan-600/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
               
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-3xl flex items-center justify-center mb-8 shadow-2xl shadow-blue-200 relative z-10 rotate-3"><Star size={40} fill="currentColor" /></div>
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-3xl flex items-center justify-center mb-8 shadow-2xl shadow-blue-900/40 relative z-10 rotate-3 border border-white/20"><Star size={40} fill="currentColor" /></div>
               
-              <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter mb-4 relative z-10">You Scored <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">{guestScore}</span>!</h3>
-              <p className="text-xs font-bold text-gray-500 mb-10 max-w-[300px] leading-relaxed relative z-10">You've completed the assessment natively! To save your performance trajectory and access deep historical analytics, register immediately.</p>
+              <h3 className="text-3xl font-black text-white uppercase tracking-tighter mb-4 relative z-10 italic">Intelligence Milestone Reach: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">{guestScore}</span></h3>
+              <p className="text-xs font-bold text-gray-500 mb-10 max-w-[300px] leading-relaxed relative z-10 uppercase tracking-widest">Performance captured. To synchronize your intelligence trajectory and unlock neural analytics, initialize registration.</p>
               
               <div className="flex flex-col gap-4 w-full relative z-10">
-                 <button onClick={() => router.push("/register")} className="w-full py-5 bg-gray-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl hover:bg-black hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-2">
-                    <Zap size={16} className="text-blue-400" /> Sign Up to Save Result
+                 <button onClick={() => router.push("/register")} className="w-full py-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center gap-2 border border-white/10">
+                    <Zap size={16} className="text-cyan-400" /> Initialize Account Enrollment
                  </button>
-                 <button onClick={() => { localStorage.clear(); router.push("/"); }} className="w-full py-4 text-gray-400 hover:text-gray-900 rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all">
-                    Discard & Return Home
+                 <button onClick={() => { localStorage.clear(); router.push("/"); }} className="w-full py-4 text-gray-600 hover:text-white rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all">
+                    Discard Intelligence & Terminate
                  </button>
               </div>
            </div>

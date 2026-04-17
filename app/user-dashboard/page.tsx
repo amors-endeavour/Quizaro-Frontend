@@ -213,10 +213,10 @@ export default function UserDashboard() {
 
   const categories = ["All", "Favorites", ...Array.from(new Set(series.map(s => s.category)))];
 
-  if (loading) return <div className="min-h-screen bg-[#f3f4f9] flex items-center justify-center font-black text-blue-600 animate-pulse tracking-widest uppercase">Initializing Classroom...</div>;
+  if (loading) return <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black text-cyan-400 animate-pulse tracking-widest uppercase">Initializing Intelligence Grid...</div>;
 
   return (
-    <div className="flex h-screen bg-[#f8f9fc] text-gray-900 font-sans overflow-hidden">
+    <div className="flex h-screen bg-[#050816] text-white font-sans overflow-hidden">
       <UserSidebar userName={user?.name || "Student"} />
 
       <main className="flex-1 overflow-y-auto">
@@ -243,20 +243,20 @@ export default function UserDashboard() {
                 </div>
 
                 {/* Badges Showcase */}
-                <div className="lg:col-span-2 bg-white border border-gray-100 p-8 rounded-[2.5rem] flex flex-col justify-center shadow-xl shadow-gray-100 overflow-hidden">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">Earned Badges Showcase</p>
+                <div className="lg:col-span-2 bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex flex-col justify-center shadow-2xl backdrop-blur-md overflow-hidden">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-4">Earned Badges Showcase</p>
                   <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                     {gamification.badges && gamification.badges.length > 0 ? (
                       gamification.badges.map((badge: any, i: number) => (
                         <div key={i} className="flex flex-col items-center gap-2 group flex-shrink-0">
-                          <div className="w-16 h-16 bg-blue-50 border border-blue-100 text-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-50 group-hover:-translate-y-1 transition-transform cursor-help pb-1" title={badge.description || badge.name}>
+                          <div className="w-16 h-16 bg-white/5 border border-white/10 text-cyan-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:-translate-y-1 transition-transform cursor-help pb-1" title={badge.description || badge.name}>
                             <Award size={28} />
                           </div>
-                          <span className="text-[9px] font-black text-gray-900 uppercase tracking-tight">{badge.name}</span>
+                          <span className="text-[9px] font-black text-white uppercase tracking-tight">{badge.name}</span>
                         </div>
                       ))
                     ) : (
-                      <p className="text-xs font-bold text-gray-300 italic">No badges earned yet. Complete tests to begin.</p>
+                      <p className="text-xs font-bold text-gray-600 italic">No badges earned yet. Complete tests to begin.</p>
                     )}
                   </div>
                 </div>
@@ -264,10 +264,10 @@ export default function UserDashboard() {
               </div>
 
               {/* Performance Heatmap */}
-              <div className="bg-white border border-gray-100 p-8 rounded-[2.5rem] flex flex-col justify-center shadow-xl shadow-gray-100">
+              <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex flex-col justify-center shadow-2xl backdrop-blur-md">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-8 rounded-xl bg-green-50 text-green-600 flex items-center justify-center"><CheckCircle2 size={16} /></div>
-                  <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em]">Activity Heatmap</h3>
+                  <div className="w-8 h-8 rounded-xl bg-cyan-400/10 text-cyan-400 flex items-center justify-center"><CheckCircle2 size={16} /></div>
+                  <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Activity Heatmap</h3>
                 </div>
                 <div className="w-full overflow-x-auto">
                   <div className="min-w-[700px] heatmap-container">
@@ -293,12 +293,12 @@ export default function UserDashboard() {
           {/* SEARCH & FILTER HUD */}
           <section className="flex flex-col md:flex-row gap-6 items-center justify-between">
              <div className="relative w-full md:w-96 group">
-                <input 
+                 <input 
                   type="text" 
                   placeholder="Search series or topics..." 
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-white border border-gray-100 rounded-3xl px-8 py-5 outline-none focus:border-blue-400 focus:shadow-2xl focus:shadow-blue-50/50 transition-all font-bold text-sm tracking-tight"
+                  className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-cyan-500/50 focus:shadow-[0_0_30px_rgba(34,211,238,0.1)] transition-all font-bold text-sm tracking-tight text-white placeholder:text-gray-600"
                 />
              </div>
              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide w-full md:w-auto">
@@ -306,7 +306,7 @@ export default function UserDashboard() {
                   <button 
                     key={cat}
                     onClick={() => setFilterCategory(cat)}
-                    className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${filterCategory === cat ? "bg-blue-600 text-white shadow-xl shadow-blue-100" : "bg-white text-gray-400 border border-gray-100 hover:border-blue-200"}`}
+                    className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${filterCategory === cat ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-xl shadow-blue-900/20" : "bg-white/5 text-gray-500 border border-white/10 hover:border-white/30"}`}
                   >
                     {cat}
                   </button>
@@ -316,9 +316,9 @@ export default function UserDashboard() {
 
           {/* ACTIVE SERIES PROGRESS */}
           <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-             <div className="flex items-center justify-between px-4">
-                <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
-                  <Play size={18} fill="currentColor" />
+              <div className="flex items-center justify-between px-4">
+                <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
+                  <Play size={18} fill="currentColor" className="text-cyan-400" />
                   Your Series Progress
                 </h3>
              </div>
@@ -330,20 +330,19 @@ export default function UserDashboard() {
                   const completed = papersInSeries.filter(pt => pt.isCompleted).length;
                   const total = papersInSeries.length;
                   const progress = Math.round((completed / total) * 100);
-
                   return (
-                    <div key={s._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 group">
+                    <div key={s._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-md group">
                        <div className="flex items-center justify-between mb-6">
                           <div>
-                             <h4 className="text-lg font-black text-gray-900 tracking-tight">{s.title}</h4>
-                             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">{completed} of {total} Papers Completed</p>
+                             <h4 className="text-lg font-black text-white tracking-tight">{s.title}</h4>
+                             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">{completed} of {total} Papers Completed</p>
                           </div>
-                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xs ${progress === 100 ? "bg-green-50 text-green-600" : "bg-blue-50 text-blue-600"}`}>
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xs ${progress === 100 ? "bg-cyan-400/10 text-cyan-400" : "bg-blue-600/10 text-blue-400"}`}>
                              {progress}%
                           </div>
                        </div>
-                       <div className="w-full h-3 bg-gray-50 rounded-full overflow-hidden mb-6">
-                          <div className={`h-full transition-all duration-1000 ${progress === 100 ? "bg-green-500" : "bg-blue-600"}`} style={{ width: `${progress}%` }} />
+                       <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-6">
+                          <div className={`h-full transition-all duration-1000 ${progress === 100 ? "bg-cyan-500" : "bg-gradient-to-r from-blue-600 to-indigo-700"}`} style={{ width: `${progress}%` }} />
                        </div>
                     </div>
                   );
@@ -354,8 +353,8 @@ export default function UserDashboard() {
           {/* PERSONALIZED IMPROVEMENT HUB (NEW) 🔥 */}
           {recommendations.length > 0 && (
             <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-               <div className="flex items-center justify-between px-4">
-                  <h3 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em] flex items-center gap-3">
+                <div className="flex items-center justify-between px-4">
+                  <h3 className="text-sm font-black text-cyan-400 uppercase tracking-[0.2em] flex items-center gap-3">
                     <TrendingUp size={18} />
                     Personalization: Focus Required
                   </h3>
@@ -389,30 +388,30 @@ export default function UserDashboard() {
 
           {/* ACTIVE PAPERS REGISTRY */}
           <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-             <div className="flex items-center justify-between px-4">
-                <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
-                  <Layers size={18} />
+              <div className="flex items-center justify-between px-4">
+                <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
+                  <Layers size={18} className="text-gray-500" />
                   Individual Paper Registry
                 </h3>
              </div>
 
-             <div className="grid grid-cols-1 gap-4">
+             <div className="grid grid-cols-1">
                 {purchasedTests.length === 0 ? (
-                  <div className="py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
-                    <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">No series purchased yet. Explore the marketplace below.</p>
+                  <div className="py-20 text-center bg-white/5 rounded-3xl border border-dashed border-white/10">
+                    <p className="text-[11px] font-black text-gray-600 uppercase tracking-widest">No series purchased yet. Explore the marketplace below.</p>
                   </div>
                 ) : (
                   purchasedTests.map((pt) => (
-                    <div key={pt._id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:scale-[1.01] transition-all duration-300 flex flex-col md:flex-row items-center justify-between gap-6 group">
+                    <div key={pt._id} className="bg-white/5 p-6 rounded-3xl border border-white/10 shadow-lg hover:shadow-cyan-500/5 hover:scale-[1.01] transition-all duration-300 flex flex-col md:flex-row items-center justify-between gap-6 group backdrop-blur-md">
                        <div className="flex items-center gap-6">
-                          <div className="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100 group-hover:rotate-6 transition-transform">
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:rotate-6 transition-transform">
                              <FileText size={28} />
                           </div>
                           <div>
-                             <h4 className="text-lg font-black text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">{pt.testId.title}</h4>
+                             <h4 className="text-lg font-black text-white leading-tight group-hover:text-cyan-400 transition-colors">{pt.testId.title}</h4>
                              <div className="flex items-center gap-4 mt-2">
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full">{pt.testId.category || "General"}</span>
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5"><Clock size={12} /> {pt.testId.duration} Min</span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full">{pt.testId.category || "General"}</span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-1.5"><Clock size={12} /> {pt.testId.duration} Min</span>
                              </div>
                           </div>
                        </div>
@@ -421,7 +420,7 @@ export default function UserDashboard() {
                           {pt.isCompleted ? (
                              <button
                                onClick={() => router.push(`/result?attemptId=${pt._id}`)}
-                               className="px-8 py-3 bg-green-50 text-green-700 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-green-600 hover:text-white transition-all shadow-lg shadow-green-50"
+                               className="px-8 py-3 bg-white/5 text-gray-400 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-white/10 hover:text-white transition-all"
                              >
                                <CheckCircle2 size={16} />
                                View Scorecard
@@ -429,7 +428,7 @@ export default function UserDashboard() {
                           ) : (
                              <button
                                onClick={() => router.push(`/quiz/${pt.testId._id}`)}
-                               className="px-8 py-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 active:scale-95"
+                               className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:shadow-[0_10px_30px_rgba(37,99,235,0.3)] transition-all active:scale-95"
                              >
                                <Play size={16} fill="white" />
                                START TEST NOW
@@ -444,35 +443,35 @@ export default function UserDashboard() {
 
           {/* MARKETPLACE: SERIES BROWSER */}
           <section className="space-y-6 pt-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-             <div className="flex items-center justify-between px-4">
-                <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-3">
-                  <Zap size={18} />
+              <div className="flex items-center justify-between px-4">
+                <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
+                  <Zap size={18} className="text-yellow-400" />
                   Institutional Global Catalog
                 </h3>
              </div>
 
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {filteredSeries.map((s) => (
-                  <div key={s._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col group hover:-translate-y-2 transition-all duration-300 relative">
+                  <div key={s._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl flex flex-col group hover:-translate-y-2 transition-all duration-300 relative backdrop-blur-md">
                      <button 
                         onClick={() => handleToggleFavorite(s._id)}
                         className={`absolute top-6 right-6 w-10 h-10 rounded-2xl flex items-center justify-center transition-all z-10 ${
-                          favorites.some(f => f._id === s._id) ? "bg-amber-50 text-amber-500 shadow-lg shadow-amber-50" : "bg-gray-50 text-gray-300 hover:text-amber-500 hover:bg-amber-50"
+                          favorites.some(f => f._id === s._id) ? "bg-amber-400/20 text-amber-500 shadow-lg" : "bg-white/5 text-gray-600 hover:text-amber-500 hover:bg-white/10"
                         }`}
                      >
                         <Bookmark size={16} fill={favorites.some(f => f._id === s._id) ? "currentColor" : "none"} />
                      </button>
-                     <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-50 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                     <div className="w-16 h-16 bg-white/5 border border-white/5 text-blue-400 rounded-2xl flex items-center justify-center mb-6 shadow-xl group-hover:bg-blue-600 group-hover:text-white transition-all">
                         <Layers size={24} />
                      </div>
-                     <h4 className="text-lg font-black text-gray-900 tracking-tight leading-none mb-2">{s.title}</h4>
-                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">{s.category}</p>
+                     <h4 className="text-lg font-black text-white tracking-tight leading-none mb-2">{s.title}</h4>
+                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-6">{s.category}</p>
                      
                      <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 italic">{s.description || "A comprehensive series of academic papers."}</p>
                      
                      <button
                         onClick={() => router.push(`/tests?seriesId=${s._id}`)}
-                        className="w-full py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition shadow-xl"
+                        className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:border-blue-600 transition shadow-xl"
                      >
                        Explore {s.isFinite ? `${s.maxPapers} Papers` : "Papers"}
                      </button>
@@ -481,20 +480,20 @@ export default function UserDashboard() {
 
                 {/* STANDALONE PAPERS IN CATALOG */}
                 {availableTests.filter(t => !t.seriesId).map((test) => (
-                  <div key={test._id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/50 flex flex-col group hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                  <div key={test._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl flex flex-col group hover:-translate-y-2 transition-all duration-300 relative overflow-hidden backdrop-blur-md">
                      {/* PREMIUM BADGE 🔥 */}
                      {test.price > 0 && (
-                        <div className="absolute top-6 right-6 flex items-center gap-1.5 px-3 py-1 bg-amber-50 rounded-full border border-amber-100">
-                           <Lock size={10} className="text-amber-600" />
-                           <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Premium</span>
+                        <div className="absolute top-6 right-6 flex items-center gap-1.5 px-3 py-1 bg-amber-400/20 rounded-full border border-amber-400/30">
+                           <Lock size={10} className="text-amber-500" />
+                           <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Premium</span>
                         </div>
                      )}
 
-                     <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg transition-all ${test.price > 0 ? "bg-amber-50 text-amber-600 shadow-amber-50 group-hover:bg-amber-600 group-hover:text-white" : "bg-emerald-50 text-emerald-600 shadow-emerald-50 group-hover:bg-emerald-600 group-hover:text-white"}`}>
+                     <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-xl transition-all ${test.price > 0 ? "bg-amber-400/10 text-amber-500 border border-amber-400/10" : "bg-cyan-400/10 text-cyan-400 border border-cyan-400/10"}`}>
                         <FileText size={24} />
                      </div>
-                     <h4 className="text-lg font-black text-gray-900 tracking-tight leading-none mb-2">{test.title}</h4>
-                     <p className={`text-[10px] font-black uppercase tracking-widest mb-6 border px-3 py-1 rounded-full w-fit ${test.price > 0 ? "text-amber-500 border-amber-100" : "text-emerald-500 border-emerald-100"}`}>
+                     <h4 className="text-lg font-black text-white tracking-tight leading-none mb-2">{test.title}</h4>
+                     <p className={`text-[10px] font-black uppercase tracking-widest mb-6 border px-3 py-1 rounded-full w-fit ${test.price > 0 ? "text-amber-500 border-amber-500/30" : "text-cyan-500 border-cyan-500/30"}`}>
                         {test.price > 0 ? `₹${test.price} Access Fee` : "Direct Session"}
                      </p>
                      
@@ -502,7 +501,7 @@ export default function UserDashboard() {
                      
                      <button
                         onClick={() => handleJoinSession(test._id)}
-                        className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition shadow-xl ${test.price > 0 ? "bg-amber-600 text-white hover:bg-amber-700 shadow-amber-100" : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-100"}`}
+                        className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition shadow-2xl ${test.price > 0 ? "bg-gradient-to-r from-amber-600 to-orange-700 text-white shadow-amber-900/20" : "bg-gradient-to-r from-cyan-600 to-blue-700 text-white shadow-cyan-900/20"}`}
                      >
                        {test.price > 0 ? `Unlock Paper (₹${test.price})` : "Begin Session"}
                      </button>

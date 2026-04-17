@@ -34,14 +34,14 @@ export default function LeaderboardSidebar() {
   }, []);
 
   return (
-    <aside className="w-80 bg-white border-l border-gray-100 flex flex-col p-8 shrink-0 overflow-y-auto hidden xl:flex">
+    <aside className="w-80 bg-[#050816] border-l border-white/10 flex flex-col p-8 shrink-0 overflow-y-auto hidden xl:flex">
       <div className="flex items-center gap-3 mb-10">
-        <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-50">
+        <div className="w-10 h-10 bg-white/5 text-cyan-400 border border-white/10 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-950/20">
           <TrendingUp size={20} />
         </div>
         <div>
-          <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest leading-none">Global Ranking</h3>
-          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-1.5">Institutional Pulse</p>
+          <h3 className="text-xs font-black text-white uppercase tracking-widest leading-none">Global Ranking</h3>
+          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-1.5">Institutional Pulse</p>
         </div>
       </div>
 
@@ -61,19 +61,19 @@ export default function LeaderboardSidebar() {
               key={user.rank}
               className={`group p-5 rounded-[2rem] border transition-all duration-300 flex items-center justify-between ${
                 user.rank === 1 
-                  ? "bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-blue-100 shadow-2xl shadow-blue-100 -translate-y-1 scale-[1.02]" 
-                  : "bg-gray-50/50 border-gray-50 hover:bg-white hover:border-gray-100 hover:shadow-xl hover:shadow-gray-100"
+                  ? "bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-white/20 shadow-[0_15px_40px_rgba(37,99,235,0.2)] -translate-y-1 scale-[1.02]" 
+                  : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 hover:shadow-xl"
               }`}
             >
               <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs transition-colors ${
-                  user.rank === 1 ? "bg-white/20" : "bg-white text-gray-400"
+                  user.rank === 1 ? "bg-white/20" : "bg-white/5 border border-white/5 text-gray-500"
                 }`}>
-                  {user.rank === 1 ? <Trophy size={16} /> : user.rank === 2 ? <Medal size={16} className="text-amber-500" /> : user.rank === 3 ? <Award size={16} className="text-blue-400" /> : user.rank}
+                  {user.rank === 1 ? <Trophy size={16} /> : user.rank === 2 ? <Medal size={16} className="text-amber-500" /> : user.rank === 3 ? <Award size={16} className="text-cyan-400" /> : user.rank}
                 </div>
                 <div>
-                  <p className={`text-[11px] font-black tracking-tight ${user.rank === 1 ? "text-white" : "text-gray-900"}`}>{user.name}</p>
-                  <p className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${user.rank === 1 ? "text-blue-100" : "text-gray-600"}`}>Score: {user.score}%</p>
+                  <p className={`text-[11px] font-black tracking-tight ${user.rank === 1 ? "text-white" : "text-white/90"}`}>{user.name}</p>
+                  <p className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${user.rank === 1 ? "text-blue-100" : "text-gray-500"}`}>Score: {user.score}%</p>
                 </div>
               </div>
 
@@ -88,13 +88,13 @@ export default function LeaderboardSidebar() {
       </div>
 
       {!loading && userStats.rank !== null && (
-        <div className="mt-10 p-6 bg-gray-50 rounded-[2.5rem] border border-gray-100 flex items-center gap-4 animate-in slide-in-from-bottom-5 duration-500">
-          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-lg shadow-gray-100 font-black text-sm">
+        <div className="mt-10 p-6 bg-white/5 rounded-[2.5rem] border border-white/10 flex items-center gap-4 animate-in slide-in-from-bottom-5 duration-500 backdrop-blur-md">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-950/20 font-black text-sm">
             #{userStats.rank}
           </div>
           <div>
-            <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Your Position</p>
-            <p className="text-[9px] text-blue-600 font-black uppercase tracking-widest mt-1">Percentile: {userStats.percentile}%</p>
+            <p className="text-[10px] font-black text-white uppercase tracking-widest">Your Position</p>
+            <p className="text-[9px] text-cyan-400 font-black uppercase tracking-widest mt-1">Percentile: {userStats.percentile}%</p>
           </div>
         </div>
       )}

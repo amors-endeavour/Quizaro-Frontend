@@ -33,44 +33,40 @@ export default function UserSidebar({ userName = "Student" }: { userName: string
   ];
 
   return (
-    <div className="w-72 min-h-screen bg-white border-r border-gray-100 flex flex-col sticky top-0 animate-in slide-in-from-left-4 duration-500">
+    <div className="w-72 min-h-screen bg-[#050816] border-r border-white/10 flex flex-col sticky top-0 animate-in slide-in-from-left-4 duration-500">
       {/* Student Branding */}
-      <div className="p-8 border-b border-gray-50 flex items-center gap-4">
-        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-blue-100">
+      <div className="p-8 border-b border-white/5 flex items-center gap-4">
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-[0_10px_20px_rgba(37,99,235,0.2)]">
           Q
         </div>
         <div>
-          <h1 className="text-sm font-black text-gray-900 tracking-tight leading-none uppercase">Quizaro</h1>
-          <p className="text-[10px] text-gray-400 mt-1 font-bold tracking-widest uppercase">Student Portal</p>
+          <h1 className="text-sm font-black text-white tracking-tight leading-none uppercase">Quizaro</h1>
+          <p className="text-[10px] text-gray-500 mt-1 font-bold tracking-widest uppercase">Student Portal</p>
         </div>
       </div>
 
       {/* User Hello Card */}
       <div className="p-6">
-        <div className="bg-gray-50 rounded-[2rem] p-6 border border-gray-100 flex flex-col items-center text-center">
-           <div className="w-20 h-20 bg-blue-100/50 rounded-3xl flex items-center justify-center mb-4 text-blue-600 shadow-inner">
-             {gamification?.avatarUrl ? (
-               <img src={gamification.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-3xl" />
-             ) : (
-               <User size={32} />
-             )}
+        <div className="bg-white/5 rounded-[2.5rem] p-6 border border-white/10 flex flex-col items-center text-center backdrop-blur-md">
+           <div className="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-3xl flex items-center justify-center mb-4 text-blue-400 shadow-inner border border-white/5">
+              <User size={32} />
            </div>
            <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-md shadow-green-200" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Online</span>
+              <div className="w-2.5 h-2.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Live Pulse</span>
            </div>
-           <h2 className="text-xl font-black text-gray-900 capitalize tracking-tight leading-none mb-4">{userName}</h2>
+           <h2 className="text-xl font-black text-white capitalize tracking-tight leading-none mb-4">{userName}</h2>
            
            {/* Phase 3.5 Points & Level Display */}
            {gamification && (
-             <div className="flex w-full divide-x border-t border-gray-200 pt-4">
+             <div className="flex w-full divide-x divide-white/10 border-t border-white/5 pt-4">
                <div className="flex-1 flex flex-col items-center">
-                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Level</span>
-                 <span className="text-sm font-black text-indigo-600">{gamification.level || 1}</span>
+                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Level</span>
+                 <span className="text-sm font-black text-purple-400 font-mono tracking-tighter">{gamification.level || 1}</span>
                </div>
                <div className="flex-1 flex flex-col items-center">
-                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">XP points</span>
-                 <span className="text-sm font-black text-blue-600">{gamification.points || 0}</span>
+                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">XP points</span>
+                 <span className="text-sm font-black text-cyan-400 font-mono tracking-tighter">{gamification.points || 0}</span>
                </div>
              </div>
            )}
@@ -88,8 +84,8 @@ export default function UserSidebar({ userName = "Student" }: { userName: string
                   href={item.href}
                   className={`flex items-center justify-between px-6 py-4 rounded-2xl transition-all duration-300 ${
                     isActive
-                      ? "bg-blue-600 text-white shadow-xl shadow-blue-100 font-bold"
-                      : "text-gray-500 hover:bg-gray-50 hover:text-blue-600"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-[0_15px_30px_rgba(37,99,235,0.2)] font-bold"
+                      : "text-gray-500 hover:bg-white/5 hover:text-white"
                   }`}
                 >
                   <div className="flex items-center gap-4">
