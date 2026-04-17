@@ -155,21 +155,6 @@ function HeroSection() {
           </button>
 
           <button 
-            onClick={() => {
-              if (typeof window !== "undefined") {
-                localStorage.setItem("token", "guest_session");
-                localStorage.setItem("role", "student");
-                localStorage.setItem("user", JSON.stringify({ name: "Guest User", email: "guest@quizaro.app" }));
-                router.push("/user-dashboard");
-              }
-            }}
-            className="group flex items-center gap-4 px-12 py-6 bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-white/20 hover:border-white/40 transition-all hover:scale-105 active:scale-95 shadow-2xl"
-          >
-            <div className="bg-white/5 p-2.5 rounded-xl text-yellow-400 group-hover:rotate-12 transition-transform"><Zap size={20} /></div>
-            Try as Guest
-          </button>
-
-          <button 
             onClick={() => router.push("/admin-login")}
             className="group flex items-center gap-4 px-12 py-6 bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-white/10 hover:border-white/30 transition-all hover:scale-105 active:scale-95 shadow-2xl"
           >
