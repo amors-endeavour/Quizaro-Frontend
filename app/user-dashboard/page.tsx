@@ -73,6 +73,7 @@ export default function UserDashboard() {
   const [gamification, setGamification] = useState<any>(null);
   const [favorites, setFavorites] = useState<any[]>([]);
   const [heatmapValues, setHeatmapValues] = useState<{date: string, count: number}[]>([]);
+  const [recommendations, setRecommendations] = useState<Series[]>([]);
 
   useEffect(() => {
     const initDashboard = async () => {
