@@ -127,7 +127,10 @@ function LoginForm() {
 
         <div className="mt-8 pt-6 border-t border-white/5 text-center space-y-4">
           <button
-            onClick={() => window.location.href = 'http://localhost:4000/auth/google'}
+            onClick={() => {
+              const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+              window.location.href = `${baseUrl}/auth/google`;
+            }}
             className="w-full flex items-center justify-center gap-3 bg-white/5 border border-white/10 text-white py-3.5 rounded-2xl hover:bg-white/10 transition-all font-bold group"
           >
             <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
