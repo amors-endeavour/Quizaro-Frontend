@@ -30,9 +30,9 @@ API.interceptors.response.use(
     
     // Auto-logout on 401 Unauthorized if in browser
     if (error?.response?.status === 401 && typeof window !== "undefined") {
-      // Don't auto-redirect from login pages to prevent loops
-      const isLoginPage = window.location.pathname.includes("/login") || window.location.pathname.includes("/admin-login");
-      if (!isLoginPage) {
+      // Don't auto-redirect from landing page or login pages to prevent loops
+      const isPublicPage = window.location.pathname === "/" || window.location.pathname.includes("/login") || window.location.pathname.includes("/admin-login");
+      if (!isPublicPage) {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
         window.location.href = "/login?redirect=" + encodeURIComponent(window.location.pathname);
