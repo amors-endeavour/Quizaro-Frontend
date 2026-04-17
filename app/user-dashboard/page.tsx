@@ -76,6 +76,17 @@ export default function UserDashboard() {
 
   useEffect(() => {
     const checkAuth = async () => {
+      // Handle token from URL (Social Login Redirect)
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get("token");
+        if (urlToken) {
+          localStorage.setItem("token", urlToken);
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+
       try {
         const { data } = await API.get("/user/profile");
         const role = (data?.role || data?.user?.role)?.toLowerCase();
