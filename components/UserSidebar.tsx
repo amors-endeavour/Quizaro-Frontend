@@ -101,42 +101,42 @@ export default function UserSidebar({ userName = "Student" }: { userName: string
       </nav>
 
       {/* Footer Support */}
-      <div className="p-6 border-t border-gray-50 mt-auto">
+      <div className="p-6 border-t border-white/5 mt-auto">
         <button
           onClick={() => setShowLogoutModal(true)}
-          className="w-full flex items-center gap-4 px-6 py-4 text-red-500 hover:bg-red-50 rounded-2xl transition-all text-xs font-black uppercase tracking-widest"
+          className="w-full flex items-center gap-4 px-6 py-4 text-red-500 hover:bg-red-500/10 rounded-2xl transition-all text-[11px] font-black uppercase tracking-[0.2em]"
         >
           <LogOut size={18} />
-          Sign Out
+          Sign Out Portal
         </button>
       </div>
 
       {/* INSTITUTIONAL LOGOUT MODAL 🔥 */}
       {showLogoutModal && (
-         <div className="fixed inset-0 z-[500] bg-gray-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-            <div className="bg-white rounded-[3.5rem] p-12 max-w-sm w-full shadow-2xl text-center space-y-8 animate-in zoom-in-95 duration-300 border border-gray-100">
-               <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-xl shadow-red-50/50">
-                  <LogOut size={32} />
+         <div className="fixed inset-0 z-[500] bg-[#050816]/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+            <div className="bg-[#0b0f2a] border border-white/10 rounded-[3.5rem] p-12 max-w-sm w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] text-center space-y-10 animate-in zoom-in-95 duration-300">
+               <div className="w-24 h-24 bg-red-500/10 text-red-500 border border-red-500/20 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl shadow-red-500/20 group">
+                  <LogOut size={40} className="group-hover:scale-110 transition-transform" />
                </div>
                <div className="space-y-4">
-                  <h3 className="text-xl font-black text-gray-900 tracking-tighter uppercase italic">Terminate Session</h3>
-                  <p className="text-[11px] font-bold text-gray-500 leading-relaxed uppercase tracking-widest">
+                  <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">Terminate Session</h3>
+                  <p className="text-[11px] font-bold text-gray-500 leading-relaxed uppercase tracking-[0.2em]">
                      Are you certain you want to sign out? Your current session intelligence will be banked and cleared.
                   </p>
                </div>
-               <div className="flex flex-col gap-3">
+               <div className="flex flex-col gap-4">
                   <button 
                     onClick={() => {
                         localStorage.clear();
-                        window.location.href = "/user-login";
+                        window.location.href = "/";
                     }}
-                    className="w-full py-5 bg-gray-900 border border-gray-900 hover:bg-red-600 hover:border-red-600 text-white rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
+                    className="w-full py-5 bg-red-600 hover:bg-red-700 text-white rounded-3xl font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl shadow-red-900/40"
                   >
                      Confirm Sign Out
                   </button>
                   <button 
                     onClick={() => setShowLogoutModal(false)}
-                    className="w-full py-5 bg-gray-50 text-gray-400 hover:bg-gray-100 rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+                    className="w-full py-5 bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white rounded-3xl font-black text-[11px] uppercase tracking-[0.3em] transition-all"
                   >
                      Stay Signed In
                   </button>
