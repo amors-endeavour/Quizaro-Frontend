@@ -85,6 +85,15 @@ export default function ProfilePage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleGenerateReferral = async () => {
+    try {
+      const { data } = await API.post("/user/referral");
+      setUser((prev: any) => ({ ...prev, referralCode: data.referralCode }));
+    } catch (err) {
+      console.error("Referral generation failed", err);
+    }
+  };
+
 
   if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Reticulating Account Details...</div>;
 
@@ -216,12 +225,23 @@ export default function ProfilePage() {
                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600"><CheckCircle2 size={20} /></div>
                        <div className="flex-1">
                           <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Referral Code</p>
-                          <div className="flex gap-2 mt-1">
-                            <span className="text-sm font-black text-blue-600 bg-white px-3 py-1 rounded truncate flex-1 border border-blue-100">{user?.referralCode || "Generating..."}</span>
-                            <button onClick={copyReferral} className="w-8 h-8 flex -mt-1 items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                               {copied ? <CheckCircle2 size={14} /> : <Copy size={14} />}
-                            </button>
-                          </div>
+                           <div className="flex gap-2 mt-1">
+                             <div className="flex-1 min-w-0">
+                                <span className={user?.referralCode ? "text-sm font-black text-blue-600 bg-white px-3 py-2 rounded truncate flex-1 border border-blue-100 block" : "text-[10px] font-black text-gray-400 bg-gray-50 px-3 py-2 rounded truncate flex-1 border border-gray-100 block italic tracking-widest uppercase"}>
+                                   {user?.referralCode || "Inactive Node"}
+                                </span>
+                             </div>
+                             
+                             {user?.referralCode ? (
+                               <button onClick={copyReferral} className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all">
+                                  {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
+                               </button>
+                             ) : (
+                               <button onClick={handleGenerateReferral} className="px-4 h-10 flex items-center justify-center bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all whitespace-nowrap">
+                                  Activate Code
+                               </button>
+                             )}
+                           </div>
                        </div>
                     </div>
                  </div>
