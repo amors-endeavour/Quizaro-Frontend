@@ -75,9 +75,15 @@ export default function UserDashboard() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [search, setSearch] = useState("");
   const [resourceCategory, setResourceCategory] = useState("All");
+  const [attempts, setAttempts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'alert' | 'error'} | null>(null);
+
+  // Derive Stats
+  const papersSubmitted = new Set(attempts.map(a => a.testId?._id)).size;
+  const totalAttempts = attempts.length;
+  const totalTimeSpent = Math.round(attempts.reduce((acc, a) => acc + (a.timeTaken || 0), 0) / 60); // In minutes
 
   useEffect(() => {
     const initDashboard = async () => {
@@ -106,17 +112,19 @@ export default function UserDashboard() {
 
         // 4. Data Synchronization (Resilient Fetching)
         try {
-          const [available, purchased, seriesList, resourceList] = await Promise.allSettled([
+          const [available, purchased, seriesList, resourceList, attemptList] = await Promise.allSettled([
             API.get("/user/tests/available"),
             API.get("/user/tests/purchased"),
             API.get("/series"),
-            API.get("/user/resources")
+            API.get("/user/resources"),
+            API.get("/user/attempts")
           ]);
 
           if (available.status === 'fulfilled') setAvailableTests(available.value.data);
           if (purchased.status === 'fulfilled') setPurchasedTests(purchased.value.data);
           if (seriesList.status === 'fulfilled') setSeries(seriesList.value.data);
           if (resourceList.status === 'fulfilled') setResources(resourceList.value.data);
+          if (attemptList.status === 'fulfilled') setAttempts(attemptList.value.data);
         } catch (dataErr) {
           console.error("Secondary Data Fetch Failure:", dataErr);
         }
@@ -179,7 +187,29 @@ export default function UserDashboard() {
           breadcrumbs={["Intelligence", "Command Dashboard"]} 
         />
 
-        <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-16 animate-in fade-in duration-1000">
+        <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12 animate-in fade-in duration-1000">
+          
+          {/* SIMPLIFIED PERFORMANCE HUD 🔥 */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+             {[
+                { label: "Papers Submitted", val: papersSubmitted, icon: <CheckCircle2 size={24} />, color: "green" },
+                { label: "Global Attempts", val: totalAttempts, icon: <History size={24} />, color: "blue" },
+                { label: "Training Velocity", val: `${totalTimeSpent}m`, icon: <Clock size={24} />, color: "purple" }
+             ].map((stat, idx) => (
+                <div key={stat.label} className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between group hover:border-white/20 transition-all backdrop-blur-md">
+                   <div>
+                      <h4 className="text-3xl font-black text-white italic tracking-tighter leading-none">{stat.val}</h4>
+                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mt-3">{stat.label}</p>
+                   </div>
+                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
+                      stat.color === 'green' ? "bg-green-500/10 text-green-400" :
+                      stat.color === 'blue' ? "bg-blue-500/10 text-blue-400" : "bg-purple-500/10 text-purple-400"
+                   }`}>
+                      {stat.icon}
+                   </div>
+                </div>
+             ))}
+          </section>
           
           {/* UNIFIED SEARCH HUD */}
           <section className="bg-white/5 border border-white/10 p-10 rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
