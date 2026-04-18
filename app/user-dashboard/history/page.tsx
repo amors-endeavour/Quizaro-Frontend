@@ -239,7 +239,8 @@ export default function PerformancePage() {
                 )}
               </div>
            </section>
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );

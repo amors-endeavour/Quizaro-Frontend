@@ -443,7 +443,6 @@ export default function UserDashboard() {
           </div>
         )}
       </main>
-main>
       
       {/* Figma Global Ranking Sync */}
       <LeaderboardSidebar />
