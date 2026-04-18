@@ -49,7 +49,6 @@ export default function PerformancePage() {
     fetchData();
   }, []);
 
-  if (loading) return <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest leading-none">Aggregating Metrics...</div>;
 
   let chartData = [...attempts].sort((a,b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()).map((a, i) => ({
     date: new Date(a.createdAt).toLocaleDateString(),
@@ -108,14 +107,24 @@ export default function PerformancePage() {
   return (
     <div className="flex h-screen bg-[#f8f9fc] text-gray-900 font-sans overflow-hidden">
       <UserSidebar userName={user?.name || "Student"} />
-
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto scrollbar-hide">
         <UserHeader 
           title="Performance IQ" 
           breadcrumbs={["Student", "Analytics Dashboard"]} 
         />
 
-        <div className="p-8 lg:p-12 max-w-[1400px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+        {loading ? (
+           <div className="p-8 lg:p-12 max-w-[1400px] mx-auto space-y-12 animate-pulse">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 {[1,2,3].map(i => <div key={i} className="h-40 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm" />)}
+              </div>
+              <div className="h-80 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm" />
+              <div className="space-y-4">
+                 {[1,2,3].map(i => <div key={i} className="h-32 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm" />)}
+              </div>
+           </div>
+        ) : (
+          <div className="p-8 lg:p-12 max-w-[1400px] mx-auto space-y-12 animate-in fade-in duration-700">
            
            {/* PERFORMANCE OVERVIEW HUD */}
            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
