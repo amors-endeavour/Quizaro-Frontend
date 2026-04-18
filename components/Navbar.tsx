@@ -65,10 +65,14 @@ export default function Navbar() {
       if (typeof window !== "undefined") {
         localStorage.clear();
       }
-      setIsAuthenticated(false);
       setTimeout(() => {
-        router.replace("/");
-      }, 300);
+        setIsAuthenticated(false);
+        setCheckingAuth(false);
+        // Force a page refresh to clear all global state/contexts
+        if (typeof window !== "undefined") {
+          window.location.href = "/";
+        }
+      }, 500);
     }
   };
 
