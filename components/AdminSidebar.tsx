@@ -10,7 +10,8 @@ import {
   LogOut,
   HelpCircle,
   Plus,
-  LayoutGrid
+  LayoutGrid,
+  FileText
 } from "lucide-react";
 import { useState } from "react";
 
