@@ -20,7 +20,8 @@ import {
   Download,
   Search,
   BookOpen,
-  History
+  History,
+  Award
 } from "lucide-react";
 
 interface Test {
