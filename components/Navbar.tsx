@@ -67,7 +67,7 @@ export default function Navbar() {
       }
       setIsAuthenticated(false);
       setTimeout(() => {
-        router.replace("/login");
+        router.replace("/");
       }, 300);
     }
   };

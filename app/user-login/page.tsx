@@ -141,6 +141,11 @@ function UserLoginForm() {
               ARE YOU AN ADMIN?
             </Link>
           </p>
+          <div className="pt-4">
+            <Link href="/" className="text-[10px] uppercase font-black tracking-[0.4em] text-cyan-500/50 hover:text-cyan-400 transition-colors">
+              [ EXIT TO HOME ]
+            </Link>
+          </div>
         </div>
       </div>
     </div>

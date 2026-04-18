@@ -152,7 +152,7 @@ function LoginForm() {
             </svg>
             Continue with Google
           </button>
-          <div className="space-y-2">
+          <div className="space-y-4">
             <p className="text-gray-500 text-sm">
               Don&apos;t have an account?{" "}
               <Link href="/register" className="text-blue-400 hover:text-blue-300 font-bold">
@@ -164,6 +164,11 @@ function LoginForm() {
                 Forgot your password?
               </Link>
             </p>
+            <div className="pt-2">
+              <Link href="/" className="text-[10px] uppercase font-black tracking-[0.4em] text-blue-500/50 hover:text-white transition-colors">
+                [ RETURN TO HOME ]
+              </Link>
+            </div>
           </div>
         </div>
       </div>
