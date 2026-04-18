@@ -33,7 +33,7 @@ export default function UserSidebar({ userName = "Student" }: { userName: string
   ];
 
   return (
-    <div className="w-72 min-h-screen bg-[#050816] border-r border-white/10 flex flex-col sticky top-0 animate-in slide-in-from-left-4 duration-500">
+    <div className="w-72 min-h-screen bg-[#050816] border-r border-white/10 flex flex-col sticky top-0 z-[100] animate-in slide-in-from-left-4 duration-500">
       {/* Student Branding */}
       <div className="p-8 border-b border-white/5 flex items-center gap-4">
         <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-[0_10px_20px_rgba(37,99,235,0.2)]">

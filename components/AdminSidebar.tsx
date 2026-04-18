@@ -39,7 +39,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
       <div className={`
         fixed lg:sticky top-0 left-0 z-50
         w-72 min-h-screen bg-[#050816] border-r border-white/10
-        flex flex-col transition-transform duration-300 ease-in-out
+        flex flex-col transition-transform duration-300 ease-in-out z-[100]
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         lg:flex animate-in slide-in-from-left-4
       `}>
