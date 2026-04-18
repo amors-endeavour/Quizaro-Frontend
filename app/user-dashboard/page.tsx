@@ -100,18 +100,22 @@ export default function UserDashboard() {
 
         setUser(profile?.user || profile);
 
-        // Fetch Data
-        const [available, purchased, seriesList, resourceList] = await Promise.all([
-          API.get("/user/tests/available"),
-          API.get("/user/tests/purchased"),
-          API.get("/series"),
-          API.get("/user/resources")
-        ]);
+        // 4. Data Synchronization (Resilient Fetching)
+        try {
+          const [available, purchased, seriesList, resourceList] = await Promise.allSettled([
+            API.get("/user/tests/available"),
+            API.get("/user/tests/purchased"),
+            API.get("/series"),
+            API.get("/user/resources")
+          ]);
 
-        setAvailableTests(available.data);
-        setPurchasedTests(purchased.data);
-        setSeries(seriesList.data);
-        setResources(resourceList.data);
+          if (available.status === 'fulfilled') setAvailableTests(available.value.data);
+          if (purchased.status === 'fulfilled') setPurchasedTests(purchased.value.data);
+          if (seriesList.status === 'fulfilled') setSeries(seriesList.value.data);
+          if (resourceList.status === 'fulfilled') setResources(resourceList.value.data);
+        } catch (dataErr) {
+          console.error("Secondary Data Fetch Failure:", dataErr);
+        }
 
       } catch (err) {
         console.error("Dashboard Init Error:", err);
