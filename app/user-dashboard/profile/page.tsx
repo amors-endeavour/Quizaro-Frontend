@@ -26,6 +26,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editBio, setEditBio] = useState("");
+  const [editPhone, setEditPhone] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState(false);
 
@@ -37,6 +38,7 @@ export default function ProfilePage() {
         setUser(u);
         setEditName(u.name || "");
         setEditBio(u.bio || "");
+        setEditPhone(u.phone || "");
       } catch (err) {
         console.error("Profile fetch failed", err);
       } finally {
@@ -68,8 +70,8 @@ export default function ProfilePage() {
 
   const saveProfile = async () => {
     try {
-      await API.put("/user/profile", { name: editName, bio: editBio });
-      setUser((prev: any) => ({ ...prev, name: editName, bio: editBio }));
+      await API.put("/user/profile", { name: editName, bio: editBio, phone: editPhone });
+      setUser((prev: any) => ({ ...prev, name: editName, bio: editBio, phone: editPhone }));
       setIsEditing(false);
     } catch (err) {
       console.error("Profile update failed", err);
@@ -162,14 +164,33 @@ export default function ProfilePage() {
                           )}
                        </div>
                     </div>
-                    <div className="flex items-center gap-6">
-                       <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400"><Mail size={20} /></div>
-                       <div>
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Email Address</p>
-                          <p className="text-sm font-black text-gray-900">{user?.email}</p>
-                       </div>
-                    </div>
-                 </div>
+                     <div className="flex items-center gap-6">
+                        <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400"><Mail size={20} /></div>
+                        <div className="flex-1">
+                           <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Email Address</p>
+                           <p className="text-sm font-black text-gray-900">{user?.email}</p>
+                        </div>
+                     </div>
+                     <div className="flex items-center gap-6">
+                        <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        </div>
+                        <div className="flex-1">
+                           <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Phone Number</p>
+                           {isEditing ? (
+                             <input 
+                               type="text" 
+                               value={editPhone} 
+                               onChange={e => setEditPhone(e.target.value)}
+                               placeholder="Add phone..."
+                               className="w-full text-sm font-black text-gray-900 border-b border-gray-200 focus:border-blue-500 outline-none pb-1 mt-1 bg-transparent"
+                             />
+                           ) : (
+                             <p className="text-sm font-black text-gray-900">{user?.phone || "Not provided."}</p>
+                           )}
+                        </div>
+                     </div>
+                  </div>
               </div>
 
               <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 space-y-8">
@@ -209,11 +230,20 @@ export default function ProfilePage() {
 
            {/* ACTIONS */}
            <div className="flex flex-col md:flex-row gap-6">
-              <button 
-                className="flex-1 py-6 bg-gray-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3"
-              >
-                Request Data Correction
-              </button>
+               <button 
+                 onClick={() => setIsEditing(!isEditing)}
+                 className="flex-1 py-6 bg-gray-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3"
+               >
+                 {isEditing ? "Cancel Modification" : "Modify Identity Data"}
+               </button>
+               {isEditing && (
+                 <button 
+                   onClick={saveProfile}
+                   className="flex-1 py-6 bg-blue-600 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3"
+                 >
+                   Save Final Changes
+                 </button>
+               )}
               <button 
                 onClick={handleLogout}
                 className="flex-1 py-6 border-2 border-red-50 text-red-500 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-red-50 transition-all flex items-center justify-center gap-3"
