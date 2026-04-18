@@ -1,0 +1,280 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import AdminHeader from "@/components/AdminHeader";
+import API from "@/app/lib/api";
+import { 
+  FileText, 
+  Plus, 
+  Trash2, 
+  ExternalLink, 
+  Download,
+  Search,
+  AlertCircle,
+  CheckCircle2,
+  Lock,
+  Globe
+} from "lucide-react";
+
+interface Resource {
+  _id: string;
+  title: string;
+  description: string;
+  fileType: string;
+  fileUrl: string;
+  category: string;
+  isFree?: boolean;
+}
+
+export default function AdminResources() {
+  const router = useRouter();
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'alert' | 'error'} | null>(null);
+
+  // Form State
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    fileUrl: "",
+    category: "General",
+    fileType: "pdf",
+    isFree: true
+  });
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await API.get("/user/profile");
+        const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
+        if (role !== "admin") {
+          router.replace("/admin-login");
+          return;
+        }
+        setIsAuthChecked(true);
+      } catch {
+        router.replace("/admin-login");
+      }
+    };
+    checkAuth();
+  }, [router]);
+
+  useEffect(() => {
+    if (!isAuthChecked) return;
+    fetchResources();
+  }, [isAuthChecked]);
+
+  const fetchResources = async () => {
+    try {
+      const { data } = await API.get("/user/resources");
+      setResources(data);
+    } catch (err) {
+      console.error("Failed to load resources");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddResource = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await API.post("/admin/resource/add", formData);
+      setStatusMsg({ text: "Intelligence Resource Deployed.", type: "success" });
+      setShowAddModal(false);
+      setFormData({ title: "", description: "", fileUrl: "", category: "General", fileType: "pdf", isFree: true });
+      fetchResources();
+      setTimeout(() => setStatusMsg(null), 3000);
+    } catch (err) {
+      setStatusMsg({ text: "Deployment Failed.", type: "error" });
+      setTimeout(() => setStatusMsg(null), 3000);
+    }
+  };
+
+  const handleDeleteResource = async (id: string) => {
+    if (!confirm("Confirm immediate resource termination?")) return;
+    try {
+      await API.delete(`/admin/resource/${id}`);
+      setResources(resources.filter(r => r._id !== id));
+      setStatusMsg({ text: "Resource Scrubbed Successfully.", type: "success" });
+      setTimeout(() => setStatusMsg(null), 3000);
+    } catch (err) {
+      setStatusMsg({ text: "Scrubbing Protocol Failed.", type: "error" });
+      setTimeout(() => setStatusMsg(null), 3000);
+    }
+  };
+
+  if (loading) return <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black animate-pulse text-cyan-400 uppercase tracking-widest text-center">Syncing Resource Files...</div>;
+
+  return (
+    <div className="flex flex-col min-h-screen bg-[#050816] text-white">
+      <AdminHeader 
+        title="Neural Repository" 
+        path={[{ label: "Intelligence" }, { label: "Repository" }]} 
+      />
+
+      <div className="p-8 lg:p-14 max-w-[1700px] mx-auto w-full space-y-12 animate-in fade-in duration-1000">
+         
+         {/* HEADER ACTION HUD */}
+         <section className="bg-white/5 border border-white/10 p-10 rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-600/5 blur-[100px] rounded-full pointer-events-none" />
+             <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
+                <div className="space-y-2 text-center md:text-left">
+                   <h2 className="text-3xl font-black tracking-tighter uppercase italic">Document Infrastructure</h2>
+                   <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Manage PDFs, Question Papers, and Academic Schemas</p>
+                </div>
+                <button 
+                  onClick={() => setShowAddModal(true)}
+                  className="px-10 py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-2xl shadow-cyan-900/30 active:scale-95"
+                >
+                   <Plus size={18} /> Deploy New Resource
+                </button>
+             </div>
+         </section>
+
+         {/* RESOURCE GRID */}
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+            {resources.length === 0 ? (
+               <div className="md:col-span-3 py-32 text-center bg-white/5 rounded-[3.5rem] border border-dashed border-white/10 opacity-30">
+                  <FileText size={48} className="mx-auto mb-4" />
+                  <p className="text-[11px] font-black uppercase tracking-widest">No intelligence resources on file</p>
+               </div>
+            ) : (
+               resources.map((res) => (
+                  <div key={res._id} className="bg-white/5 border border-white/10 p-10 rounded-[3rem] shadow-2xl backdrop-blur-md group hover:bg-[#0b0f2a] transition-all duration-500 relative flex flex-col items-center text-center">
+                     <div className="absolute top-6 right-8 flex items-center gap-2">
+                        {res.isFree ? (
+                           <span className="flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/10 rounded-full text-[8px] font-black uppercase tracking-widest"><Globe size={10} /> Public</span>
+                        ) : (
+                           <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/10 rounded-full text-[8px] font-black uppercase tracking-widest"><Lock size={10} /> Protected</span>
+                        )}
+                     </div>
+
+                     <div className="w-20 h-20 bg-gradient-to-br from-cyan-600/10 to-blue-700/10 border border-white/5 text-cyan-400 rounded-3xl flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform">
+                        <FileText size={36} />
+                     </div>
+                     
+                     <h4 className="text-xl font-black text-white leading-none tracking-tight mb-3 uppercase italic group-hover:text-cyan-400 transition-colors uppercase">{res.title}</h4>
+                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-6">{res.category}</p>
+                     
+                     <p className="text-[11px] text-gray-600 font-bold mb-10 line-clamp-2 italic leading-relaxed">{res.description || "Intelligence document node."}</p>
+                     
+                     <div className="flex w-full gap-3 mt-auto">
+                        <a 
+                          href={res.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex-1 py-4 bg-white/5 border border-white/10 text-gray-400 hover:text-white rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all text-[9px] font-black uppercase tracking-widest"
+                        >
+                           <ExternalLink size={14} /> Open Registry
+                        </a>
+                        <button 
+                          onClick={() => handleDeleteResource(res._id)}
+                          className="w-14 h-14 bg-red-500/10 text-red-500 border border-red-500/10 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-lg"
+                        >
+                           <Trash2 size={16} />
+                        </button>
+                     </div>
+                  </div>
+               ))
+            )}
+         </div>
+
+      </div>
+
+      {/* ADD RESOURCE MODAL 🔥 */}
+      {showAddModal && (
+         <div className="fixed inset-0 z-[500] bg-[#050816]/90 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+            <div className="bg-[#0b0f2a] border border-white/10 rounded-[3.5rem] p-12 max-w-lg w-full shadow-2xl space-y-8 animate-in zoom-in-95 duration-300">
+               <div className="text-center">
+                  <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">Initiate Resource Deposit</h3>
+                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2">Uploading Intelligence Core to Registry</p>
+               </div>
+
+               <form onSubmit={handleAddResource} className="space-y-5">
+                  <div className="grid grid-cols-2 gap-5">
+                     <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Protocol Title</label>
+                        <input 
+                           required
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold"
+                           placeholder="Ex: Physics 2024 Final Paper"
+                           value={formData.title}
+                           onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        />
+                     </div>
+                     <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Network File Access URL</label>
+                        <input 
+                           required
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold font-mono"
+                           placeholder="https://drive.google.com/..."
+                           value={formData.fileUrl}
+                           onChange={(e) => setFormData({...formData, fileUrl: e.target.value})}
+                        />
+                     </div>
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Categorization</label>
+                        <input 
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold"
+                           placeholder="Ex: Entrance Exams"
+                           value={formData.category}
+                           onChange={(e) => setFormData({...formData, category: e.target.value})}
+                        />
+                     </div>
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Registry Access</label>
+                        <select 
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold"
+                           value={formData.isFree ? "true" : "false"}
+                           onChange={(e) => setFormData({...formData, isFree: e.target.value === "true"})}
+                        >
+                           <option value="true" className="bg-[#0b0f2a]">Public / Free</option>
+                           <option value="false" className="bg-[#0b0f2a]">Protected (Internal Only)</option>
+                        </select>
+                     </div>
+                     <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Contextual Description</label>
+                        <textarea 
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold h-24 resize-none"
+                           placeholder="Brief description of the intelligence node..."
+                           value={formData.description}
+                           onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        />
+                     </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                     <button 
+                        type="button"
+                        onClick={() => setShowAddModal(false)}
+                        className="flex-1 py-5 bg-white/5 text-gray-500 hover:text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+                     >
+                        Abort Protocol
+                     </button>
+                     <button 
+                        type="submit"
+                        className="flex-1 py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-2xl shadow-cyan-900/40"
+                     >
+                        Deploy to Grid
+                     </button>
+                  </div>
+               </form>
+            </div>
+         </div>
+      )}
+
+      {/* Global Persistence HUD */}
+      {statusMsg && (
+        <div className={`fixed bottom-10 left-10 z-[600] px-10 py-6 rounded-[2.5rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-5 backdrop-blur-2xl ${statusMsg.type === 'success' ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-500"}`}>
+           <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-500/20" : "bg-red-500/20"}`}>
+              {statusMsg.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+           </div>
+           <p className="text-[11px] font-black uppercase tracking-widest">{statusMsg.text}</p>
+        </div>
+      )}
+    </div>
+  );
+}

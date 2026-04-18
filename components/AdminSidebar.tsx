@@ -17,6 +17,7 @@ import { useState } from "react";
 const navItems = [
   { href: "/admin-dashboard", label: "Neural Overview", icon: <BarChart3 size={20} /> },
   { href: "/admin-dashboard/tests", label: "Intelligence Library", icon: <Library size={20} /> },
+  { href: "/admin-dashboard/resources", label: "Neural Repository", icon: <FileText size={20} /> },
   { href: "/admin-dashboard/users", label: "Student Nodes", icon: <Users size={20} /> },
   { href: "/admin-dashboard/settings", label: "Core Settings", icon: <Settings size={20} /> },
 ];
