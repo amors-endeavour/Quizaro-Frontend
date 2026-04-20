@@ -5,23 +5,35 @@ import { Search, Settings, Filter, Plus, Bell, ChevronRight, LayoutGrid, List } 
 interface AdminHeaderProps {
   title: string;
   path: { label: string; href?: string }[];
+  activeTab?: 'intelligence' | 'analysis';
+  onTabChange?: (tab: 'intelligence' | 'analysis') => void;
   onNew?: () => void;
+  onSettings?: () => void;
+  onFilter?: () => void;
   onSearchChange?: (val: string) => void;
 }
 
 export default function AdminHeader({ title, path, onNew, onSearchChange }: AdminHeaderProps) {
   return (
-    <div className="bg-[#050816] border-b border-white/10 flex flex-col sticky top-0 z-20">
+  return (
+    <div className="bg-[#050816] border-b border-white/10 flex flex-col sticky top-0 z-[110] transition-all duration-500">
       {/* Top Navbar */}
-      <div className="px-4 lg:px-8 h-16 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-md">
-        <div className="flex items-center gap-4 lg:gap-8 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-1.5 py-4 border-b-2 border-cyan-400 text-cyan-400 font-bold text-xs lg:text-sm shrink-0">
-            <LayoutGrid size={16} />
+      <div className="px-4 lg:px-8 h-16 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-3xl">
+        <div className="flex items-center gap-4 lg:gap-12 overflow-x-auto no-scrollbar h-full">
+          <button 
+            onClick={() => onTabChange?.('intelligence')}
+            className={`flex items-center gap-2.5 h-full border-b-2 transition-all duration-300 font-black text-[10px] uppercase tracking-[0.2em] px-2 ${activeTab === 'intelligence' ? "border-cyan-400 text-cyan-400" : "border-transparent text-gray-500 hover:text-white"}`}
+          >
+            <LayoutGrid size={14} />
             Intelligence Suite
-          </div>
-          <div className="hidden md:block text-gray-500 font-medium text-sm hover:text-white transition cursor-not-allowed shrink-0">
+          </button>
+          <button 
+            onClick={() => onTabChange?.('analysis')}
+            className={`flex items-center gap-2.5 h-full border-b-2 transition-all duration-300 font-black text-[10px] uppercase tracking-[0.2em] px-2 ${activeTab === 'analysis' ? "border-cyan-400 text-cyan-400" : "border-transparent text-gray-500 hover:text-white"}`}
+          >
+            <BarChart3 size={14} />
             Recent Analysis
-          </div>
+          </button>
         </div>
 
         <div className="flex items-center gap-3 lg:gap-6">
@@ -70,13 +82,19 @@ export default function AdminHeader({ title, path, onNew, onSearchChange }: Admi
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <button className="p-3 border border-white/10 rounded-xl hover:bg-white/10 transition shadow-sm bg-white/5">
-              <Settings size={18} className="text-gray-500" />
+            <button 
+              onClick={onSettings}
+              className="p-3 border border-white/10 rounded-xl hover:bg-white/10 transition shadow-sm bg-white/5 group"
+            >
+              <Settings size={18} className="text-gray-500 group-hover:text-cyan-400 transition-colors" />
             </button>
 
-            <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 border border-white/10 rounded-xl hover:bg-white/10 transition shadow-sm bg-white/5 font-bold text-xs text-gray-400">
-              <Filter size={16} />
-              <span className="hidden lg:inline">Filters</span>
+            <button 
+              onClick={onFilter}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-3 px-6 py-2.5 border border-white/10 rounded-xl hover:bg-white/10 transition shadow-sm bg-white/5 font-black text-[9px] uppercase tracking-widest text-gray-400 hover:text-white"
+            >
+              <Filter size={14} />
+              Filters
             </button>
 
             <button 

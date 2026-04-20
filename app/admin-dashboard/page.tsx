@@ -33,7 +33,10 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats>({ totalUsers: 0, totalTests: 0, totalAttempts: 0 });
   const [recentAttempts, setRecentAttempts] = useState<RecentAttempt[]>([]);
+  const [filteredAttempts, setFilteredAttempts] = useState<RecentAttempt[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'intelligence' | 'analysis'>('intelligence');
+  const [searchQuery, setSearchQuery] = useState("");
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   useEffect(() => {
@@ -84,6 +87,20 @@ export default function AdminDashboard() {
     fetchData();
   }, [isAuthChecked]);
 
+  useEffect(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) {
+      setFilteredAttempts(recentAttempts);
+      return;
+    }
+    const filtered = recentAttempts.filter(a => 
+      a.userId?.name?.toLowerCase().includes(q) || 
+      a.userId?.email?.toLowerCase().includes(q) || 
+      a.testId?.title?.toLowerCase().includes(q)
+    );
+    setFilteredAttempts(filtered);
+  }, [searchQuery, recentAttempts]);
+
   if (loading) return <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black animate-pulse text-cyan-400 uppercase tracking-widest leading-none text-center">Accessing Institutional <br/> Intelligence Grid...</div>;
 
   return (
@@ -91,6 +108,12 @@ export default function AdminDashboard() {
       <AdminHeader 
         title="Institutional Intelligence" 
         path={[{ label: "Intelligence" }, { label: "Overview" }]} 
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onNew={() => router.push("/admin-dashboard/tests")}
+        onSettings={() => router.push("/admin-dashboard/settings")}
+        onFilter={() => alert("Filters suite accessing Neural Repository...")}
+        onSearchChange={setSearchQuery}
       />
 
       <div className="p-8 lg:p-14 max-w-[1700px] mx-auto w-full space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-1000">
@@ -210,9 +233,9 @@ export default function AdminDashboard() {
             <div className="px-12 py-10 border-b border-white/5 flex items-center justify-between">
                <div className="flex items-center gap-4">
                   <div className="p-3 bg-cyan-600/10 text-cyan-400 border border-cyan-400/20 rounded-2xl shadow-sm"><BarChart3 size={20} /></div>
-                  <div>
-                    <h3 className="text-sm font-black text-white uppercase tracking-widest">Institutional Records</h3>
-                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">Comprehensive activity tracking</p>
+                <div>
+                    <h3 className="text-sm font-black text-white uppercase tracking-widest">{activeTab === 'analysis' ? "Advanced Cognitive Records" : "Institutional Records"}</h3>
+                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">{activeTab === 'analysis' ? "Deep-dive performance analytics" : "Comprehensive activity tracking"}</p>
                   </div>
                </div>
                <div className="flex items-center gap-3">
@@ -231,7 +254,7 @@ export default function AdminDashboard() {
                      </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                     {recentAttempts.length === 0 ? (
+                     {(activeTab === 'intelligence' ? filteredAttempts : filteredAttempts.filter(a => (a.score / a.totalMarks) > 0.8)).length === 0 ? (
                        <tr>
                          <td colSpan={4} className="px-12 py-24 text-center">
                             <div className="flex flex-col items-center gap-4 py-10 opacity-30">
@@ -241,7 +264,7 @@ export default function AdminDashboard() {
                          </td>
                        </tr>
                      ) : (
-                       recentAttempts.map((attempt) => (
+                       (activeTab === 'intelligence' ? filteredAttempts : filteredAttempts.filter(a => (a.score / (a.totalMarks || 100)) > 0.8)).map((attempt) => (
                           <tr key={attempt._id} className="group hover:bg-white/5 transition-all cursor-pointer">
                              <td className="px-12 py-8">
                                 <div className="flex items-center gap-5">
