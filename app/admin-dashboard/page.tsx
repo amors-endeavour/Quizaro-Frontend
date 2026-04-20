@@ -11,7 +11,8 @@ import {
   ChevronRight, 
   TrendingUp, 
   BarChart3,
-  PieChart
+  PieChart,
+  Plus
 } from "lucide-react";
 
 interface Stats {
@@ -37,6 +38,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'intelligence' | 'analysis'>('intelligence');
   const [searchQuery, setSearchQuery] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   useEffect(() => {
@@ -112,7 +115,7 @@ export default function AdminDashboard() {
         onTabChange={setActiveTab}
         onNew={() => router.push("/admin-dashboard/tests")}
         onSettings={() => router.push("/admin-dashboard/settings")}
-        onFilter={() => alert("Filters suite accessing Neural Repository...")}
+        onFilter={() => setIsFilterOpen(!isFilterOpen)}
         onSearchChange={setSearchQuery}
       />
 
@@ -308,6 +311,58 @@ export default function AdminDashboard() {
          </section>
 
       </div>
+
+      {/* NEURAL FILTER OVERLAY 🔥 */}
+      {isFilterOpen && (
+        <div className="fixed inset-0 z-[200] flex justify-end animate-in fade-in duration-300">
+           <div className="absolute inset-0 bg-[#050816]/60 backdrop-blur-sm" onClick={() => setIsFilterOpen(false)} />
+           <div className="relative w-96 h-full bg-[#0b0f2a] border-l border-white/10 shadow-2xl p-10 space-y-10 animate-in slide-in-from-right-10 duration-500 overflow-y-auto">
+              <div className="flex items-center justify-between">
+                 <h3 className="text-xl font-black text-white uppercase tracking-tighter italic">Cognitive Filters</h3>
+                 <button onClick={() => setIsFilterOpen(false)} className="text-gray-500 hover:text-white transition">
+                    <Plus className="rotate-45" size={24} />
+                 </button>
+              </div>
+
+              <div className="space-y-8">
+                 {[
+                   { label: "Performance Grades", options: ["High Proficiency (>80%)", "Standard Pass (>50%)", "Deficiency (<30%)"] },
+                   { label: "Temporal Constraints", options: ["Last 24 Hours", "Critical Week", "Historical Archive"] },
+                   { label: "Subject Context", options: ["Mathematics Core", "Scientific Theory", "Logic Engine"] }
+                 ].map(group => (
+                   <div key={group.label} className="space-y-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/50">{group.label}</p>
+                      <div className="flex flex-wrap gap-2">
+                         {group.options.map(opt => (
+                           <button 
+                             key={opt}
+                             onClick={() => {
+                               setActiveFilters(prev => prev.includes(opt) ? prev.filter(f => f !== opt) : [...prev, opt]);
+                             }}
+                             className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${activeFilters.includes(opt) ? "bg-cyan-600 border-cyan-400 text-white shadow-lg shadow-cyan-900/20" : "bg-white/5 border-white/10 text-gray-500 hover:border-white/20"}`}
+                           >
+                             {opt}
+                           </button>
+                         ))}
+                      </div>
+                   </div>
+                 ))}
+              </div>
+
+              <div className="pt-10 border-t border-white/5">
+                 <button 
+                  onClick={() => {
+                    setActiveFilters([]);
+                    setIsFilterOpen(false);
+                  }}
+                  className="w-full py-4 border border-white/10 text-gray-400 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white/5 hover:text-white transition-all"
+                 >
+                    Reset Cognitive Constraints
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
