@@ -15,7 +15,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const checkAuth = async () => {
       try {
         const { data } = await API.get("/user/profile");
-        const role = (data?.role || data?.user?.role || data?.data?.role)?.toString().toLowerCase();
+        const userObj = data.user || data;
+        const role = userObj.role?.toString().toLowerCase();
 
         if (role !== "admin") {
           router.replace("/user-dashboard");
@@ -55,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       
       <div className="flex-1 flex flex-col min-w-0">
         <main className="flex-1 overflow-auto">
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 h-full relative">
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 h-full relative">
             {/* Mobile Toggle Button */}
             <div className="lg:hidden fixed top-4 left-4 z-[60]">
                <button 

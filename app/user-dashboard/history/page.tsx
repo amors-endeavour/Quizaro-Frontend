@@ -105,12 +105,10 @@ export default function PerformancePage() {
 
 
   return (
-    <div className="flex h-screen bg-[#f8f9fc] text-gray-900 font-sans overflow-hidden">
-      <UserSidebar userName={user?.name || "Student"} />
-      <main className="flex-1 overflow-y-auto scrollbar-hide">
+    <>
         <UserHeader 
           title="Performance IQ" 
-          breadcrumbs={["Student", "Analytics Dashboard"]} 
+          breadcrumbs={["Intelligence", "Evaluation History"]} 
         />
 
         {loading ? (
@@ -128,33 +126,33 @@ export default function PerformancePage() {
            
            {/* PERFORMANCE OVERVIEW HUD */}
            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 flex items-center gap-6">
-                 <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-50">
+              <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl flex items-center gap-6">
+                 <div className="w-16 h-16 bg-blue-600/10 text-blue-400 border border-blue-400/20 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/10">
                     <TrendingUp size={28} />
                  </div>
                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Attempts</p>
-                    <h3 className="text-3xl font-black text-gray-900">{attempts.length}</h3>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Total Attempts</p>
+                    <h3 className="text-3xl font-black text-white">{attempts.length}</h3>
                  </div>
               </div>
-              <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 flex items-center gap-6">
-                 <div className="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-50">
+              <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl flex items-center gap-6">
+                 <div className="w-16 h-16 bg-green-600/10 text-green-400 border border-green-400/20 rounded-2xl flex items-center justify-center shadow-lg shadow-green-900/10">
                     <Award size={28} />
                  </div>
                  <div>
                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Average Proficiency</p>
-                    <h3 className="text-3xl font-black text-gray-900">
+                    <h3 className="text-3xl font-black text-white">
                       {attempts.length > 0 ? Math.round(attempts.reduce((acc, curr) => acc + parseFloat(curr.percentage), 0) / attempts.length) : 0}%
                     </h3>
                  </div>
               </div>
-              <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 flex items-center gap-6">
-                 <div className="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-50">
+              <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl flex items-center gap-6">
+                 <div className="w-16 h-16 bg-purple-600/10 text-purple-400 border border-purple-400/20 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-900/10">
                     <Clock size={28} />
                  </div>
                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Active Learning</p>
-                    <h3 className="text-3xl font-black text-gray-900">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Active Learning</p>
+                    <h3 className="text-3xl font-black text-white">
                        {Math.round(attempts.reduce((acc, curr) => acc + (curr.timeTaken || 0), 0) / 60)} Min
                     </h3>
                  </div>
@@ -177,18 +175,20 @@ export default function PerformancePage() {
               </div>
 
               {chartData.length > 1 && (
-                <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 h-80 mb-8">
+                <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl h-80 mb-8 overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-cyan-600/5 to-transparent pointer-events-none" />
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                      <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 900 }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 900 }} domain={[0, 100]} />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                      <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280', fontWeight: 900 }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280', fontWeight: 900 }} domain={[0, 100]} />
                       <Tooltip 
-                        contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', fontWeight: 900, textTransform: 'uppercase', fontSize: '10px' }} 
+                        contentStyle={{ backgroundColor: '#050816', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)', fontWeight: 900, textTransform: 'uppercase', fontSize: '10px', color: '#fff' }} 
+                        itemStyle={{ color: '#22d3ee' }}
                       />
-                      <Line type="monotone" dataKey="score" stroke="#2563eb" strokeWidth={4} activeDot={{ r: 8, fill: '#2563eb', stroke: '#fff', strokeWidth: 4 }} />
+                      <Line type="monotone" dataKey="score" stroke="#22d3ee" strokeWidth={4} activeDot={{ r: 8, fill: '#22d3ee', stroke: '#050816', strokeWidth: 4 }} />
                       {chartData.length >= 3 && (
-                        <Line type="monotone" dataKey="predicted" stroke="#8b5cf6" strokeWidth={4} strokeDasharray="5 5" activeDot={{ r: 8, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 4 }} />
+                        <Line type="monotone" dataKey="predicted" stroke="#a855f7" strokeWidth={4} strokeDasharray="5 5" activeDot={{ r: 8, fill: '#a855f7', stroke: '#050816', strokeWidth: 4 }} />
                       )}
                     </LineChart>
                   </ResponsiveContainer>
@@ -241,7 +241,6 @@ export default function PerformancePage() {
            </section>
           </div>
         )}
-      </main>
-    </div>
+    </>
   );
 }

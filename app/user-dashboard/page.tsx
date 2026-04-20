@@ -176,10 +176,7 @@ export default function UserDashboard() {
   const resourceCategories = ["All", ...Array.from(new Set(resources.map(r => r.category)))];
 
   return (
-    <div className="flex h-screen bg-[#050816] text-white font-sans overflow-hidden">
-      <UserSidebar userName={user?.name || "Student"} />
-
-      <main className="flex-1 overflow-y-auto scrollbar-hide">
+    <>
         <UserHeader 
           title="Intelligence Command" 
           breadcrumbs={["Intelligence", "Command Dashboard"]} 
@@ -442,7 +439,6 @@ export default function UserDashboard() {
             </section>
           </div>
         )}
-      </main>
       
       {/* Figma Global Ranking Sync */}
       <LeaderboardSidebar />
