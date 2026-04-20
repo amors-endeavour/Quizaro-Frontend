@@ -502,8 +502,8 @@ export default function TestsPage() {
 
       {/* CREATE / EDIT MODAL (TEST PAPER) */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0a0f1d] border border-white/10 rounded-[4rem] w-full max-w-xl overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[500] flex items-center justify-center p-4">
+          <div className="bg-[#0a0f1d] border border-white/10 rounded-[4rem] w-full max-w-xl max-h-[90vh] overflow-y-auto no-scrollbar shadow-[0_50px_100px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300">
             <div className="px-10 py-10 bg-white/5 border-b border-white/10 flex items-center justify-between">
                <h3 className="text-xl font-black text-white tracking-tight uppercase italic">
                  {editingTest ? "Node Calibration" : "Construction Hub"}
@@ -592,8 +592,8 @@ export default function TestsPage() {
 
       {/* CREATE SERIES MODAL */}
       {showSeriesModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0a0f1d] border border-white/10 rounded-[4rem] w-full max-w-xl overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[500] flex items-center justify-center p-4">
+          <div className="bg-[#0a0f1d] border border-white/10 rounded-[4rem] w-full max-w-xl max-h-[90vh] overflow-y-auto no-scrollbar shadow-[0_50px_100px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300">
             <div className="px-10 py-10 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex items-center justify-between">
                <h3 className="text-xl font-black tracking-tight uppercase italic">Intelligence Catalyst Construction</h3>
                <button onClick={() => setShowSeriesModal(false)} className="text-white/40 hover:text-white transition-colors duration-300">
@@ -666,7 +666,7 @@ export default function TestsPage() {
 
       {/* CONFIRMATION OVERLAY 🔥 */}
       {showConfirmModal.show && (
-         <div className="fixed inset-0 z-[400] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+         <div className="fixed inset-0 z-[600] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-6 animate-in fade-in duration-500">
             <div className="bg-[#0a0f1d] border border-white/10 rounded-[4rem] p-16 max-w-lg w-full shadow-[0_50px_100px_rgba(0,0,0,0.8)] text-center space-y-10 animate-in zoom-in-95 duration-300">
                <div className="w-24 h-24 bg-red-400/10 text-red-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl shadow-red-950/20 border border-red-500/20">
                   <AlertCircle size={40} className="animate-pulse" />
