@@ -13,8 +13,16 @@ interface AdminHeaderProps {
   onSearchChange?: (val: string) => void;
 }
 
-export default function AdminHeader({ title, path, onNew, onSearchChange }: AdminHeaderProps) {
-  return (
+export default function AdminHeader({ 
+  title, 
+  path, 
+  activeTab, 
+  onTabChange, 
+  onNew, 
+  onSettings, 
+  onFilter, 
+  onSearchChange 
+}: AdminHeaderProps) {
   return (
     <div className="bg-[#050816] border-b border-white/10 flex flex-col sticky top-0 z-[110] transition-all duration-500">
       {/* Top Navbar */}
