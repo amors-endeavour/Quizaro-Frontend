@@ -452,6 +452,6 @@ export default function UserDashboard() {
            <p className="text-[11px] font-black uppercase tracking-widest">{statusMsg.text}</p>
         </div>
       )}
-    </div>
+    </>
   );
 }
