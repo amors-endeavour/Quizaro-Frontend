@@ -106,7 +106,6 @@ export default function AdminResources() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black animate-pulse text-cyan-400 uppercase tracking-widest text-center">Syncing Resource Files...</div>;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#050816] text-white">
@@ -136,7 +135,11 @@ export default function AdminResources() {
 
          {/* RESOURCE GRID */}
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
-            {resources.length === 0 ? (
+            {loading ? (
+               [1,2,3].map(i => (
+                 <div key={i} className="h-80 bg-white/5 border border-white/10 rounded-[3rem] animate-pulse shadow-2xl backdrop-blur-md" />
+               ))
+            ) : resources.length === 0 ? (
                <div className="md:col-span-3 py-32 text-center bg-white/5 rounded-[3.5rem] border border-dashed border-white/10 opacity-30">
                   <FileText size={48} className="mx-auto mb-4" />
                   <p className="text-[11px] font-black uppercase tracking-widest">No intelligence resources on file</p>

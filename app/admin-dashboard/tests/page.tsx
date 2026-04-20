@@ -253,7 +253,6 @@ export default function TestsPage() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black animate-pulse text-cyan-400 uppercase tracking-widest leading-none text-xs text-center">Accessing Institutional <br/> Library Grid...</div>;
 
   return (
     <div className="flex flex-col min-h-screen relative bg-[#050816] text-white selection:bg-cyan-500/30">
@@ -370,7 +369,13 @@ export default function TestsPage() {
              </div>
           </div>
 
-          {!currentSeriesId ? (
+          {loading ? (
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+               {[1,2,3,4].map(i => (
+                 <div key={i} className="h-64 bg-white/5 rounded-[4rem] border border-white/10 animate-pulse" />
+               ))}
+             </div>
+          ) : !currentSeriesId ? (
             /* SERIES GRID VIEW */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
               {series.length === 0 && tests.filter(t => !t.seriesId).length === 0 ? (
