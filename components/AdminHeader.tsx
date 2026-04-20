@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Settings, Filter, Plus, Bell, ChevronRight, LayoutGrid, List } from "lucide-react";
+import { Search, Settings, Filter, Plus, Bell, ChevronRight, LayoutGrid, List, BarChart3 } from "lucide-react";
 
 interface AdminHeaderProps {
   title: string;
