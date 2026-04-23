@@ -506,7 +506,7 @@ export default function TestsPage() {
           <div className="bg-[#0a0f1d] border border-white/10 rounded-[4rem] w-full max-w-xl max-h-[90vh] overflow-y-auto no-scrollbar shadow-[0_50px_100px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300">
             <div className="px-10 py-10 bg-white/5 border-b border-white/10 flex items-center justify-between">
                <h3 className="text-xl font-black text-white tracking-tight uppercase italic">
-                 {editingTest ? "Node Calibration" : "Construction Hub"}
+                 {editingTest ? "Edit Paper" : "New Paper"}
                </h3>
                <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-white transition-colors duration-300">
                  <X size={28} />
@@ -515,7 +515,7 @@ export default function TestsPage() {
             
             <form onSubmit={handleSubmit} className="p-12 space-y-8">
               <div className="space-y-3">
-                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Intelligence Sequence Assignment</label>
+                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Select Series (Optional)</label>
                 <select 
                   className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-cyan-400 appearance-none"
                   value={formData.seriesId}
@@ -528,7 +528,7 @@ export default function TestsPage() {
 
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Node Identity</label>
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Paper Title</label>
                   <input 
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-white placeholder:text-gray-700"
                     value={formData.title}
@@ -538,7 +538,7 @@ export default function TestsPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Sequence Rank</label>
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Paper Number</label>
                   <input 
                     type="number"
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-white"
@@ -560,7 +560,7 @@ export default function TestsPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Registry Fee (₹)</label>
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1 italic">Price (₹)</label>
                   <input 
                     type="number"
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-sm text-amber-500"
@@ -582,7 +582,7 @@ export default function TestsPage() {
                   type="submit"
                   className="flex-1 py-5 bg-white text-black rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-all duration-300 shadow-2xl shadow-cyan-900/20 active:scale-95"
                 >
-                  {editingTest ? "Preserve Evolution" : "Initialize Node"}
+                  {editingTest ? "Save Changes" : "Create Paper"}
                 </button>
               </div>
             </form>

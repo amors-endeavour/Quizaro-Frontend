@@ -74,11 +74,12 @@ export default function AdminDashboard() {
     
     const fetchData = async () => {
       try {
-        const [statsRes, attemptsRes] = await Promise.all([
+        const [statsRes, revenueRes, attemptsRes] = await Promise.all([
           API.get("/admin/stats"),
+          API.get("/admin/revenue"),
           API.get("/admin/attempts/recent"),
         ]);
-        setStats(statsRes.data);
+        setStats({ ...statsRes.data, ...revenueRes.data });
         setRecentAttempts(attemptsRes.data);
       } catch (err) {
         console.error("Dashboard data load failed");
@@ -109,8 +110,8 @@ export default function AdminDashboard() {
   return (
     <div className="flex flex-col min-h-screen bg-[#050816] text-white">
       <AdminHeader 
-        title="Institutional Intelligence" 
-        path={[{ label: "Intelligence" }, { label: "Overview" }]} 
+        title="Overview" 
+        path={[{ label: "Overview" }]} 
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onNew={() => router.push("/admin-dashboard/tests")}
@@ -122,12 +123,12 @@ export default function AdminDashboard() {
       <div className="p-8 lg:p-14 max-w-[1700px] mx-auto w-full space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-1000">
          
          {/* PERFORMANCE HUD (IMAGE #1 ANALYTICS STYLE) */}
-         <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[
-              { label: "Active Cohort", val: stats.totalUsers, icon: <Users size={24} />, color: "blue" },
-              { label: "Paper Catalog", val: stats.totalTests, icon: <FileText size={24} />, color: "green" },
-              { label: "Global Submissions", val: stats.totalAttempts, icon: <Activity size={24} />, color: "purple" },
-              { label: "Average Velocity", val: "84%", icon: <TrendingUp size={24} />, color: "orange" }
+              { label: "Students", val: stats.totalUsers, icon: <Users size={24} />, color: "blue" },
+              { label: "Tests", val: stats.totalTests, icon: <FileText size={24} />, color: "green" },
+              { label: "Total Revenue", val: `₹${(stats as any).revenue || 0}`, icon: <TrendingUp size={24} />, color: "purple" },
+              { label: "Profit", val: `₹${(stats as any).profit || 0}`, icon: <BarChart3 size={24} />, color: "orange" }
             ].map((stat, idx) => (
                <div 
                 key={stat.label} 

@@ -16,11 +16,11 @@ import {
 import { useState } from "react";
 
 const navItems = [
-  { href: "/admin-dashboard", label: "Neural Overview", icon: <BarChart3 size={20} /> },
-  { href: "/admin-dashboard/tests", label: "Intelligence Library", icon: <Library size={20} /> },
-  { href: "/admin-dashboard/resources", label: "Neural Repository", icon: <FileText size={20} /> },
-  { href: "/admin-dashboard/users", label: "Student Nodes", icon: <Users size={20} /> },
-  { href: "/admin-dashboard/settings", label: "Core Settings", icon: <Settings size={20} /> },
+  { href: "/admin-dashboard", label: "Dashboard", icon: <BarChart3 size={20} /> },
+  { href: "/admin-dashboard/tests", label: "Papers", icon: <Library size={20} /> },
+  { href: "/admin-dashboard/resources", label: "Resources", icon: <FileText size={20} /> },
+  { href: "/admin-dashboard/users", label: "Students", icon: <Users size={20} /> },
+  { href: "/admin-dashboard/settings", label: "Settings", icon: <Settings size={20} /> },
 ];
 
 export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () => void }) {
@@ -93,14 +93,14 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
             className="flex items-center gap-4 px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-white rounded-2xl transition-all text-[11px] font-black uppercase tracking-widest"
           >
             <HelpCircle size={18} className="opacity-60" />
-            Support Core
+            Support
           </Link>
           <button
             onClick={() => setShowLogoutModal(true)}
             className="w-full flex items-center gap-4 px-6 py-4 text-red-500 hover:bg-red-500/10 rounded-2xl transition-all text-[11px] font-black uppercase tracking-widest"
           >
             <LogOut size={18} />
-            Halt Session
+            Logout
           </button>
         </div>
       </div>
@@ -113,9 +113,9 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                   <LogOut size={40} />
                </div>
                <div className="space-y-4">
-                  <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">Terminate Matrix</h3>
+                  <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">Logout</h3>
                   <p className="text-[11px] font-bold text-gray-500 leading-relaxed uppercase tracking-[0.2em]">
-                     Authorized Administrator, confirm immediate session suspension. All local caches will be purged.
+                     Authorized Administrator, confirm immediate session suspension.
                   </p>
                </div>
                <div className="flex flex-col gap-4">
@@ -126,13 +126,13 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                     }}
                     className="w-full py-5 bg-red-600 hover:bg-red-700 text-white rounded-3xl font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl shadow-red-900/40"
                   >
-                     Confirm Shutdown
+                     Confirm Logout
                   </button>
                   <button 
                     onClick={() => setShowLogoutModal(false)}
                     className="w-full py-5 bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white rounded-3xl font-black text-[11px] uppercase tracking-[0.3em] transition-all"
                   >
-                     Maintain Access
+                     Cancel
                   </button>
                </div>
             </div>

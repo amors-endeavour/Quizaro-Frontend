@@ -33,24 +33,18 @@ export default function AdminHeader({
             className={`flex items-center gap-2.5 h-full border-b-2 transition-all duration-300 font-black text-[10px] uppercase tracking-[0.2em] px-2 ${activeTab === 'intelligence' ? "border-cyan-400 text-cyan-400" : "border-transparent text-gray-500 hover:text-white"}`}
           >
             <LayoutGrid size={14} />
-            Intelligence Suite
+            Papers
           </button>
           <button 
             onClick={() => onTabChange?.('analysis')}
             className={`flex items-center gap-2.5 h-full border-b-2 transition-all duration-300 font-black text-[10px] uppercase tracking-[0.2em] px-2 ${activeTab === 'analysis' ? "border-cyan-400 text-cyan-400" : "border-transparent text-gray-500 hover:text-white"}`}
           >
             <BarChart3 size={14} />
-            Recent Analysis
+            Analysis
           </button>
         </div>
 
         <div className="flex items-center gap-3 lg:gap-6">
-          <div className="hidden sm:flex items-center gap-3 text-red-400 bg-red-400/10 border border-red-400/20 px-3 py-1.5 rounded-full text-[10px] lg:text-xs font-bold animate-pulse cursor-pointer">
-            <Bell size={14} />
-            <span className="hidden lg:inline">Report Dashboard (17)</span>
-            <span className="lg:hidden">(17)</span>
-          </div>
-          <div className="w-px h-6 bg-white/10 hidden sm:block" />
           <div className="flex items-center gap-2 group cursor-pointer">
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs group-hover:scale-105 transition-transform">
               MA
