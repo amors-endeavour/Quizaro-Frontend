@@ -16,16 +16,22 @@ export default function HelpButton() {
            </div>
            <p className="text-[11px] font-bold text-gray-500 leading-relaxed mb-6 italic">How can we help you today? Our support team is online.</p>
            
-           <div className="space-y-3">
-              <button className="w-full flex items-center gap-3 px-4 py-3 bg-[#25D366] text-white rounded-xl shadow-lg shadow-green-100 hover:scale-[1.03] transition-all duration-200">
-                 <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center"><MessageCircle size={14} fill="white" /></div>
-                 <span className="text-[11px] font-black uppercase tracking-widest">Connect on WhatsApp</span>
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3 bg-gray-900 text-white rounded-xl shadow-lg shadow-gray-200 hover:scale-[1.03] transition-all duration-200">
-                 <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center"><HelpCircle size={14} fill="white" /></div>
-                 <span className="text-[11px] font-black uppercase tracking-widest">Open Help Center</span>
-              </button>
-           </div>
+            <div className="space-y-3">
+               <button 
+                  onClick={() => window.open("https://wa.me/919999999999?text=Hello%20Quizaro%20Support!%20I%20need%20help.", "_blank")}
+                  className="w-full flex items-center gap-3 px-4 py-3 bg-[#25D366] text-white rounded-xl shadow-lg shadow-green-100 hover:scale-[1.03] transition-all duration-200"
+               >
+                  <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center"><MessageCircle size={14} fill="white" /></div>
+                  <span className="text-[11px] font-black uppercase tracking-widest">Connect on WhatsApp</span>
+               </button>
+               <button 
+                  onClick={() => window.location.href = window.location.pathname.includes("admin") ? "/admin-dashboard/help" : "/contact"}
+                  className="w-full flex items-center gap-3 px-4 py-3 bg-gray-900 text-white rounded-xl shadow-lg shadow-gray-200 hover:scale-[1.03] transition-all duration-200"
+               >
+                  <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center"><HelpCircle size={14} fill="white" /></div>
+                  <span className="text-[11px] font-black uppercase tracking-widest">Open Help Center</span>
+               </button>
+            </div>
         </div>
       )}
 
