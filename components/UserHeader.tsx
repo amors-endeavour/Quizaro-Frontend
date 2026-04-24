@@ -19,7 +19,10 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
             <LayoutGrid size={14} />
             My Dashboard
           </div>
-          <div className="text-gray-500 font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all cursor-pointer">
+          <div 
+            onClick={() => window.location.href = "/contact"}
+            className="text-gray-500 font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all cursor-pointer"
+          >
             Support Center
           </div>
         </div>
