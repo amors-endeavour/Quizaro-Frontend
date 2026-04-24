@@ -33,7 +33,7 @@ export default function AdminHeader({
   return (
     <div className="bg-white border-b border-gray-100 flex flex-col sticky top-0 z-[110] transition-all duration-500 shadow-sm">
       {/* Top Navbar */}
-      <div className="px-4 lg:px-8 h-16 flex items-center justify-between border-b border-gray-50 bg-white">
+      <div className="pl-24 pr-4 lg:pl-32 lg:pr-8 h-16 flex items-center justify-between border-b border-gray-50 bg-white">
         <div className="flex items-center gap-4 lg:gap-12 overflow-x-auto no-scrollbar h-full">
           {displayTabs.map((tab) => (
             <button 

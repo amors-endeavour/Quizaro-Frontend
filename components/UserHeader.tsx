@@ -23,7 +23,7 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
   return (
     <div className="bg-white border-b border-gray-100 flex flex-col sticky top-0 z-[120] shadow-sm">
       {/* Upper Utility Navbar */}
-      <div className="px-8 h-18 flex items-center justify-between border-b border-gray-50 bg-gray-50/50 backdrop-blur-md relative">
+      <div className="pl-24 pr-8 h-18 flex items-center justify-between border-b border-gray-50 bg-gray-50/50 backdrop-blur-md relative">
         <div className="flex items-center gap-10">
           <div className="flex items-center gap-2 py-5 border-b-2 border-blue-600 text-blue-600 font-black text-[11px] uppercase tracking-widest cursor-default">
             <LayoutGrid size={14} />
@@ -85,7 +85,7 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
       </div>
 
       {/* Main Breadcrumb & Branding Header */}
-      <div className="px-8 py-6 flex items-center justify-between bg-white w-full">
+      <div className="pl-24 pr-8 py-6 flex items-center justify-between bg-white w-full">
          <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-2.5 text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] font-sans">
                {breadcrumbs.map((crumb, idx) => (
