@@ -91,7 +91,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
       const qData = qRes.data.map((q: any) => ({
         ...q,
         text: q.questionText || q.text || "", // Handle both variants
-        marks: q.marks || q.points || 1      // Normalize marks 🔥
+        marks: q.marks || q.marks || 1      // Normalize marks 🔥
       }));
 
       setQuestions(qData);
@@ -222,7 +222,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                    </div>
                    <div className="flex justify-between items-end border-b border-white/5 pb-4">
                       <span className="text-[11px] font-bold text-gray-500 uppercase italic">Total Points</span>
-                      <span className="text-2xl font-black text-white leading-none italic">{questions.reduce((a, b) => a + (b.points || 0), 0)}</span>
+                      <span className="text-2xl font-black text-white leading-none italic">{questions.reduce((a, b) => a + (b.marks || 0), 0)}</span>
                    </div>
                 </div>
                 {activeTab === "Settings" && (
@@ -245,7 +245,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                        <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">Questions</h3>
                        <button 
                          onClick={() => {
-                           setCurrentQuestion({ text: "", type: "mcq", options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }], correctOption: 0, points: 1, section: "General" });
+                           setCurrentQuestion({ text: "", type: "mcq", options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }], correctOption: 0, marks: 1, section: "General" });
                            setIsEditing(true);
                          }}
                          className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-blue-900/40 border border-white/10 italic"
@@ -399,7 +399,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                    <textarea 
                      value={bulkData}
                      onChange={(e) => setBulkData(e.target.value)}
-                     placeholder='[{"text": "Sample Issue", "options": [{"text": "A"}], "correctOption": 0, "points": 1, "section": "Quant"}]'
+                     placeholder='[{"text": "Sample Issue", "options": [{"text": "A"}], "correctOption": 0, "marks": 1, "section": "Quant"}]'
                      className="w-full h-96 bg-black/40 border border-white/10 rounded-[3.5rem] p-12 font-mono text-xs font-black text-cyan-400 outline-none focus:border-cyan-400/50 transition-all shadow-inner italic"
                    />
                    <button 
@@ -442,8 +442,8 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                           <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1 italic">Intellectual Value</label>
                           <input 
                             type="number"
-                            value={currentQuestion.points}
-                            onChange={(e) => setCurrentQuestion({...currentQuestion, points: Number(e.target.value)})}
+                            value={currentQuestion.marks}
+                            onChange={(e) => setCurrentQuestion({...currentQuestion, marks: Number(e.target.value)})}
                             className="w-full bg-white/5 border border-white/10 rounded-[2rem] px-10 py-6 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-2xl text-cyan-400 italic"
                           />
                        </div>
