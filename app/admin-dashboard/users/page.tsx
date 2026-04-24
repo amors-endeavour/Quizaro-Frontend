@@ -67,20 +67,28 @@ export default function StudentAccessPage() {
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
       try {
-        const [seriesRes, testsRes, usersRes, logsRes] = await Promise.all([
-          API.get("/admin/series"),
-          API.get("/admin/tests"),
-          API.get("/admin/users"),
-          API.get("/admin/audit-logs")
-        ]);
-        setSeries(seriesRes.data);
-        setTests(testsRes.data);
+        // Fetch users first as it's the most critical
+        const usersRes = await API.get("/admin/users").catch(() => ({ data: [] }));
         setUsers(usersRes.data);
         setFilteredUsers(usersRes.data);
+
+        // Fetch other catalogs
+        const [seriesRes, testsRes, logsRes] = await Promise.all([
+          API.get("/admin/series").catch(() => ({ data: [] })),
+          API.get("/admin/tests").catch(() => ({ data: [] })),
+          API.get("/admin/audit-logs").catch(() => ({ data: [] }))
+        ]);
+        
+        setSeries(seriesRes.data);
+        setTests(testsRes.data);
         setAuditLogs(logsRes.data);
       } catch (err) {
-        console.error("Governance data load failed", err);
+        console.error("Critical governance load error", err);
+        setError("Failed to synchronize with identity vault.");
+      } finally {
+        setLoading(false);
       }
     };
     loadData();
@@ -97,7 +105,12 @@ export default function StudentAccessPage() {
       u.email.toLowerCase().includes(q)
     );
     setFilteredUsers(filtered);
-  }, [searchQuery, users]);
+    
+    // If user is searching, automatically switch to Governance tab to show results
+    if (q.length > 1 && activeTab !== 'governance') {
+      setActiveTab('governance');
+    }
+  }, [searchQuery, users, activeTab]);
 
   const handleGrant = async (e: React.FormEvent) => {
     e.preventDefault();

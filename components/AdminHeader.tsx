@@ -19,21 +19,23 @@ export default function AdminHeader({
   path, 
   activeTab, 
   onTabChange, 
-  tabs = [
-    { id: 'intelligence', label: 'Papers', icon: <LayoutGrid size={14} /> },
-    { id: 'analysis', label: 'Analysis', icon: <BarChart3 size={14} /> }
-  ],
+  tabs,
   onNew, 
   onSettings, 
   onFilter, 
   onSearchChange 
 }: AdminHeaderProps) {
+  const displayTabs = tabs || [
+    { id: 'intelligence', label: 'Papers', icon: <LayoutGrid size={14} /> },
+    { id: 'analysis', label: 'Analysis', icon: <BarChart3 size={14} /> }
+  ];
+
   return (
     <div className="bg-[#050816] border-b border-white/10 flex flex-col sticky top-0 z-[110] transition-all duration-500">
       {/* Top Navbar */}
       <div className="px-4 lg:px-8 h-16 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-3xl">
         <div className="flex items-center gap-4 lg:gap-12 overflow-x-auto no-scrollbar h-full">
-          {tabs.map((tab) => (
+          {displayTabs.map((tab) => (
             <button 
               key={tab.id}
               onClick={() => onTabChange?.(tab.id)}
