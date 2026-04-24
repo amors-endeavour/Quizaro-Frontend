@@ -62,6 +62,7 @@ export default function AdminHeader({
           <div className="flex items-center gap-2 group cursor-pointer">
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs group-hover:scale-105 transition-transform">
               MA
+            </div>
           </div>
         </div>
       </div>
