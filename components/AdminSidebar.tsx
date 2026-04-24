@@ -29,35 +29,36 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
 
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Mobile/Global Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-[#050816]/70 backdrop-blur-md z-40 lg:hidden animate-in fade-in duration-300"
+          className="fixed inset-0 bg-[#050816]/70 backdrop-blur-md z-[150] animate-in fade-in duration-300"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar Container */}
       <div className={`
-        fixed lg:sticky top-0 left-0 z-50
-        w-72 min-h-screen bg-[#050816] border-r border-white/10
-        flex flex-col transition-transform duration-300 ease-in-out z-[100]
-        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        lg:flex animate-in slide-in-from-left-4
+        fixed top-0 left-0 z-[200]
+        w-80 min-h-screen bg-[#050816] border-r border-white/10
+        flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)]
+        ${isOpen ? "translate-x-0 shadow-[20px_0_60px_rgba(0,0,0,0.8)]" : "-translate-x-full"}
       `}>
         {/* Brand Section */}
         <div className="p-8 border-b border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-[0_10px_20px_rgba(124,58,237,0.2)]">
-              Q
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="Quizaro" 
+              className="w-12 h-12 object-contain" 
+            />
             <div>
               <h1 className="text-sm font-black text-white leading-none uppercase tracking-tight">QUIZARO</h1>
               <p className="text-[10px] text-gray-500 mt-1 font-black tracking-widest uppercase">Admin Matrix</p>
             </div>
           </div>
-          <button onClick={onClose} className="lg:hidden text-gray-500 hover:text-white transition-colors">
-             <Plus className="rotate-45" size={24} />
+          <button onClick={onClose} className="text-gray-500 hover:text-white hover:rotate-90 transition-all duration-300">
+             <Plus className="rotate-45" size={28} />
           </button>
         </div>
 

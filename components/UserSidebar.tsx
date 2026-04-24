@@ -17,7 +17,7 @@ import {
 import { useState, useEffect } from "react";
 import API from "@/app/lib/api";
 
-export default function UserSidebar({ userName = "Student" }: { userName: string }) {
+export default function UserSidebar({ isOpen, onClose, userName = "Student" }: { isOpen: boolean; onClose: () => void; userName: string }) {
   const pathname = usePathname();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [gamification, setGamification] = useState<any>(null);
@@ -27,22 +27,43 @@ export default function UserSidebar({ userName = "Student" }: { userName: string
   }, []);
 
   const navItems = [
-    { href: "/user-dashboard", label: "My Tests", icon: <BookOpen size={20} /> },
-    { href: "/user-dashboard/history", label: "Performance", icon: <History size={20} /> },
-    { href: "/user-dashboard/profile", label: "My Profile", icon: <User size={20} /> },
+    { href: "/user-dashboard", label: "Dashboard", icon: <Home size={20} /> },
+    { href: "/user-dashboard", label: "Papers", icon: <BookOpen size={20} /> },
+    { href: "/user-dashboard", label: "Resources", icon: <FileText size={20} /> },
+    { href: "/user-dashboard/history", label: "Students", icon: <Users size={20} /> },
+    { href: "/user-dashboard/profile", label: "Settings", icon: <Settings size={20} /> },
   ];
 
   return (
-    <div className="w-72 min-h-screen bg-[#050816] border-r border-white/10 flex flex-col sticky top-0 z-[100] animate-in slide-in-from-left-4 duration-500">
+    <>
+      {/* Mobile/Global Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-[#050816]/70 backdrop-blur-md z-[150] animate-in fade-in duration-300"
+          onClick={onClose}
+        />
+      )}
+
+      <div className={`
+        fixed top-0 left-0 z-[200]
+        w-80 min-h-screen bg-[#050816] border-r border-white/10
+        flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)]
+        ${isOpen ? "translate-x-0 shadow-[20px_0_60px_rgba(0,0,0,0.8)]" : "-translate-x-full"}
+      `}>
       {/* Student Branding */}
       <div className="p-8 border-b border-white/5 flex items-center gap-4">
-        <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-[0_10px_20px_rgba(37,99,235,0.2)]">
-          Q
-        </div>
+        <img 
+          src="/logo.png" 
+          alt="Quizaro" 
+          className="w-12 h-12 object-contain" 
+        />
         <div>
           <h1 className="text-sm font-black text-white tracking-tight leading-none uppercase">Quizaro</h1>
           <p className="text-[10px] text-gray-500 mt-1 font-bold tracking-widest uppercase">Student Portal</p>
         </div>
+        <button onClick={onClose} className="ml-auto text-gray-500 hover:text-white hover:rotate-90 transition-all duration-300">
+           <Plus className="rotate-45" size={28} />
+        </button>
       </div>
 
       {/* User Hello Card */}
@@ -101,13 +122,20 @@ export default function UserSidebar({ userName = "Student" }: { userName: string
       </nav>
 
       {/* Footer Support */}
-      <div className="p-6 border-t border-white/5 mt-auto">
+      <div className="p-6 border-t border-white/5 mt-auto space-y-2">
+        <button
+          onClick={() => window.location.href = "/contact"}
+          className="w-full flex items-center gap-4 px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-white rounded-2xl transition-all text-[11px] font-black uppercase tracking-[0.2em]"
+        >
+          <HelpCircle size={18} />
+          Support
+        </button>
         <button
           onClick={() => setShowLogoutModal(true)}
           className="w-full flex items-center gap-4 px-6 py-4 text-red-500 hover:bg-red-500/10 rounded-2xl transition-all text-[11px] font-black uppercase tracking-[0.2em]"
         >
           <LogOut size={18} />
-          Sign Out Portal
+          Logout
         </button>
       </div>
 
@@ -144,6 +172,6 @@ export default function UserSidebar({ userName = "Student" }: { userName: string
             </div>
          </div>
       )}
-    </div>
+    </>
   );
 }

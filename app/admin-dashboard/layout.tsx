@@ -52,20 +52,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex min-h-screen bg-[#f8f9fc]">
+      {/* Persistent Logo Trigger */}
+      <div className="fixed top-6 left-6 z-[200]">
+         <button 
+           onClick={() => setIsSidebarOpen(true)}
+           className="p-1 hover:scale-110 transition-transform active:scale-95 group"
+         >
+            <div className="bg-white rounded-2xl p-2 shadow-2xl border border-gray-100 flex items-center justify-center">
+               <img src="/logo.png" alt="Quizaro" className="w-10 h-10 object-contain" />
+            </div>
+            <span className="absolute left-full ml-4 px-3 py-1.5 bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Open Matrix Menu</span>
+         </button>
+      </div>
+
       <AdminSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 ml-0 lg:ml-0 transition-all duration-500">
         <main className="flex-1 overflow-auto">
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 h-full relative">
-            {/* Mobile Toggle Button */}
-            <div className="lg:hidden fixed top-4 left-4 z-[60]">
-               <button 
-                 onClick={() => setIsSidebarOpen(true)}
-                 className="p-3 bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/50 text-gray-900"
-               >
-                  <BarChart3 className="rotate-90" size={24} />
-               </button>
-            </div>
             {children}
           </div>
         </main>

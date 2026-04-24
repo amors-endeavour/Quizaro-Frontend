@@ -9,6 +9,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -33,8 +34,22 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="flex h-screen bg-[#050816] text-white font-sans overflow-hidden">
-      <UserSidebar userName={user?.name || "Student"} />
+    <div className="flex h-screen bg-[#050816] text-white font-sans overflow-hidden relative">
+      {/* Persistent Logo Trigger */}
+      <div className="fixed top-8 left-8 z-[200]">
+         <button 
+           onClick={() => setIsSidebarOpen(true)}
+           className="p-1 hover:scale-110 transition-transform active:scale-95 group"
+         >
+            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-2.5 border border-white/10 flex items-center justify-center shadow-2xl shadow-blue-500/10">
+               <img src="/logo.png" alt="Quizaro" className="w-10 h-10 object-contain" />
+            </div>
+            <span className="absolute left-full ml-4 px-3 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Access Neural Map</span>
+         </button>
+      </div>
+
+      <UserSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} userName={user?.name || "Student"} />
+      
       <main className="flex-1 overflow-y-auto scrollbar-hide">
         <div className="animate-in fade-in duration-300">
           {children}
