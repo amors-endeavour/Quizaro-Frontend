@@ -136,7 +136,7 @@ export default function AdminDashboard() {
         title="Overview" 
         path={[{ label: "Overview" }]} 
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => setActiveTab(tab as 'intelligence' | 'analysis')}
         onNew={() => router.push("/admin-dashboard/tests")}
         onSettings={() => router.push("/admin-dashboard/settings")}
         onFilter={() => setIsFilterOpen(!isFilterOpen)}
