@@ -380,9 +380,9 @@ function ExamCard({ emoji, title, subtitle, count, color }: ExamCardProps) {
 
 function HowItWorksSection() {
   const steps: StepProps[] = [
-    { number: "01", title: "Create Free Account", desc: "Sign up in 30 seconds. No credit card required.", icon: <Users size={20} /> },
-    { number: "02", title: "Choose Your Exam", desc: "Select from 200+ categories with custom difficulty.", icon: <BookOpen size={20} /> },
-    { number: "03", title: "Take AI-Powered Tests", desc: "Adaptive questions that focus on your weak areas.", icon: <Brain size={20} /> },
+    { number: "01", title: "Create Free Account", desc: "Sign up in 30 seconds for free.", icon: <Users size={20} /> },
+    { number: "02", title: "Choose Your Exam", desc: "Select from 100+ categories.", icon: <BookOpen size={20} /> },
+    { number: "03", title: "Take Tests", desc: "Adaptive questions that focus on your weak areas.", icon: <Brain size={20} /> },
     { number: "04", title: "Track & Improve", desc: "Detailed analysis and AI insights after every test.", icon: <TrendingUp size={20} /> },
   ];
 
