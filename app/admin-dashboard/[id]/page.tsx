@@ -29,8 +29,7 @@ interface Question {
   text: string;
   type: "mcq" | "descriptive";
   options: { text: string }[];
-  correctOption: number;
-  points: number;
+  marks: number;
   section?: string;
 }
 
@@ -75,7 +74,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
     type: "mcq",
     options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
     correctOption: 0,
-    points: 1,
+    marks: 1,
     section: "General"
   });
 
@@ -90,7 +89,8 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
       
       const qData = qRes.data.map((q: any) => ({
         ...q,
-        text: q.questionText || q.text || "" // Handle both variants
+        text: q.questionText || q.text || "", // Handle both variants
+        marks: q.marks || q.points || 1      // Normalize marks 🔥
       }));
 
       setQuestions(qData);
