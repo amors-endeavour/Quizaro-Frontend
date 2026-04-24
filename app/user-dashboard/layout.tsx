@@ -28,7 +28,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   if (loading) {
     return (
       <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest text-[10px] italic">
-        Establishing Secure Session...
+        Initializing...
       </div>
     );
   }

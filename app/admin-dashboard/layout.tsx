@@ -42,7 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="absolute inset-0 flex items-center justify-center text-blue-600 font-black text-2xl">Q</div>
           </div>
           <div className="text-center space-y-2">
-            <h2 className="text-sm font-black text-gray-900 uppercase tracking-[0.3em] animate-pulse">Establishing Secure Hub</h2>
+            <h2 className="text-sm font-black text-gray-900 uppercase tracking-[0.3em] animate-pulse">Initializing Hub...</h2>
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Verification in progress...</p>
           </div>
         </div>

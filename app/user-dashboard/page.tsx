@@ -409,8 +409,8 @@ export default function UserDashboard() {
                 </div>
             </section>
 
-            {/* SECTION 3: INSTITUTIONAL SERIES MESH */}
-            <section className="space-y-8 animate-in fade-in duration-1000 pb-20">
+            {/* SECTION 3: INSTITUTIONAL SERIES MESH 🔥 */}
+            <section className="bg-white/5 border border-white/10 p-10 lg:p-14 rounded-[3.5rem] backdrop-blur-3xl space-y-10">
                 <div className="flex items-center justify-between px-4">
                   <div className="flex items-center gap-4">
                      <div className="w-10 h-10 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-2xl flex items-center justify-center shadow-lg"><Layers size={20} /></div>
@@ -438,6 +438,56 @@ export default function UserDashboard() {
                     </div>
                   ))}
                 </div>
+            </section>
+
+            {/* SECTION 4: INSTITUTIONAL PERFORMANCE HUD & GLOBAL RANKING 🌐 */}
+            <section className="bg-[#0b0f2a] border border-white/10 rounded-[4rem] p-12 lg:p-20 relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 blur-[150px] rounded-full pointer-events-none" />
+               <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-600/5 blur-[150px] rounded-full pointer-events-none" />
+               
+               <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-20">
+                  <div className="space-y-12">
+                     <div className="flex items-center gap-6">
+                        <div className="w-14 h-14 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-3xl flex items-center justify-center"><Award size={28} /></div>
+                        <div>
+                           <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Global Ranking</h3>
+                           <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Institutional Pulse</p>
+                        </div>
+                     </div>
+
+                     <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 text-center space-y-6">
+                        <Zap size={48} className="mx-auto text-gray-700 animate-pulse" />
+                        <p className="text-sm font-bold text-gray-400 italic">Awaiting initial performance data for comprehensive global ranking... Continue training to activate neural sync.</p>
+                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                           <div className="h-full w-1/4 bg-blue-600 animate-pulse" />
+                        </div>
+                     </div>
+                  </div>
+
+                  <div className="space-y-12">
+                     <div className="flex items-center gap-6">
+                        <div className="w-14 h-14 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-3xl flex items-center justify-center"><Layers size={28} /></div>
+                        <div>
+                           <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Institutional HUD</h3>
+                           <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">V4.5.1 LIVE</p>
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-2 gap-6">
+                        {[
+                           { label: "Neural Load", val: "Optimal", color: "blue" },
+                           { label: "Sync Status", val: "Active", color: "cyan" },
+                           { label: "Mesh Integrity", val: "99.8%", color: "purple" },
+                           { label: "Uptime", val: "99.9h", color: "green" }
+                        ].map(stat => (
+                           <div key={stat.label} className="bg-white/5 border border-white/10 p-6 rounded-[2rem] space-y-2 hover:bg-white/[0.08] transition-all">
+                              <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{stat.label}</p>
+                              <h4 className="text-xl font-black text-white tracking-tighter uppercase italic leading-none">{stat.val}</h4>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               </div>
             </section>
           </div>
         )}
