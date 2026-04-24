@@ -29,6 +29,7 @@ interface Question {
   text: string;
   type: "mcq" | "descriptive";
   options: { text: string }[];
+  correctOption: number;
   marks: number;
   section?: string;
 }
