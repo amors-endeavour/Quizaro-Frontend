@@ -52,16 +52,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex min-h-screen bg-[#f8f9fc]">
-      {/* Persistent Logo Trigger */}
-      <div className="fixed top-6 left-6 z-[200]">
+      {/* Integrated Logo Trigger */}
+      <div className="fixed top-0 left-0 z-[200] w-20 h-16 bg-white border-r border-b border-gray-100 flex items-center justify-center shadow-sm">
          <button 
            onClick={() => setIsSidebarOpen(true)}
-           className="p-1 hover:scale-110 transition-transform active:scale-95 group"
+           className="hover:scale-110 transition-transform active:scale-95 group relative"
          >
-            <div className="bg-white rounded-2xl p-2 shadow-2xl border border-gray-100 flex items-center justify-center">
-               <img src="/logo.png" alt="Quizaro" className="w-10 h-10 object-contain" />
-            </div>
-            <span className="absolute left-full ml-4 px-3 py-1.5 bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Open Matrix Menu</span>
+            <img src="/logo.png" alt="Quizaro" className="w-10 h-10 object-contain" />
+            <span className="absolute left-full ml-6 px-3 py-1.5 bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[300]">Open Matrix Menu</span>
          </button>
       </div>
 
