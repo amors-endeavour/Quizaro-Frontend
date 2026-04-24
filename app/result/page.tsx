@@ -58,6 +58,7 @@ function ResultContent() {
   const [error, setError] = useState("");
   const [user, setUser] = useState<any>(null);
   const [showReview, setShowReview] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -120,7 +121,17 @@ function ResultContent() {
 
   return (
     <div className="flex h-screen bg-[#050816] text-white font-sans overflow-hidden selection:bg-cyan-500/30">
-      <UserSidebar userName={user?.name || "Student"} />
+      <UserSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} userName={user?.name || "Student"} />
+
+      {/* Floating Logo Trigger */}
+      <button 
+        onClick={() => setIsSidebarOpen(true)}
+        className="fixed top-6 left-6 z-[100] group transition-all duration-500 active:scale-95"
+      >
+        <div className="bg-white rounded-2xl p-2 shadow-2xl border border-gray-100 flex items-center justify-center group-hover:shadow-blue-500/20 group-hover:border-blue-500/50 transition-all">
+          <img src="/logo.png" alt="Quizaro" className="w-10 h-10 object-contain" />
+        </div>
+      </button>
 
       <main className="flex-1 overflow-y-auto">
         <UserHeader 

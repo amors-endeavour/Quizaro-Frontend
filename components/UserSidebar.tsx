@@ -12,7 +12,10 @@ import {
   HelpCircle,
   Bell,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Plus,
+  Users,
+  FileText
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import API from "@/app/lib/api";
@@ -137,6 +140,7 @@ export default function UserSidebar({ isOpen, onClose, userName = "Student" }: {
           <LogOut size={18} />
           Logout
         </button>
+      </div>
       </div>
 
       {/* INSTITUTIONAL LOGOUT MODAL 🔥 */}
