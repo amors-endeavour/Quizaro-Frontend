@@ -198,9 +198,9 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
           {/* NAVIGATION WING */}
           <div className="w-full lg:w-80 flex flex-col gap-3">
              {[
-                { id: "Questions", label: "Intelligence Registry", icon: <Layers size={18} /> },
-                { id: "Settings", label: "Core Parameters", icon: <Shield size={18} /> },
-                { id: "Import", label: "Neural Ingestion", icon: <ArrowDownToLine size={18} /> }
+                { id: "Questions", label: "Questions", icon: <Layers size={18} /> },
+                { id: "Settings", label: "Settings", icon: <Shield size={18} /> },
+                { id: "Import", label: "Bulk Import", icon: <ArrowDownToLine size={18} /> }
              ].map((tab) => (
                 <button 
                   key={tab.id}
@@ -213,14 +213,14 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
              ))}
              
              <div className="mt-8 p-10 bg-white/5 rounded-[3rem] border border-white/5 backdrop-blur-md">
-                <p className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em] mb-6 italic">Census Metrics</p>
+                <p className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em] mb-6 italic">Paper Summary</p>
                 <div className="space-y-6">
                    <div className="flex justify-between items-end border-b border-white/5 pb-4">
-                      <span className="text-[11px] font-bold text-gray-500 uppercase italic">Nodes</span>
+                      <span className="text-[11px] font-bold text-gray-500 uppercase italic">Questions</span>
                       <span className="text-2xl font-black text-white leading-none italic">{questions.length}</span>
                    </div>
                    <div className="flex justify-between items-end border-b border-white/5 pb-4">
-                      <span className="text-[11px] font-bold text-gray-500 uppercase italic">Weightage</span>
+                      <span className="text-[11px] font-bold text-gray-500 uppercase italic">Total Points</span>
                       <span className="text-2xl font-black text-white leading-none italic">{questions.reduce((a, b) => a + (b.points || 0), 0)}</span>
                    </div>
                 </div>
@@ -230,7 +230,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                     disabled={saving}
                     className="w-full py-5 mt-10 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-2xl shadow-cyan-900/20 active:scale-95 italic"
                   >
-                    {saving ? "Synchronizing..." : "Preserve Logic"}
+                    {saving ? "Saving..." : "Save Settings"}
                   </button>
                 )}
              </div>
@@ -241,7 +241,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
               {activeTab === "Questions" ? (
                 <div className="space-y-10 animate-in fade-in slide-in-from-right-10 duration-700">
                    <div className="flex items-center justify-between">
-                       <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">Intelligence Registry</h3>
+                       <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">Questions</h3>
                        <button 
                          onClick={() => {
                            setCurrentQuestion({ text: "", type: "mcq", options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }], correctOption: 0, points: 1, section: "General" });
@@ -249,7 +249,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                          }}
                          className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-blue-900/40 border border-white/10 italic"
                        >
-                         Synthesize Node
+                         Add Question
                        </button>
                    </div>
 
@@ -392,8 +392,8 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                ) : (
                 <div className="bg-white/5 backdrop-blur-3xl rounded-[4rem] border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] p-16 space-y-12 animate-in fade-in slide-in-from-bottom-5 duration-700">
                    <div className="space-y-3">
-                       <h3 className="text-2xl font-black text-white uppercase tracking-[0.3em] italic">Institutional Neural Ingestion</h3>
-                       <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest italic tracking-[0.4em]">Inject raw JSON string for deep registry merging</p>
+                       <h3 className="text-2xl font-black text-white uppercase tracking-[0.3em] italic">Bulk Import Hub</h3>
+                       <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest italic tracking-[0.4em]">Paste raw JSON to import multiple questions instantly</p>
                    </div>
                    <textarea 
                      value={bulkData}
@@ -418,7 +418,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
            <div className="bg-[#0a0f1d] rounded-[4.5rem] w-full max-w-6xl overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10 flex flex-col max-h-[90vh]">
               <div className="px-16 py-12 bg-white/5 border-b border-white/10 flex items-center justify-between backdrop-blur-md">
                  <div>
-                    <h3 className="text-2xl font-black text-white uppercase tracking-[0.3em] italic">Intelligence Node Construction</h3>
+                    <h3 className="text-2xl font-black text-white uppercase tracking-[0.3em] italic">Question Editor</h3>
                     <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest mt-1 italic">Design clinical assessment pathways</p>
                  </div>
                  <button onClick={() => setIsEditing(false)} className="w-16 h-16 bg-white/5 border border-white/10 shadow-2xl rounded-3xl flex items-center justify-center text-gray-500 hover:text-white text-3xl font-light transition-all active:scale-90 animate-in spin-in-90 duration-500">×</button>
@@ -526,9 +526,9 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                   <AlertCircle size={40} className="animate-pulse" />
                </div>
                <div className="space-y-4">
-                  <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">Expunge Intelligence Node</h3>
+                  <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">Delete Question</h3>
                   <p className="text-sm font-bold text-gray-500 leading-relaxed italic">
-                     Are you certain you want to permanently expunge this node from the institutional core? This operation is non-reversible.
+                     Are you certain you want to permanently delete this question? This operation cannot be undone.
                   </p>
                </div>
                <div className="flex flex-col gap-6">

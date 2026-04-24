@@ -184,7 +184,7 @@ export default function AdminDashboard() {
                   <section className="lg:col-span-2 bg-white/5 rounded-[3.5rem] border border-white/10 shadow-2xl p-12 space-y-10 group overflow-hidden relative backdrop-blur-md">
                      <div className="flex items-center justify-between relative z-10">
                         <div>
-                           <h3 className="text-lg font-black text-white uppercase tracking-tight">Institutional Velocity</h3>
+                           <h3 className="text-lg font-black text-white uppercase tracking-tight">Enrollment Velocity</h3>
                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">Real-time enrollment tracking for last 7 days</p>
                         </div>
                         <div className="flex items-center gap-2 px-4 py-2 bg-cyan-400/10 border border-cyan-400/20 rounded-xl">
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
                      </div>
                      <div className="h-72 w-full relative pt-10 px-2 box-border opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
                         {/* CHART PLACEHOLDER */}
-                        <div className="absolute inset-0 flex items-center justify-center italic text-gray-700 font-black uppercase text-[10px] tracking-[0.5em]">Cognitive Mapping Active</div>
+                        <div className="absolute inset-0 flex items-center justify-center italic text-gray-700 font-black uppercase text-[10px] tracking-[0.5em]">Processing Data...</div>
                      </div>
                   </section>
 
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
                      <div className="flex items-center gap-4">
                         <div className="p-3 bg-cyan-600/10 text-cyan-400 border border-cyan-400/20 rounded-2xl shadow-sm"><BarChart3 size={20} /></div>
                         <div>
-                          <h3 className="text-sm font-black text-white uppercase tracking-widest">Cognitive Intelligence Registry</h3>
+                          <h3 className="text-sm font-black text-white uppercase tracking-widest">Question History</h3>
                           <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">Detailed student interaction logs</p>
                         </div>
                      </div>
