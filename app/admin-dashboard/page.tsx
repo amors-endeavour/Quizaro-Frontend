@@ -367,7 +367,6 @@ export default function AdminDashboard() {
              </div>
           )}
       </div>
-iv>
 
       {/* NEURAL FILTER OVERLAY 🔥 */}
       {isFilterOpen && (
