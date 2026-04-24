@@ -186,8 +186,11 @@ export default function ProfilePage() {
                              <input 
                                type="text" 
                                value={editPhone} 
-                               onChange={e => setEditPhone(e.target.value)}
-                               placeholder="+91..."
+                               onChange={e => {
+                                 const val = e.target.value.replace(/\D/g, "");
+                                 if (val.length <= 10) setEditPhone(val);
+                               }}
+                               placeholder="10-digit mobile number"
                                className="w-full text-sm font-black text-white border-b border-white/10 focus:border-cyan-400 outline-none pb-1 mt-1 bg-transparent"
                              />
                            ) : (
