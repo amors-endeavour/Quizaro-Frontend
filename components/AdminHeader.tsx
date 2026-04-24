@@ -1,6 +1,9 @@
 "use client";
 
-import { Search, Settings, Filter, Plus, Bell, ChevronRight, LayoutGrid, List, BarChart3 } from "lucide-react";
+import { Search, Settings, Filter, Plus, Bell, ChevronRight, LayoutGrid, List, BarChart3, LogOut, Home, User } from "lucide-react";
+import { getInitials } from "@/app/lib/utils";
+import { useState, useEffect } from "react";
+import API from "@/app/lib/api";
 
 interface AdminHeaderProps {
   title: string;
@@ -25,6 +28,13 @@ export default function AdminHeader({
   onFilter, 
   onSearchChange 
 }: AdminHeaderProps) {
+  const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
+
+  useEffect(() => {
+    API.get("/user/profile").then(res => setUser(res.data.user || res.data)).catch(() => {});
+  }, []);
+
   const displayTabs = tabs || [
     { id: 'intelligence', label: 'Papers', icon: <LayoutGrid size={14} /> },
     { id: 'analysis', label: 'Analysis', icon: <BarChart3 size={14} /> }
@@ -59,10 +69,41 @@ export default function AdminHeader({
             />
           </div>
 
-          <div className="flex items-center gap-2 group cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs group-hover:scale-105 transition-transform shadow-lg shadow-blue-500/20">
-              MA
-            </div>
+          <div className="relative">
+            <button 
+              onClick={() => setShowMenu(!showMenu)}
+              className="w-9 h-9 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs hover:scale-105 transition-transform shadow-lg shadow-blue-500/20 uppercase"
+            >
+              {user ? getInitials(user.name) : "??"}
+            </button>
+
+            {showMenu && (
+              <div className="absolute top-full right-0 mt-3 w-64 bg-white border border-gray-100 rounded-3xl shadow-2xl p-6 animate-in slide-in-from-top-2 duration-300 z-[200]">
+                 <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-50">
+                    <div className="w-12 h-12 rounded-2xl bg-gray-900 text-white flex items-center justify-center font-black text-sm uppercase">
+                       {user ? getInitials(user.name) : "??"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                       <h4 className="text-xs font-black text-gray-900 uppercase truncate">{user?.name}</h4>
+                       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate">{user?.role}</p>
+                    </div>
+                 </div>
+                 <div className="space-y-1">
+                    <button className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-gray-50 rounded-xl transition-all">
+                       <User size={14} /> Profile
+                    </button>
+                    <button className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-gray-50 rounded-xl transition-all">
+                       <Settings size={14} /> Settings
+                    </button>
+                    <button 
+                      onClick={() => { localStorage.clear(); window.location.href = "/"; }}
+                      className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-red-500 uppercase tracking-widest hover:bg-red-50 rounded-xl transition-all"
+                    >
+                       <LogOut size={14} /> Logout
+                    </button>
+                 </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

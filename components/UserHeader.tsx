@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, HelpCircle, ChevronRight, LayoutGrid, Calendar, X, Sparkles, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Bell, HelpCircle, ChevronRight, LayoutGrid, Calendar, X, Sparkles, AlertCircle, User, Settings, LogOut } from "lucide-react";
+import { getInitials } from "@/app/lib/utils";
+import API from "@/app/lib/api";
 
 interface UserHeaderProps {
   title: string;
@@ -10,7 +12,13 @@ interface UserHeaderProps {
 
 export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '/');
+
+  useEffect(() => {
+    API.get("/user/profile").then(res => setUser(res.data.user || res.data)).catch(() => {});
+  }, []);
 
   const notifications = [
     { id: 1, title: "New Test Series Live", description: "Advanced Matrix Intelligence papers are now live.", type: "new" },
@@ -100,13 +108,48 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
             <h2 className="text-2xl font-black text-gray-900 tracking-tighter leading-none">{title}</h2>
          </div>
 
-         <div className="flex items-center gap-3">
+         <div className="flex items-center gap-3 relative">
             <div 
               onClick={() => window.location.href = "/contact"}
               className="p-3 bg-gray-50 text-gray-400 border border-gray-100 rounded-2xl shadow-sm hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
             >
                <HelpCircle size={20} />
             </div>
+
+            <button 
+              onClick={() => setShowMenu(!showMenu)}
+              className="w-11 h-11 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-sm hover:scale-105 transition-transform shadow-lg shadow-blue-500/20 uppercase"
+            >
+              {user ? getInitials(user.name) : "??"}
+            </button>
+
+            {showMenu && (
+              <div className="absolute top-full right-0 mt-4 w-64 bg-white border border-gray-100 rounded-[2.5rem] shadow-2xl p-8 animate-in slide-in-from-top-2 duration-300 z-[200]">
+                 <div className="flex items-center gap-4 mb-8 pb-8 border-b border-gray-50">
+                    <div className="w-14 h-14 rounded-3xl bg-gray-900 text-white flex items-center justify-center font-black text-sm uppercase">
+                       {user ? getInitials(user.name) : "??"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                       <h4 className="text-sm font-black text-gray-900 uppercase truncate leading-none">{user?.name}</h4>
+                       <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest truncate mt-2">Scholar Entity</p>
+                    </div>
+                 </div>
+                 <div className="space-y-2">
+                    <button className="w-full flex items-center gap-4 p-4 text-[11px] font-black text-gray-500 uppercase tracking-widest hover:bg-gray-50 rounded-2xl transition-all">
+                       <User size={16} /> Profile
+                    </button>
+                    <button className="w-full flex items-center gap-4 p-4 text-[11px] font-black text-gray-500 uppercase tracking-widest hover:bg-gray-50 rounded-2xl transition-all">
+                       <Settings size={16} /> Settings
+                    </button>
+                    <button 
+                      onClick={() => { localStorage.clear(); window.location.href = "/"; }}
+                      className="w-full flex items-center gap-4 p-4 text-[11px] font-black text-red-500 uppercase tracking-widest hover:bg-red-50 rounded-2xl transition-all"
+                    >
+                       <LogOut size={16} /> Logout
+                    </button>
+                 </div>
+              </div>
+            )}
          </div>
       </div>
     </div>

@@ -43,6 +43,7 @@ interface Paper {
   _id: string;
   title: string;
   description?: string;
+  price?: number;
   isPublished: boolean;
   createdAt: string;
   createdBy?: { name: string };
@@ -63,6 +64,10 @@ export default function AdminDashboard() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+  // Split papers into Paid and Free
+  const paidPapers = papers.filter(p => p.price && p.price > 0);
+  const freePapers = papers.filter(p => !p.price || p.price === 0);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -145,6 +150,16 @@ export default function AdminDashboard() {
 
       <div className="p-8 lg:p-14 max-w-[1700px] mx-auto w-full space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-1000">
          
+         <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black uppercase tracking-tighter italic">Institutional Dashboard</h2>
+            <button 
+              onClick={() => router.push("/")}
+              className="px-6 py-2.5 bg-white text-gray-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all shadow-lg"
+            >
+               Go to Institutional Home
+            </button>
+         </div>
+
          {/* PERFORMANCE HUD (BIFURCATED) */}
           <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {(activeTab === 'intelligence' ? [
@@ -284,30 +299,75 @@ export default function AdminDashboard() {
                </section>
              </>
           ) : (
-             /* PAPERS GRID VIEW (STANDALONE PAPERS HUB) */
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {papers.length === 0 ? (
-                  <div className="col-span-full py-40 text-center bg-white/5 rounded-[4rem] border border-dashed border-white/10 animate-pulse">
-                    <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest italic tracking-[0.3em]">No Papers Synthesized</p>
-                  </div>
-                ) : (
-                  papers.map((paper) => (
-                    <AdminTestCard 
-                      key={paper._id}
-                      title={paper.title}
-                      description={paper.description}
-                      date={new Date(paper.createdAt).toLocaleDateString()}
-                      status={paper.isPublished ? "Published" : "Draft"}
-                      onStatusToggle={(ns) => handleStatusToggle(paper._id, ns)}
-                      onEdit={() => router.push(`/admin-dashboard/tests`)}
-                      onQuestions={() => router.push(`/admin-dashboard/${paper._id}`)}
-                      onDelete={() => console.log("Delete triggered from dashboard")}
-                    />
-                  ))
-                )}
+             /* BIFURCATED PAPERS HUB 🔥 */
+             <div className="space-y-16">
+                {/* PAID PAPERS SECTION */}
+                <section className="space-y-8">
+                   <div className="flex items-center gap-4 px-4">
+                      <div className="w-10 h-10 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-950/10">
+                         <BarChart3 size={20} />
+                      </div>
+                      <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Premium Paid Papers</h3>
+                   </div>
+                   
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {paidPapers.length === 0 ? (
+                        <div className="col-span-full py-20 text-center bg-white/5 rounded-[3rem] border border-dashed border-white/10">
+                          <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest">No Premium Papers Synthesized</p>
+                        </div>
+                      ) : (
+                        paidPapers.map((paper) => (
+                          <AdminTestCard 
+                            key={paper._id}
+                            title={paper.title}
+                            description={paper.description}
+                            date={new Date(paper.createdAt).toLocaleDateString()}
+                            status={paper.isPublished ? "Published" : "Draft"}
+                            onStatusToggle={(ns) => handleStatusToggle(paper._id, ns)}
+                            onEdit={() => router.push(`/admin-dashboard/tests`)}
+                            onQuestions={() => router.push(`/admin-dashboard/${paper._id}`)}
+                            onDelete={() => console.log("Delete triggered from dashboard")}
+                          />
+                        ))
+                      )}
+                   </div>
+                </section>
+
+                {/* FREE PAPERS SECTION */}
+                <section className="space-y-8">
+                   <div className="flex items-center gap-4 px-4">
+                      <div className="w-10 h-10 bg-green-500/10 text-green-400 border border-green-500/20 rounded-2xl flex items-center justify-center shadow-lg shadow-green-950/10">
+                         <CheckCircle2 size={20} />
+                      </div>
+                      <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Institutional Free Papers</h3>
+                   </div>
+                   
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {freePapers.length === 0 ? (
+                        <div className="col-span-full py-20 text-center bg-white/5 rounded-[3rem] border border-dashed border-white/10">
+                          <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest">No Free Papers Synthesized</p>
+                        </div>
+                      ) : (
+                        freePapers.map((paper) => (
+                          <AdminTestCard 
+                            key={paper._id}
+                            title={paper.title}
+                            description={paper.description}
+                            date={new Date(paper.createdAt).toLocaleDateString()}
+                            status={paper.isPublished ? "Published" : "Draft"}
+                            onStatusToggle={(ns) => handleStatusToggle(paper._id, ns)}
+                            onEdit={() => router.push(`/admin-dashboard/tests`)}
+                            onQuestions={() => router.push(`/admin-dashboard/${paper._id}`)}
+                            onDelete={() => console.log("Delete triggered from dashboard")}
+                          />
+                        ))
+                      )}
+                   </div>
+                </section>
              </div>
           )}
       </div>
+iv>
 
       {/* NEURAL FILTER OVERLAY 🔥 */}
       {isFilterOpen && (
