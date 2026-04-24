@@ -164,7 +164,7 @@ export default function UserDashboard() {
     (item.description && item.description.toLowerCase().includes(search.toLowerCase()));
 
   const myTests = purchasedTests.filter(pt => matchesSearch(pt.testId));
-  const freeStandalone = availableTests.filter(t => !t.seriesId && t.price === 0 && matchesSearch(t));
+  const availableStandalone = availableTests.filter(t => !t.seriesId && matchesSearch(t));
   const librarySeries = series.filter(s => matchesSearch(s));
   
   const filteredResources = resources.filter(r => {
@@ -228,7 +228,7 @@ export default function UserDashboard() {
                         <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Neural Link Active</p>
                         {search && (
                           <div className="flex gap-2">
-                             <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{myTests.length + freeStandalone.length + librarySeries.length} Tests Found</span>
+                         <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{myTests.length + availableStandalone.length + librarySeries.length} Tests Found</span>
                              <span className="px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{filteredResources.length} Notes Found</span>
                           </div>
                         )}
@@ -375,31 +375,38 @@ export default function UserDashboard() {
                 </div>
             </section>
 
-            {/* SECTION 3: RECENT OPEN ASSESSMENTS (FREE) */}
-            {freeStandalone.length > 0 && (
+            {/* SECTION 3: RECENT OPEN ASSESSMENTS (GLOBAL) */}
+            {availableStandalone.length > 0 && (
                <section className="space-y-8 animate-in fade-in duration-1000">
                   <div className="flex items-center justify-between px-4">
                     <div className="flex items-center gap-4">
                        <div className="w-10 h-10 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-2xl flex items-center justify-center shadow-lg"><Zap size={20} /></div>
-                       <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Standalone Open Catalog</h3>
+                       <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Institutional Assessment Catalog</h3>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                     {freeStandalone.map((test) => (
+                     {availableStandalone.map((test) => (
                         <div key={test._id} className="bg-white/5 p-8 rounded-[3rem] border border-white/10 shadow-2xl flex flex-col group hover:-translate-y-2 transition-all duration-300 relative overflow-hidden backdrop-blur-md">
                            <div className="w-16 h-16 bg-white/5 border border-white/5 text-cyan-400 rounded-2xl flex items-center justify-center mb-8 shadow-inner group-hover:bg-cyan-500 group-hover:text-white transition-all">
-                              <Sparkles size={28} />
+                              {test.price === 0 ? <Sparkles size={28} /> : <Lock size={28} />}
                            </div>
                            <h4 className="text-lg font-black text-white tracking-tighter leading-none mb-3 italic">{test.title}</h4>
-                           <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-6">{test.category || "Elective Paper"}</p>
+                           <div className="flex items-center justify-between mb-6">
+                              <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{test.category || "Elective Paper"}</p>
+                              {test.price > 0 && <span className="text-[10px] font-black text-amber-500 uppercase italic tracking-tighter">Premium</span>}
+                           </div>
                            <p className="text-[11px] text-gray-600 font-bold mb-10 line-clamp-2 italic leading-relaxed">{test.description || "Direct evaluation paper."}</p>
                            
                            <button
-                              onClick={() => handleJoinSession(test._id)}
-                              className="w-full mt-auto py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:shadow-2xl hover:shadow-cyan-900/40 active:scale-95"
+                               onClick={() => handleJoinSession(test._id)}
+                               className={`w-full mt-auto py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:shadow-2xl active:scale-95 ${
+                                 test.price === 0 
+                                 ? "bg-gradient-to-r from-cyan-600 to-blue-700 text-white hover:shadow-cyan-900/40" 
+                                 : "bg-white/5 border border-white/10 text-gray-400 hover:bg-amber-600 hover:text-white hover:border-amber-600 hover:shadow-amber-900/40"
+                               }`}
                            >
-                             Initiate Direct Session
+                             {test.price === 0 ? "Initiate Direct Session" : "Unlock & Launch"}
                            </button>
                         </div>
                      ))}
