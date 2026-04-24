@@ -58,7 +58,7 @@ export default function UserSidebar({ isOpen, onClose, userName = "Student" }: {
         <img 
           src="/logo.png" 
           alt="Quizaro" 
-          className="w-12 h-12 object-contain" 
+          className="w-32 h-16 object-contain" 
         />
         <div>
           <h1 className="text-sm font-black text-white tracking-tight leading-none uppercase">Quizaro</h1>

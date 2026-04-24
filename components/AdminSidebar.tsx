@@ -50,7 +50,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
             <img 
               src="/logo.png" 
               alt="Quizaro" 
-              className="w-12 h-12 object-contain" 
+              className="w-32 h-16 object-contain" 
             />
             <div>
               <h1 className="text-sm font-black text-white leading-none uppercase tracking-tight">QUIZARO</h1>

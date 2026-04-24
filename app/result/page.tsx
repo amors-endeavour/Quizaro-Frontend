@@ -124,12 +124,12 @@ function ResultContent() {
       <UserSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} userName={user?.name || "Student"} />
 
       {/* Integrated Logo Trigger */}
-      <div className="fixed top-0 left-0 z-[200] w-20 h-16 bg-white border-r border-b border-gray-100 flex items-center justify-center shadow-sm">
+      <div className="fixed top-0 left-0 z-[200] w-32 h-16 bg-white border-r border-b border-gray-100 flex items-center justify-center shadow-sm">
          <button 
            onClick={() => setIsSidebarOpen(true)}
-           className="hover:scale-110 transition-transform active:scale-95 group relative"
+           className="hover:scale-105 transition-transform active:scale-95 group relative"
          >
-            <img src="/logo.png" alt="Quizaro" className="w-10 h-10 object-contain" />
+            <img src="/logo.png" alt="Quizaro" className="w-24 h-12 object-contain" />
             <span className="absolute left-full ml-6 px-3 py-1.5 bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[300]">Open Matrix Menu</span>
          </button>
       </div>
