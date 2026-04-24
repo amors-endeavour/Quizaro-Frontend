@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 
 import API from "@/app/lib/api";
 
@@ -10,28 +11,36 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     // 1. Instant check (Optimistic UI)
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    if (token) {
-      setIsAuthenticated(true);
-      setCheckingAuth(false);
-    } else {
-      // If no token, we can also be sure they are NOT logged in
-      setIsAuthenticated(false);
-      setCheckingAuth(false);
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      if (token) {
+        setIsAuthenticated(true);
+        setUserRole(role);
+        setCheckingAuth(false);
+      } else {
+        setIsAuthenticated(false);
+        setCheckingAuth(false);
+      }
     }
 
     // 2. Background verification (Security)
     const verifyAuth = async () => {
       try {
         const { data } = await API.get("/user/profile");
+        const role = (data?.role || data?.user?.role)?.toLowerCase();
         setIsAuthenticated(!!data);
+        setUserRole(role);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("role", role);
+        }
       } catch (err) {
         setIsAuthenticated(false);
-        // Clear local state if verification fails
         if (typeof window !== "undefined") {
           localStorage.removeItem("token");
           localStorage.removeItem("role");
@@ -43,36 +52,25 @@ export default function Navbar() {
     verifyAuth();
   }, []);
 
-  const handleAdminAccess = () => {
-    setOpen(false);
-    // Directly go to admin dashboard if we're likely an admin
-    const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
-    if (role === "admin") {
+  const handleDashboardRedirect = () => {
+    if (userRole === "admin") {
       router.push("/admin-dashboard");
     } else {
-      router.push("/login?redirect=/admin-dashboard");
+      router.push("/user-dashboard");
     }
   };
 
   const handleLogout = async () => {
-    // Show a quick exit feedback
-    setCheckingAuth(true); // Re-use the pulse skeleton
+    setCheckingAuth(true); 
     try {
-      await API.post("/user/logout");
-    } catch {
-      console.log("Remote logout failed, clearing local state anyway");
-    } finally {
       if (typeof window !== "undefined") {
         localStorage.clear();
       }
       setTimeout(() => {
-        setIsAuthenticated(false);
-        setCheckingAuth(false);
-        // Force a page refresh to clear all global state/contexts
-        if (typeof window !== "undefined") {
-          window.location.href = "/";
-        }
-      }, 500);
+        window.location.href = "/";
+      }, 300);
+    } catch {
+      window.location.href = "/";
     }
   };
 
@@ -114,36 +112,19 @@ export default function Navbar() {
             <div className="w-20 h-8 bg-gray-100 rounded-lg animate-pulse" />
           ) : isAuthenticated ? (
             <>
-              <Link
-                href="/user-dashboard"
-                className="text-base font-medium text-gray-600 hover:text-gray-900 transition"
+              <button
+                onClick={handleDashboardRedirect}
+                className="px-6 py-2.5 bg-[#050816] text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-gray-900 transition-all shadow-xl shadow-gray-950/20"
               >
                 Dashboard
-              </Link>
+              </button>
               <button
                 onClick={handleLogout}
-                className="px-6 py-2.5 text-sm font-semibold rounded-xl text-white 
-                bg-gradient-to-r from-red-500 to-pink-500 
-                hover:opacity-90 transition shadow-lg shadow-red-500/20"
+                className="p-2.5 text-red-500 hover:bg-red-50 rounded-xl transition-all border border-red-100"
+                title="Logout"
               >
-                Logout
+                <LogOut size={20} />
               </button>
-              <button
-                onClick={() => setOpen(!open)}
-                className="text-gray-400 hover:text-gray-900 transition text-lg"
-              >
-                ▼
-              </button>
-              {open && (
-                <div className="absolute right-0 top-14 w-48 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-[60]">
-                  <button
-                    onClick={handleAdminAccess}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition"
-                  >
-                    Admin Access
-                  </button>
-                </div>
-              )}
             </>
           ) : (
             <>

@@ -193,6 +193,16 @@ export default function UserDashboard() {
         ) : (
           <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12 animate-in fade-in duration-700">
             
+            <div className="flex items-center justify-between">
+               <h2 className="text-xl font-black uppercase tracking-tighter italic text-white">Student Intelligence Hub</h2>
+               <button 
+                 onClick={() => router.push("/")}
+                 className="px-6 py-2.5 bg-white text-[#050816] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all shadow-lg"
+               >
+                  Go to Institutional Home
+               </button>
+            </div>
+
             <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
                {[
                   { label: "Papers Submitted", val: papersSubmitted, icon: <CheckCircle2 size={24} />, color: "green" },
