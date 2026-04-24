@@ -62,7 +62,7 @@ export default function ProfilePage() {
       const res = await API.post("/user/profile/avatar", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
-      setUser((prev: any) => ({ ...prev, avatarUrl: res.data.avatarUrl }));
+      setUser((prev: any) => ({ ...prev, avatar: res.data.avatar }));
     } catch (err) {
       console.error("Avatar error", err);
     }
@@ -110,8 +110,8 @@ export default function ProfilePage() {
               
               <div className="relative mt-8">
                  <div className="w-40 h-40 bg-cyan-600 rounded-[3rem] flex items-center justify-center text-white text-6xl font-black shadow-2xl rotate-6 group-hover:rotate-0 transition-all duration-700 overflow-hidden border-4 border-[#050816]">
-                    {user?.avatarUrl ? (
-                      <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                    {user?.avatar ? (
+                      <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
                       user?.name?.[0] || "S"
                     )}
