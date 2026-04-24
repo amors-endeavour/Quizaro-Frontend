@@ -87,7 +87,6 @@ export default function UserDashboard() {
 
   useEffect(() => {
     const initDashboard = async () => {
-      // 1. Handle Token Handoff (Social Login)
       if (typeof window !== "undefined") {
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get("token");
@@ -110,7 +109,6 @@ export default function UserDashboard() {
 
         setUser(profile?.user || profile);
 
-        // 4. Data Synchronization (Resilient Fetching)
         try {
           const [available, purchased, seriesList, resourceList, attemptList] = await Promise.allSettled([
             API.get("/user/tests/available"),
@@ -158,9 +156,8 @@ export default function UserDashboard() {
     }
   };
 
-  // Logic for filtering
   const matchesSearch = (item: any) => 
-    item.title.toLowerCase().includes(search.toLowerCase()) || 
+    item.title?.toLowerCase().includes(search.toLowerCase()) || 
     (item.description && item.description.toLowerCase().includes(search.toLowerCase()));
 
   const myTests = purchasedTests.filter(pt => matchesSearch(pt.testId));
@@ -196,13 +193,12 @@ export default function UserDashboard() {
         ) : (
           <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12 animate-in fade-in duration-700">
             
-            {/* SIMPLIFIED PERFORMANCE HUD 🔥 */}
             <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
                {[
                   { label: "Papers Submitted", val: papersSubmitted, icon: <CheckCircle2 size={24} />, color: "green" },
                   { label: "Global Attempts", val: totalAttempts, icon: <History size={24} />, color: "blue" },
                   { label: "Training Velocity", val: `${totalTimeSpent}m`, icon: <Clock size={24} />, color: "purple" }
-               ].map((stat, idx) => (
+               ].map((stat) => (
                   <div key={stat.label} className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between group hover:border-white/20 transition-all backdrop-blur-md">
                      <div>
                         <h4 className="text-3xl font-black text-white italic tracking-tighter leading-none">{stat.val}</h4>
@@ -218,7 +214,6 @@ export default function UserDashboard() {
                ))}
             </section>
 
-            {/* UNIFIED SEARCH HUD */}
             <section className="bg-white/5 border border-white/10 p-10 rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
                <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-600/5 blur-[100px] rounded-full pointer-events-none" />
                <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
@@ -228,7 +223,7 @@ export default function UserDashboard() {
                         <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Neural Link Active</p>
                         {search && (
                           <div className="flex gap-2">
-                         <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{myTests.length + availableStandalone.length + librarySeries.length} Tests Found</span>
+                             <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{myTests.length + availableStandalone.length + librarySeries.length} Tests Found</span>
                              <span className="px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{filteredResources.length} Notes Found</span>
                           </div>
                         )}
@@ -247,63 +242,93 @@ export default function UserDashboard() {
                </div>
             </section>
 
-            {/* SECTION 1: PERSONAL TEST REGISTRY */}
+            {/* SECTION 1: CONSOLIDATED INTELLIGENCE REGISTRY 🔥 */}
             <section className="space-y-8">
                 <div className="flex items-center justify-between px-4">
                   <div className="flex items-center gap-4">
                      <div className="w-10 h-10 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-2xl flex items-center justify-center shadow-lg"><BookOpen size={20} /></div>
-                     <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">My Assessment Registry</h3>
+                     <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Institutional Intelligence Registry</h3>
                   </div>
-                  {!search && <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{myTests.length} Active Protcols</span>}
+                  {!search && <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{myTests.length + availableStandalone.length} Global Protocols</span>}
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
-                  {myTests.length === 0 ? (
+                  {/* Part A: Active & Completed Protocols */}
+                  {myTests.map((pt) => (
+                    <div key={pt._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-xl hover:shadow-cyan-500/5 hover:bg-white/[0.07] transition-all duration-300 group flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-md relative overflow-hidden">
+                       <div className="flex items-center gap-8 relative z-10">
+                          <div className={`w-16 h-16 ${pt.isCompleted ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-blue-500/20"} border rounded-2xl flex items-center justify-center transition-all group-hover:scale-110`}>
+                             {pt.isCompleted ? <CheckCircle2 size={32} /> : <FileText size={32} />}
+                          </div>
+                          <div>
+                             <h4 className="text-xl font-black text-white leading-tight group-hover:text-cyan-400 transition-colors uppercase italic tracking-tighter">{pt.testId.title}</h4>
+                             <div className="flex items-center gap-6 mt-3">
+                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{pt.testId.category || "General"}</span>
+                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Clock size={12} className="text-cyan-400" /> {pt.testId.duration} Min</span>
+                             </div>
+                          </div>
+                       </div>
+                       
+                       <div className="flex items-center gap-4 relative z-10">
+                          {pt.isCompleted ? (
+                             <button
+                                onClick={() => router.push(`/result?attemptId=${pt._id}`)}
+                                className="px-10 py-4 bg-white/5 text-gray-400 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-white/10 hover:text-white transition-all"
+                             >
+                                <Award size={18} /> View Analysis
+                             </button>
+                          ) : (
+                             <button
+                                onClick={() => router.push(`/quiz/${pt.testId._id}`)}
+                                className="px-10 py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 hover:shadow-2xl hover:shadow-cyan-900/40 transition-all font-black"
+                             >
+                                <Play size={18} fill="white" /> Resume Session
+                             </button>
+                          )}
+                       </div>
+                    </div>
+                  ))}
+
+                  {/* Part B: Newly Published Institutional Nodes */}
+                  {availableStandalone.map((test) => (
+                    <div key={test._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 border-dashed shadow-xl hover:shadow-amber-500/5 hover:bg-white/[0.07] transition-all duration-300 group flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-md relative overflow-hidden">
+                       <div className="flex items-center gap-8 relative z-10">
+                          <div className={`w-16 h-16 bg-white/5 border border-white/10 text-gray-400 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 group-hover:text-amber-400 group-hover:border-amber-400/20`}>
+                             <Sparkles size={32} />
+                          </div>
+                          <div>
+                             <div className="flex items-center gap-3">
+                                <h4 className="text-xl font-black text-white leading-tight group-hover:text-amber-400 transition-colors uppercase italic tracking-tighter">{test.title}</h4>
+                                <span className="px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest">New Protocol</span>
+                             </div>
+                             <div className="flex items-center gap-6 mt-3">
+                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{test.category || "General"}</span>
+                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Clock size={12} className="text-amber-400" /> {test.duration} Min</span>
+                             </div>
+                          </div>
+                       </div>
+                       
+                       <div className="flex items-center gap-4 relative z-10">
+                          <button
+                             onClick={() => handleJoinSession(test._id)}
+                             className="px-10 py-5 bg-white/5 hover:bg-amber-600 text-gray-400 hover:text-white border border-white/10 hover:border-amber-600 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 hover:shadow-2xl hover:shadow-amber-900/40 transition-all font-black"
+                          >
+                             <Play size={18} /> Initiate Session
+                          </button>
+                       </div>
+                    </div>
+                  ))}
+
+                  {myTests.length === 0 && availableStandalone.length === 0 && (
                     <div className="py-16 text-center bg-white/5 rounded-[2.5rem] border border-dashed border-white/10 flex flex-col items-center gap-4 opacity-40">
                       <History size={32} className="text-gray-600" />
-                      <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">No active protocols found</p>
+                      <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">No intelligence nodes found in registry</p>
                     </div>
-                  ) : (
-                    myTests.map((pt) => (
-                      <div key={pt._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-xl hover:shadow-cyan-500/5 hover:bg-white/[0.07] transition-all duration-300 group flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-md relative overflow-hidden">
-                         <div className="flex items-center gap-8 relative z-10">
-                            <div className={`w-16 h-16 ${pt.isCompleted ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-blue-500/20"} border rounded-2xl flex items-center justify-center transition-all group-hover:scale-110`}>
-                               {pt.isCompleted ? <CheckCircle2 size={32} /> : <FileText size={32} />}
-                            </div>
-                            <div>
-                               <h4 className="text-xl font-black text-white leading-tight group-hover:text-cyan-400 transition-colors uppercase italic tracking-tighter">{pt.testId.title}</h4>
-                               <div className="flex items-center gap-6 mt-3">
-                                  <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{pt.testId.category || "General"}</span>
-                                  <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Clock size={12} className="text-cyan-400" /> {pt.testId.duration} Min</span>
-                               </div>
-                            </div>
-                         </div>
-                         
-                         <div className="flex items-center gap-4 relative z-10">
-                            {pt.isCompleted ? (
-                               <button
-                                  onClick={() => router.push(`/result?attemptId=${pt._id}`)}
-                                  className="px-10 py-4 bg-white/5 text-gray-400 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-white/10 hover:text-white transition-all"
-                               >
-                                  <Award size={18} /> View Analysis
-                               </button>
-                            ) : (
-                               <button
-                                  onClick={() => router.push(`/quiz/${pt.testId._id}`)}
-                                  className="px-10 py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 hover:shadow-2xl hover:shadow-cyan-900/40 transition-all font-black"
-                               >
-                                  <Play size={18} fill="white" /> Launch System
-                               </button>
-                            )}
-                         </div>
-                         <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/5 blur-3xl pointer-events-none" />
-                      </div>
-                    ))
                   )}
                 </div>
             </section>
 
-            {/* SECTION 2: STUDY MANUALS & NOTES REPOSITORY 🔥 */}
+            {/* SECTION 2: STUDY MANUALS & NOTES REPOSITORY */}
             <section className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
                 <div className="flex flex-col md:flex-row md:items-center justify-between px-4 gap-6">
                   <div className="flex items-center gap-4">
@@ -311,7 +336,6 @@ export default function UserDashboard() {
                      <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">Knowledge & Notes Mesh</h3>
                   </div>
                   
-                  {/* Resource Category Filters */}
                   <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                      {resourceCategories.map(cat => (
                        <button
@@ -375,46 +399,7 @@ export default function UserDashboard() {
                 </div>
             </section>
 
-            {/* SECTION 3: RECENT OPEN ASSESSMENTS (GLOBAL) */}
-            {availableStandalone.length > 0 && (
-               <section className="space-y-8 animate-in fade-in duration-1000">
-                  <div className="flex items-center justify-between px-4">
-                    <div className="flex items-center gap-4">
-                       <div className="w-10 h-10 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-2xl flex items-center justify-center shadow-lg"><Zap size={20} /></div>
-                       <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Institutional Assessment Catalog</h3>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                     {availableStandalone.map((test) => (
-                        <div key={test._id} className="bg-white/5 p-8 rounded-[3rem] border border-white/10 shadow-2xl flex flex-col group hover:-translate-y-2 transition-all duration-300 relative overflow-hidden backdrop-blur-md">
-                           <div className="w-16 h-16 bg-white/5 border border-white/5 text-cyan-400 rounded-2xl flex items-center justify-center mb-8 shadow-inner group-hover:bg-cyan-500 group-hover:text-white transition-all">
-                              {test.price === 0 ? <Sparkles size={28} /> : <Lock size={28} />}
-                           </div>
-                           <h4 className="text-lg font-black text-white tracking-tighter leading-none mb-3 italic">{test.title}</h4>
-                           <div className="flex items-center justify-between mb-6">
-                              <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{test.category || "Elective Paper"}</p>
-                              {test.price > 0 && <span className="text-[10px] font-black text-amber-500 uppercase italic tracking-tighter">Premium</span>}
-                           </div>
-                           <p className="text-[11px] text-gray-600 font-bold mb-10 line-clamp-2 italic leading-relaxed">{test.description || "Direct evaluation paper."}</p>
-                           
-                           <button
-                               onClick={() => handleJoinSession(test._id)}
-                               className={`w-full mt-auto py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:shadow-2xl active:scale-95 ${
-                                 test.price === 0 
-                                 ? "bg-gradient-to-r from-cyan-600 to-blue-700 text-white hover:shadow-cyan-900/40" 
-                                 : "bg-white/5 border border-white/10 text-gray-400 hover:bg-amber-600 hover:text-white hover:border-amber-600 hover:shadow-amber-900/40"
-                               }`}
-                           >
-                             {test.price === 0 ? "Initiate Direct Session" : "Unlock & Launch"}
-                           </button>
-                        </div>
-                     ))}
-                  </div>
-               </section>
-            )}
-
-            {/* SECTION 4: GLOBAL INSTITUTIONAL SERIES */}
+            {/* SECTION 3: INSTITUTIONAL SERIES MESH */}
             <section className="space-y-8 animate-in fade-in duration-1000 pb-20">
                 <div className="flex items-center justify-between px-4">
                   <div className="flex items-center gap-4">
@@ -447,10 +432,8 @@ export default function UserDashboard() {
           </div>
         )}
       
-      {/* Figma Global Ranking Sync */}
       <LeaderboardSidebar />
 
-      {/* Persistence Notification HUD */}
       {statusMsg && (
         <div className={`fixed bottom-10 left-10 z-[300] px-10 py-6 rounded-[2.5rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-5 backdrop-blur-3xl ${statusMsg.type === 'success' ? "bg-green-500/10 border-green-500/20 text-green-400" : statusMsg.type === 'alert' ? "bg-amber-500/10 border-amber-500/20 text-amber-400" : "bg-red-500/10 border-red-500/20 text-red-500"}`}>
            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-500/20" : statusMsg.type === 'alert' ? "bg-amber-500/20" : "bg-red-500/20"}`}>
