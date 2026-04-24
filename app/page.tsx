@@ -126,7 +126,7 @@ function HeroSection() {
         {/* Institutional Badge */}
         <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-12 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-1000">
           <Sparkles size={14} className="text-yellow-400 animate-pulse" />
-          Simplify By Umar - Let's Learn Simply
+          Simplified By Umar - Let's Learn Simply
           <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
         </div>
 
@@ -139,7 +139,7 @@ function HeroSection() {
         </h1>
 
         <p className="max-w-2xl text-base sm:text-lg text-gray-300 font-medium leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
-          India's smartest quiz platform. Adaptive AI tests, real-time analytics, live 
+          India's smartest quiz platform. Adaptive tests, real-time analytics, live 
           leaderboards — everything you need to outperform 50,000+ aspirants.
         </p>
 
