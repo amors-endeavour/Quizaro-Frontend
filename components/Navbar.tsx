@@ -77,7 +77,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full sticky top-0 z-50 bg-[#050816] border-b border-white/10 backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-1000">
+    <nav className="w-full sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm animate-in fade-in slide-in-from-top-4 duration-1000">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
 
         {/* Logo */}
@@ -90,7 +90,7 @@ export default function Navbar() {
         </Link>
 
         {/* Center Links */}
-        <div className="hidden md:flex gap-10 text-[16px] text-gray-300 font-medium">
+        <div className="hidden md:flex gap-10 text-[16px] text-gray-600 font-medium">
               {[
                 { name: "Home", href: "/" },
                 { name: "Tests", href: "/tests" },
@@ -100,10 +100,10 @@ export default function Navbar() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="hover:text-white transition relative group"
+                  className="hover:text-gray-900 transition relative group"
                 >
                   {item.name}
-                  <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-gradient-to-r from-purple-500 to-cyan-500 transition-all group-hover:w-full"></span>
+                  <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-blue-600 transition-all group-hover:w-full"></span>
                 </Link>
               ))}
         </div>
@@ -111,12 +111,12 @@ export default function Navbar() {
         {/* Right Side */}
         <div className="flex items-center gap-5 relative">
           {checkingAuth ? (
-            <div className="w-20 h-8 bg-white/10 rounded-lg animate-pulse" />
+            <div className="w-20 h-8 bg-gray-100 rounded-lg animate-pulse" />
           ) : isAuthenticated ? (
             <>
               <Link
                 href="/user-dashboard"
-                className="text-base font-medium text-gray-300 hover:text-white transition"
+                className="text-base font-medium text-gray-600 hover:text-gray-900 transition"
               >
                 Dashboard
               </Link>
@@ -130,15 +130,15 @@ export default function Navbar() {
               </button>
               <button
                 onClick={() => setOpen(!open)}
-                className="text-gray-400 hover:text-white transition text-lg"
+                className="text-gray-400 hover:text-gray-900 transition text-lg"
               >
                 ▼
               </button>
               {open && (
-                <div className="absolute right-0 top-14 w-48 bg-[#0b0f2a] border border-white/10 rounded-xl shadow-xl py-2">
+                <div className="absolute right-0 top-14 w-48 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-[60]">
                   <button
                     onClick={handleAdminAccess}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition"
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition"
                   >
                     Admin Access
                   </button>
@@ -149,15 +149,15 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="text-base font-medium text-gray-300 hover:text-white transition"
+                className="text-base font-medium text-gray-600 hover:text-gray-900 transition"
               >
                 Login
               </Link>
               <Link
                 href="/register"
                 className="px-6 py-2.5 text-sm font-semibold rounded-xl text-white 
-                bg-gradient-to-r from-purple-500 to-cyan-500 
-                hover:opacity-90 transition shadow-lg shadow-purple-500/20"
+                bg-gradient-to-r from-blue-600 to-indigo-600 
+                hover:opacity-90 transition shadow-lg shadow-blue-500/20"
               >
                 Register
               </Link>
@@ -165,8 +165,6 @@ export default function Navbar() {
           )}
         </div>
       </div>
-
-      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-purple-500/40 to-transparent"></div>
     </nav>
   );
 }
