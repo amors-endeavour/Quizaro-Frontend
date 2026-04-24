@@ -236,6 +236,7 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
           setShowAntiCheatHUD(true);
           setTimeout(() => setShowAntiCheatHUD(false), 4000);
           if (next >= 3) {
+            setSubmitting(true); // Immediate lock 🔥
             handleSubmit(); // Force submit on 3rd violation
           }
           return next;
@@ -632,8 +633,8 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[400] bg-red-600 text-white px-10 py-5 rounded-[2rem] shadow-2xl animate-in slide-in-from-top-4 duration-300 flex items-center gap-4">
           <AlertCircle size={20} />
           <div>
-            <p className="text-[11px] font-black uppercase tracking-widest">Tab Switch Detected — Warning {tabSwitchWarnings}/3</p>
-            <p className="text-[10px] opacity-70 mt-0.5">{tabSwitchWarnings >= 3 ? "Auto-submitting..." : "3rd violation will auto-submit your paper."}</p>
+            <p className="text-[11px] font-black uppercase tracking-widest">Tab Switch Detected — Warning {Math.min(tabSwitchWarnings, 3)}/2</p>
+            <p className="text-[10px] opacity-70 mt-0.5">{tabSwitchWarnings >= 3 ? "Auto-submitting..." : "Next violation will auto-submit your paper."}</p>
           </div>
         </div>
       )}
