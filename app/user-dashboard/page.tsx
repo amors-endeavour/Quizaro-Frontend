@@ -160,8 +160,8 @@ export default function UserDashboard() {
     item.title?.toLowerCase().includes(search.toLowerCase()) || 
     (item.description && item.description.toLowerCase().includes(search.toLowerCase()));
 
-  const myTests = purchasedTests.filter(pt => matchesSearch(pt.testId));
-  const availableStandalone = availableTests.filter(t => !t.seriesId && matchesSearch(t));
+  const myTests = purchasedTests.filter(pt => pt.testId && matchesSearch(pt.testId));
+  const availableRegistry = availableTests.filter(t => matchesSearch(t));
   const librarySeries = series.filter(s => matchesSearch(s));
   
   const filteredResources = resources.filter(r => {
@@ -233,7 +233,7 @@ export default function UserDashboard() {
                         <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Neural Link Active</p>
                         {search && (
                           <div className="flex gap-2">
-                             <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{myTests.length + availableStandalone.length + librarySeries.length} Tests Found</span>
+                             <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{myTests.length + availableRegistry.length + librarySeries.length} Tests Found</span>
                              <span className="px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{filteredResources.length} Notes Found</span>
                           </div>
                         )}
@@ -259,7 +259,7 @@ export default function UserDashboard() {
                      <div className="w-10 h-10 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-2xl flex items-center justify-center shadow-lg"><BookOpen size={20} /></div>
                      <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Institutional Intelligence Registry</h3>
                   </div>
-                  {!search && <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{myTests.length + availableStandalone.length} Global Protocols</span>}
+                  {!search && <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{myTests.length + availableRegistry.length} Global Protocols</span>}
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
@@ -300,7 +300,7 @@ export default function UserDashboard() {
                   ))}
 
                   {/* Part B: Newly Published Institutional Nodes */}
-                  {availableStandalone.map((test) => (
+                  {availableRegistry.map((test) => (
                     <div key={test._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 border-dashed shadow-xl hover:shadow-amber-500/5 hover:bg-white/[0.07] transition-all duration-300 group flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-md relative overflow-hidden">
                        <div className="flex items-center gap-8 relative z-10">
                           <div className={`w-16 h-16 bg-white/5 border border-white/10 text-gray-400 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 group-hover:text-amber-400 group-hover:border-amber-400/20`}>
@@ -310,6 +310,11 @@ export default function UserDashboard() {
                              <div className="flex items-center gap-3">
                                 <h4 className="text-xl font-black text-white leading-tight group-hover:text-amber-400 transition-colors uppercase italic tracking-tighter">{test.title}</h4>
                                 <span className="px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest">New Protocol</span>
+                                {test.seriesId && (
+                                   <span className="px-3 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest flex items-center gap-2">
+                                      <Layers size={10} /> Series Member
+                                   </span>
+                                )}
                              </div>
                              <div className="flex items-center gap-6 mt-3">
                                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{test.category || "General"}</span>
@@ -329,7 +334,7 @@ export default function UserDashboard() {
                     </div>
                   ))}
 
-                  {myTests.length === 0 && availableStandalone.length === 0 && (
+                  {myTests.length === 0 && availableRegistry.length === 0 && (
                     <div className="py-16 text-center bg-white/5 rounded-[2.5rem] border border-dashed border-white/10 flex flex-col items-center gap-4 opacity-40">
                       <History size={32} className="text-gray-600" />
                       <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">No intelligence nodes found in registry</p>
