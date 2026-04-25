@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Bell, HelpCircle, ChevronRight, LayoutGrid, Calendar, X, Sparkles, AlertCircle, User, Settings, LogOut } from "lucide-react";
 import { getInitials } from "@/app/lib/utils";
 import API from "@/app/lib/api";
@@ -11,6 +12,7 @@ interface UserHeaderProps {
 }
 
 export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
+  const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
   const [showMenu, setShowMenu] = useState(false);

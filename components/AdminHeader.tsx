@@ -3,6 +3,7 @@
 import { Search, Settings, Filter, Plus, Bell, ChevronRight, LayoutGrid, List, BarChart3, LogOut, Home, User } from "lucide-react";
 import { getInitials } from "@/app/lib/utils";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import API from "@/app/lib/api";
 
 interface AdminHeaderProps {
@@ -28,6 +29,7 @@ export default function AdminHeader({
   onFilter, 
   onSearchChange 
 }: AdminHeaderProps) {
+  const router = useRouter();
   const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
   const [showMenu, setShowMenu] = useState(false);
 
