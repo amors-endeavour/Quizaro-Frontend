@@ -92,13 +92,13 @@ export default function AdminHeader({
                  </div>
                  <div className="space-y-1">
                     <button 
-                      onClick={() => router.push("/admin-dashboard/settings")}
+                      onClick={() => router.push("/admin-dashboard/profile")}
                       className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-gray-50 rounded-xl transition-all"
                     >
                        <User size={14} /> Profile
                     </button>
                     <button 
-                      onClick={() => router.push("/admin-dashboard/settings")}
+                      onClick={() => router.push("/admin-dashboard/profile")}
                       className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-gray-50 rounded-xl transition-all"
                     >
                        <Settings size={14} /> Settings
