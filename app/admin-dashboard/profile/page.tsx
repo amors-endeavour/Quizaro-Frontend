@@ -69,8 +69,12 @@ export default function AdminProfilePage() {
       <div className="flex-1 flex flex-col min-w-0 transition-all duration-500">
         <AdminHeader 
           title="Administrative Core" 
-          tabs={["Identity", "Security"]}
-          activeTab="Identity"
+          path={[{ label: "Identity", href: "/admin-dashboard/profile" }]}
+          tabs={[
+            { id: 'identity', label: 'Identity', icon: <User size={14} /> },
+            { id: 'security', label: 'Security', icon: <Shield size={14} /> }
+          ]}
+          activeTab="identity"
           onTabChange={() => {}}
         />
 
