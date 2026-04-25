@@ -102,7 +102,7 @@ function HeroSection() {
   const router = useRouter();
 
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center pt-32 pb-20 overflow-hidden">
+    <section className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-20 overflow-hidden">
       {/* Dynamic Background Effects */}
       <div className="absolute inset-0">
         {/* Main Center Glow */}
