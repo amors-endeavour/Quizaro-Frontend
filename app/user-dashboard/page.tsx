@@ -440,6 +440,52 @@ export default function UserDashboard() {
                 </div>
             </section>
 
+            {/* SECTION 4: CENTRALIZED INSTITUTIONAL HUD 🌐 */}
+            <div className="flex justify-center pb-20">
+               <section className="bg-[#0b0f2a] border border-white/10 rounded-[4rem] p-12 lg:p-16 max-w-[1000px] w-full relative overflow-hidden group shadow-2xl">
+                  <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-cyan-600/5 blur-[120px] rounded-full pointer-events-none" />
+                  
+                  <div className="relative z-10 flex flex-col items-center text-center space-y-12">
+                     <div className="flex flex-col items-center gap-4">
+                        <div className="w-16 h-16 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-[2rem] flex items-center justify-center shadow-lg"><Award size={32} /></div>
+                        <div>
+                           <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Global Ranking Matrix</h3>
+                           <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mt-1">Institutional Pulse</p>
+                        </div>
+                     </div>
+
+                     <div className="w-full max-w-2xl bg-white/5 border border-white/10 rounded-[2.5rem] p-12 space-y-8 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-600/5 opacity-50" />
+                        <div className="relative z-10 space-y-6">
+                           <Zap size={48} className="mx-auto text-blue-500/40 animate-pulse" />
+                           <div className="space-y-2">
+                              <p className="text-md font-black text-white uppercase tracking-widest italic">Awaiting Initial Performance Data</p>
+                              <p className="text-xs font-bold text-gray-500 italic leading-relaxed max-w-md mx-auto">Complete institutional protocols to activate your neural signature and synchronize with the global ranking mesh.</p>
+                           </div>
+                           <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden max-w-sm mx-auto border border-white/5">
+                              <div className="h-full w-1/3 bg-gradient-to-r from-blue-600 to-cyan-500 animate-pulse" />
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
+                        {[
+                           { label: "Institutional HUD", val: "V4.5.1 LIVE", color: "blue" },
+                           { label: "Neural Load", val: "Optimal", color: "cyan" },
+                           { label: "Sync Status", val: "Active", color: "purple" },
+                           { label: "Mesh Integrity", val: "99.8%", color: "green" }
+                        ].map(stat => (
+                           <div key={stat.label} className="bg-white/5 border border-white/10 p-6 rounded-[2rem] space-y-1.5 hover:bg-white/[0.08] transition-all group/stat">
+                              <p className="text-[8px] font-black text-gray-600 uppercase tracking-widest group-hover/stat:text-gray-400 transition-colors">{stat.label}</p>
+                              <h4 className="text-lg font-black text-white tracking-tighter uppercase italic leading-none">{stat.val}</h4>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               </section>
+            </div>
+
           </div>
         )}
       
