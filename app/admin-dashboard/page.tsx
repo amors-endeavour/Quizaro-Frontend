@@ -194,56 +194,7 @@ export default function AdminDashboard() {
 
           {activeTab === 'analysis' ? (
              <>
-               {/* ANALYTICS GRID */}
-               <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                  <section className="lg:col-span-2 bg-white/5 rounded-[3.5rem] border border-white/10 shadow-2xl p-12 space-y-10 group overflow-hidden relative backdrop-blur-md">
-                     <div className="flex items-center justify-between relative z-10">
-                        <div>
-                           <h3 className="text-lg font-black text-white uppercase tracking-tight">Enrollment Velocity</h3>
-                           <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">Real-time enrollment tracking for last 7 days</p>
-                        </div>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-cyan-400/10 border border-cyan-400/20 rounded-xl">
-                           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                           <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Live Pulse</span>
-                        </div>
-                     </div>
-                     <div className="h-72 w-full relative pt-10 px-2 box-border opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-                        {/* CHART PLACEHOLDER */}
-                        <div className="absolute inset-0 flex items-center justify-center italic text-gray-700 font-black uppercase text-[10px] tracking-[0.5em]">Processing Data...</div>
-                     </div>
-                  </section>
-
-                  <section className="bg-white/5 rounded-[3.5rem] border border-white/10 shadow-2xl p-10 flex flex-col group backdrop-blur-md">
-                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-sm font-black text-white uppercase tracking-widest">System Pulse</h3>
-                        <Activity size={18} className="text-cyan-400 shadow-cyan-400" />
-                     </div>
-                     <div className="flex-1 space-y-6 overflow-y-auto max-h-[400px] scrollbar-hide pr-2">
-                        {recentAttempts.slice(0, 5).map((attempt, i) => (
-                          <div key={attempt._id} className="flex gap-4 group/item">
-                             <div className="relative">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs transition-colors ${i === 0 ? "bg-cyan-600 text-white" : "bg-white/5 border border-white/5 text-gray-500 group-hover/item:text-cyan-400 group-hover/item:border-cyan-400/20"}`}>
-                                   {attempt.userId?.name?.charAt(0)}
-                                </div>
-                                {i < 4 && <div className="absolute top-10 left-1/2 -translate-x-1/2 w-0.5 h-6 bg-white/5" />}
-                             </div>
-                             <div className="flex flex-col flex-1 pb-4">
-                                <div className="flex items-center justify-between">
-                                   <span className="text-[11px] font-black text-white uppercase">{attempt.userId?.name}</span>
-                                   <span className="text-[9px] font-bold text-gray-600 uppercase">Just Now</span>
-                                </div>
-                                <p className="text-[10px] text-gray-500 font-bold mt-1 line-clamp-1">Accessed {attempt.testId?.title}</p>
-                                <div className="mt-2 flex items-center gap-2">
-                                   <span className="bg-cyan-500/10 text-cyan-400 text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest border border-cyan-400/10">Verification Success</span>
-                                </div>
-                             </div>
-                          </div>
-                        ))}
-                     </div>
-                  </section>
-               </div>
-
-               {/* COMPREHENSIVE RECORDS TAB */}
+               {/* COMPREHENSIVE RECORDS SECTION (MIDDLE) 🔥 */}
                <section className="bg-white/5 rounded-[3.5rem] border border-white/10 shadow-2xl overflow-hidden backdrop-blur-md">
                   <div className="px-12 py-10 border-b border-white/5 flex items-center justify-between">
                      <div className="flex items-center gap-4">
@@ -297,6 +248,93 @@ export default function AdminDashboard() {
                      </table>
                   </div>
                </section>
+
+               {/* ANALYTICS GRID (BOTTOM) 🔥 */}
+               <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                  <section className="lg:col-span-2 bg-white/5 rounded-[3.5rem] border border-white/10 shadow-2xl p-12 space-y-10 group overflow-hidden relative backdrop-blur-md">
+                     <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent pointer-events-none" />
+                     <div className="flex items-center justify-between relative z-10">
+                        <div>
+                           <h3 className="text-lg font-black text-white uppercase tracking-tight">Enrollment Velocity</h3>
+                           <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">Real-time enrollment tracking for last 7 days</p>
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-cyan-400/10 border border-cyan-400/20 rounded-xl">
+                           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                           <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Live Pulse</span>
+                        </div>
+                     </div>
+                     <div className="h-72 w-full relative pt-10 px-2 box-border group-hover:scale-[1.02] transition-transform duration-700">
+                        {/* NEURAL VELOCITY CHART (SVG IMPLEMENTATION) */}
+                        <svg className="w-full h-full" viewBox="0 0 1000 300" preserveAspectRatio="none">
+                           <defs>
+                              <linearGradient id="velocityGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                 <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.2" />
+                                 <stop offset="100%" stopColor="#22d3ee" stopOpacity="0" />
+                              </linearGradient>
+                           </defs>
+                           {/* MOCK GRID LINES */}
+                           {[0, 1, 2, 3].map(i => (
+                             <line key={i} x1="0" y1={i * 100} x2="1000" y2={i * 100} stroke="white" strokeOpacity="0.03" strokeWidth="1" />
+                           ))}
+                           {/* DYNAMIC PATH */}
+                           <path 
+                              d="M 0 250 Q 150 200 300 220 T 500 150 T 750 180 T 1000 50 L 1000 300 L 0 300 Z" 
+                              fill="url(#velocityGradient)"
+                              className="animate-pulse"
+                           />
+                           <path 
+                              d="M 0 250 Q 150 200 300 220 T 500 150 T 750 180 T 1000 50" 
+                              fill="none" 
+                              stroke="#22d3ee" 
+                              strokeWidth="3" 
+                              strokeLinecap="round"
+                              className="drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                           />
+                           {/* DATA NODES */}
+                           {[0, 300, 500, 750, 1000].map((x, i) => (
+                             <circle key={i} cx={x} cy={i === 0 ? 250 : i === 1 ? 220 : i === 2 ? 150 : i === 3 ? 180 : 50} r="4" fill="#050816" stroke="#22d3ee" strokeWidth="2" />
+                           ))}
+                        </svg>
+                     </div>
+                  </section>
+
+                  <section className="bg-white/5 rounded-[3.5rem] border border-white/10 shadow-2xl p-10 flex flex-col group backdrop-blur-md relative overflow-hidden">
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/5 blur-3xl pointer-events-none" />
+                     <div className="flex items-center justify-between mb-8 relative z-10">
+                        <h3 className="text-sm font-black text-white uppercase tracking-widest">System Pulse</h3>
+                        <Activity size={18} className="text-cyan-400 animate-pulse" />
+                     </div>
+                     <div className="flex-1 space-y-6 overflow-y-auto max-h-[400px] scrollbar-hide pr-2 relative z-10">
+                        {recentAttempts.length === 0 ? (
+                           <div className="flex flex-col items-center justify-center h-full opacity-30 gap-4">
+                              <Activity size={32} />
+                              <p className="text-[10px] font-black uppercase tracking-widest">Awaiting Pulse...</p>
+                           </div>
+                        ) : (
+                           recentAttempts.slice(0, 8).map((attempt, i) => (
+                              <div key={attempt._id} className="flex gap-4 group/item">
+                                 <div className="relative">
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs transition-colors ${i === 0 ? "bg-cyan-600 text-white shadow-lg shadow-cyan-900/40" : "bg-white/5 border border-white/5 text-gray-500 group-hover/item:text-cyan-400 group-hover/item:border-cyan-400/20"}`}>
+                                       {attempt.userId?.name?.charAt(0) || "S"}
+                                    </div>
+                                    {i < (recentAttempts.slice(0, 8).length - 1) && <div className="absolute top-10 left-1/2 -translate-x-1/2 w-0.5 h-6 bg-white/5" />}
+                                 </div>
+                                 <div className="flex flex-col flex-1 pb-4">
+                                    <div className="flex items-center justify-between">
+                                       <span className="text-[11px] font-black text-white uppercase">{attempt.userId?.name}</span>
+                                       <span className="text-[9px] font-bold text-gray-600 uppercase italic">Active</span>
+                                    </div>
+                                    <p className="text-[10px] text-gray-500 font-bold mt-1 line-clamp-1">Analyzed {attempt.testId?.title}</p>
+                                    <div className="mt-2 flex items-center gap-2">
+                                       <span className="bg-cyan-500/10 text-cyan-400 text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest border border-cyan-400/10">Verification Success</span>
+                                    </div>
+                                 </div>
+                              </div>
+                           ))
+                        )}
+                     </div>
+                  </section>
+               </div>
              </>
           ) : (
              /* BIFURCATED PAPERS HUB 🔥 */
