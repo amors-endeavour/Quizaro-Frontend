@@ -136,13 +136,13 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
                  </div>
                  <div className="space-y-2">
                     <button 
-                      onClick={() => window.location.href = "/user-dashboard/settings"}
+                      onClick={() => router.push("/user-dashboard/profile")}
                       className="w-full flex items-center gap-4 p-4 text-[11px] font-black text-gray-500 uppercase tracking-widest hover:bg-gray-50 rounded-2xl transition-all"
                     >
                        <User size={16} /> Profile
                     </button>
                     <button 
-                      onClick={() => window.location.href = "/user-dashboard/settings"}
+                      onClick={() => router.push("/user-dashboard/profile")}
                       className="w-full flex items-center gap-4 p-4 text-[11px] font-black text-gray-500 uppercase tracking-widest hover:bg-gray-50 rounded-2xl transition-all"
                     >
                        <Settings size={16} /> Settings
