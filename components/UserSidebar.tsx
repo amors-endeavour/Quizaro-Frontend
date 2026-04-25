@@ -31,9 +31,9 @@ export default function UserSidebar({ isOpen, onClose, userName = "Student" }: {
 
   const navItems = [
     { href: "/user-dashboard", label: "Dashboard", icon: <Home size={20} /> },
-    { href: "/user-dashboard", label: "Papers", icon: <BookOpen size={20} /> },
-    { href: "/user-dashboard", label: "Resources", icon: <FileText size={20} /> },
-    { href: "/user-dashboard/history", label: "Students", icon: <Users size={20} /> },
+    { href: "/user-dashboard/papers", label: "Papers", icon: <BookOpen size={20} /> },
+    { href: "/user-dashboard/resources", label: "Resources", icon: <FileText size={20} /> },
+    { href: "/user-dashboard/students", label: "Students", icon: <Users size={20} /> },
     { href: "/user-dashboard/profile", label: "Settings", icon: <Settings size={20} /> },
   ];
 
