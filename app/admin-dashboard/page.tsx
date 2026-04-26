@@ -133,7 +133,14 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black animate-pulse text-cyan-400 uppercase tracking-widest leading-none text-center">Syncing Resource Files...</div>;
+  if (loading) return (
+    <div className="min-h-screen bg-[#050816] flex flex-col items-center justify-center space-y-6">
+      <div className="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin" />
+      <p className="font-black animate-pulse text-cyan-400 uppercase tracking-[0.3em] text-[10px] italic">
+        Initializing Institutional Intelligence...
+      </p>
+    </div>
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-[#050816] text-white">

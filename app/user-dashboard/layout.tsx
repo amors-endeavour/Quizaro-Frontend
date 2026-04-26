@@ -27,8 +27,11 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black animate-pulse text-blue-600 uppercase tracking-widest text-[10px] italic">
-        Initializing...
+      <div className="min-h-screen bg-[#050816] flex flex-col items-center justify-center space-y-6">
+        <div className="w-16 h-16 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+        <p className="font-black animate-pulse text-blue-400 uppercase tracking-[0.3em] text-[10px] italic">
+          Initializing Intelligence Command...
+        </p>
       </div>
     );
   }
