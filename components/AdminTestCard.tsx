@@ -1,8 +1,8 @@
-"use client";
-
-import { FileText, MoreVertical, CheckCircle2, FileEdit, Trash2, Download, BarChart3 } from "lucide-react";
+import { FileText, MoreVertical, CheckCircle2, FileEdit, Trash2, Download, BarChart3, Copy, Check } from "lucide-react";
+import { useState } from "react";
 
 interface AdminTestCardProps {
+  id: string;
   title: string;
   description?: string;
   date: string;
@@ -18,6 +18,7 @@ interface AdminTestCardProps {
 }
 
 export default function AdminTestCard({ 
+  id,
   title, 
   description, 
   date, 
@@ -31,6 +32,14 @@ export default function AdminTestCard({
   onExport,
   onAnalytics
 }: AdminTestCardProps) {
+  
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   
   const statusColors = {
     Draft: "bg-gray-100 text-gray-500 hover:bg-gray-200",
@@ -108,6 +117,13 @@ export default function AdminTestCard({
                title="View Analytics"
             >
               <BarChart3 size={16} className="group-hover/opt:scale-125 transition-transform" />
+            </button>
+            <button 
+               onClick={handleCopyId}
+               className={`w-10 h-10 border rounded-xl flex items-center justify-center transition-all group/opt ${copied ? "bg-green-500 border-green-500 text-white" : "border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-100"}`}
+               title="Copy Paper ID"
+            >
+              {copied ? <Check size={16} /> : <Copy size={16} className="group-hover/opt:scale-125 transition-transform" />}
             </button>
             <button 
               onClick={onDelete}
