@@ -25,14 +25,14 @@ interface Resource {
   fileUrl: string;
   category: string;
   isFree?: boolean;
+  createdAt?: string;
 }
 
 export default function AdminResources() {
   const router = useRouter();
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'alert' | 'error'} | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Form State
   const [showAddModal, setShowAddModal] = useState(false);
@@ -78,8 +78,42 @@ export default function AdminResources() {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+    
+    try {
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+
+      const { data } = await API.post("/admin/upload", uploadData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+          setUploadProgress(percentCompleted);
+        }
+      });
+
+      setFormData({ ...formData, fileUrl: data.url, title: file.name.replace(".pdf", "") });
+      setStatusMsg({ text: "Intelligence File Encrypted & Buffered.", type: "success" });
+      setTimeout(() => setStatusMsg(null), 3000);
+    } catch (err) {
+      setStatusMsg({ text: "Upload Protocol Breach.", type: "error" });
+      setTimeout(() => setStatusMsg(null), 3000);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleAddResource = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.fileUrl) {
+      setStatusMsg({ text: "No File Payload Detected.", type: "error" });
+      return;
+    }
     try {
       await API.post("/admin/resource/add", formData);
       setStatusMsg({ text: "Intelligence Resource Deployed.", type: "success" });
@@ -106,6 +140,11 @@ export default function AdminResources() {
     }
   };
 
+  const filteredResources = resources.filter(res => 
+    res.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    res.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
 
   return (
     <div className="flex flex-col min-h-screen bg-[#050816] text-white">
@@ -120,13 +159,27 @@ export default function AdminResources() {
          <section className="bg-white/5 border border-white/10 p-10 rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
              <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-600/5 blur-[100px] rounded-full pointer-events-none" />
              <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
-                <div className="space-y-2 text-center md:text-left">
-                   <h2 className="text-3xl font-black tracking-tighter uppercase italic">Document Infrastructure</h2>
-                   <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Manage PDFs, Question Papers, and Academic Schemas</p>
+                <div className="space-y-4 flex-1">
+                   <div className="space-y-1">
+                      <h2 className="text-3xl font-black tracking-tighter uppercase italic">Document Infrastructure</h2>
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Manage PDFs, Question Papers, and Academic Schemas</p>
+                   </div>
+                   
+                   {/* Search Box */}
+                   <div className="relative max-w-xl group">
+                      <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-cyan-400 transition-colors" size={18} />
+                      <input 
+                        type="text" 
+                        placeholder="Search Intelligence Registry..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-black/40 border border-white/5 rounded-[2rem] py-5 pl-16 pr-8 text-xs font-black text-white focus:outline-none focus:border-cyan-400/50 transition-all placeholder:text-gray-700 italic tracking-widest uppercase"
+                      />
+                   </div>
                 </div>
                 <button 
                   onClick={() => setShowAddModal(true)}
-                  className="px-10 py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-2xl shadow-cyan-900/30 active:scale-95"
+                  className="px-10 py-6 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-2xl shadow-cyan-900/30 active:scale-95 whitespace-nowrap"
                 >
                    <Plus size={18} /> Deploy New Resource
                 </button>
@@ -134,19 +187,19 @@ export default function AdminResources() {
          </section>
 
          {/* RESOURCE GRID */}
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
             {loading ? (
-               [1,2,3].map(i => (
-                 <div key={i} className="h-80 bg-white/5 border border-white/10 rounded-[3rem] animate-pulse shadow-2xl backdrop-blur-md" />
+               [1,2,3,4].map(i => (
+                 <div key={i} className="h-96 bg-white/5 border border-white/10 rounded-[3rem] animate-pulse shadow-2xl" />
                ))
-            ) : resources.length === 0 ? (
-               <div className="md:col-span-3 py-32 text-center bg-white/5 rounded-[3.5rem] border border-dashed border-white/10 opacity-30">
+            ) : filteredResources.length === 0 ? (
+               <div className="md:col-span-3 xl:col-span-4 py-32 text-center bg-white/5 rounded-[3.5rem] border border-dashed border-white/10 opacity-30">
                   <FileText size={48} className="mx-auto mb-4" />
-                  <p className="text-[11px] font-black uppercase tracking-widest">No intelligence resources on file</p>
+                  <p className="text-[11px] font-black uppercase tracking-widest">No intelligence resources on file matching query</p>
                </div>
             ) : (
-               resources.map((res) => (
-                  <div key={res._id} className="bg-white/5 border border-white/10 p-10 rounded-[3rem] shadow-2xl backdrop-blur-md group hover:bg-[#0b0f2a] transition-all duration-500 relative flex flex-col items-center text-center">
+               filteredResources.map((res) => (
+                  <div key={res._id} className="bg-white/5 border border-white/10 p-10 rounded-[3rem] shadow-2xl backdrop-blur-md group hover:bg-[#0b0f2a] hover:border-cyan-400/30 transition-all duration-500 relative flex flex-col">
                      <div className="absolute top-6 right-8 flex items-center gap-2">
                         {res.isFree ? (
                            <span className="flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/10 rounded-full text-[8px] font-black uppercase tracking-widest"><Globe size={10} /> Public</span>
@@ -155,23 +208,25 @@ export default function AdminResources() {
                         )}
                      </div>
 
-                     <div className="w-20 h-20 bg-gradient-to-br from-cyan-600/10 to-blue-700/10 border border-white/5 text-cyan-400 rounded-3xl flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                        <FileText size={36} />
+                     <div className="w-16 h-16 bg-white/5 border border-white/10 text-cyan-400 rounded-2xl flex items-center justify-center mb-8 shadow-inner group-hover:bg-cyan-400 group-hover:text-black transition-all duration-500">
+                        <FileText size={28} />
                      </div>
                      
-                     <h4 className="text-xl font-black text-white leading-none tracking-tight mb-3 uppercase italic group-hover:text-cyan-400 transition-colors uppercase">{res.title}</h4>
-                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-6">{res.category}</p>
+                     <div className="space-y-1 mb-6">
+                        <h4 className="text-xl font-black text-white leading-tight tracking-tighter uppercase italic group-hover:text-cyan-400 transition-colors">{res.title}</h4>
+                        <p className="text-[9px] font-black text-cyan-400/50 uppercase tracking-widest">{res.category}</p>
+                     </div>
                      
-                     <p className="text-[11px] text-gray-600 font-bold mb-10 line-clamp-2 italic leading-relaxed">{res.description || "Intelligence document node."}</p>
+                     <p className="text-[11px] text-gray-500 font-bold mb-10 line-clamp-2 italic leading-relaxed font-black uppercase tracking-tight">{res.description || "Foundational academic document node."}</p>
                      
                      <div className="flex w-full gap-3 mt-auto">
                         <a 
                           href={res.fileUrl} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex-1 py-4 bg-white/5 border border-white/10 text-gray-400 hover:text-white rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all text-[9px] font-black uppercase tracking-widest"
+                          className="flex-1 py-4 bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 hover:bg-cyan-400 hover:text-black rounded-2xl flex items-center justify-center gap-2 transition-all text-[9px] font-black uppercase tracking-widest"
                         >
-                           <ExternalLink size={14} /> Open Registry
+                           <Download size={14} /> Fetch PDF
                         </a>
                         <button 
                           onClick={() => handleDeleteResource(res._id)}
@@ -190,29 +245,62 @@ export default function AdminResources() {
       {/* ADD RESOURCE MODAL 🔥 */}
       {showAddModal && (
          <div className="fixed inset-0 z-[500] bg-[#050816]/90 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
-            <div className="bg-[#0b0f2a] border border-white/10 rounded-[3.5rem] p-12 max-w-lg w-full shadow-2xl space-y-8 animate-in zoom-in-95 duration-300">
+            <div className="bg-[#0b0f2a] border border-white/10 rounded-[3.5rem] p-12 max-w-xl w-full shadow-2xl space-y-8 animate-in zoom-in-95 duration-300 overflow-y-auto max-h-[90vh] no-scrollbar">
                <div className="text-center">
                   <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">Initiate Resource Deposit</h3>
                   <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2">Uploading Intelligence Core to Registry</p>
                </div>
 
-               <form onSubmit={handleAddResource} className="space-y-5">
+               <form onSubmit={handleAddResource} className="space-y-6">
+                  {/* File Upload Section */}
+                  <div className="space-y-4">
+                     <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Asset Payload (PDF)</label>
+                     <div className="relative group">
+                        <input 
+                           type="file"
+                           accept=".pdf"
+                           onChange={handleFileUpload}
+                           className="hidden"
+                           id="pdf-upload"
+                           disabled={isUploading}
+                        />
+                        <label 
+                           htmlFor="pdf-upload"
+                           className={`w-full h-32 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${isUploading ? "bg-white/5 border-white/10 opacity-50" : "bg-white/5 border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.08]"}`}
+                        >
+                           {isUploading ? (
+                              <div className="flex flex-col items-center gap-3">
+                                 <div className="w-12 h-12 border-4 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin" />
+                                 <p className="text-[9px] font-black text-cyan-400 uppercase tracking-widest">Encrypting... {uploadProgress}%</p>
+                              </div>
+                           ) : (
+                              <>
+                                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:text-cyan-400 transition-colors">
+                                    <Plus size={24} />
+                                 </div>
+                                 <p className="text-[9px] font-black text-gray-500 group-hover:text-white uppercase tracking-widest">Drop PDF here or click to browse</p>
+                              </>
+                           )}
+                        </label>
+                     </div>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-5">
                      <div className="col-span-2 space-y-2">
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Protocol Title</label>
                         <input 
                            required
-                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold"
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic placeholder:text-gray-700"
                            placeholder="Ex: Physics 2024 Final Paper"
                            value={formData.title}
                            onChange={(e) => setFormData({...formData, title: e.target.value})}
                         />
                      </div>
                      <div className="col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Network File Access URL</label>
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Registry Access Point (URL)</label>
                         <input 
                            required
-                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold font-mono"
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-bold font-mono text-cyan-400/70"
                            placeholder="https://drive.google.com/..."
                            value={formData.fileUrl}
                            onChange={(e) => setFormData({...formData, fileUrl: e.target.value})}
@@ -221,7 +309,7 @@ export default function AdminResources() {
                      <div className="space-y-2">
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Categorization</label>
                         <input 
-                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold"
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic placeholder:text-gray-700"
                            placeholder="Ex: Entrance Exams"
                            value={formData.category}
                            onChange={(e) => setFormData({...formData, category: e.target.value})}
@@ -230,7 +318,7 @@ export default function AdminResources() {
                      <div className="space-y-2">
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Registry Access</label>
                         <select 
-                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold"
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-black text-white uppercase tracking-widest"
                            value={formData.isFree ? "true" : "false"}
                            onChange={(e) => setFormData({...formData, isFree: e.target.value === "true"})}
                         >
@@ -241,7 +329,7 @@ export default function AdminResources() {
                      <div className="col-span-2 space-y-2">
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Contextual Description</label>
                         <textarea 
-                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-bold h-24 resize-none"
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic h-24 resize-none placeholder:text-gray-700"
                            placeholder="Brief description of the intelligence node..."
                            value={formData.description}
                            onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -253,13 +341,14 @@ export default function AdminResources() {
                      <button 
                         type="button"
                         onClick={() => setShowAddModal(false)}
-                        className="flex-1 py-5 bg-white/5 text-gray-500 hover:text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+                        className="flex-1 py-6 bg-white/5 text-gray-500 hover:text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all"
                      >
                         Abort Protocol
                      </button>
                      <button 
                         type="submit"
-                        className="flex-1 py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-2xl shadow-cyan-900/40"
+                        disabled={isUploading}
+                        className="flex-1 py-6 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-2xl shadow-cyan-900/40 disabled:opacity-50"
                      >
                         Deploy to Grid
                      </button>

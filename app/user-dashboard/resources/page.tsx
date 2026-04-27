@@ -33,7 +33,7 @@ export default function UserResourcesPage() {
   useEffect(() => {
     const fetchResources = async () => {
       try {
-        const { data } = await API.get("/catalog/resources");
+        const { data } = await API.get("/user/resources");
         setResources(data);
       } catch (err) {
         console.error("Failed to load resources", err);
@@ -47,7 +47,7 @@ export default function UserResourcesPage() {
   const categories = ["All", ...new Set(resources.map(r => r.category))];
   const filtered = resources.filter(r => 
     (category === "All" || r.category === category) &&
-    (r.title.toLowerCase().includes(search.toLowerCase()))
+    (r.title.toLowerCase().includes(search.toLowerCase()) || r.category.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
@@ -76,16 +76,16 @@ export default function UserResourcesPage() {
            </div>
 
            {/* SEARCH HUD */}
-           <div className="relative group">
-              <div className="absolute inset-y-0 left-6 flex items-center text-gray-500 group-focus-within:text-blue-500 transition-colors">
-                 <Search size={18} />
+           <div className="relative group max-w-4xl mx-auto w-full">
+              <div className="absolute inset-y-0 left-8 flex items-center text-gray-600 group-focus-within:text-cyan-400 transition-colors">
+                 <Search size={20} />
               </div>
               <input 
                 type="text" 
                 placeholder="Synchronize with study materials and intellectual assets..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-6 pl-16 pr-8 text-sm font-black text-white focus:outline-none focus:border-blue-500 transition-all placeholder:text-gray-600 italic tracking-tight"
+                className="w-full bg-white/5 border border-white/10 rounded-[2.5rem] py-7 pl-20 pr-10 text-sm font-black text-white focus:outline-none focus:border-cyan-400/50 transition-all placeholder:text-gray-700 italic tracking-tight uppercase"
               />
            </div>
 
@@ -97,8 +97,8 @@ export default function UserResourcesPage() {
               </div>
 
               {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                   {[1,2,3,4,5,6].map(i => (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                   {[1,2,3,4,5,6,7,8].map(i => (
                      <div key={i} className="h-64 bg-white/5 border border-white/10 rounded-[3rem] animate-pulse" />
                    ))}
                 </div>
@@ -107,30 +107,30 @@ export default function UserResourcesPage() {
                    <p className="text-[11px] font-black text-gray-500 uppercase tracking-[0.2em]">No assets detected in this spectral range.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                    {filtered.map((r) => (
-                     <div 
-                        key={r._id} 
-                        className="bg-white/5 border border-white/10 rounded-[3rem] p-10 flex flex-col hover:border-cyan-400/50 hover:bg-white/[0.08] transition-all duration-500 group relative"
-                     >
-                        <div className="flex items-center justify-between mb-8">
-                           <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-cyan-400 group-hover:bg-cyan-400 group-hover:text-black transition-all duration-500"><FileText size={24} /></div>
-                           <div className="flex items-center gap-2">
-                              <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-400/10 px-3 py-1.5 rounded-full border border-cyan-400/20">{r.fileType}</span>
-                           </div>
-                        </div>
-                        <h4 className="text-xl font-black text-white uppercase tracking-tighter italic mb-4 leading-none group-hover:text-cyan-400 transition-colors">{r.title}</h4>
-                        <p className="text-[11px] text-gray-500 font-bold mb-10 line-clamp-2 italic leading-relaxed font-black">{r.description || "Foundational intellectual document."}</p>
-                        
-                        <a 
-                          href={r.fileUrl} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="w-full mt-auto py-5 bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-cyan-400 hover:text-black transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3"
-                        >
-                          <Download size={16} /> Decrypt Asset
-                        </a>
-                     </div>
+                      <div 
+                         key={r._id} 
+                         className="bg-white/5 border border-white/10 rounded-[3rem] p-10 flex flex-col hover:border-cyan-400/50 hover:bg-white/[0.08] transition-all duration-500 group relative"
+                      >
+                         <div className="flex items-center justify-between mb-8">
+                            <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-cyan-400 group-hover:bg-cyan-400 group-hover:text-black transition-all duration-500"><FileText size={24} /></div>
+                            <div className="flex items-center gap-2">
+                               <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-400/10 px-3 py-1.5 rounded-full border border-cyan-400/20 italic">{r.category}</span>
+                            </div>
+                         </div>
+                         <h4 className="text-xl font-black text-white uppercase tracking-tighter italic mb-4 leading-tight group-hover:text-cyan-400 transition-colors">{r.title}</h4>
+                         <p className="text-[11px] text-gray-500 font-bold mb-10 line-clamp-2 italic leading-relaxed font-black uppercase tracking-tight">{r.description || "Foundational intellectual document."}</p>
+                         
+                         <a 
+                           href={r.fileUrl} 
+                           target="_blank" 
+                           rel="noreferrer"
+                           className="w-full mt-auto py-5 bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-cyan-400 hover:text-black transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3"
+                         >
+                           <Download size={16} /> Fetch Asset
+                         </a>
+                      </div>
                    ))}
                 </div>
               )}
