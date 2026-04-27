@@ -87,7 +87,7 @@ export default function AdminResources() {
     
     try {
       const uploadData = new FormData();
-      uploadData.append("file", file);
+      uploadData.append("postImage", file);
 
       const { data } = await API.post("/admin/upload", uploadData, {
         headers: { "Content-Type": "multipart/form-data" },
