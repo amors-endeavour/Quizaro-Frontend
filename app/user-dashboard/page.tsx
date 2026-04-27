@@ -143,7 +143,8 @@ export default function UserDashboard() {
     try {
       setLoading(true);
       await API.post(`/test/purchase/${testId}`);
-      router.push(`/quiz/${testId}`);
+      window.open(`/quiz/${testId}`, '_blank');
+      window.location.reload(); // Refresh to show as purchased
     } catch (err: any) {
       if (err.response?.status === 402) {
          setStatusMsg({ text: "Premium Paper: Institutional access required.", type: 'alert' });
@@ -275,6 +276,17 @@ export default function UserDashboard() {
                              <div className="flex items-center gap-6 mt-3">
                                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{pt.testId.category || "General"}</span>
                                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Clock size={12} className="text-cyan-400" /> {pt.testId.duration} Min</span>
+                                 {(pt.testId as any).pdfUrl && (
+                                   <a 
+                                     href={(pt.testId as any).pdfUrl} 
+                                     target="_blank" 
+                                     rel="noopener noreferrer"
+                                     className="text-[9px] font-black text-cyan-400 uppercase tracking-widest flex items-center gap-2 hover:underline ml-4"
+                                     onClick={(e) => e.stopPropagation()}
+                                   >
+                                     <Download size={12} /> Download PDF
+                                   </a>
+                                 )}
                              </div>
                           </div>
                        </div>
@@ -289,7 +301,7 @@ export default function UserDashboard() {
                              </button>
                           ) : (
                              <button
-                                onClick={() => router.push(`/quiz/${pt.testId._id}`)}
+                                onClick={() => window.open(`/quiz/${pt.testId._id}`, '_blank')}
                                 className="px-10 py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 hover:shadow-2xl hover:shadow-cyan-900/40 transition-all font-black"
                              >
                                 <Play size={18} fill="white" /> Resume Session
@@ -319,6 +331,17 @@ export default function UserDashboard() {
                              <div className="flex items-center gap-6 mt-3">
                                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{test.category || "General"}</span>
                                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Clock size={12} className="text-amber-400" /> {test.duration} Min</span>
+                                 {(test as any).pdfUrl && (
+                                   <a 
+                                     href={(test as any).pdfUrl} 
+                                     target="_blank" 
+                                     rel="noopener noreferrer"
+                                     className="text-[9px] font-black text-amber-500 uppercase tracking-widest flex items-center gap-2 hover:underline ml-4"
+                                     onClick={(e) => e.stopPropagation()}
+                                   >
+                                     <Download size={12} /> Download PDF
+                                   </a>
+                                 )}
                              </div>
                           </div>
                        </div>

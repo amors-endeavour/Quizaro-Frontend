@@ -37,6 +37,7 @@ export default function TestsPage() {
   const [series, setSeries] = useState<Series[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showAutoIngestModal, setShowAutoIngestModal] = useState(false);
   const [showSeriesModal, setShowSeriesModal] = useState(false);
   const [editingTest, setEditingTest] = useState<Test | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState<{show: boolean, type: 'delete' | 'series_delete' | 'bulk_delete', targetId?: string, targetName?: string}>({show: false, type: 'delete'});
@@ -204,6 +205,43 @@ export default function TestsPage() {
     window.open(`${process.env.NEXT_PUBLIC_API_URL}/admin/export/${testId}?token=${token}`, '_blank');
   };
 
+  const handleAutoIngest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const fileInput = document.getElementById('auto-pdf-upload') as HTMLInputElement;
+    const file = fileInput?.files?.[0];
+    if (!file) {
+      setStatusMsg({ text: "No PDF Payload Detected.", type: "error" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append("postImage", file);
+      uploadData.append("title", newTest.title);
+      uploadData.append("category", newTest.category || "General");
+
+      await API.post("/admin/auto-ingest", uploadData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+
+      setStatusMsg({ text: "Intelligence Scanned & MCQs Generated.", type: "success" });
+      setShowAutoIngestModal(false);
+      setNewTest({ title: "", description: "", duration: 30, price: 0, category: "General", seriesId: "", paperNumber: 1, difficulty: "Medium" });
+      
+      // Refresh tests
+      const testsRes = await API.get("/admin/tests");
+      setTests(testsRes.data);
+      
+      setTimeout(() => setStatusMsg(null), 3000);
+    } catch (err) {
+      setStatusMsg({ text: "Ingestion Protocol Failed.", type: "error" });
+      setTimeout(() => setStatusMsg(null), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -348,6 +386,13 @@ export default function TestsPage() {
                       className="absolute inset-0 opacity-0 cursor-pointer"
                    />
                 </div>
+
+                <button 
+                  onClick={() => setShowAutoIngestModal(true)}
+                  className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic shadow-xl shadow-purple-900/20 flex items-center gap-2"
+                >
+                  <Zap size={14} /> AUTO-INGEST PDF
+                </button>
 
                   {!currentSeriesId && (
                    <>
@@ -535,6 +580,82 @@ export default function TestsPage() {
           testTitle={selectedAnalyticsTest.title}
           onClose={() => setSelectedAnalyticsTest(null)}
         />
+      )}
+
+      {/* AUTO-INGEST MODAL 🤖 */}
+      {showAutoIngestModal && (
+         <div className="fixed inset-0 z-[500] bg-[#050816]/90 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+            <div className="bg-[#0b0f2a] border border-white/10 rounded-[3.5rem] p-12 max-w-xl w-full shadow-2xl space-y-8 animate-in zoom-in-95 duration-300">
+               <div className="text-center">
+                  <div className="w-16 h-16 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-purple-900/20">
+                    <Zap size={32} />
+                  </div>
+                  <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">Neural Ingestion Protocol</h3>
+                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2">AI will scan PDF and generate MCQs automatically</p>
+               </div>
+
+               <form onSubmit={handleAutoIngest} className="space-y-6">
+                  <div className="space-y-4">
+                     <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Source Intelligence (PDF)</label>
+                     <input 
+                        type="file"
+                        accept=".pdf"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none text-xs font-black text-white"
+                        id="auto-pdf-upload"
+                        required
+                     />
+                  </div>
+
+                  <div className="space-y-4">
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Test Title</label>
+                        <input 
+                           required
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic"
+                           placeholder="Ex: Advanced Physics MCQs"
+                           value={newTest.title}
+                           onChange={(e) => setNewTest({...newTest, title: e.target.value})}
+                        />
+                     </div>
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Categorization</label>
+                        <input 
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic"
+                           placeholder="Ex: Academic"
+                           value={newTest.category}
+                           onChange={(e) => setNewTest({...newTest, category: e.target.value})}
+                        />
+                     </div>
+                  </div>
+
+                  {loading && (
+                    <div className="space-y-3">
+                       <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full bg-purple-500 animate-pulse" style={{ width: `100%` }} />
+                       </div>
+                       <p className="text-[8px] font-black text-purple-400 uppercase tracking-widest text-center animate-pulse">Scanning Neural Pathways...</p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-4 pt-4">
+                     <button 
+                        type="button" 
+                        onClick={() => setShowAutoIngestModal(false)}
+                        className="flex-1 py-6 bg-white/5 text-gray-500 hover:text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+                     >
+                        Abort
+                     </button>
+                     <button 
+                        type="submit"
+                        disabled={loading}
+                        className="flex-[1.5] py-6 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-2xl shadow-purple-900/40 disabled:opacity-50 flex items-center justify-center gap-3"
+                     >
+                        <Zap size={16} /> {loading ? "Ingesting..." : "Commence Auto-Ingest"}
+                     </button>
+                  </div>
+               </form>
+            </div>
+         </div>
       )}
 
       {/* CREATE / EDIT MODAL (TEST PAPER) */}

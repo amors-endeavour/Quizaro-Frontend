@@ -41,6 +41,7 @@ export default function AdminResources() {
 
   // Form State
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showAutoIngestModal, setShowAutoIngestModal] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -132,6 +133,45 @@ export default function AdminResources() {
     }
   };
 
+  const handleAutoIngest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const fileInput = document.getElementById('auto-pdf-upload') as HTMLInputElement;
+    const file = fileInput?.files?.[0];
+    if (!file) {
+      setStatusMsg({ text: "No PDF Payload Detected.", type: "error" });
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadProgress(0);
+    
+    try {
+      const uploadData = new FormData();
+      uploadData.append("postImage", file);
+      uploadData.append("title", formData.title);
+      uploadData.append("category", formData.category);
+
+      await API.post("/admin/auto-ingest", uploadData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+          setUploadProgress(percentCompleted);
+        }
+      });
+
+      setStatusMsg({ text: "Intelligence Scanned & MCQs Generated.", type: "success" });
+      setShowAutoIngestModal(false);
+      setFormData({ title: "", description: "", fileUrl: "", category: "General", fileType: "pdf", isFree: true });
+      fetchResources();
+      setTimeout(() => setStatusMsg(null), 3000);
+    } catch (err) {
+      setStatusMsg({ text: "Ingestion Protocol Failed.", type: "error" });
+      setTimeout(() => setStatusMsg(null), 3000);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleDeleteResource = async (id: string) => {
     if (!confirm("Confirm immediate resource termination?")) return;
     try {
@@ -182,12 +222,20 @@ export default function AdminResources() {
                       />
                    </div>
                 </div>
-                <button 
-                  onClick={() => setShowAddModal(true)}
-                  className="px-10 py-6 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-2xl shadow-cyan-900/30 active:scale-95 whitespace-nowrap"
-                >
-                   <Plus size={18} /> Deploy New Resource
-                </button>
+                <div className="flex gap-4">
+                  <button 
+                    onClick={() => setShowAutoIngestModal(true)}
+                    className="px-8 py-6 bg-white/5 border border-white/10 text-cyan-400 rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 hover:bg-cyan-600 hover:text-white transition-all shadow-2xl active:scale-95 whitespace-nowrap"
+                  >
+                    <Zap size={18} /> Auto-Ingest PDF
+                  </button>
+                  <button 
+                    onClick={() => setShowAddModal(true)}
+                    className="px-10 py-6 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-2xl shadow-cyan-900/30 active:scale-95 whitespace-nowrap"
+                  >
+                    <Plus size={18} /> Deploy New Resource
+                  </button>
+                </div>
              </div>
          </section>
 
@@ -246,6 +294,79 @@ export default function AdminResources() {
          </div>
 
       </div>
+
+      {/* AUTO-INGEST MODAL 🤖 */}
+      {showAutoIngestModal && (
+         <div className="fixed inset-0 z-[500] bg-[#050816]/90 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+            <div className="bg-[#0b0f2a] border border-white/10 rounded-[3.5rem] p-12 max-w-xl w-full shadow-2xl space-y-8 animate-in zoom-in-95 duration-300">
+               <div className="text-center">
+                  <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">Neural Ingestion Protocol</h3>
+                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2">AI will scan PDF and generate MCQs automatically</p>
+               </div>
+
+               <form onSubmit={handleAutoIngest} className="space-y-6">
+                  <div className="space-y-4">
+                     <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Source Intelligence (PDF)</label>
+                     <input 
+                        type="file"
+                        accept=".pdf"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none text-xs font-black text-white"
+                        id="auto-pdf-upload"
+                        required
+                     />
+                  </div>
+
+                  <div className="space-y-4">
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Test Title</label>
+                        <input 
+                           required
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic"
+                           placeholder="Ex: Advanced Physics MCQs"
+                           value={formData.title}
+                           onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        />
+                     </div>
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Categorization</label>
+                        <input 
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic"
+                           placeholder="Ex: Academic"
+                           value={formData.category}
+                           onChange={(e) => setFormData({...formData, category: e.target.value})}
+                        />
+                     </div>
+                  </div>
+
+                  {isUploading && (
+                    <div className="space-y-3">
+                       <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full bg-cyan-500 transition-all" style={{ width: `${uploadProgress}%` }} />
+                       </div>
+                       <p className="text-[8px] font-black text-cyan-400 uppercase tracking-widest text-center">Processing Neural Pathways... {uploadProgress}%</p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-4 pt-4">
+                     <button 
+                        type="button"
+                        onClick={() => setShowAutoIngestModal(false)}
+                        className="flex-1 py-6 bg-white/5 text-gray-500 hover:text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+                     >
+                        Abort
+                     </button>
+                     <button 
+                        type="submit"
+                        disabled={isUploading}
+                        className="flex-[1.5] py-6 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-2xl shadow-cyan-900/40 disabled:opacity-50 flex items-center justify-center gap-3"
+                     >
+                        <Zap size={16} /> {isUploading ? "Ingesting..." : "Commence Auto-Ingest"}
+                     </button>
+                  </div>
+               </form>
+            </div>
+         </div>
+      )}
 
       {/* ADD RESOURCE MODAL 🔥 */}
       {showAddModal && (
