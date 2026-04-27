@@ -82,6 +82,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
   });
 
   const [bulkData, setBulkData] = useState("");
+  const [isPdfPinned, setIsPdfPinned] = useState(true);
 
   const loadData = async () => {
     try {
@@ -241,9 +242,39 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
              </div>
           </div>
 
-          {/* MAIN CANVAS */}
-          <div className="flex-1 w-full">
-              {activeTab === "Questions" ? (
+          {/* MAIN CANVAS / SPLIT VIEW */}
+          <div className="flex-1 flex flex-col xl:flex-row gap-12 min-w-0">
+              
+              {/* STICKY PDF PANEL 🔥 */}
+              {testSettings.fileUrl && activeTab !== "PDF" && isPdfPinned && (
+                <div className="w-full xl:w-[600px] h-[600px] xl:h-[85vh] sticky top-14 bg-white/5 rounded-[4rem] border border-white/10 overflow-hidden shadow-2xl animate-in slide-in-from-left-10 duration-700">
+                    <div className="absolute top-6 left-6 z-10 flex gap-2">
+                       <button 
+                         onClick={() => setIsPdfPinned(false)}
+                         className="px-4 py-2 bg-black/60 backdrop-blur-md rounded-xl text-[8px] font-black uppercase text-white hover:bg-cyan-600 transition-all"
+                       >
+                          Minimize Viewer
+                       </button>
+                    </div>
+                    <iframe 
+                      src={`${testSettings.fileUrl}#toolbar=0`}
+                      className="w-full h-full border-none"
+                      title="Sticky Institutional Asset"
+                    />
+                </div>
+              )}
+
+              <div className="flex-1 w-full min-w-0">
+                  {!isPdfPinned && testSettings.fileUrl && activeTab !== "PDF" && (
+                    <button 
+                      onClick={() => setIsPdfPinned(true)}
+                      className="mb-8 px-8 py-4 bg-cyan-600/20 border border-cyan-400/30 rounded-2xl text-[9px] font-black uppercase text-cyan-400 hover:bg-cyan-600 hover:text-white transition-all italic"
+                    >
+                       + Restore Asset Viewer
+                    </button>
+                  )}
+                  
+                  {activeTab === "Questions" ? (
                 <div className="space-y-10 animate-in fade-in slide-in-from-right-10 duration-700">
                    <div className="flex items-center justify-between">
                        <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">Questions</h3>
@@ -456,7 +487,8 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                      Initialize Ingestion Process
                    </button>
                 </div>
-              )}
+                  )}
+              </div>
           </div>
       </div>
 

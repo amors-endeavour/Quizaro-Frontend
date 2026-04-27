@@ -162,6 +162,44 @@ export default function AdminResources() {
     }
   };
 
+  const handleIntelligentFetch = async (res: Resource) => {
+    try {
+      if (res.testId) {
+        router.push(`/admin-dashboard/${res.testId}`);
+        return;
+      }
+
+      // If no testId, attempt to find a test with the same title
+      const allT = await API.get("/admin/tests");
+      const existingTest = allT.data.find((t: any) => t.title.toLowerCase().trim() === res.title.toLowerCase().trim());
+
+      if (existingTest) {
+        // Link it automatically
+        await API.put(`/admin/resource/${res._id}`, { testId: existingTest._id });
+        router.push(`/admin-dashboard/${existingTest._id}`);
+      } else {
+        // Create a new draft test automatically
+        setStatusMsg({ text: "Synthesizing New Assessment Logic...", type: "success" });
+        const { data: newTest } = await API.post("/test/create", {
+          title: res.title,
+          description: res.description || "Synthesized from PDF asset.",
+          category: res.category,
+          duration: 30,
+          fileUrl: res.fileUrl // Bind the PDF immediately
+        });
+
+        // Link the resource to the new test
+        await API.put(`/admin/resource/${res._id}`, { testId: newTest._id });
+        
+        router.push(`/admin-dashboard/${newTest._id}`);
+      }
+    } catch (err) {
+      console.error("Intelligent fetch failure:", err);
+      // Fallback: just open the PDF
+      window.open(res.fileUrl, "_blank");
+    }
+  };
+
   const handleDeleteResource = async (id: string) => {
     if (!confirm("Confirm immediate resource termination?")) return;
     try {
@@ -255,27 +293,21 @@ export default function AdminResources() {
                      <p className="text-[11px] text-gray-500 font-bold mb-10 line-clamp-2 italic leading-relaxed font-black uppercase tracking-tight">{res.description || "Foundational academic document node."}</p>
                      
                      <div className="flex w-full gap-3 mt-auto">
-                        <a 
-                          href={res.fileUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex-1 py-4 bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 hover:bg-cyan-400 hover:text-black rounded-2xl flex items-center justify-center gap-2 transition-all text-[9px] font-black uppercase tracking-widest"
-                        >
-                           <Download size={14} /> Fetch PDF
-                        </a>
                         <button 
-                          onClick={() => {
-                             if (res.testId) {
-                                router.push(`/admin-dashboard/${res.testId}`);
-                             } else {
-                                setActiveResourceId(res._id);
-                                setIsLinkModalOpen(true);
-                             }
-                          }}
-                          className="flex-1 py-4 bg-blue-600/10 border border-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-2xl flex items-center justify-center gap-2 transition-all text-[9px] font-black uppercase tracking-widest"
+                           onClick={() => handleIntelligentFetch(res)}
+                           className="flex-1 py-4 bg-cyan-400 text-black hover:bg-white rounded-2xl flex items-center justify-center gap-2 transition-all text-[9px] font-black uppercase tracking-widest shadow-lg shadow-cyan-900/20"
                         >
-                           <Layers size={14} /> {res.testId ? "Studio" : "Link Test"}
+                           <Layers size={14} /> Enter Studio
                         </button>
+                        <a 
+                           href={res.fileUrl} 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           className="w-14 h-14 bg-white/5 border border-white/10 text-gray-400 hover:text-white rounded-2xl flex items-center justify-center transition-all"
+                           title="Raw PDF View"
+                        >
+                           <Download size={16} />
+                        </a>
                         <button 
                           onClick={() => handleDeleteResource(res._id)}
                           className="w-14 h-14 bg-red-500/10 text-red-500 border border-red-500/10 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-lg"
