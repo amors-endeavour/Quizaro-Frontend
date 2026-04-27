@@ -386,6 +386,19 @@ export default function AdminResources() {
                         />
                          <label 
                             htmlFor="pdf-upload"
+                            onDragOver={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            onDrop={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const file = e.dataTransfer.files?.[0];
+                                if (file && file.type === "application/pdf") {
+                                    const event = { target: { files: [file] } } as any;
+                                    handleFileUpload(event);
+                                }
+                            }}
                             className={`w-full h-40 border-2 border-dashed rounded-[2.5rem] flex flex-col items-center justify-center gap-4 cursor-pointer transition-all ${isUploading ? "bg-white/5 border-white/10 opacity-50" : formData.fileUrl ? "bg-cyan-400/5 border-cyan-400/50 shadow-2xl shadow-cyan-900/10" : "bg-white/5 border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.08]"}`}
                          >
                             {isUploading ? (
