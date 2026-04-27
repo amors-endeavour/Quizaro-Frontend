@@ -377,14 +377,15 @@ export default function AdminResources() {
                         />
                      </div>
                      <div className="col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Registry Access Point (URL)</label>
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Asset Link / Registry Access Point</label>
                         <input 
                            required
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-bold font-mono text-cyan-400/70"
-                           placeholder="https://drive.google.com/..."
+                           placeholder="Auto-filled on upload or paste external PDF link"
                            value={formData.fileUrl}
                            onChange={(e) => setFormData({...formData, fileUrl: e.target.value})}
                         />
+                        <p className="text-[8px] text-gray-600 font-bold uppercase italic ml-1">* This field populates automatically when you drop a file above.</p>
                      </div>
                      <div className="space-y-2">
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Categorization</label>
