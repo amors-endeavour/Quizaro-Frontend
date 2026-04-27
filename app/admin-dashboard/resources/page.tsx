@@ -14,7 +14,8 @@ import {
   AlertCircle,
   CheckCircle2,
   Lock,
-  Globe
+  Globe,
+  Zap
 } from "lucide-react";
 
 interface Resource {
