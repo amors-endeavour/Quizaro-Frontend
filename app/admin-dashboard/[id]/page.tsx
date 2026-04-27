@@ -250,6 +250,16 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                   {tab.label}
                 </button>
              ))}
+
+              {testSettings.fileUrl && !isPdfPinned && activeTab !== "PDF" && (
+                <button 
+                  onClick={() => setIsPdfPinned(true)}
+                  className="mt-4 px-8 py-5 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] text-left transition-all border border-cyan-400/30 text-cyan-400 flex items-center gap-4 italic animate-pulse bg-cyan-400/5"
+                >
+                  <Plus size={18} />
+                  Restore Split View
+                </button>
+              )}
              
              <div className="mt-8 p-10 bg-white/5 rounded-[3rem] border border-white/5 backdrop-blur-md">
                 <p className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em] mb-6 italic">Paper Summary</p>
@@ -275,24 +285,25 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
              </div>
           </div>
 
-          {/* MAIN CANVAS / SPLIT VIEW */}
-          <div className="flex-1 flex flex-col xl:flex-row gap-12 min-w-0">
+          {/* MAIN CANVAS / SPLIT VIEW 🔥 */}
+          <div className={`flex-1 grid grid-cols-1 ${testSettings.fileUrl && isPdfPinned ? "lg:grid-cols-2" : "grid-cols-1"} gap-12 min-w-0 h-full`}>
               
               {/* STICKY PDF PANEL 🔥 */}
               {testSettings.fileUrl && activeTab !== "PDF" && isPdfPinned && (
-                <div className="w-full xl:w-[600px] h-[600px] xl:h-[85vh] sticky top-14 bg-white/5 rounded-[4rem] border border-white/10 overflow-hidden shadow-2xl animate-in slide-in-from-left-10 duration-700">
-                    <div className="absolute top-6 left-6 z-10 flex gap-2">
+                <div className="w-full h-[500px] lg:h-[calc(100vh-180px)] lg:sticky lg:top-32 bg-white/5 rounded-[3.5rem] border border-white/10 overflow-hidden shadow-2xl animate-in slide-in-from-left-10 duration-700">
+                    <div className="absolute top-6 left-6 z-20 flex gap-2">
                        <button 
                          onClick={() => setIsPdfPinned(false)}
-                         className="px-4 py-2 bg-black/60 backdrop-blur-md rounded-xl text-[8px] font-black uppercase text-white hover:bg-cyan-600 transition-all"
+                         className="px-5 py-2.5 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl text-[9px] font-black uppercase text-white hover:bg-red-500 transition-all shadow-2xl"
                        >
-                          Minimize Viewer
+                          Close Viewer
                        </button>
                     </div>
                     <iframe 
                       src={getEmbedUrl(testSettings.fileUrl)}
-                      className="w-full h-full border-none"
-                      title="Sticky Institutional Asset"
+                      className="w-full h-full border-none bg-white/5"
+                      title="Institutional Intelligence Asset"
+                      loading="lazy"
                     />
                 </div>
               )}
