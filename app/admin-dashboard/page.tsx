@@ -364,6 +364,7 @@ export default function AdminDashboard() {
                         paidPapers.map((paper) => (
                           <AdminTestCard 
                             key={paper._id}
+                            id={paper._id}
                             title={paper.title}
                             description={paper.description}
                             date={new Date(paper.createdAt).toLocaleDateString()}
@@ -396,6 +397,7 @@ export default function AdminDashboard() {
                         freePapers.map((paper) => (
                           <AdminTestCard 
                             key={paper._id}
+                            id={paper._id}
                             title={paper.title}
                             description={paper.description}
                             date={new Date(paper.createdAt).toLocaleDateString()}
