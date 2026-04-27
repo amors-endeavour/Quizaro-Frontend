@@ -135,16 +135,51 @@ export default function AdminResources() {
       setStatusMsg({ text: "No File Payload Detected.", type: "error" });
       return;
     }
+    
+    setIsUploading(true); // Re-use loading state for processing
+    setStatusMsg({ text: "Initiating Intelligent Ingestion...", type: "success" });
+
     try {
-      await API.post("/admin/resource/add", formData);
-      setStatusMsg({ text: "Intelligence Resource Deployed.", type: "success" });
-      setShowAddModal(false);
-      setFormData({ title: "", description: "", fileUrl: "", category: "General", fileType: "pdf", isFree: true, testId: "" });
-      fetchResources();
-      setTimeout(() => setStatusMsg(null), 3000);
+      // 1. Create Resource
+      const { data: resource } = await API.post("/admin/resource/add", formData);
+      
+      // 2. Create Linked Test
+      setStatusMsg({ text: "Synthesizing Assessment Architecture...", type: "success" });
+      const { data: test } = await API.post("/test/create", {
+        title: formData.title,
+        description: formData.description || `Synthesized from ${formData.title}`,
+        category: formData.category,
+        duration: 30,
+        price: 0,
+        fileUrl: formData.fileUrl
+      });
+
+      // 3. Link them
+      await API.put(`/admin/resource/${resource._id}`, { testId: test._id });
+
+      // 4. AI Extraction
+      setStatusMsg({ text: "AI is scanning for questions...", type: "success" });
+      const { data: questions } = await API.post("/admin/ai/extract", { fileUrl: formData.fileUrl });
+
+      // 5. Bulk Save Questions
+      setStatusMsg({ text: `Ingesting ${questions.length} questions into registry...`, type: "success" });
+      await Promise.all(questions.map((q: any) => 
+        API.post(`/question/add/${test._id}`, { ...q, questionText: q.questionText })
+      ));
+
+      setStatusMsg({ text: "Ingestion Complete! Launching Studio...", type: "success" });
+      
+      setTimeout(() => {
+        router.push(`/admin-dashboard/${test._id}`);
+      }, 1500);
+
     } catch (err) {
-      setStatusMsg({ text: "Deployment Failed.", type: "error" });
-      setTimeout(() => setStatusMsg(null), 3000);
+      console.error("Ingestion failure:", err);
+      setStatusMsg({ text: "Ingestion failed. Proceeding to Manual Studio.", type: "error" });
+      setTimeout(() => setShowAddModal(false), 3000);
+      fetchResources();
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -376,17 +411,6 @@ export default function AdminResources() {
                            value={formData.title}
                            onChange={(e) => setFormData({...formData, title: e.target.value})}
                         />
-                     </div>
-                     <div className="col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Asset Link / Registry Access Point</label>
-                        <input 
-                           required
-                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-bold font-mono text-cyan-400/70"
-                           placeholder="Auto-filled on upload or paste external PDF link"
-                           value={formData.fileUrl}
-                           onChange={(e) => setFormData({...formData, fileUrl: e.target.value})}
-                        />
-                        <p className="text-[8px] text-gray-600 font-bold uppercase italic ml-1">* This field populates automatically when you drop a file above.</p>
                      </div>
                      <div className="space-y-2">
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Categorization</label>
