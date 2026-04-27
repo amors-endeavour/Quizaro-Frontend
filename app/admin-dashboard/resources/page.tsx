@@ -51,6 +51,10 @@ export default function AdminResources() {
     isFree: true,
     testId: ""
   });
+  
+  const [allTests, setAllTests] = useState<any[]>([]);
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [activeResourceId, setActiveResourceId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -69,11 +73,6 @@ export default function AdminResources() {
     checkAuth();
   }, [router]);
 
-  useEffect(() => {
-    if (!isAuthChecked) return;
-    fetchResources();
-  }, [isAuthChecked]);
-
   const fetchResources = async () => {
     try {
       const { data } = await API.get("/user/resources");
@@ -84,6 +83,21 @@ export default function AdminResources() {
       setLoading(false);
     }
   };
+
+  const fetchTests = async () => {
+    try {
+      const { data } = await API.get("/admin/tests");
+      setAllTests(data);
+    } catch (err) {
+      console.error("Failed to load tests");
+    }
+  };
+
+  useEffect(() => {
+    if (!isAuthChecked) return;
+    fetchResources();
+    fetchTests();
+  }, [isAuthChecked]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -131,6 +145,20 @@ export default function AdminResources() {
     } catch (err) {
       setStatusMsg({ text: "Deployment Failed.", type: "error" });
       setTimeout(() => setStatusMsg(null), 3000);
+    }
+  };
+
+  const handleLinkTest = async (testId: string) => {
+    if (!activeResourceId) return;
+    try {
+       await API.put(`/admin/resource/${activeResourceId}`, { testId });
+       setStatusMsg({ text: "Assessment linkage synchronized.", type: "success" });
+       setIsLinkModalOpen(false);
+       fetchResources();
+       setTimeout(() => setStatusMsg(null), 3000);
+    } catch (err) {
+       setStatusMsg({ text: "Linkage failed.", type: "error" });
+       setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
@@ -236,7 +264,14 @@ export default function AdminResources() {
                            <Download size={14} /> Fetch PDF
                         </a>
                         <button 
-                          onClick={() => router.push(`/admin-dashboard/${res.testId || "tests"}`)}
+                          onClick={() => {
+                             if (res.testId) {
+                                router.push(`/admin-dashboard/${res.testId}`);
+                             } else {
+                                setActiveResourceId(res._id);
+                                setIsLinkModalOpen(true);
+                             }
+                          }}
                           className="flex-1 py-4 bg-blue-600/10 border border-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-2xl flex items-center justify-center gap-2 transition-all text-[9px] font-black uppercase tracking-widest"
                         >
                            <Layers size={14} /> {res.testId ? "Studio" : "Link Test"}
@@ -340,13 +375,19 @@ export default function AdminResources() {
                         </select>
                      </div>
                      <div className="col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Linked Assessment (Test ID)</label>
-                        <input 
-                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-bold font-mono text-cyan-400/70"
-                           placeholder="Optional: Paste Test ID to link with Studio"
-                           value={formData.testId}
-                           onChange={(e) => setFormData({...formData, testId: e.target.value})}
-                        />
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Bind to Assessment (Linked Test)</label>
+                        <div className="relative">
+                           <input 
+                              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-bold font-mono text-cyan-400/70"
+                              placeholder="Paste Test ID or use dropdown if available"
+                              value={formData.testId}
+                              onChange={(e) => setFormData({...formData, testId: e.target.value})}
+                           />
+                           <div className="mt-2 flex flex-wrap gap-2">
+                              {/* Simple hint for the admin */}
+                              <p className="text-[9px] text-gray-600 font-bold uppercase italic">Binding a test ID enables the Asset Viewer in Question Studio.</p>
+                           </div>
+                        </div>
                      </div>
                      <div className="col-span-2 space-y-2">
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Contextual Description</label>
@@ -387,6 +428,48 @@ export default function AdminResources() {
               {statusMsg.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
            </div>
            <p className="text-[11px] font-black uppercase tracking-widest">{statusMsg.text}</p>
+        </div>
+      )}
+
+      {/* LINK TEST MODAL 🔥 */}
+      {isLinkModalOpen && (
+        <div className="fixed inset-0 z-[500] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+           <div className="bg-[#0a0f1d] border border-white/10 rounded-[4.5rem] p-16 max-w-2xl w-full shadow-[0_50px_100px_rgba(0,0,0,0.8)] space-y-12 animate-in zoom-in-95 duration-300">
+              <div className="flex justify-between items-center">
+                 <div>
+                    <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">Bind to Assessment</h3>
+                    <p className="text-xs text-gray-500 font-bold uppercase italic mt-2">Select a paper to link with this resource</p>
+                 </div>
+                 <button onClick={() => setIsLinkModalOpen(false)} className="text-gray-500 hover:text-white text-3xl font-light">×</button>
+              </div>
+
+              <div className="max-h-[400px] overflow-y-auto pr-4 space-y-4 custom-scrollbar">
+                 {allTests.length === 0 ? (
+                    <p className="text-center py-10 text-gray-600 font-black uppercase text-[10px] tracking-widest italic">No Institutional Papers Found</p>
+                 ) : (
+                    allTests.map((test: any) => (
+                       <button 
+                         key={test._id}
+                         onClick={() => handleLinkTest(test._id)}
+                         className="w-full p-6 bg-white/5 border border-white/5 rounded-3xl flex items-center justify-between hover:bg-white/10 hover:border-cyan-400/30 transition-all group"
+                       >
+                          <div className="text-left">
+                             <h4 className="text-sm font-black text-white uppercase italic group-hover:text-cyan-400 transition-colors">{test.title}</h4>
+                             <p className="text-[9px] text-gray-600 font-bold uppercase italic">{test.category} • {test.duration} MIN</p>
+                          </div>
+                          <Layers size={18} className="text-gray-700 group-hover:text-cyan-400 transition-colors" />
+                       </button>
+                    ))
+                 )}
+              </div>
+
+              <button 
+                onClick={() => router.push('/admin-dashboard/tests')}
+                className="w-full py-6 bg-white/5 border border-dashed border-white/10 rounded-3xl text-gray-500 font-black text-[10px] uppercase tracking-widest hover:text-white hover:border-white/20 transition-all italic"
+              >
+                 + Create New Paper First
+              </button>
+           </div>
         </div>
       )}
     </div>
