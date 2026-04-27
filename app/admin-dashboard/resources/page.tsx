@@ -380,24 +380,37 @@ export default function AdminResources() {
                            id="pdf-upload"
                            disabled={isUploading}
                         />
-                        <label 
-                           htmlFor="pdf-upload"
-                           className={`w-full h-32 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${isUploading ? "bg-white/5 border-white/10 opacity-50" : "bg-white/5 border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.08]"}`}
-                        >
-                           {isUploading ? (
-                              <div className="flex flex-col items-center gap-3">
-                                 <div className="w-12 h-12 border-4 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin" />
-                                 <p className="text-[9px] font-black text-cyan-400 uppercase tracking-widest">Encrypting... {uploadProgress}%</p>
-                              </div>
-                           ) : (
-                              <>
-                                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:text-cyan-400 transition-colors">
-                                    <Plus size={24} />
-                                 </div>
-                                 <p className="text-[9px] font-black text-gray-500 group-hover:text-white uppercase tracking-widest">Drop PDF here or click to browse</p>
-                              </>
-                           )}
-                        </label>
+                         <label 
+                            htmlFor="pdf-upload"
+                            className={`w-full h-40 border-2 border-dashed rounded-[2.5rem] flex flex-col items-center justify-center gap-4 cursor-pointer transition-all ${isUploading ? "bg-white/5 border-white/10 opacity-50" : formData.fileUrl ? "bg-cyan-400/5 border-cyan-400/50 shadow-2xl shadow-cyan-900/10" : "bg-white/5 border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.08]"}`}
+                         >
+                            {isUploading ? (
+                               <div className="flex flex-col items-center gap-4">
+                                  <div className="w-14 h-14 border-4 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin" />
+                                  <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Encrypting Payload... {uploadProgress}%</p>
+                               </div>
+                            ) : formData.fileUrl ? (
+                               <>
+                                  <div className="w-16 h-16 bg-cyan-600 text-white rounded-2xl flex items-center justify-center shadow-2xl animate-in zoom-in duration-500">
+                                     <CheckCircle2 size={32} />
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="text-[11px] font-black text-white uppercase tracking-tight">{formData.title}.pdf</p>
+                                    <p className="text-[9px] font-bold text-cyan-400 uppercase tracking-widest mt-1 italic">Asset Buffered & Ready for Ingestion</p>
+                                  </div>
+                               </>
+                            ) : (
+                               <>
+                                  <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:text-cyan-400 transition-colors">
+                                     <Plus size={32} />
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="text-[10px] font-black text-gray-400 group-hover:text-white uppercase tracking-widest">Drop Intelligence PDF here</p>
+                                    <p className="text-[8px] text-gray-700 font-bold uppercase tracking-widest mt-1 italic">Maximum payload: 50MB</p>
+                                  </div>
+                               </>
+                            )}
+                         </label>
                      </div>
                   </div>
 
