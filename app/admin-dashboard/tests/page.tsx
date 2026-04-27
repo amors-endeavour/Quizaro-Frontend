@@ -41,6 +41,7 @@ export default function TestsPage() {
   const [editingTest, setEditingTest] = useState<Test | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState<{show: boolean, type: 'delete' | 'series_delete' | 'bulk_delete', targetId?: string, targetName?: string}>({show: false, type: 'delete'});
   const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'error'} | null>(null);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
   
   // Navigation State
   const [currentSeriesId, setCurrentSeriesId] = useState<string | null>(null);
@@ -67,6 +68,24 @@ export default function TestsPage() {
   const [selectedAnalyticsTest, setSelectedAnalyticsTest] = useState<{ id: string; title: string } | null>(null);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await API.get("/user/profile");
+        const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
+        if (role !== "admin") {
+          router.replace("/admin-login");
+          return;
+        }
+        setIsAuthChecked(true);
+      } catch {
+        router.replace("/admin-login");
+      }
+    };
+    checkAuth();
+  }, [router]);
+
+  useEffect(() => {
+    if (!isAuthChecked) return;
     const fetchData = async () => {
       try {
         const [testsRes, seriesRes] = await Promise.all([
@@ -82,7 +101,7 @@ export default function TestsPage() {
       }
     };
     fetchData();
-  }, []);
+  }, [isAuthChecked]);
 
   // Logic: Filter tests based on current series and search
   const filteredTests = useMemo(() => {

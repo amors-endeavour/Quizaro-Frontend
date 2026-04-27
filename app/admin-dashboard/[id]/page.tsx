@@ -67,6 +67,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
   const [saving, setSaving] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState<{show: boolean, type: 'delete' | 'save', targetId?: string}>({show: false, type: 'delete'});
   const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'error'} | null>(null);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   // Editor State
   const [isEditing, setIsEditing] = useState(false);
@@ -114,8 +115,26 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
   };
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await API.get("/user/profile");
+        const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
+        if (role !== "admin") {
+          router.replace("/admin-login");
+          return;
+        }
+        setIsAuthChecked(true);
+      } catch {
+        router.replace("/admin-login");
+      }
+    };
+    checkAuth();
+  }, [router]);
+
+  useEffect(() => {
+    if (!isAuthChecked) return;
     loadData();
-  }, [id]);
+  }, [id, isAuthChecked]);
 
   const handleUpdateTest = async () => {
     setSaving(true);
