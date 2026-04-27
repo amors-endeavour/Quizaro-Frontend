@@ -25,6 +25,7 @@ interface Resource {
   fileUrl: string;
   category: string;
   isFree?: boolean;
+  testId?: string;
   createdAt?: string;
 }
 
@@ -46,7 +47,8 @@ export default function AdminResources() {
     fileUrl: "",
     category: "General",
     fileType: "pdf",
-    isFree: true
+    isFree: true,
+    testId: ""
   });
 
   useEffect(() => {
@@ -233,6 +235,12 @@ export default function AdminResources() {
                            <Download size={14} /> Fetch PDF
                         </a>
                         <button 
+                          onClick={() => router.push(`/admin-dashboard/${res.testId || "tests"}`)}
+                          className="flex-1 py-4 bg-blue-600/10 border border-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-2xl flex items-center justify-center gap-2 transition-all text-[9px] font-black uppercase tracking-widest"
+                        >
+                           <Layers size={14} /> {res.testId ? "Studio" : "Link Test"}
+                        </button>
+                        <button 
                           onClick={() => handleDeleteResource(res._id)}
                           className="w-14 h-14 bg-red-500/10 text-red-500 border border-red-500/10 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-lg"
                         >
@@ -329,6 +337,15 @@ export default function AdminResources() {
                            <option value="true" className="bg-[#0b0f2a]">Public / Free</option>
                            <option value="false" className="bg-[#0b0f2a]">Protected (Internal Only)</option>
                         </select>
+                     </div>
+                     <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Linked Assessment (Test ID)</label>
+                        <input 
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-bold font-mono text-cyan-400/70"
+                           placeholder="Optional: Paste Test ID to link with Studio"
+                           value={formData.testId}
+                           onChange={(e) => setFormData({...formData, testId: e.target.value})}
+                        />
                      </div>
                      <div className="col-span-2 space-y-2">
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Contextual Description</label>

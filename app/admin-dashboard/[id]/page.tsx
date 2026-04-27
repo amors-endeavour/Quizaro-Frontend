@@ -52,7 +52,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Questions");
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [testSettings, setTestSettings] = useState<TestSettings>({
+  const [testSettings, setTestSettings] = useState<TestSettings & { fileUrl?: string }>({
     title: "",
     duration: 30,
     passingCriteria: 40,
@@ -61,7 +61,8 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
     shuffleOptions: true,
     instructions: "",
     category: "General",
-    questionTimer: 0
+    questionTimer: 0,
+    fileUrl: ""
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -104,7 +105,8 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
         shuffleOptions: testRes.data.shuffleOptions ?? true,
         instructions: testRes.data.description || "",
         category: testRes.data.category || "General",
-        questionTimer: testRes.data.questionTimer || 0
+        questionTimer: testRes.data.questionTimer || 0,
+        fileUrl: testRes.data.fileUrl || ""
       });
     } catch (err) {
       console.error("Studio data fetch failed:", err);
@@ -200,6 +202,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
           <div className="w-full lg:w-80 flex flex-col gap-3">
              {[
                 { id: "Questions", label: "Questions", icon: <Layers size={18} /> },
+                { id: "PDF", label: "Asset Viewer", icon: <FileText size={18} /> },
                 { id: "Settings", label: "Settings", icon: <Shield size={18} /> },
                 { id: "Import", label: "Bulk Import", icon: <ArrowDownToLine size={18} /> }
              ].map((tab) => (
@@ -296,6 +299,26 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                       </div>
                    )}
                 </div>
+              ) : activeTab === "PDF" ? (
+                <div className="bg-white/5 backdrop-blur-3xl rounded-[4rem] border border-white/10 overflow-hidden h-[800px] shadow-[0_50px_100px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-700">
+                    {testSettings.fileUrl ? (
+                      <iframe 
+                        src={`${testSettings.fileUrl}#toolbar=0`}
+                        className="w-full h-full border-none"
+                        title="Institutional PDF Viewer"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-center p-20 space-y-6">
+                         <div className="w-24 h-24 bg-white/5 rounded-[2.5rem] flex items-center justify-center text-gray-700">
+                            <FileText size={40} />
+                         </div>
+                         <div className="space-y-2">
+                            <h3 className="text-xl font-black text-white uppercase tracking-widest italic">No PDF Asset Bound</h3>
+                            <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest leading-relaxed">Please link a PDF resource in the settings to activate the mesh viewer.</p>
+                         </div>
+                      </div>
+                    )}
+                </div>
               ) : activeTab === "Settings" ? (
                 <div className="bg-white rounded-[4rem] border border-gray-100 shadow-2xl shadow-gray-100/30 overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
                     <div className="px-12 py-11 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
@@ -313,6 +336,16 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                            value={testSettings.title}
                            onChange={(e) => setTestSettings({...testSettings, title: e.target.value})}
                            className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-10 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-2xl tracking-tighter text-gray-900"
+                         />
+                       </div>
+
+                       <div className="space-y-4">
+                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Asset Pipeline (PDF Link)</label>
+                         <input 
+                           value={testSettings.fileUrl}
+                           onChange={(e) => setTestSettings({...testSettings, fileUrl: e.target.value})}
+                           className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-10 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-sm text-cyan-600 italic"
+                           placeholder="https://cloudinary.com/..."
                          />
                        </div>
 
