@@ -8,6 +8,7 @@ import {
   Plus, 
   Trash2, 
   FileEdit,
+  FileText,
   AlertCircle,
   CheckCircle2,
   PieChart,
