@@ -409,21 +409,6 @@ export default function AdminResources() {
                         </select>
                      </div>
                      <div className="col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Bind to Assessment (Linked Test)</label>
-                        <div className="relative">
-                           <input 
-                              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-bold font-mono text-cyan-400/70"
-                              placeholder="Paste Test ID or use dropdown if available"
-                              value={formData.testId}
-                              onChange={(e) => setFormData({...formData, testId: e.target.value})}
-                           />
-                           <div className="mt-2 flex flex-wrap gap-2">
-                              {/* Simple hint for the admin */}
-                              <p className="text-[9px] text-gray-600 font-bold uppercase italic">Binding a test ID enables the Asset Viewer in Question Studio.</p>
-                           </div>
-                        </div>
-                     </div>
-                     <div className="col-span-2 space-y-2">
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Contextual Description</label>
                         <textarea 
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic h-24 resize-none placeholder:text-gray-700"
