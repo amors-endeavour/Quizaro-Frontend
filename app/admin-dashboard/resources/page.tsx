@@ -125,7 +125,7 @@ export default function AdminResources() {
       await API.post("/admin/resource/add", formData);
       setStatusMsg({ text: "Intelligence Resource Deployed.", type: "success" });
       setShowAddModal(false);
-      setFormData({ title: "", description: "", fileUrl: "", category: "General", fileType: "pdf", isFree: true });
+      setFormData({ title: "", description: "", fileUrl: "", category: "General", fileType: "pdf", isFree: true, testId: "" });
       fetchResources();
       setTimeout(() => setStatusMsg(null), 3000);
     } catch (err) {
