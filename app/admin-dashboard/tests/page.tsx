@@ -330,7 +330,8 @@ export default function TestsPage() {
               price: 1, // Default to 1 for paid
               seriesId: currentSeriesId || "",
               paperNumber: tests.filter(t => t.seriesId === currentSeriesId).length + 1,
-              difficulty: "Medium"
+              difficulty: "Medium",
+              category: "General"
             });
             setShowModal(true);
           }}
@@ -407,7 +408,8 @@ export default function TestsPage() {
                           price: 499, // Specific pre-fill for Paid
                           seriesId: "",
                           paperNumber: 1,
-                          difficulty: "Medium"
+                          difficulty: "Medium",
+                          category: "General"
                         });
                         setShowModal(true);
                       }}
@@ -425,7 +427,8 @@ export default function TestsPage() {
                           price: 0, // Force Free
                           seriesId: "",
                           paperNumber: 1,
-                          difficulty: "Medium"
+                          difficulty: "Medium",
+                          category: "General"
                         });
                         setShowModal(true);
                       }}
@@ -497,7 +500,8 @@ export default function TestsPage() {
                             price: test.price || 0,
                             seriesId: "",
                             paperNumber: test.paperNumber || 1,
-                            difficulty: test.difficulty || "Medium"
+                            difficulty: test.difficulty || "Medium",
+                            category: test.category || "General"
                           });
                           setShowModal(true);
                         }}
@@ -524,7 +528,8 @@ export default function TestsPage() {
                       price: 0,
                       seriesId: currentSeriesId || "",
                       paperNumber: tests.filter(t => t.seriesId === currentSeriesId).length + 1,
-                      difficulty: "Medium"
+                      difficulty: "Medium",
+                      category: "General"
                     });
                     setShowModal(true);
                   }}
@@ -558,7 +563,8 @@ export default function TestsPage() {
                           price: test.price || 0,
                           seriesId: test.seriesId || "",
                           paperNumber: test.paperNumber || 1,
-                          difficulty: test.difficulty || "Medium"
+                          difficulty: test.difficulty || "Medium",
+                          category: test.category || "General"
                         });
                         setShowModal(true);
                       }}
