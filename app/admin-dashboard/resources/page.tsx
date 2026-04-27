@@ -185,6 +185,7 @@ export default function AdminResources() {
           description: res.description || "Synthesized from PDF asset.",
           category: res.category,
           duration: 30,
+          price: 0, // Required by backend validation
           fileUrl: res.fileUrl // Bind the PDF immediately
         });
 

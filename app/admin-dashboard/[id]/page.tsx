@@ -117,6 +117,15 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
     }
   };
 
+  const getEmbedUrl = (url: string) => {
+    if (!url) return "";
+    // Transform Google Drive links to preview links for embedding
+    if (url.includes("drive.google.com")) {
+      return url.replace(/\/view.*|\/edit.*/, "/preview");
+    }
+    return `${url}#toolbar=0`;
+  };
+
   useEffect(() => {
     loadData();
   }, [id]);
@@ -257,7 +266,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                        </button>
                     </div>
                     <iframe 
-                      src={`${testSettings.fileUrl}#toolbar=0`}
+                      src={getEmbedUrl(testSettings.fileUrl)}
                       className="w-full h-full border-none"
                       title="Sticky Institutional Asset"
                     />
