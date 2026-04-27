@@ -118,7 +118,11 @@ export default function AdminResources() {
         }
       });
 
-      setFormData({ ...formData, fileUrl: data.url, title: file.name.replace(".pdf", "") });
+      setFormData(prev => ({ 
+        ...prev, 
+        fileUrl: data.url, 
+        title: prev.title || file.name.replace(".pdf", "") 
+      }));
       setStatusMsg({ text: "Intelligence File Encrypted & Buffered.", type: "success" });
       setTimeout(() => setStatusMsg(null), 3000);
     } catch (err) {
@@ -422,7 +426,7 @@ export default function AdminResources() {
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic placeholder:text-gray-700"
                            placeholder="Ex: Physics 2024 Final Paper"
                            value={formData.title}
-                           onChange={(e) => setFormData({...formData, title: e.target.value})}
+                           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
                         />
                      </div>
                      <div className="space-y-2">
@@ -431,7 +435,7 @@ export default function AdminResources() {
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic placeholder:text-gray-700"
                            placeholder="Ex: Entrance Exams"
                            value={formData.category}
-                           onChange={(e) => setFormData({...formData, category: e.target.value})}
+                           onChange={(e) => setFormData(prev => ({...prev, category: e.target.value}))}
                         />
                      </div>
                      <div className="space-y-2">
@@ -439,7 +443,7 @@ export default function AdminResources() {
                         <select 
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-black text-white uppercase tracking-widest"
                            value={formData.isFree ? "true" : "false"}
-                           onChange={(e) => setFormData({...formData, isFree: e.target.value === "true"})}
+                           onChange={(e) => setFormData(prev => ({...prev, isFree: e.target.value === "true"}))}
                         >
                            <option value="true" className="bg-[#0b0f2a]">Public / Free</option>
                            <option value="false" className="bg-[#0b0f2a]">Protected (Internal Only)</option>
@@ -451,7 +455,7 @@ export default function AdminResources() {
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic h-24 resize-none placeholder:text-gray-700"
                            placeholder="Brief description of the intelligence node..."
                            value={formData.description}
-                           onChange={(e) => setFormData({...formData, description: e.target.value})}
+                           onChange={(e) => setFormData(prev => ({...prev, description: e.target.value}))}
                         />
                      </div>
                   </div>
