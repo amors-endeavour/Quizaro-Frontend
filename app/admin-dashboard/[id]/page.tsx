@@ -260,23 +260,36 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                          <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] italic">Awaiting Intellectual Injection</p>
                       </div>
                    ) : (
-                       <div className="flex flex-col gap-8">
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {questions.map((q, idx) => (
-                           <div key={idx} className="bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-white/10 p-10 flex items-center justify-between group hover:border-cyan-400/30 hover:shadow-[0_40px_100px_rgba(0,0,0,0.5)] transition-all duration-700 relative overflow-hidden">
-                              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-600/[0.03] rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                              <div className="flex items-center gap-10 relative z-10">
-                                 <div className="w-16 h-16 bg-white/5 text-gray-600 border border-white/5 rounded-2xl flex items-center justify-center font-black text-xs font-mono group-hover:bg-cyan-600 group-hover:text-white group-hover:border-cyan-400 transition-all duration-700 shadow-xl group-hover:shadow-cyan-900/40">{idx + 1}</div>
-                                 <div className="space-y-2">
-                                    <span className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em] bg-cyan-950/40 px-4 py-1.5 rounded-full border border-cyan-400/10 italic">{q.section || "General"} Node</span>
-                                    <p className="text-xl font-black text-white tracking-tight line-clamp-1 max-w-2xl italic leading-none">{q.text}</p>
+                           <div key={idx} className="bg-white/[0.03] backdrop-blur-3xl rounded-[3rem] border border-white/10 p-10 flex flex-col gap-8 group hover:border-cyan-400/30 hover:bg-white/[0.05] transition-all duration-700 relative overflow-hidden shadow-2xl">
+                              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-600/[0.05] rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                              
+                              <div className="flex items-center justify-between relative z-10">
+                                 <div className="w-12 h-12 bg-white/5 text-cyan-400 border border-white/5 rounded-xl flex items-center justify-center font-black text-xs font-mono group-hover:bg-cyan-600 group-hover:text-white transition-all shadow-lg">{idx + 1}</div>
+                                 <div className="flex items-center gap-3">
+                                    <button onClick={() => { setCurrentQuestion(q); setIsEditing(true); }} className="w-10 h-10 rounded-xl bg-white/5 text-gray-500 hover:text-white flex items-center justify-center transition-all"><FileEdit size={16} /></button>
+                                    <button onClick={() => setShowConfirmModal({ show: true, type: 'delete', targetId: q._id })} className="w-10 h-10 rounded-xl bg-white/5 text-red-500/50 hover:text-red-500 flex items-center justify-center transition-all"><Trash2 size={16} /></button>
                                  </div>
                               </div>
-                              <div className="flex items-center gap-5 relative z-10">
-                                 <button onClick={() => {
-                                   setCurrentQuestion(q);
-                                   setIsEditing(true);
-                                 }} className="w-14 h-14 rounded-2xl bg-white/5 text-gray-500 border border-white/5 flex items-center justify-center hover:bg-white hover:text-black transition-all shadow-xl active:scale-90"><FileEdit size={22} /></button>
-                                 <button onClick={() => setShowConfirmModal({ show: true, type: 'delete', targetId: q._id })} className="w-14 h-14 rounded-2xl bg-white/5 text-red-400 border border-white/5 flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-400 transition-all shadow-xl active:scale-90"><Trash2 size={22} /></button>
+
+                              <div className="space-y-4 relative z-10 flex-1">
+                                 <p className="text-lg font-black text-white tracking-tight italic leading-relaxed">{q.text}</p>
+                                 
+                                 {/* OPTION BOXES */}
+                                 <div className="grid grid-cols-2 gap-3 pt-4">
+                                    {q.options.map((opt, i) => (
+                                       <div key={i} className={`p-4 rounded-2xl border text-[9px] font-black uppercase tracking-widest flex items-center gap-3 transition-all ${q.correctOption === i ? "bg-cyan-600/10 border-cyan-400/30 text-cyan-400" : "bg-white/5 border-white/5 text-gray-600"}`}>
+                                          <span className="opacity-40">{String.fromCharCode(65 + i)}</span>
+                                          <span className="truncate">{opt.text}</span>
+                                       </div>
+                                    ))}
+                                 </div>
+                              </div>
+
+                              <div className="flex items-center justify-between pt-6 border-t border-white/5 relative z-10">
+                                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest italic">{q.section || "General Domain"}</span>
+                                 <span className="text-[10px] font-black text-white bg-white/5 px-4 py-2 rounded-xl italic">{q.marks} Points</span>
                               </div>
                            </div>
                         ))}
@@ -425,34 +438,34 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                  <button onClick={() => setIsEditing(false)} className="w-16 h-16 bg-white/5 border border-white/10 shadow-2xl rounded-3xl flex items-center justify-center text-gray-500 hover:text-white text-3xl font-light transition-all active:scale-90 animate-in spin-in-90 duration-500">×</button>
               </div>
 
-              <div className="p-16 grid grid-cols-1 lg:grid-cols-2 gap-20 overflow-y-auto">
+              <div className="p-16 grid grid-cols-1 lg:grid-cols-2 gap-20 overflow-y-auto no-scrollbar">
                  <div className="space-y-12">
-                    <div className="space-y-4">
-                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1 italic">Syntactic Stem / Prompt</label>
+                    <div className="space-y-6">
+                       <label className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-400 ml-1 italic">Syntactic Stem / Prompt</label>
                        <textarea 
                          value={currentQuestion.text}
                          onChange={(e) => setCurrentQuestion({...currentQuestion, text: e.target.value})}
-                         className="w-full h-48 bg-white/5 border border-white/10 rounded-[2.5rem] p-10 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-xl leading-relaxed shadow-inner text-white placeholder:text-gray-800 italic"
-                         placeholder="Formulate your prompt..."
+                         className="w-full h-72 bg-white/5 border border-white/10 rounded-[3rem] p-12 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-2xl leading-tight shadow-inner text-white placeholder:text-gray-800 italic"
+                         placeholder="Formulate your prompt here..."
                        />
                     </div>
                     
                     <div className="grid grid-cols-2 gap-10">
-                       <div className="space-y-4">
-                          <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1 italic">Intellectual Value</label>
+                       <div className="p-10 bg-white/5 rounded-[2.5rem] border border-white/10 space-y-4">
+                          <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Intellectual Value</label>
                           <input 
                             type="number"
                             value={currentQuestion.marks}
                             onChange={(e) => setCurrentQuestion({...currentQuestion, marks: Number(e.target.value)})}
-                            className="w-full bg-white/5 border border-white/10 rounded-[2rem] px-10 py-6 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-2xl text-cyan-400 italic"
+                            className="w-full bg-transparent outline-none font-black text-4xl text-cyan-400 italic"
                           />
                        </div>
-                       <div className="space-y-4">
-                          <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1 italic">Taxonomic Section</label>
+                       <div className="p-10 bg-white/5 rounded-[2.5rem] border border-white/10 space-y-4">
+                          <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Taxonomic Section</label>
                           <input 
                             value={currentQuestion.section}
                             onChange={(e) => setCurrentQuestion({...currentQuestion, section: e.target.value})}
-                            className="w-full bg-white/5 border border-white/10 rounded-[2rem] px-10 py-6 outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-all font-black text-white italic"
+                            className="w-full bg-transparent outline-none font-black text-xl text-white italic"
                             placeholder="e.g. Quant"
                           />
                        </div>
@@ -494,14 +507,14 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                     </div>
                     <button 
                       onClick={() => setCurrentQuestion({...currentQuestion, options: [...currentQuestion.options, { text: "" }]})}
-                      className="w-full py-5 bg-white/5 border border-dashed border-white/10 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-600 hover:text-cyan-400 hover:border-cyan-400/30 transition-all italic"
+                      className="w-full py-6 bg-white/5 border border-dashed border-white/10 rounded-3xl font-black text-[10px] uppercase tracking-widest text-gray-600 hover:text-cyan-400 hover:border-cyan-400/30 transition-all italic"
                     >
-                      + Neural Choice Node
+                      + Integrate Neural Choice Node
                     </button>
 
-                    <div className="pt-10 border-t border-white/10 flex gap-6">
-                       <button onClick={() => setIsEditing(false)} className="flex-1 py-5 border-2 border-white/5 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-600 hover:bg-white/5 transition duration-300 italic">Abort</button>
-                       <button onClick={() => handleSaveQuestion(currentQuestion)} className="flex-[1.5] py-5 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl hover:bg-cyan-400 transition-all duration-300 active:scale-95 italic">Commit node to registry</button>
+                    <div className="pt-10 flex gap-6">
+                       <button onClick={() => setIsEditing(false)} className="flex-1 py-6 bg-white/5 rounded-3xl font-black text-[10px] uppercase tracking-widest text-gray-600 hover:text-white transition duration-300 italic">Abort Synthesis</button>
+                       <button onClick={() => handleSaveQuestion(currentQuestion)} className="flex-[1.5] py-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-3xl font-black text-[10px] uppercase tracking-widest shadow-2xl hover:scale-105 transition-all duration-300 active:scale-95 italic">Commit Node to Registry</button>
                     </div>
                  </div>
               </div>

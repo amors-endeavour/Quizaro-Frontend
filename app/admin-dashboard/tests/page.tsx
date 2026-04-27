@@ -269,7 +269,7 @@ export default function TestsPage() {
               title: "",
               description: "",
               duration: 30,
-              price: 0,
+              price: 1, // Default to 1 for paid
               seriesId: currentSeriesId || "",
               paperNumber: tests.filter(t => t.seriesId === currentSeriesId).length + 1,
               difficulty: "Medium"
@@ -339,22 +339,40 @@ export default function TestsPage() {
                           title: "",
                           description: "",
                           duration: 30,
-                          price: 0,
+                          price: 499, // Specific pre-fill for Paid
                           seriesId: "",
                           paperNumber: 1,
                           difficulty: "Medium"
                         });
                         setShowModal(true);
                       }}
-                      className="px-6 py-2.5 bg-white text-black hover:bg-cyan-400 hover:text-black rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic shadow-xl shadow-cyan-900/10"
+                      className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:scale-105 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic shadow-xl shadow-amber-900/20 border border-white/10"
                     >
-                      + New Paper
+                      + NEW PAPER (PAID)
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setEditingTest(null);
+                        setFormData({
+                          title: "",
+                          description: "",
+                          duration: 30,
+                          price: 0, // Force Free
+                          seriesId: "",
+                          paperNumber: 1,
+                          difficulty: "Medium"
+                        });
+                        setShowModal(true);
+                      }}
+                      className="px-6 py-2.5 bg-white text-black hover:bg-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic shadow-xl shadow-white/5"
+                    >
+                      + NEW PAPER (FREE)
                     </button>
                     <button 
                       onClick={() => setShowSeriesModal(true)}
                       className="px-6 py-2.5 bg-cyan-600/10 text-cyan-400 border border-cyan-400/20 hover:bg-cyan-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic shadow-lg shadow-black/20"
                     >
-                      + New Series
+                      + NEW SERIES
                     </button>
                    </>
                  )}
