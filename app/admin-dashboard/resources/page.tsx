@@ -40,7 +40,8 @@ export default function AdminResources() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Form State
+
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -139,6 +140,7 @@ export default function AdminResources() {
       setStatusMsg({ text: "No File Payload Detected.", type: "error" });
       return;
     }
+
     
     setIsUploading(true); // Re-use loading state for processing
     setStatusMsg({ text: "Initiating Intelligent Ingestion...", type: "success" });
