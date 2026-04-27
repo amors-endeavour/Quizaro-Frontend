@@ -55,7 +55,8 @@ export default function TestsPage() {
     price: 0,
     seriesId: "",
     paperNumber: 1,
-    difficulty: "Medium"
+    difficulty: "Medium",
+    category: "General"
   });
 
   const [seriesFormData, setSeriesFormData] = useState({
@@ -218,8 +219,8 @@ export default function TestsPage() {
     try {
       const uploadData = new FormData();
       uploadData.append("postImage", file);
-      uploadData.append("title", newTest.title);
-      uploadData.append("category", newTest.category || "General");
+      uploadData.append("title", formData.title);
+      uploadData.append("category", formData.category || "General");
 
       await API.post("/admin/auto-ingest", uploadData, {
         headers: { "Content-Type": "multipart/form-data" }
@@ -227,7 +228,7 @@ export default function TestsPage() {
 
       setStatusMsg({ text: "Intelligence Scanned & MCQs Generated.", type: "success" });
       setShowAutoIngestModal(false);
-      setNewTest({ title: "", description: "", duration: 30, price: 0, category: "General", seriesId: "", paperNumber: 1, difficulty: "Medium" });
+      setFormData({ title: "", description: "", duration: 30, price: 0, category: "General", seriesId: "", paperNumber: 1, difficulty: "Medium" });
       
       // Refresh tests
       const testsRes = await API.get("/admin/tests");
@@ -613,8 +614,8 @@ export default function TestsPage() {
                            required
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic"
                            placeholder="Ex: Advanced Physics MCQs"
-                           value={newTest.title}
-                           onChange={(e) => setNewTest({...newTest, title: e.target.value})}
+                           value={formData.title}
+                           onChange={(e) => setFormData({...formData, title: e.target.value})}
                         />
                      </div>
                      <div className="space-y-2">
@@ -622,8 +623,8 @@ export default function TestsPage() {
                         <input 
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic"
                            placeholder="Ex: Academic"
-                           value={newTest.category}
-                           onChange={(e) => setNewTest({...newTest, category: e.target.value})}
+                           value={formData.category}
+                           onChange={(e) => setFormData({...formData, category: e.target.value})}
                         />
                      </div>
                   </div>
