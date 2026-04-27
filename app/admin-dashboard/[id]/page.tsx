@@ -22,7 +22,8 @@ import {
   Lock,
   Mail,
   MoreVertical,
-  ChevronLeft
+  ChevronLeft,
+  Sparkles
 } from "lucide-react";
 
 interface Question {
@@ -83,6 +84,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
 
   const [bulkData, setBulkData] = useState("");
   const [isPdfPinned, setIsPdfPinned] = useState(true);
+  const [isAiExtracting, setIsAiExtracting] = useState(false);
 
   const loadData = async () => {
     try {
@@ -195,6 +197,28 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
     } catch {
       setStatusMsg({ text: "JSON parsing failure - verification required.", type: 'error' });
       setTimeout(() => setStatusMsg(null), 3000);
+    }
+  };
+
+  const handleAiExtraction = async () => {
+    if (!testSettings.fileUrl) {
+        setStatusMsg({ text: "No PDF asset bound to this node.", type: "error" });
+        return;
+    }
+    
+    setIsAiExtracting(true);
+    setStatusMsg({ text: "AI is analyzing your PDF intelligence...", type: "success" });
+    
+    try {
+        const { data } = await API.post("/admin/ai/extract", { fileUrl: testSettings.fileUrl });
+        setBulkData(JSON.stringify(data, null, 2));
+        setStatusMsg({ text: "Intelligence extracted successfully!", type: "success" });
+        setTimeout(() => setStatusMsg(null), 3000);
+    } catch (err: any) {
+        setStatusMsg({ text: err?.response?.data?.message || "AI extraction failed.", type: "error" });
+        setTimeout(() => setStatusMsg(null), 5000);
+    } finally {
+        setIsAiExtracting(false);
     }
   };
 
@@ -479,10 +503,22 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                 </div>
                ) : (
                 <div className="bg-white/5 backdrop-blur-3xl rounded-[4rem] border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] p-16 space-y-12 animate-in fade-in slide-in-from-bottom-5 duration-700">
-                   <div className="space-y-3">
-                       <h3 className="text-2xl font-black text-white uppercase tracking-[0.3em] italic">Bulk Import Hub</h3>
-                       <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest italic tracking-[0.4em]">Paste raw JSON to import multiple questions instantly</p>
-                   </div>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="space-y-3">
+                            <h3 className="text-2xl font-black text-white uppercase tracking-[0.3em] italic">Bulk Import Hub</h3>
+                            <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest italic tracking-[0.4em]">Paste raw JSON or use AI to extract from PDF</p>
+                        </div>
+                        {testSettings.fileUrl && (
+                           <button 
+                             onClick={handleAiExtraction}
+                             disabled={isAiExtracting}
+                             className={`px-8 py-5 bg-cyan-600/10 border border-cyan-400/20 text-cyan-400 rounded-3xl font-black text-[10px] uppercase tracking-widest flex items-center gap-4 transition-all hover:bg-cyan-600 hover:text-white shadow-2xl shadow-cyan-900/10 ${isAiExtracting ? "animate-pulse opacity-50" : ""}`}
+                           >
+                              <Sparkles size={18} className={isAiExtracting ? "animate-spin" : "animate-pulse"} />
+                              {isAiExtracting ? "Synthesizing..." : "Extract with AI"}
+                           </button>
+                        )}
+                    </div>
                    <textarea 
                      value={bulkData}
                      onChange={(e) => setBulkData(e.target.value)}
