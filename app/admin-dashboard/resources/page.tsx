@@ -14,8 +14,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Lock,
-  Globe,
-  Layers
+  Globe
 } from "lucide-react";
 
 interface Resource {
@@ -26,22 +25,16 @@ interface Resource {
   fileUrl: string;
   category: string;
   isFree?: boolean;
-  testId?: string;
   createdAt?: string;
 }
 
 export default function AdminResources() {
   const router = useRouter();
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'alert' | 'error'} | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-
-
+  // Form State
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -49,13 +42,8 @@ export default function AdminResources() {
     fileUrl: "",
     category: "General",
     fileType: "pdf",
-    isFree: true,
-    testId: ""
+    isFree: true
   });
-  
-  const [allTests, setAllTests] = useState<any[]>([]);
-  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
-  const [activeResourceId, setActiveResourceId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -74,6 +62,11 @@ export default function AdminResources() {
     checkAuth();
   }, [router]);
 
+  useEffect(() => {
+    if (!isAuthChecked) return;
+    fetchResources();
+  }, [isAuthChecked]);
+
   const fetchResources = async () => {
     try {
       const { data } = await API.get("/user/resources");
@@ -84,21 +77,6 @@ export default function AdminResources() {
       setLoading(false);
     }
   };
-
-  const fetchTests = async () => {
-    try {
-      const { data } = await API.get("/admin/tests");
-      setAllTests(data);
-    } catch (err) {
-      console.error("Failed to load tests");
-    }
-  };
-
-  useEffect(() => {
-    if (!isAuthChecked) return;
-    fetchResources();
-    fetchTests();
-  }, [isAuthChecked]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -119,11 +97,7 @@ export default function AdminResources() {
         }
       });
 
-      setFormData(prev => ({ 
-        ...prev, 
-        fileUrl: data.url, 
-        title: prev.title || file.name.replace(".pdf", "") 
-      }));
+      setFormData({ ...formData, fileUrl: data.url, title: file.name.replace(".pdf", "") });
       setStatusMsg({ text: "Intelligence File Encrypted & Buffered.", type: "success" });
       setTimeout(() => setStatusMsg(null), 3000);
     } catch (err) {
@@ -140,105 +114,16 @@ export default function AdminResources() {
       setStatusMsg({ text: "No File Payload Detected.", type: "error" });
       return;
     }
-
-    
-    setIsUploading(true); // Re-use loading state for processing
-    setStatusMsg({ text: "Initiating Intelligent Ingestion...", type: "success" });
-
     try {
-      // 1. Create Resource
-      const { data: resource } = await API.post("/admin/resource/add", formData);
-      
-      // 2. Create Linked Test
-      setStatusMsg({ text: "Synthesizing Assessment Architecture...", type: "success" });
-      const { data: test } = await API.post("/test/create", {
-        title: formData.title,
-        description: formData.description || `Synthesized from ${formData.title}`,
-        category: formData.category,
-        duration: 30,
-        price: 0,
-        fileUrl: formData.fileUrl
-      });
-
-      // 3. Link them
-      await API.put(`/admin/resource/${resource._id}`, { testId: test._id });
-
-      // 4. AI Extraction
-      setStatusMsg({ text: "AI is scanning for questions...", type: "success" });
-      const { data: questions } = await API.post("/admin/ai/extract", { fileUrl: formData.fileUrl });
-
-      // 5. Bulk Save Questions
-      setStatusMsg({ text: `Ingesting ${questions.length} questions into registry...`, type: "success" });
-      await Promise.all(questions.map((q: any) => 
-        API.post(`/question/add/${test._id}`, { ...q, questionText: q.questionText })
-      ));
-
-      setStatusMsg({ text: "Ingestion Complete! Launching Studio...", type: "success" });
-      
-      setTimeout(() => {
-        router.push(`/admin-dashboard/${test._id}`);
-      }, 1500);
-
-    } catch (err) {
-      console.error("Ingestion failure:", err);
-      setStatusMsg({ text: "Ingestion failed. Proceeding to Manual Studio.", type: "error" });
-      setTimeout(() => setShowAddModal(false), 3000);
+      await API.post("/admin/resource/add", formData);
+      setStatusMsg({ text: "Intelligence Resource Deployed.", type: "success" });
+      setShowAddModal(false);
+      setFormData({ title: "", description: "", fileUrl: "", category: "General", fileType: "pdf", isFree: true });
       fetchResources();
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleLinkTest = async (testId: string) => {
-    if (!activeResourceId) return;
-    try {
-       await API.put(`/admin/resource/${activeResourceId}`, { testId });
-       setStatusMsg({ text: "Assessment linkage synchronized.", type: "success" });
-       setIsLinkModalOpen(false);
-       fetchResources();
-       setTimeout(() => setStatusMsg(null), 3000);
+      setTimeout(() => setStatusMsg(null), 3000);
     } catch (err) {
-       setStatusMsg({ text: "Linkage failed.", type: "error" });
-       setTimeout(() => setStatusMsg(null), 3000);
-    }
-  };
-
-  const handleIntelligentFetch = async (res: Resource) => {
-    try {
-      if (res.testId) {
-        router.push(`/admin-dashboard/${res.testId}`);
-        return;
-      }
-
-      // If no testId, attempt to find a test with the same title
-      const allT = await API.get("/admin/tests");
-      const existingTest = allT.data.find((t: any) => t.title.toLowerCase().trim() === res.title.toLowerCase().trim());
-
-      if (existingTest) {
-        // Link it automatically
-        await API.put(`/admin/resource/${res._id}`, { testId: existingTest._id });
-        router.push(`/admin-dashboard/${existingTest._id}`);
-      } else {
-        // Create a new draft test automatically
-        setStatusMsg({ text: "Synthesizing New Assessment Logic...", type: "success" });
-        const { data: newTest } = await API.post("/test/create", {
-          title: res.title,
-          description: res.description || "Synthesized from PDF asset.",
-          category: res.category,
-          duration: 30,
-          price: 0, // Required by backend validation
-          fileUrl: res.fileUrl // Bind the PDF immediately
-        });
-
-        // Link the resource to the new test
-        await API.put(`/admin/resource/${res._id}`, { testId: newTest._id });
-        
-        router.push(`/admin-dashboard/${newTest._id}`);
-      }
-    } catch (err) {
-      console.error("Intelligent fetch failure:", err);
-      // Fallback: just open the PDF
-      window.open(res.fileUrl, "_blank");
+      setStatusMsg({ text: "Deployment Failed.", type: "error" });
+      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
@@ -335,20 +220,13 @@ export default function AdminResources() {
                      <p className="text-[11px] text-gray-500 font-bold mb-10 line-clamp-2 italic leading-relaxed font-black uppercase tracking-tight">{res.description || "Foundational academic document node."}</p>
                      
                      <div className="flex w-full gap-3 mt-auto">
-                        <button 
-                           onClick={() => handleIntelligentFetch(res)}
-                           className="flex-1 py-4 bg-cyan-400 text-black hover:bg-white rounded-2xl flex items-center justify-center gap-2 transition-all text-[9px] font-black uppercase tracking-widest shadow-lg shadow-cyan-900/20"
-                        >
-                           <Layers size={14} /> Enter Studio
-                        </button>
                         <a 
-                           href={res.fileUrl} 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           className="w-14 h-14 bg-white/5 border border-white/10 text-gray-400 hover:text-white rounded-2xl flex items-center justify-center transition-all"
-                           title="Raw PDF View"
+                          href={res.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex-1 py-4 bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 hover:bg-cyan-400 hover:text-black rounded-2xl flex items-center justify-center gap-2 transition-all text-[9px] font-black uppercase tracking-widest"
                         >
-                           <Download size={16} />
+                           <Download size={14} /> Fetch PDF
                         </a>
                         <button 
                           onClick={() => handleDeleteResource(res._id)}
@@ -386,50 +264,24 @@ export default function AdminResources() {
                            id="pdf-upload"
                            disabled={isUploading}
                         />
-                         <label 
-                            htmlFor="pdf-upload"
-                            onDragOver={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            onDrop={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const file = e.dataTransfer.files?.[0];
-                                if (file && file.type === "application/pdf") {
-                                    const event = { target: { files: [file] } } as any;
-                                    handleFileUpload(event);
-                                }
-                            }}
-                            className={`w-full h-40 border-2 border-dashed rounded-[2.5rem] flex flex-col items-center justify-center gap-4 cursor-pointer transition-all ${isUploading ? "bg-white/5 border-white/10 opacity-50" : formData.fileUrl ? "bg-cyan-400/5 border-cyan-400/50 shadow-2xl shadow-cyan-900/10" : "bg-white/5 border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.08]"}`}
-                         >
-                            {isUploading ? (
-                               <div className="flex flex-col items-center gap-4">
-                                  <div className="w-14 h-14 border-4 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin" />
-                                  <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Encrypting Payload... {uploadProgress}%</p>
-                               </div>
-                            ) : formData.fileUrl ? (
-                               <>
-                                  <div className="w-16 h-16 bg-cyan-600 text-white rounded-2xl flex items-center justify-center shadow-2xl animate-in zoom-in duration-500">
-                                     <CheckCircle2 size={32} />
-                                  </div>
-                                  <div className="text-center">
-                                    <p className="text-[11px] font-black text-white uppercase tracking-tight">{formData.title}.pdf</p>
-                                    <p className="text-[9px] font-bold text-cyan-400 uppercase tracking-widest mt-1 italic">Asset Buffered & Ready for Ingestion</p>
-                                  </div>
-                               </>
-                            ) : (
-                               <>
-                                  <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:text-cyan-400 transition-colors">
-                                     <Plus size={32} />
-                                  </div>
-                                  <div className="text-center">
-                                    <p className="text-[10px] font-black text-gray-400 group-hover:text-white uppercase tracking-widest">Drop Intelligence PDF here</p>
-                                    <p className="text-[8px] text-gray-700 font-bold uppercase tracking-widest mt-1 italic">Maximum payload: 50MB</p>
-                                  </div>
-                               </>
-                            )}
-                         </label>
+                        <label 
+                           htmlFor="pdf-upload"
+                           className={`w-full h-32 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${isUploading ? "bg-white/5 border-white/10 opacity-50" : "bg-white/5 border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.08]"}`}
+                        >
+                           {isUploading ? (
+                              <div className="flex flex-col items-center gap-3">
+                                 <div className="w-12 h-12 border-4 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin" />
+                                 <p className="text-[9px] font-black text-cyan-400 uppercase tracking-widest">Encrypting... {uploadProgress}%</p>
+                              </div>
+                           ) : (
+                              <>
+                                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:text-cyan-400 transition-colors">
+                                    <Plus size={24} />
+                                 </div>
+                                 <p className="text-[9px] font-black text-gray-500 group-hover:text-white uppercase tracking-widest">Drop PDF here or click to browse</p>
+                              </>
+                           )}
+                        </label>
                      </div>
                   </div>
 
@@ -441,7 +293,17 @@ export default function AdminResources() {
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic placeholder:text-gray-700"
                            placeholder="Ex: Physics 2024 Final Paper"
                            value={formData.title}
-                           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
+                           onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        />
+                     </div>
+                     <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Registry Access Point (URL)</label>
+                        <input 
+                           required
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-bold font-mono text-cyan-400/70"
+                           placeholder="https://drive.google.com/..."
+                           value={formData.fileUrl}
+                           onChange={(e) => setFormData({...formData, fileUrl: e.target.value})}
                         />
                      </div>
                      <div className="space-y-2">
@@ -450,7 +312,7 @@ export default function AdminResources() {
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic placeholder:text-gray-700"
                            placeholder="Ex: Entrance Exams"
                            value={formData.category}
-                           onChange={(e) => setFormData(prev => ({...prev, category: e.target.value}))}
+                           onChange={(e) => setFormData({...formData, category: e.target.value})}
                         />
                      </div>
                      <div className="space-y-2">
@@ -458,7 +320,7 @@ export default function AdminResources() {
                         <select 
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-[10px] font-black text-white uppercase tracking-widest"
                            value={formData.isFree ? "true" : "false"}
-                           onChange={(e) => setFormData(prev => ({...prev, isFree: e.target.value === "true"}))}
+                           onChange={(e) => setFormData({...formData, isFree: e.target.value === "true"})}
                         >
                            <option value="true" className="bg-[#0b0f2a]">Public / Free</option>
                            <option value="false" className="bg-[#0b0f2a]">Protected (Internal Only)</option>
@@ -470,7 +332,7 @@ export default function AdminResources() {
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-500/50 text-sm font-black text-white italic h-24 resize-none placeholder:text-gray-700"
                            placeholder="Brief description of the intelligence node..."
                            value={formData.description}
-                           onChange={(e) => setFormData(prev => ({...prev, description: e.target.value}))}
+                           onChange={(e) => setFormData({...formData, description: e.target.value})}
                         />
                      </div>
                   </div>
@@ -503,48 +365,6 @@ export default function AdminResources() {
               {statusMsg.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
            </div>
            <p className="text-[11px] font-black uppercase tracking-widest">{statusMsg.text}</p>
-        </div>
-      )}
-
-      {/* LINK TEST MODAL 🔥 */}
-      {isLinkModalOpen && (
-        <div className="fixed inset-0 z-[500] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-6 animate-in fade-in duration-500">
-           <div className="bg-[#0a0f1d] border border-white/10 rounded-[4.5rem] p-16 max-w-2xl w-full shadow-[0_50px_100px_rgba(0,0,0,0.8)] space-y-12 animate-in zoom-in-95 duration-300">
-              <div className="flex justify-between items-center">
-                 <div>
-                    <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">Bind to Assessment</h3>
-                    <p className="text-xs text-gray-500 font-bold uppercase italic mt-2">Select a paper to link with this resource</p>
-                 </div>
-                 <button onClick={() => setIsLinkModalOpen(false)} className="text-gray-500 hover:text-white text-3xl font-light">×</button>
-              </div>
-
-              <div className="max-h-[400px] overflow-y-auto pr-4 space-y-4 custom-scrollbar">
-                 {allTests.length === 0 ? (
-                    <p className="text-center py-10 text-gray-600 font-black uppercase text-[10px] tracking-widest italic">No Institutional Papers Found</p>
-                 ) : (
-                    allTests.map((test: any) => (
-                       <button 
-                         key={test._id}
-                         onClick={() => handleLinkTest(test._id)}
-                         className="w-full p-6 bg-white/5 border border-white/5 rounded-3xl flex items-center justify-between hover:bg-white/10 hover:border-cyan-400/30 transition-all group"
-                       >
-                          <div className="text-left">
-                             <h4 className="text-sm font-black text-white uppercase italic group-hover:text-cyan-400 transition-colors">{test.title}</h4>
-                             <p className="text-[9px] text-gray-600 font-bold uppercase italic">{test.category} • {test.duration} MIN</p>
-                          </div>
-                          <Layers size={18} className="text-gray-700 group-hover:text-cyan-400 transition-colors" />
-                       </button>
-                    ))
-                 )}
-              </div>
-
-              <button 
-                onClick={() => router.push('/admin-dashboard/tests')}
-                className="w-full py-6 bg-white/5 border border-dashed border-white/10 rounded-3xl text-gray-500 font-black text-[10px] uppercase tracking-widest hover:text-white hover:border-white/20 transition-all italic"
-              >
-                 + Create New Paper First
-              </button>
-           </div>
         </div>
       )}
     </div>

@@ -419,7 +419,6 @@ export default function TestsPage() {
                   {tests.filter(t => !t.seriesId).map((test) => (
                     <div key={test._id} className="col-span-full xl:col-span-2">
                        <AdminTestCard 
-                        id={test._id}
                         title={test.title}
                         description={test.description}
                         date={new Date(test.createdAt).toLocaleDateString()}
@@ -478,7 +477,6 @@ export default function TestsPage() {
                  filteredTests.sort((a,b) => (a.paperNumber || 0) - (b.paperNumber || 0)).map((test) => (
                     <AdminTestCard 
                       key={test._id}
-                      id={test._id}
                       title={test.title}
                       description={`Paper ${test.paperNumber || "N/A"}`}
                       date={new Date(test.createdAt).toISOString().split('T')[0].replace(/-/g, '/')}

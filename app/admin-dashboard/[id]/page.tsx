@@ -8,7 +8,6 @@ import {
   Plus, 
   Trash2, 
   FileEdit,
-  FileText,
   AlertCircle,
   CheckCircle2,
   PieChart,
@@ -22,8 +21,7 @@ import {
   Lock,
   Mail,
   MoreVertical,
-  ChevronLeft,
-  Sparkles
+  ChevronLeft
 } from "lucide-react";
 
 interface Question {
@@ -54,7 +52,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Questions");
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [testSettings, setTestSettings] = useState<TestSettings & { fileUrl?: string }>({
+  const [testSettings, setTestSettings] = useState<TestSettings>({
     title: "",
     duration: 30,
     passingCriteria: 40,
@@ -63,8 +61,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
     shuffleOptions: true,
     instructions: "",
     category: "General",
-    questionTimer: 0,
-    fileUrl: ""
+    questionTimer: 0
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -83,8 +80,6 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
   });
 
   const [bulkData, setBulkData] = useState("");
-  const [isPdfPinned, setIsPdfPinned] = useState(true);
-  const [isAiExtracting, setIsAiExtracting] = useState(false);
 
   const loadData = async () => {
     try {
@@ -109,23 +104,13 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
         shuffleOptions: testRes.data.shuffleOptions ?? true,
         instructions: testRes.data.description || "",
         category: testRes.data.category || "General",
-        questionTimer: testRes.data.questionTimer || 0,
-        fileUrl: testRes.data.fileUrl || ""
+        questionTimer: testRes.data.questionTimer || 0
       });
     } catch (err) {
       console.error("Studio data fetch failed:", err);
     } finally {
       setLoading(false);
     }
-  };
-
-  const getEmbedUrl = (url: string) => {
-    if (!url) return "";
-    // Transform Google Drive links to preview links for embedding
-    if (url.includes("drive.google.com")) {
-      return url.replace(/\/view.*|\/edit.*/, "/preview");
-    }
-    return `${url}#toolbar=0`;
   };
 
   useEffect(() => {
@@ -200,28 +185,6 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
     }
   };
 
-  const handleAiExtraction = async () => {
-    if (!testSettings.fileUrl) {
-        setStatusMsg({ text: "No PDF asset bound to this node.", type: "error" });
-        return;
-    }
-    
-    setIsAiExtracting(true);
-    setStatusMsg({ text: "AI is analyzing your PDF intelligence...", type: "success" });
-    
-    try {
-        const { data } = await API.post("/admin/ai/extract", { fileUrl: testSettings.fileUrl });
-        setBulkData(JSON.stringify(data, null, 2));
-        setStatusMsg({ text: "Intelligence extracted successfully!", type: "success" });
-        setTimeout(() => setStatusMsg(null), 3000);
-    } catch (err: any) {
-        setStatusMsg({ text: err?.response?.data?.message || "AI extraction failed.", type: "error" });
-        setTimeout(() => setStatusMsg(null), 5000);
-    } finally {
-        setIsAiExtracting(false);
-    }
-  };
-
   if (loading) return <div className="min-h-screen bg-[#050816] flex items-center justify-center font-black animate-pulse text-cyan-400 uppercase tracking-widest leading-none text-xs text-center">Synthesizing Institutional <br/> Studio Environment...</div>;
 
   return (
@@ -237,7 +200,6 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
           <div className="w-full lg:w-80 flex flex-col gap-3">
              {[
                 { id: "Questions", label: "Questions", icon: <Layers size={18} /> },
-                { id: "PDF", label: "Asset Viewer", icon: <FileText size={18} /> },
                 { id: "Settings", label: "Settings", icon: <Shield size={18} /> },
                 { id: "Import", label: "Bulk Import", icon: <ArrowDownToLine size={18} /> }
              ].map((tab) => (
@@ -250,16 +212,6 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                   {tab.label}
                 </button>
              ))}
-
-              {testSettings.fileUrl && !isPdfPinned && activeTab !== "PDF" && (
-                <button 
-                  onClick={() => setIsPdfPinned(true)}
-                  className="mt-4 px-8 py-5 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] text-left transition-all border border-cyan-400/30 text-cyan-400 flex items-center gap-4 italic animate-pulse bg-cyan-400/5"
-                >
-                  <Plus size={18} />
-                  Restore Split View
-                </button>
-              )}
              
              <div className="mt-8 p-10 bg-white/5 rounded-[3rem] border border-white/5 backdrop-blur-md">
                 <p className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em] mb-6 italic">Paper Summary</p>
@@ -285,40 +237,9 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
              </div>
           </div>
 
-          {/* MAIN CANVAS / SPLIT VIEW 🔥 */}
-          <div className={`flex-1 grid grid-cols-1 ${testSettings.fileUrl && isPdfPinned ? "lg:grid-cols-2" : "grid-cols-1"} gap-12 min-w-0 h-full`}>
-              
-              {/* STICKY PDF PANEL 🔥 */}
-              {testSettings.fileUrl && activeTab !== "PDF" && isPdfPinned && (
-                <div className="w-full h-[500px] lg:h-[calc(100vh-180px)] lg:sticky lg:top-32 bg-white/5 rounded-[3.5rem] border border-white/10 overflow-hidden shadow-2xl animate-in slide-in-from-left-10 duration-700">
-                    <div className="absolute top-6 left-6 z-20 flex gap-2">
-                       <button 
-                         onClick={() => setIsPdfPinned(false)}
-                         className="px-5 py-2.5 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl text-[9px] font-black uppercase text-white hover:bg-red-500 transition-all shadow-2xl"
-                       >
-                          Close Viewer
-                       </button>
-                    </div>
-                    <iframe 
-                      src={getEmbedUrl(testSettings.fileUrl)}
-                      className="w-full h-full border-none bg-white/5"
-                      title="Institutional Intelligence Asset"
-                      loading="lazy"
-                    />
-                </div>
-              )}
-
-              <div className="flex-1 w-full min-w-0">
-                  {!isPdfPinned && testSettings.fileUrl && activeTab !== "PDF" && (
-                    <button 
-                      onClick={() => setIsPdfPinned(true)}
-                      className="mb-8 px-8 py-4 bg-cyan-600/20 border border-cyan-400/30 rounded-2xl text-[9px] font-black uppercase text-cyan-400 hover:bg-cyan-600 hover:text-white transition-all italic"
-                    >
-                       + Restore Asset Viewer
-                    </button>
-                  )}
-                  
-                  {activeTab === "Questions" ? (
+          {/* MAIN CANVAS */}
+          <div className="flex-1 w-full">
+              {activeTab === "Questions" ? (
                 <div className="space-y-10 animate-in fade-in slide-in-from-right-10 duration-700">
                    <div className="flex items-center justify-between">
                        <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">Questions</h3>
@@ -375,26 +296,6 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                       </div>
                    )}
                 </div>
-              ) : activeTab === "PDF" ? (
-                <div className="bg-white/5 backdrop-blur-3xl rounded-[4rem] border border-white/10 overflow-hidden h-[800px] shadow-[0_50px_100px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-700">
-                    {testSettings.fileUrl ? (
-                      <iframe 
-                        src={`${testSettings.fileUrl}#toolbar=0`}
-                        className="w-full h-full border-none"
-                        title="Institutional PDF Viewer"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-center p-20 space-y-6">
-                         <div className="w-24 h-24 bg-white/5 rounded-[2.5rem] flex items-center justify-center text-gray-700">
-                            <FileText size={40} />
-                         </div>
-                         <div className="space-y-2">
-                            <h3 className="text-xl font-black text-white uppercase tracking-widest italic">No PDF Asset Bound</h3>
-                            <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest leading-relaxed">Please link a PDF resource in the settings to activate the mesh viewer.</p>
-                         </div>
-                      </div>
-                    )}
-                </div>
               ) : activeTab === "Settings" ? (
                 <div className="bg-white rounded-[4rem] border border-gray-100 shadow-2xl shadow-gray-100/30 overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
                     <div className="px-12 py-11 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
@@ -412,16 +313,6 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                            value={testSettings.title}
                            onChange={(e) => setTestSettings({...testSettings, title: e.target.value})}
                            className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-10 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-black text-2xl tracking-tighter text-gray-900"
-                         />
-                       </div>
-
-                       <div className="space-y-4">
-                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Asset Pipeline (PDF Link)</label>
-                         <input 
-                           value={testSettings.fileUrl}
-                           onChange={(e) => setTestSettings({...testSettings, fileUrl: e.target.value})}
-                           className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-10 py-6 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-sm text-cyan-600 italic"
-                           placeholder="https://cloudinary.com/..."
                          />
                        </div>
 
@@ -514,22 +405,10 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                 </div>
                ) : (
                 <div className="bg-white/5 backdrop-blur-3xl rounded-[4rem] border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] p-16 space-y-12 animate-in fade-in slide-in-from-bottom-5 duration-700">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="space-y-3">
-                            <h3 className="text-2xl font-black text-white uppercase tracking-[0.3em] italic">Bulk Import Hub</h3>
-                            <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest italic tracking-[0.4em]">Paste raw JSON or use AI to extract from PDF</p>
-                        </div>
-                        {testSettings.fileUrl && (
-                           <button 
-                             onClick={handleAiExtraction}
-                             disabled={isAiExtracting}
-                             className={`px-8 py-5 bg-cyan-600/10 border border-cyan-400/20 text-cyan-400 rounded-3xl font-black text-[10px] uppercase tracking-widest flex items-center gap-4 transition-all hover:bg-cyan-600 hover:text-white shadow-2xl shadow-cyan-900/10 ${isAiExtracting ? "animate-pulse opacity-50" : ""}`}
-                           >
-                              <Sparkles size={18} className={isAiExtracting ? "animate-spin" : "animate-pulse"} />
-                              {isAiExtracting ? "Synthesizing..." : "Extract with AI"}
-                           </button>
-                        )}
-                    </div>
+                   <div className="space-y-3">
+                       <h3 className="text-2xl font-black text-white uppercase tracking-[0.3em] italic">Bulk Import Hub</h3>
+                       <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest italic tracking-[0.4em]">Paste raw JSON to import multiple questions instantly</p>
+                   </div>
                    <textarea 
                      value={bulkData}
                      onChange={(e) => setBulkData(e.target.value)}
@@ -543,8 +422,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                      Initialize Ingestion Process
                    </button>
                 </div>
-                  )}
-              </div>
+              )}
           </div>
       </div>
 
