@@ -21,6 +21,7 @@ interface Test {
   paperNumber?: number;
   difficulty?: string;
   status?: "Draft" | "Published";
+  isPublished?: boolean;
   createdAt: string;
 }
 

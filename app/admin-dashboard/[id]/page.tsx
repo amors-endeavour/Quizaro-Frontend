@@ -209,23 +209,63 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
   return (
     <div className="flex flex-col min-h-screen bg-[#050816] text-white selection:bg-cyan-500/30">
       <AdminHeader 
-        title="Question Studio" 
-        path={[{ label: "Library", href: "/admin-dashboard/tests" }, { label: testSettings.title }]} 
+        title={testSettings.title || "Question Studio"} 
+        path={[{ label: "Library", href: "/admin-dashboard/tests" }, { label: "Neural Studio" }]} 
       />
 
-      <div className="p-10 lg:p-14 max-w-[1700px] mx-auto w-full flex flex-col lg:flex-row gap-12">
+      <div className="p-10 lg:p-14 max-w-[1700px] mx-auto w-full space-y-12">
+          {/* PAPER IDENTITY HERO 🔥 */}
+          <section className="bg-white/5 border border-white/10 p-12 lg:p-16 rounded-[4rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden group animate-in fade-in slide-in-from-top-10 duration-700">
+             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-600/5 blur-[150px] rounded-full pointer-events-none" />
+             <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
+             
+             <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center justify-between">
+                <div className="space-y-4 text-center md:text-left">
+                   <div className="flex items-center gap-4 justify-center md:justify-start">
+                      <span className="px-5 py-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] italic shadow-lg shadow-cyan-950/20">
+                        {testSettings.category} Assessment
+                      </span>
+                      <span className="w-1.5 h-1.5 bg-white/20 rounded-full" />
+                      <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest italic">Node ID: {id.slice(-6).toUpperCase()}</span>
+                   </div>
+                   <h1 className="text-5xl lg:text-6xl font-black text-white tracking-tighter uppercase italic leading-none group-hover:text-cyan-400 transition-colors duration-700">
+                     {testSettings.title}
+                   </h1>
+                   <p className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] italic max-w-2xl">
+                     {testSettings.instructions || "Institutional Protocol for High-Fidelity Knowledge Extraction"}
+                   </p>
+                </div>
+
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full md:w-auto">
+                   {[
+                      { label: "Duration", value: `${testSettings.duration}m`, icon: <Clock size={16} />, color: "text-blue-400" },
+                      { label: "Questions", value: questions.length, icon: <Layers size={16} />, color: "text-purple-400" },
+                      { label: "Pass Mark", value: `${testSettings.passingCriteria}%`, icon: <Target size={16} />, color: "text-green-400" },
+                      { label: "Status", value: "Live", icon: <Shield size={16} />, color: "text-cyan-400" }
+                   ].map((stat, i) => (
+                      <div key={i} className="bg-white/5 border border-white/5 rounded-3xl p-6 flex flex-col items-center justify-center gap-2 min-w-[120px] backdrop-blur-md hover:bg-white/10 transition-all">
+                         <div className={`${stat.color} opacity-60 mb-1`}>{stat.icon}</div>
+                         <span className="text-xl font-black text-white italic">{stat.value}</span>
+                         <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">{stat.label}</span>
+                      </div>
+                   ))}
+                </div>
+             </div>
+          </section>
+
+          <div className="flex flex-col lg:flex-row gap-12">
           
           {/* NAVIGATION WING */}
           <div className="w-full lg:w-80 flex flex-col gap-3">
              {[
-                { id: "Questions", label: "Questions", icon: <Layers size={18} /> },
-                { id: "Settings", label: "Settings", icon: <Shield size={18} /> },
-                { id: "Import", label: "Bulk Import", icon: <ArrowDownToLine size={18} /> }
+                { id: "Questions", label: "Questions List", icon: <Layers size={18} /> },
+                { id: "Settings", label: "Paper Settings", icon: <Shield size={18} /> },
+                { id: "Import", label: "Bulk Ingestion", icon: <ArrowDownToLine size={18} /> }
              ].map((tab) => (
                 <button 
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-8 py-5 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] text-left transition-all border flex items-center gap-4 italic ${activeTab === tab.id ? "bg-cyan-600 text-white border-cyan-400 shadow-[0_15px_40px_rgba(6,182,212,0.3)]" : "bg-white/5 border-white/5 text-gray-500 hover:border-cyan-400/30 hover:text-white"}`}
+                  className={`px-8 py-6 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] text-left transition-all border flex items-center gap-4 italic ${activeTab === tab.id ? "bg-cyan-600 text-white border-cyan-400 shadow-[0_20px_50px_rgba(6,182,212,0.4)]" : "bg-white/5 border-white/5 text-gray-500 hover:border-cyan-400/30 hover:text-white"}`}
                 >
                   {tab.icon}
                   {tab.label}
@@ -444,6 +484,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
               )}
           </div>
       </div>
+    </div>
 
       {/* ITEM EDITOR MODAL */}
        {isEditing && (
