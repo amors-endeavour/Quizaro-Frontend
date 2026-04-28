@@ -90,7 +90,6 @@ export default function AdminHeader({
         {/* GOVERNANCE ACTIONS HUB */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3 p-2 bg-gray-50/50 dark:bg-[#0a0f29] rounded-[1.5rem] border-2 border-gray-100 dark:border-gray-800 shadow-inner">
-            {mounted && <ThemeToggle />}
             <button 
               onClick={onSettings}
               className="w-12 h-12 flex items-center justify-center text-gray-400 dark:text-gray-800 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-white dark:hover:bg-[#050816] rounded-2xl transition-all duration-500 border border-transparent hover:border-gray-100 dark:hover:border-gray-800 active:scale-95"

@@ -405,7 +405,7 @@ export default function AdminDashboard() {
       {/* FILTER OVERLAY */}
       {isFilterOpen && (
         <div className="fixed inset-0 z-[600] flex justify-end animate-in fade-in duration-500">
-           <div className="absolute inset-0 bg-[#050816]/60 dark:bg-black/80 backdrop-blur-md" onClick={() => setIsFilterOpen(false)} />
+           <div className="absolute inset-0 bg-gray-900/40 dark:bg-black/80 backdrop-blur-md" onClick={() => setIsFilterOpen(false)} />
            <div className="relative w-full max-w-[450px] h-full bg-white dark:bg-[#050816] border-l border-gray-100 dark:border-gray-800 shadow-2xl p-16 space-y-16 animate-in slide-in-from-right-10 duration-700 overflow-y-auto custom-scrollbar">
               <div className="flex items-center justify-between">
                  <div className="space-y-2">

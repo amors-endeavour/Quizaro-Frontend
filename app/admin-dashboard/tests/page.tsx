@@ -549,7 +549,7 @@ export default function TestsPage() {
 
       {/* AUTO-INGEST MODAL 🤖 */}
       {showAutoIngestModal && (
-         <div className="fixed inset-0 z-[600] bg-[#050816]/80 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
+         <div className="fixed inset-0 z-[600] bg-gray-900/60 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
             <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[5rem] p-20 max-w-2xl w-full shadow-2xl space-y-16 animate-in zoom-in-95 duration-700 relative overflow-hidden">
                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 animate-pulse" />
                <div className="text-center space-y-6">
@@ -618,7 +618,7 @@ export default function TestsPage() {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-[600] bg-[#050816]/80 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
+        <div className="fixed inset-0 z-[600] bg-gray-900/60 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
           <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[5rem] w-full max-w-3xl shadow-2xl animate-in zoom-in-95 duration-700 overflow-hidden flex flex-col max-h-[95vh] relative">
             <div className="absolute top-0 left-0 w-full h-2 bg-blue-600" />
             <div className="px-20 py-12 bg-gray-50/30 dark:bg-[#050816]/30 border-b-2 border-gray-50 dark:border-gray-800 flex items-center justify-between transition-all duration-500">
@@ -714,7 +714,7 @@ export default function TestsPage() {
       )}
 
       {showSeriesModal && (
-        <div className="fixed inset-0 z-[600] bg-[#050816]/80 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
+        <div className="fixed inset-0 z-[600] bg-gray-900/60 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
           <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[5rem] w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-700 overflow-hidden flex flex-col relative transition-all duration-500">
             <div className="absolute top-0 left-0 w-full h-2 bg-blue-600" />
             <div className="px-20 py-12 bg-gray-50/30 dark:bg-[#050816]/30 border-b-2 border-gray-50 dark:border-gray-800 flex items-center justify-between transition-all duration-500">
@@ -784,7 +784,7 @@ export default function TestsPage() {
 
       {/* CONFIRMATION OVERLAY */}
       {showConfirmModal.show && (
-         <div className="fixed inset-0 z-[800] bg-[#050816]/80 dark:bg-black/95 backdrop-blur-3xl flex items-center justify-center p-8 animate-in fade-in duration-500">
+         <div className="fixed inset-0 z-[800] bg-gray-900/60 dark:bg-black/95 backdrop-blur-3xl flex items-center justify-center p-8 animate-in fade-in duration-500">
             <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[5rem] p-20 max-w-xl w-full shadow-2xl text-center space-y-16 animate-in zoom-in-95 duration-700 relative overflow-hidden">
                <div className="absolute top-0 left-0 w-full h-2 bg-red-600" />
                <div className="w-28 h-28 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-4 border-white dark:border-[#0a0f29] rounded-[3rem] flex items-center justify-center mx-auto shadow-2xl rotate-3 hover:rotate-0 transition-all duration-700">

@@ -307,7 +307,7 @@ export default function AdminResources() {
 
       {/* AUTO-INGEST MODAL 🤖 */}
       {showAutoIngestModal && (
-         <div className="fixed inset-0 z-[500] bg-[#050816]/60 dark:bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+         <div className="fixed inset-0 z-[500] bg-gray-900/40 dark:bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
             <div className="bg-white dark:bg-[#0a0f29] border border-gray-100 dark:border-gray-800 rounded-[4rem] p-16 max-w-2xl w-full shadow-2xl space-y-12 animate-in zoom-in-95 duration-500 overflow-y-auto max-h-[90vh] custom-scrollbar">
                <div className="text-center space-y-4">
                   <h3 className="text-3xl font-black text-gray-900 dark:text-white italic tracking-tighter uppercase leading-none">Neural Ingestion Protocol</h3>
@@ -380,7 +380,7 @@ export default function AdminResources() {
 
       {/* ADD RESOURCE MODAL 🔥 */}
       {showAddModal && (
-         <div className="fixed inset-0 z-[500] bg-[#050816]/60 dark:bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+         <div className="fixed inset-0 z-[500] bg-gray-900/40 dark:bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
             <div className="bg-white dark:bg-[#0a0f29] border border-gray-100 dark:border-gray-800 rounded-[4rem] p-16 max-w-2xl w-full shadow-2xl space-y-12 animate-in zoom-in-95 duration-500 overflow-y-auto max-h-[90vh] custom-scrollbar">
                <div className="text-center space-y-4">
                   <h3 className="text-3xl font-black text-gray-900 dark:text-white italic tracking-tighter uppercase leading-none">Resource Deposit</h3>

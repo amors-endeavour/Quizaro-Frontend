@@ -437,7 +437,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
 
       {/* MCQ EDITOR MODAL */}
       {isEditing && (
-        <div className="fixed inset-0 bg-[#050816]/60 dark:bg-black/80 backdrop-blur-xl z-[500] flex items-center justify-center p-6 animate-in fade-in duration-500">
+        <div className="fixed inset-0 bg-gray-900/40 dark:bg-black/80 backdrop-blur-xl z-[500] flex items-center justify-center p-6 animate-in fade-in duration-500">
            <div className="bg-white dark:bg-[#0a0f29] rounded-[4rem] w-full max-w-6xl flex flex-col shadow-2xl h-[92vh] border border-gray-100 dark:border-gray-800 overflow-hidden animate-in zoom-in-95 duration-500 transition-all">
               {/* Header Bar */}
               <div className="px-12 py-10 lg:px-16 bg-gray-50/50 dark:bg-[#050816]/30 border-b border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-8">
@@ -577,7 +577,7 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
       )}
 
       {showConfirmModal.show && (
-         <div className="fixed inset-0 z-[700] bg-[#050816]/60 dark:bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-300">
+         <div className="fixed inset-0 z-[700] bg-gray-900/40 dark:bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-300">
             <div className="bg-white dark:bg-[#0a0f29] rounded-[4rem] p-16 lg:p-24 max-w-lg w-full shadow-2xl text-center space-y-14 animate-in zoom-in-95 duration-700 border border-gray-100 dark:border-gray-800">
                <div className="w-32 h-32 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 border-2 border-red-100 dark:border-red-900/30 rounded-[3.5rem] flex items-center justify-center mx-auto shadow-2xl shadow-red-500/10">
                   <AlertCircle size={64} />

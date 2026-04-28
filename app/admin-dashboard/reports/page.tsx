@@ -282,7 +282,7 @@ export default function ReportsDashboard() {
       </div>
 
       {selectedAttempt && (
-        <div className="fixed inset-0 bg-[#050816]/80 dark:bg-black/95 backdrop-blur-3xl z-[600] flex items-center justify-center p-8 animate-in fade-in duration-500">
+        <div className="fixed inset-0 bg-gray-900/60 dark:bg-black/95 backdrop-blur-3xl z-[600] flex items-center justify-center p-8 animate-in fade-in duration-500">
            <div className="bg-white dark:bg-[#0a0f29] rounded-[5rem] w-full max-w-6xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-700 border-2 border-gray-100 dark:border-gray-800 flex flex-col max-h-[92vh] relative">
               <div className="absolute top-0 left-0 w-full h-2 bg-blue-600" />
               <div className="px-20 py-14 bg-gray-50/50 dark:bg-[#050816]/30 border-b-2 border-gray-50 dark:border-gray-800 flex items-center justify-between transition-all duration-500">

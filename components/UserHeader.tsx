@@ -125,7 +125,6 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
 
          <div className="flex items-center gap-6 relative">
             <div className="flex items-center gap-3 p-2 bg-gray-50/50 dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[2rem] shadow-inner">
-                {mounted && <ThemeToggle />}
                 <div 
                   onClick={() => window.location.href = "/contact"}
                   className="w-12 h-12 flex items-center justify-center text-gray-400 dark:text-gray-800 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-white dark:hover:bg-[#050816] rounded-2xl transition-all duration-500 border border-transparent hover:border-gray-100 dark:hover:border-gray-800 cursor-pointer active:scale-95"

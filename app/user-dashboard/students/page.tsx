@@ -44,7 +44,7 @@ export default function UserStudentsPage() {
   const filtered = students.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="flex min-h-screen bg-[#050816]">
+    <div className="flex min-h-screen bg-[#f8f9fc]">
       <UserSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} userName="" />
       
       <div className="flex-1 flex flex-col min-w-0">
@@ -58,7 +58,7 @@ export default function UserStudentsPage() {
            {/* SEARCH & HUD */}
            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
               <div className="lg:col-span-2 relative group">
-                 <div className="absolute inset-y-0 left-6 flex items-center text-gray-500 group-focus-within:text-blue-500 transition-colors">
+                 <div className="absolute inset-y-0 left-6 flex items-center text-gray-400 group-focus-within:text-blue-500 transition-colors">
                     <Search size={18} />
                  </div>
                  <input 
@@ -66,14 +66,14 @@ export default function UserStudentsPage() {
                    placeholder="Decrypt student signatures by name or entity ID..."
                    value={search}
                    onChange={(e) => setSearch(e.target.value)}
-                   className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-6 pl-16 pr-8 text-sm font-black text-white focus:outline-none focus:border-blue-500 transition-all placeholder:text-gray-600 italic tracking-tight"
+                   className="w-full bg-white border-2 border-gray-100 rounded-[2rem] py-6 pl-16 pr-8 text-sm font-black text-gray-900 focus:outline-none focus:border-blue-500 transition-all placeholder:text-gray-300 italic tracking-tight shadow-sm"
                  />
               </div>
-              <div className="bg-blue-600/10 border border-blue-600/20 p-6 rounded-[2rem] flex items-center gap-6">
-                 <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg"><Trophy size={20} /></div>
+              <div className="bg-blue-50 border border-blue-100 p-6 rounded-[2rem] flex items-center gap-6">
+                 <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/20"><Trophy size={20} /></div>
                  <div>
-                    <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Active Scholars</p>
-                    <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">{students.length} Nodes</h3>
+                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Active Scholars</p>
+                    <h3 className="text-xl font-black text-gray-900 uppercase italic tracking-tighter">{students.length} Nodes</h3>
                  </div>
               </div>
            </div>
@@ -82,13 +82,13 @@ export default function UserStudentsPage() {
            <section className="space-y-6 pb-20">
               <div className="flex items-center gap-4 px-4">
                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_10px_#3b82f6]" />
-                 <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic">Institutional identity mesh</h3>
+                 <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] italic">Institutional identity mesh</h3>
               </div>
 
               {loading ? (
                 <div className="space-y-4">
                    {[1,2,3,4,5].map(i => (
-                     <div key={i} className="h-24 bg-white/5 border border-white/10 rounded-[2rem] animate-pulse" />
+                     <div key={i} className="h-24 bg-white border border-gray-100 rounded-[2rem] animate-pulse" />
                    ))}
                 </div>
               ) : (
@@ -96,25 +96,25 @@ export default function UserStudentsPage() {
                    {filtered.map((s, idx) => (
                      <div 
                         key={s._id} 
-                        className="bg-white/5 border border-white/10 rounded-[2.5rem] p-6 flex items-center gap-6 hover:bg-white/[0.08] hover:border-blue-500/50 transition-all duration-500 group"
+                        className="bg-white border-2 border-gray-50 rounded-[2.5rem] p-6 flex items-center gap-6 hover:bg-gray-50/50 hover:border-blue-200 transition-all duration-500 group shadow-sm"
                      >
-                        <div className="w-16 h-16 rounded-2xl bg-gray-900 text-white border border-white/10 flex items-center justify-center font-black text-sm uppercase group-hover:scale-110 transition-transform shadow-xl">
+                        <div className="w-16 h-16 rounded-2xl bg-gray-50 text-blue-600 border border-gray-100 flex items-center justify-center font-black text-sm uppercase group-hover:scale-110 transition-transform shadow-sm">
                            {getInitials(s.name)}
                         </div>
                         <div className="flex-1 min-w-0">
                            <div className="flex items-center gap-3">
-                              <h4 className="text-sm font-black text-white uppercase tracking-tight truncate">{s.name}</h4>
+                              <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight truncate">{s.name}</h4>
                               {idx < 3 && <Sparkles size={14} className="text-amber-500 shrink-0" />}
                            </div>
                            <div className="flex items-center gap-4 mt-1">
-                              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Scholar</span>
-                              <div className="w-1 h-1 bg-white/10 rounded-full" />
-                              <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Lvl {s.level || 1}</span>
+                              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Scholar</span>
+                              <div className="w-1 h-1 bg-gray-200 rounded-full" />
+                              <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Lvl {s.level || 1}</span>
                            </div>
                         </div>
                         <div className="text-right pr-4">
-                           <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">XP Points</p>
-                           <h5 className="text-lg font-black text-white tracking-tighter">{s.points || 0}</h5>
+                           <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">XP Points</p>
+                           <h5 className="text-lg font-black text-gray-900 tracking-tighter">{s.points || 0}</h5>
                         </div>
                      </div>
                    ))}
