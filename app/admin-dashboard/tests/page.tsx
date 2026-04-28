@@ -180,8 +180,8 @@ export default function TestsPage() {
   const handleStatusToggle = async (id: string, newStatus: string) => {
      try {
        // Optimistic update for UI smoothness
-       setTests(tests.map(t => t._id === id ? { ...t, status: newStatus as any } : t));
-       await API.put(`/admin/test/${id}`, { status: newStatus });
+       setTests(tests.map(t => t._id === id ? { ...t, isPublished: newStatus === "Published" } : t));
+       await API.put(`/admin/test/publish/${id}`);
      } catch {
        console.error("Status update failed");
      }
@@ -490,7 +490,8 @@ export default function TestsPage() {
                         title={test.title}
                         description={test.description}
                         date={new Date(test.createdAt).toLocaleDateString()}
-                        status={(test.status || (test.totalQuestions || 0) > 0 ? "Published" : "Draft") as any}
+                        status={test.isPublished ? "Published" : "Draft"}
+                        onStatusToggle={(ns) => handleStatusToggle(test._id, ns)}
                         onEdit={() => {
                           setEditingTest(test);
                           setFormData({
@@ -550,7 +551,7 @@ export default function TestsPage() {
                       title={test.title}
                       description={`Paper ${test.paperNumber || "N/A"}`}
                       date={new Date(test.createdAt).toISOString().split('T')[0].replace(/-/g, '/')}
-                      status={test.status || "Draft"}
+                      status={test.isPublished ? "Published" : "Draft"}
                       isSelected={selectedTests.includes(test._id)}
                       onSelect={(val) => handleToggleSelect(test._id, val)}
                       onStatusToggle={(ns) => handleStatusToggle(test._id, ns)}
