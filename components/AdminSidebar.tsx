@@ -22,11 +22,11 @@ import {
 import { useState } from "react";
 
 const navItems = [
-  { href: "/admin-dashboard", label: "Intelligence Hub", icon: <BarChart3 size={20} /> },
-  { href: "/admin-dashboard/tests", label: "Paper Registry", icon: <Library size={20} /> },
-  { href: "/admin-dashboard/resources", label: "Knowledge Mesh", icon: <FileText size={20} /> },
-  { href: "/admin-dashboard/users", label: "Scholar Base", icon: <Users size={20} /> },
-  { href: "/admin-dashboard/settings", label: "Core Config", icon: <Settings size={20} /> },
+  { href: "/admin-dashboard", label: "Dashboard", icon: <BarChart3 size={20} /> },
+  { href: "/admin-dashboard/tests", label: "All Tests", icon: <Library size={20} /> },
+  { href: "/admin-dashboard/resources", label: "Resources", icon: <FileText size={20} /> },
+  { href: "/admin-dashboard/users", label: "Users", icon: <Users size={20} /> },
+  { href: "/admin-dashboard/settings", label: "Settings", icon: <Settings size={20} /> },
 ];
 
 export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () => void }) {
@@ -120,21 +120,21 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
           </div>
         </nav>
   
-        {/* GOVERNANCE FOOTER */}
+        {/* SUPPORT & LOGOUT SECTION */}
         <div className="p-10 border-t-2 border-gray-100 dark:border-gray-800 space-y-4 relative z-10">
           <Link 
             href="/admin-dashboard/help"
             className="w-full flex items-center gap-6 px-8 py-5 text-gray-400 dark:text-gray-800 hover:bg-gray-50 dark:hover:bg-blue-900/10 hover:text-gray-900 dark:hover:text-blue-500 rounded-[2rem] transition-all duration-700 text-[12px] font-black uppercase tracking-[0.2em] italic border-2 border-transparent hover:border-gray-100 dark:hover:border-blue-900/30"
           >
             <HelpCircle size={22} className="text-gray-300 dark:text-gray-800" />
-            Core Support
+            Support
           </Link>
           <button
             onClick={() => setShowLogoutModal(true)}
             className="w-full flex items-center gap-6 px-8 py-5 text-red-500 dark:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-500 rounded-[2rem] transition-all duration-700 text-[12px] font-black uppercase tracking-[0.2em] italic border-2 border-transparent hover:border-red-100 dark:hover:border-red-900/30"
           >
             <LogOut size={22} />
-            Expunge Session
+            Logout
           </button>
         </div>
       </div>

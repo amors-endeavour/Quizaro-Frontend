@@ -37,11 +37,11 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
   }, []);
 
   const navItems = [
-    { href: "/user-dashboard", label: "Command Center", icon: <Home size={20} /> },
-    { href: "/user-dashboard/papers", label: "Intelligence Registry", icon: <BookOpen size={20} /> },
-    { href: "/user-dashboard/resources", label: "Knowledge Mesh", icon: <FileText size={20} /> },
-    { href: "/user-dashboard/students", label: "Scholar Nexus", icon: <Users size={20} /> },
-    { href: "/user-dashboard/profile", label: "Identity Config", icon: <Settings size={20} /> },
+    { href: "/user-dashboard", label: "Dashboard", icon: <Home size={20} /> },
+    { href: "/user-dashboard/papers", label: "My Tests", icon: <BookOpen size={20} /> },
+    { href: "/user-dashboard/resources", label: "Resources", icon: <FileText size={20} /> },
+    { href: "/user-dashboard/students", label: "Scholars", icon: <Users size={20} /> },
+    { href: "/user-dashboard/profile", label: "Profile", icon: <Settings size={20} /> },
   ];
 
   return (
@@ -149,21 +149,21 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
         </ul>
       </nav>
 
-      {/* IDENTITY SUPPORT & TERMINATION */}
+      {/* SUPPORT & LOGOUT SECTION */}
       <div className="p-10 border-t-2 border-gray-100 dark:border-gray-800 mt-auto space-y-3 relative z-10">
         <button
           onClick={() => window.location.href = "/contact"}
           className="w-full flex items-center gap-6 px-8 py-5 text-gray-400 dark:text-gray-800 hover:bg-gray-50 dark:hover:bg-blue-900/10 hover:text-gray-900 dark:hover:text-blue-500 rounded-[2rem] transition-all duration-700 text-[12px] font-black uppercase tracking-[0.2em] italic border-2 border-transparent hover:border-gray-100 dark:hover:border-blue-900/30"
         >
           <HelpCircle size={22} className="text-gray-300 dark:text-gray-800" />
-          Neural Support
+          Support
         </button>
         <button
           onClick={() => setShowLogoutModal(true)}
           className="w-full flex items-center gap-6 px-8 py-5 text-red-500 dark:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-500 rounded-[2rem] transition-all duration-700 text-[12px] font-black uppercase tracking-[0.2em] italic border-2 border-transparent hover:border-red-100 dark:hover:border-red-900/30"
         >
           <LogOut size={22} />
-          Terminate Session
+          Logout
         </button>
       </div>
       </div>
