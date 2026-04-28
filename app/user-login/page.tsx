@@ -141,6 +141,7 @@ function UserLoginForm() {
             </Link>
           </div>
         </div>
+      </div>
     </div>
   );
 }
