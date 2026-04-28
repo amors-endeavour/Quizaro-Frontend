@@ -6,7 +6,7 @@ import { BarChart3 } from "lucide-react";
 import AdminSidebar from "@/components/AdminSidebar";
 import API from "@/app/lib/api";
 import { useTheme } from "next-themes";
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
