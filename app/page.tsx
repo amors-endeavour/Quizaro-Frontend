@@ -105,10 +105,9 @@ function HeroSection() {
 
       <div className="relative z-10 text-center px-6 max-w-7xl mx-auto flex flex-col items-center">
         {/* Institutional Status Badge */}
-        <div className="inline-flex items-center gap-4 px-8 py-3 rounded-full bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 text-[11px] font-black uppercase tracking-[0.4em] text-blue-600 dark:text-blue-500 mb-16 shadow-2xl shadow-blue-900/5 animate-in fade-in slide-in-from-bottom-8 duration-1000 italic">
-          <Sparkles size={16} className="text-blue-500" />
-          Neural Adaptive Intelligence • Simplified with Umar
-          <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+        <div className="inline-flex items-center gap-4 px-8 py-3 rounded-full bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 text-[11px] font-black uppercase tracking-[0.4em] text-gray-400 dark:text-gray-500 mb-16 shadow-2xl shadow-blue-900/5 animate-in fade-in slide-in-from-bottom-8 duration-1000 italic">
+          <Sparkles size={16} className="text-amber-500" />
+          SIMPLIFY BY UMAR - LET'S LEARN SIMPLY
         </div>
 
         {/* Master Visionary Heading */}
