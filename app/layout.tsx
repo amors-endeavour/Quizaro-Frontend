@@ -19,8 +19,8 @@ export default function RootLayout({
       <body className="antialiased bg-white dark:bg-[#050816] text-gray-900 dark:text-white transition-colors duration-500 selection:bg-blue-100 dark:selection:bg-blue-900/30 selection:text-blue-600">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <SmoothFlowRegistry />
