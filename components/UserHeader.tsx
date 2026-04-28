@@ -6,6 +6,7 @@ import { Bell, HelpCircle, ChevronRight, LayoutGrid, Calendar, X, Sparkles, Aler
 import { getInitials } from "@/app/lib/utils";
 import API from "@/app/lib/api";
 import { useTheme } from "next-themes";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface UserHeaderProps {
   title: string;
@@ -26,12 +27,6 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
     setMounted(true);
     API.get("/user/profile").then(res => setUser(res.data.user || res.data)).catch(() => {});
   }, []);
-
-  const toggleTheme = () => {
-    if (theme === 'dark') setTheme('light');
-    else if (theme === 'light') setTheme('system');
-    else setTheme('dark');
-  };
 
   const notifications = [
     { id: 1, title: "New Intelligence Packet", description: "Advanced Matrix Theory papers have been synchronized.", type: "new" },
@@ -130,15 +125,7 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
 
          <div className="flex items-center gap-6 relative">
             <div className="flex items-center gap-3 p-2 bg-gray-50/50 dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[2rem] shadow-inner">
-                {mounted && (
-                  <button 
-                    onClick={toggleTheme}
-                    className="w-12 h-12 flex items-center justify-center text-gray-400 dark:text-gray-800 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-white dark:hover:bg-[#050816] rounded-2xl transition-all duration-500 border border-transparent hover:border-gray-100 dark:hover:border-gray-800 active:scale-95"
-                    title={`Switch Theme Protocol`}
-                  >
-                    {theme === 'dark' ? <Moon size={20} /> : theme === 'light' ? <Sun size={20} /> : <Monitor size={20} />}
-                  </button>
-                )}
+                {mounted && <ThemeToggle />}
                 <div 
                   onClick={() => window.location.href = "/contact"}
                   className="w-12 h-12 flex items-center justify-center text-gray-400 dark:text-gray-800 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-white dark:hover:bg-[#050816] rounded-2xl transition-all duration-500 border border-transparent hover:border-gray-100 dark:hover:border-gray-800 cursor-pointer active:scale-95"

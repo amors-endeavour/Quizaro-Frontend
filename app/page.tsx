@@ -114,12 +114,11 @@ function HeroSection() {
         {/* Master Visionary Heading */}
         <h1 className="text-6xl sm:text-8xl md:text-[9rem] font-black leading-[0.95] mb-12 tracking-tighter text-gray-900 dark:text-white animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-100 italic selection:bg-blue-600 selection:text-white">
           Crack Any Exam <br />
-          <span className="text-blue-600 dark:text-blue-500 drop-shadow-[0_0_30px_rgba(37,99,235,0.2)]">With Precision</span>
+          <span className="text-blue-600 dark:text-blue-500 drop-shadow-[0_0_30px_rgba(37,99,235,0.2)]">With Confidence</span>
         </h1>
 
-        <p className="max-w-3xl text-xl sm:text-2xl text-gray-400 dark:text-gray-700 font-black leading-relaxed mb-20 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-200 uppercase tracking-tight italic">
-          India&apos;s most sophisticated adaptive assessment platform. <br className="hidden md:block"/>
-          Leverage neural analytics to outperform 50,000+ elite aspirants.
+        <p className="max-w-4xl text-xl sm:text-2xl text-gray-400 dark:text-gray-700 font-black leading-relaxed mb-20 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-200 tracking-tight italic">
+          India&apos;s smartest quiz platform. Adaptive test, real time analytics, live leaderboards - everything you need to outperform 50,000+ aspirants.
         </p>
 
         {/* Strategic Action Command Hub */}
@@ -129,7 +128,7 @@ function HeroSection() {
             className="group relative flex items-center gap-6 px-16 py-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-[2.5rem] font-black text-sm uppercase tracking-[0.3em] shadow-2xl shadow-gray-900/40 hover:scale-105 transition-all active:scale-95 italic"
           >
             <div className="bg-white/10 dark:bg-gray-100 p-3 rounded-2xl group-hover:rotate-12 transition-transform shadow-inner"><Users size={24} /></div>
-            Authorize Student Access
+            I AM A STUDENT
           </button>
 
           <button 
@@ -137,7 +136,7 @@ function HeroSection() {
             className="group flex items-center gap-6 px-16 py-8 bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[2.5rem] font-black text-sm uppercase tracking-[0.3em] text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-gray-900/5 italic"
           >
             <div className="bg-gray-50 dark:bg-[#050816] p-3 rounded-2xl text-gray-300 dark:text-gray-800 group-hover:text-blue-600 transition-colors shadow-inner"><Shield size={24} /></div>
-            Institutional Admin
+            I AM AN ADMIN
           </button>
         </div>
 

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import API from "@/app/lib/api";
 import { useTheme } from "next-themes";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface AdminHeaderProps {
   title: string;
@@ -45,12 +46,6 @@ export default function AdminHeader({
     { id: 'intelligence', label: 'Paper Registry', icon: <LayoutGrid size={14} /> },
     { id: 'analysis', label: 'Clinical Analysis', icon: <BarChart3 size={14} /> }
   ];
-
-  const toggleTheme = () => {
-    if (theme === 'dark') setTheme('light');
-    else if (theme === 'light') setTheme('system');
-    else setTheme('dark');
-  };
 
   return (
     <div className="bg-white/90 dark:bg-[#050816]/90 backdrop-blur-2xl border-b-2 border-gray-100 dark:border-gray-800 flex flex-col sticky top-0 z-[110] transition-all duration-500 shadow-sm">
@@ -95,15 +90,7 @@ export default function AdminHeader({
         {/* GOVERNANCE ACTIONS HUB */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3 p-2 bg-gray-50/50 dark:bg-[#0a0f29] rounded-[1.5rem] border-2 border-gray-100 dark:border-gray-800 shadow-inner">
-            {mounted && (
-              <button 
-                onClick={toggleTheme}
-                className="w-12 h-12 flex items-center justify-center text-gray-400 dark:text-gray-800 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-white dark:hover:bg-[#050816] rounded-2xl transition-all duration-500 border border-transparent hover:border-gray-100 dark:hover:border-gray-800 active:scale-95"
-                title={`Switch Theme protocol`}
-              >
-                {theme === 'dark' ? <Moon size={20} /> : theme === 'light' ? <Sun size={20} /> : <Monitor size={20} />}
-              </button>
-            )}
+            {mounted && <ThemeToggle />}
             <button 
               onClick={onSettings}
               className="w-12 h-12 flex items-center justify-center text-gray-400 dark:text-gray-800 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-white dark:hover:bg-[#050816] rounded-2xl transition-all duration-500 border border-transparent hover:border-gray-100 dark:hover:border-gray-800 active:scale-95"
