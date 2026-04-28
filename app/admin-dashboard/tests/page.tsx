@@ -234,9 +234,12 @@ export default function TestsPage() {
       setTests(testsRes.data);
       
       setTimeout(() => setStatusMsg(null), 3000);
-    } catch (err) {
-      setStatusMsg({ text: "Ingestion Protocol Failed.", type: "error" });
-      setTimeout(() => setStatusMsg(null), 3000);
+    } catch (err: any) {
+      setStatusMsg({ 
+        text: err?.response?.data?.message || "Ingestion Protocol Failed.", 
+        type: "error" 
+      });
+      setTimeout(() => setStatusMsg(null), 5000);
     } finally {
       setLoading(false);
     }
