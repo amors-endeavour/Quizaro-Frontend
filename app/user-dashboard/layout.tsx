@@ -27,9 +27,9 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8f9fc] flex flex-col items-center justify-center space-y-6">
-        <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
-        <p className="font-black animate-pulse text-blue-600 uppercase tracking-[0.3em] text-[10px] italic">
+      <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] flex flex-col items-center justify-center space-y-6 transition-colors duration-500">
+        <div className="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 border-t-blue-600 rounded-full animate-spin shadow-sm" />
+        <p className="font-black animate-pulse text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em] text-[10px] italic">
           Initializing Intelligence Command...
         </p>
       </div>
@@ -37,9 +37,9 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="flex min-h-screen bg-[#f8f9fc] text-gray-900 font-sans overflow-hidden relative">
+    <div className="flex min-h-screen bg-[#f8f9fc] dark:bg-[#050816] text-gray-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
       {/* Integrated Logo Trigger */}
-      <div className="fixed top-0 left-0 z-[200] w-32 h-20 bg-white border-r border-b border-gray-100 flex items-center justify-center shadow-sm">
+      <div className="fixed top-0 left-0 z-[200] w-32 h-20 bg-white dark:bg-[#0a0f29] border-r border-b border-gray-100 dark:border-gray-800 flex items-center justify-center shadow-sm">
          <button 
            onClick={() => setIsSidebarOpen(true)}
            className="hover:scale-105 transition-transform active:scale-95 group relative"
