@@ -60,7 +60,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
             </div>
             <div>
               <h1 className="text-xl font-black text-gray-900 dark:text-white leading-none uppercase tracking-tighter italic">QUIZARO</h1>
-              <p className="text-[10px] text-blue-600 dark:text-blue-500 mt-2 font-black tracking-[0.4em] uppercase italic">Admin Matrix</p>
+              <p className="text-[10px] text-blue-600 dark:text-blue-500 mt-2 font-black tracking-[0.4em] uppercase italic">Matrix</p>
             </div>
           </div>
           <button onClick={onClose} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-2xl text-gray-300 dark:text-gray-700 hover:text-blue-600 dark:hover:text-blue-500 hover:rotate-90 transition-all duration-700 border border-gray-100 dark:border-gray-700">
@@ -71,7 +71,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
         {/* OPERATIONAL NAVIGATION */}
         <nav className="flex-1 p-10 pt-16 overflow-y-auto no-scrollbar relative z-10">
           <div className="mb-10 px-6">
-             <span className="text-[10px] font-black text-gray-300 dark:text-gray-800 uppercase tracking-[0.5em] italic">Main Protocol Chain</span>
+             <span className="text-[10px] font-black text-gray-300 dark:text-gray-800 uppercase tracking-[0.5em] italic">Menu</span>
           </div>
           <ul className="space-y-4">
             {navItems.map((item) => {
@@ -107,14 +107,14 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                 <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-1000" />
                 <div className="flex items-center gap-4 mb-6 relative z-10">
                    <Activity size={18} className="text-blue-600 dark:text-blue-500" />
-                   <span className="text-[11px] font-black text-gray-500 dark:text-gray-600 uppercase tracking-[0.3em] italic">System Telemetry</span>
+                   <span className="text-[11px] font-black text-gray-500 dark:text-gray-600 uppercase tracking-[0.3em] italic">Status</span>
                 </div>
                 <div className="h-3 w-full bg-white dark:bg-gray-800 rounded-full overflow-hidden border border-gray-100 dark:border-gray-700 p-0.5 relative z-10 shadow-inner">
                    <div className="h-full bg-blue-600 dark:bg-blue-500 w-[64%] rounded-full shadow-[0_0_10px_rgba(37,99,235,0.4)] animate-pulse" />
                 </div>
                 <div className="flex items-center justify-between mt-4 relative z-10">
-                   <span className="text-[10px] font-black text-blue-600 dark:text-blue-500 uppercase tracking-[0.2em] italic">Active Pulse</span>
-                   <span className="text-[10px] font-black text-gray-400 dark:text-gray-800 uppercase tracking-widest italic tabular-nums">Load: 64%</span>
+                   <span className="text-[10px] font-black text-blue-600 dark:text-blue-500 uppercase tracking-[0.2em] italic">Pulse</span>
+                   <span className="text-[10px] font-black text-gray-400 dark:text-gray-800 uppercase tracking-widest italic tabular-nums">64%</span>
                 </div>
              </div>
           </div>

@@ -38,9 +38,9 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
 
   const navItems = [
     { href: "/user-dashboard", label: "Dashboard", icon: <Home size={20} /> },
-    { href: "/user-dashboard/papers", label: "My Tests", icon: <BookOpen size={20} /> },
+    { href: "/user-dashboard/papers", label: "Tests", icon: <BookOpen size={20} /> },
     { href: "/user-dashboard/resources", label: "Resources", icon: <FileText size={20} /> },
-    { href: "/user-dashboard/students", label: "Scholars", icon: <Users size={20} /> },
+    { href: "/user-dashboard/students", label: "Students", icon: <Users size={20} /> },
     { href: "/user-dashboard/profile", label: "Profile", icon: <Settings size={20} /> },
   ];
 
@@ -71,7 +71,7 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
           </div>
           <div>
             <h1 className="text-xl font-black text-gray-900 dark:text-white leading-none uppercase tracking-tighter italic">QUIZARO</h1>
-            <p className="text-[10px] text-blue-600 dark:text-blue-500 mt-2 font-black tracking-[0.4em] uppercase italic leading-none">Scholar Portal</p>
+            <p className="text-[10px] text-blue-600 dark:text-blue-500 mt-2 font-black tracking-[0.4em] uppercase italic leading-none">Portal</p>
           </div>
         </div>
         <button onClick={onClose} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-2xl text-gray-300 dark:text-gray-700 hover:text-blue-600 dark:hover:text-blue-500 hover:rotate-90 transition-all duration-700 border border-gray-100 dark:border-gray-700">
@@ -88,7 +88,7 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
               <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-xl border-4 border-white dark:border-[#050816] shadow-lg animate-pulse" />
            </div>
            <div className="flex items-center justify-center gap-4 mb-4 relative z-10">
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 dark:text-gray-700 italic">Synchronized Identity</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 dark:text-gray-700 italic">Scholar Info</span>
            </div>
            <h2 className="text-2xl font-black text-gray-900 dark:text-white capitalize tracking-tighter leading-none mb-10 italic relative z-10">{userName}</h2>
            
@@ -96,14 +96,14 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
            {gamification && (
              <div className="flex w-full divide-x-2 divide-gray-200 dark:divide-gray-800 border-t-2 border-gray-100 dark:border-gray-800/50 pt-8 relative z-10">
                <div className="flex-1 flex flex-col items-center">
-                 <span className="text-[10px] font-black text-gray-400 dark:text-gray-800 uppercase tracking-widest italic mb-2">Proficiency</span>
+                 <span className="text-[10px] font-black text-gray-400 dark:text-gray-800 uppercase tracking-widest italic mb-2">Level</span>
                  <div className="flex items-center gap-2">
                     <Award size={14} className="text-purple-600" />
                     <span className="text-lg font-black text-purple-600 dark:text-purple-400 font-mono tracking-tighter uppercase italic tabular-nums">{gamification.level || 1}</span>
                  </div>
                </div>
                <div className="flex-1 flex flex-col items-center">
-                 <span className="text-[10px] font-black text-gray-400 dark:text-gray-800 uppercase tracking-widest italic mb-2">Neural XP</span>
+                 <span className="text-[10px] font-black text-gray-400 dark:text-gray-800 uppercase tracking-widest italic mb-2">Points</span>
                  <div className="flex items-center gap-2">
                     <Activity size={14} className="text-blue-600" />
                     <span className="text-lg font-black text-blue-600 dark:text-blue-500 font-mono tracking-tighter uppercase italic tabular-nums">{gamification.points || 0}</span>
@@ -117,7 +117,7 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
       {/* COGNITIVE NAVIGATION CHAIN */}
       <nav className="flex-1 p-10 pt-0 overflow-y-auto no-scrollbar relative z-10">
         <div className="mb-8 px-6">
-           <span className="text-[10px] font-black text-gray-300 dark:text-gray-800 uppercase tracking-[0.5em] italic">Knowledge Channels</span>
+           <span className="text-[10px] font-black text-gray-300 dark:text-gray-800 uppercase tracking-[0.5em] italic">Menu</span>
         </div>
         <ul className="space-y-3">
           {navItems.map((item) => {
