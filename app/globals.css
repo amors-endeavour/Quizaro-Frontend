@@ -2,28 +2,77 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #050816;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #050816;
+  --foreground: #ffffff;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* GitHub Calendar Heatmap Overrides */
+/* Custom Institutional Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border: 3px solid #050816;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+  background-clip: content-box;
+}
+
+/* GitHub Calendar Heatmap Overrides - Adaptive */
 .react-calendar-heatmap rect {
   rx: 3px;
 }
-.color-empty { fill: #f3f4f6; } /* Tailwind gray-100 */
-.color-scale-1 { fill: #86efac; } /* Tailwind green-300 */
-.color-scale-2 { fill: #4ade80; } /* Tailwind green-400 */
-.color-scale-3 { fill: #22c55e; } /* Tailwind green-500 */
-.color-scale-4 { fill: #16a34a; } /* Tailwind green-600 */
+
+.color-empty { fill: #f3f4f6; }
+.dark .color-empty { fill: #0a0f29; }
+
+.color-scale-1 { fill: #86efac; }
+.color-scale-2 { fill: #4ade80; }
+.color-scale-3 { fill: #22c55e; }
+.color-scale-4 { fill: #16a34a; }
+
+/* Custom Utilities for Premium Look */
+.glass-panel {
+  @apply bg-white/80 dark:bg-[#0a0f29]/80 backdrop-blur-xl border border-gray-100 dark:border-gray-800 shadow-2xl;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animated Gradient Background for Heroes */
+.bg-mesh {
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(225,100%,10%,1) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(225,100%,5%,1) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(225,100%,8%,1) 0, transparent 50%);
+}

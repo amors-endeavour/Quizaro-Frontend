@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import UserSidebar from "@/components/UserSidebar";
 import UserHeader from "@/components/UserHeader";
 import API from "@/app/lib/api";
@@ -15,9 +15,13 @@ import {
   Edit2,
   Copy,
   CheckCircle2,
-  FileText
+  FileText,
+  Smartphone,
+  Info,
+  Zap,
+  Lock,
+  X
 } from "lucide-react";
-import { useRef } from "react";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
@@ -94,94 +98,115 @@ export default function ProfilePage() {
     }
   };
 
+  if (loading && !user) return (
+    <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] flex flex-col items-center justify-center space-y-6 transition-colors duration-300">
+      <div className="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 border-t-blue-600 rounded-full animate-spin" />
+      <p className="font-black animate-pulse text-blue-600 dark:text-blue-400 uppercase tracking-widest text-[10px] italic leading-none">
+        Synchronizing Identity Vault Node...
+      </p>
+    </div>
+  );
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-[#f8f9fc] dark:bg-[#050816] text-gray-900 dark:text-gray-100 transition-colors duration-300">
         <UserHeader 
-          title="Identity Registry" 
-          breadcrumbs={["Intelligence", "Account Core"]} 
+          title="Identity Core" 
+          breadcrumbs={["Scholar", "Account Hub"]} 
         />
 
-        <div className="p-8 lg:p-12 max-w-[1200px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-500">
+        <div className="flex-1 overflow-y-auto p-8 lg:p-14 max-w-[1300px] mx-auto w-full space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-1000 pb-20">
            
            {/* AVATAR HERO */}
-           <div className="bg-white/5 rounded-[4rem] p-16 border border-white/10 shadow-2xl backdrop-blur-3xl flex flex-col items-center text-center relative overflow-hidden group">
-              <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-r from-cyan-600 to-blue-600 opacity-10" />
+           <div className="bg-white dark:bg-[#0a0f29] rounded-[4rem] p-16 border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col items-center text-center relative overflow-hidden group transition-all duration-500">
+              <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 dark:from-blue-600/5 dark:to-indigo-600/5 transition-all duration-700 group-hover:scale-110" />
               
-              <div className="relative mt-8">
-                 <div className="w-40 h-40 bg-cyan-600 rounded-[3rem] flex items-center justify-center text-white text-6xl font-black shadow-2xl rotate-6 group-hover:rotate-0 transition-all duration-700 overflow-hidden border-4 border-[#050816]">
+              <div className="relative mt-12">
+                 <div className="w-48 h-48 bg-blue-600 rounded-[3.5rem] flex items-center justify-center text-white text-7xl font-black shadow-2xl rotate-6 group-hover:rotate-0 transition-all duration-1000 overflow-hidden border-8 border-white dark:border-[#050816]">
                     {user?.avatar ? (
                       <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
-                      user?.name?.[0] || "S"
+                      <span className="italic">{user?.name?.[0] || "S"}</span>
                     )}
                  </div>
-                 <button onClick={() => fileInputRef.current?.click()} className="absolute -bottom-2 -right-2 w-12 h-12 bg-white text-black border border-white/10 rounded-2xl flex items-center justify-center hover:scale-110 shadow-xl transition-all">
-                    <Camera size={20} />
+                 <button onClick={() => fileInputRef.current?.click()} className="absolute -bottom-4 -right-4 w-16 h-16 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border-4 border-white dark:border-[#050816] rounded-2xl flex items-center justify-center hover:scale-110 shadow-2xl transition-all active:scale-90 group-hover:rotate-12 duration-500">
+                    <Camera size={28} />
                  </button>
                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleAvatarChange} />
               </div>
 
-              <h2 className="mt-10 text-4xl font-black text-white uppercase tracking-tighter italic">{user?.name}</h2>
-              <p className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.4em] mt-4 italic bg-cyan-400/10 px-6 py-2 rounded-full border border-cyan-400/20 inline-block">
-                 Institutional Intelligence Node
-              </p>
+              <div className="mt-12 space-y-3">
+                 <h2 className="text-5xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic leading-none">{user?.name}</h2>
+                 <p className="text-[10px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-[0.3em] italic leading-none">Scholar Entity ID: NODE-{user?._id?.slice(-8).toUpperCase()}</p>
+              </div>
+
+              <div className="flex items-center gap-6 mt-10">
+                 <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest italic bg-blue-50 dark:bg-blue-900/20 px-8 py-3 rounded-full border border-blue-100 dark:border-blue-800/30 shadow-sm">
+                    Institutional Scholar Protocol
+                 </span>
+                 <div className="flex items-center gap-3 px-6 py-2 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-800/30 rounded-full text-[10px] font-black uppercase tracking-widest italic leading-none">
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-sm shadow-green-500" />
+                    Grid Active
+                 </div>
+              </div>
            </div>
 
            {/* ACCOUNT GRID */}
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="bg-white/5 p-12 rounded-[3.5rem] border border-white/10 shadow-2xl space-y-10">
-                 <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] flex items-center gap-4 italic mb-2">
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_10px_cyan]" />
-                    Biometric Identity
-                 </h3>
-                 <div className="space-y-8">
+           <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
+              <div className="bg-white dark:bg-[#0a0f29] p-12 lg:p-16 rounded-[4rem] border border-gray-100 dark:border-gray-800 shadow-sm space-y-16 transition-all duration-500">
+                 <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                       <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest italic leading-none">Biometric Identity</h3>
+                       <p className="text-[9px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Personal Metadata Synchronization</p>
+                    </div>
+                    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm border border-blue-100 dark:border-blue-800/30"><User size={24} /></div>
+                 </div>
+                 <div className="space-y-12">
                     <div className="flex items-center gap-8 group">
-                       <div className="w-14 h-14 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:bg-cyan-600 group-hover:text-white transition-all"><User size={22} /></div>
-                       <div className="flex-1">
-                          <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Cognitive Alias</p>
+                       <div className="w-16 h-16 bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-700 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner"><User size={28} /></div>
+                       <div className="flex-1 space-y-2">
+                          <p className="text-[10px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest italic leading-none">Institutional Alias</p>
                           {isEditing ? (
                             <input 
                               type="text" 
                               value={editName} 
                               onChange={e => setEditName(e.target.value)}
-                              className="w-full text-sm font-black text-white border-b border-white/10 focus:border-cyan-400 outline-none pb-1 mt-1 bg-transparent"
+                              className="w-full text-[18px] font-black text-gray-900 dark:text-white border-b-2 border-blue-100 dark:border-blue-900/30 focus:border-blue-600 outline-none pb-2 mt-2 bg-transparent italic"
                             />
                           ) : (
-                            <p className="text-sm font-black text-white italic">{user?.name}</p>
+                            <p className="text-xl font-black text-gray-900 dark:text-white italic leading-none group-hover:text-blue-600 transition-colors duration-300">{user?.name}</p>
                           )}
                        </div>
-                     </div>
-                     <div className="flex items-center gap-8 group">
-                       <div className="w-14 h-14 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:bg-cyan-600 group-hover:text-white transition-all"><FileText size={22} /></div>
-                       <div className="flex-1">
-                          <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Neural Narrative (Bio)</p>
+                      </div>
+                      <div className="flex items-center gap-8 group">
+                       <div className="w-16 h-16 bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-700 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner"><FileText size={28} /></div>
+                       <div className="flex-1 space-y-2">
+                          <p className="text-[10px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest italic leading-none">Neural Narrative (Bio)</p>
                           {isEditing ? (
                             <input 
                               type="text" 
                               value={editBio} 
                               onChange={e => setEditBio(e.target.value)}
-                              placeholder="Add narrative..."
-                              className="w-full text-sm font-black text-white border-b border-white/10 focus:border-cyan-400 outline-none pb-1 mt-1 bg-transparent"
+                              placeholder="Synchronize narrative metadata..."
+                              className="w-full text-[18px] font-black text-gray-900 dark:text-white border-b-2 border-blue-100 dark:border-blue-900/30 focus:border-blue-600 outline-none pb-2 mt-2 bg-transparent italic"
                             />
                           ) : (
-                            <p className="text-sm font-black text-white/60 italic leading-relaxed">{user?.bio || "No narrative established."}</p>
+                            <p className="text-lg font-black text-gray-400 dark:text-gray-600 italic leading-relaxed line-clamp-2">{user?.bio || "No narrative synchronized in grid."}</p>
                           )}
                        </div>
                     </div>
                      <div className="flex items-center gap-8 group">
-                        <div className="w-14 h-14 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:bg-cyan-600 group-hover:text-white transition-all"><Mail size={22} /></div>
-                        <div className="flex-1">
-                           <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Network Protocol (Email)</p>
-                           <p className="text-sm font-black text-white">{user?.email}</p>
+                        <div className="w-16 h-16 bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-700 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner"><Mail size={28} /></div>
+                        <div className="flex-1 space-y-2">
+                           <p className="text-[10px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest italic leading-none">Network Protocol (Email)</p>
+                           <p className="text-xl font-black text-gray-900 dark:text-white italic leading-none lowercase group-hover:text-blue-600 transition-colors duration-300">{user?.email}</p>
                         </div>
                      </div>
                      <div className="flex items-center gap-8 group">
-                        <div className="w-14 h-14 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:bg-cyan-600 group-hover:text-white transition-all">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <div className="w-16 h-16 bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-700 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner">
+                           <Smartphone size={28} />
                         </div>
-                        <div className="flex-1">
-                           <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Secure Uplink (Phone)</p>
+                        <div className="flex-1 space-y-2">
+                           <p className="text-[10px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest italic leading-none">Uplink Frequency (Phone)</p>
                            {isEditing ? (
                              <input 
                                type="text" 
@@ -190,87 +215,108 @@ export default function ProfilePage() {
                                  const val = e.target.value.replace(/\D/g, "");
                                  if (val.length <= 10) setEditPhone(val);
                                }}
-                               placeholder="10-digit mobile number"
-                               className="w-full text-sm font-black text-white border-b border-white/10 focus:border-cyan-400 outline-none pb-1 mt-1 bg-transparent"
+                               placeholder="10-digit numeric protocol"
+                               className="w-full text-[18px] font-black text-gray-900 dark:text-white border-b-2 border-blue-100 dark:border-blue-900/30 focus:border-blue-600 outline-none pb-2 mt-2 bg-transparent italic"
                              />
                            ) : (
-                             <p className="text-sm font-black text-white">{user?.phone || "Not linked."}</p>
+                             <p className="text-xl font-black text-gray-900 dark:text-white italic leading-none group-hover:text-blue-600 transition-colors duration-300">{user?.phone || "Registry Incomplete"}</p>
                            )}
                         </div>
                      </div>
                   </div>
               </div>
 
-              <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-100/30 space-y-8">
-                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-3">
-                    <Shield size={16} /> Security & System
-                 </h3>
-                 <div className="space-y-6">
-                    <div className="flex items-center gap-6">
-                       <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400"><Shield size={20} /></div>
-                       <div>
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Account Status</p>
-                          <p className="text-sm font-black text-green-600 flex items-center gap-2">Verified Academic <ChevronRight size={14} /></p>
+              <div className="bg-white dark:bg-[#0a0f29] p-12 lg:p-16 rounded-[4rem] border border-gray-100 dark:border-gray-800 shadow-sm space-y-16 transition-all duration-500">
+                 <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                       <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest italic leading-none">Institutional Protocol</h3>
+                       <p className="text-[9px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Security & Permissions Synchronization</p>
+                    </div>
+                    <div className="w-12 h-12 bg-gray-50 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm border border-gray-100 dark:border-gray-700"><Lock size={24} /></div>
+                 </div>
+                 <div className="space-y-12">
+                    <div className="flex items-center gap-8 group">
+                       <div className="w-16 h-16 bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-700 group-hover:bg-green-600 group-hover:text-white transition-all duration-500 shadow-inner"><Shield size={28} /></div>
+                       <div className="flex-1 space-y-2">
+                          <p className="text-[10px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest italic leading-none">Verification Integrity</p>
+                          <div className="flex items-center justify-between">
+                             <p className="text-lg font-black text-green-600 dark:text-green-400 uppercase italic leading-none">Authorized Institutional Node</p>
+                             <CheckCircle2 size={20} className="text-green-600" />
+                          </div>
                        </div>
                     </div>
-                    <div className="flex items-center gap-6">
-                       <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400"><Calendar size={20} /></div>
-                       <div>
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Registration Date</p>
-                          <p className="text-sm font-black text-gray-900">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "Unknown"}</p>
+                    <div className="flex items-center gap-8 group">
+                       <div className="w-16 h-16 bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-700 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner"><Calendar size={28} /></div>
+                       <div className="flex-1 space-y-2">
+                          <p className="text-[10px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest italic leading-none">Historical Commit (Joined)</p>
+                          <p className="text-xl font-black text-gray-900 dark:text-white italic leading-none">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase() : "REGISTRY LEGACY"}</p>
                        </div>
                      </div>
-                     <div className="flex items-center gap-6 mt-6">
-                       <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600"><CheckCircle2 size={20} /></div>
-                       <div className="flex-1">
-                          <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Referral Code</p>
-                           <div className="flex gap-2 mt-1">
-                             <div className="flex-1 min-w-0">
-                                <span className={user?.referralCode ? "text-sm font-black text-blue-600 bg-white px-3 py-2 rounded truncate flex-1 border border-blue-100 block" : "text-[10px] font-black text-gray-400 bg-gray-50 px-3 py-2 rounded truncate flex-1 border border-gray-100 block italic tracking-widest uppercase"}>
-                                   {user?.referralCode || "Inactive Node"}
-                                </span>
-                             </div>
-                             
-                             {user?.referralCode ? (
-                               <button onClick={copyReferral} className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all">
-                                  {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
-                               </button>
-                             ) : (
-                               <button onClick={handleGenerateReferral} className="px-4 h-10 flex items-center justify-center bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all whitespace-nowrap">
-                                  Activate Code
-                               </button>
-                             )}
+                     <div className="flex flex-col gap-6 mt-6 pt-12 border-t border-gray-50 dark:border-gray-800">
+                        <div className="flex items-center gap-5">
+                           <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm"><Zap size={28} /></div>
+                           <div className="space-y-1">
+                              <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest italic leading-none">Growth Identification</p>
+                              <p className="text-[9px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Institutional Peer Synchronization</p>
                            </div>
-                       </div>
-                    </div>
-                 </div>
+                        </div>
+                        <div className="flex gap-4">
+                           <div className="flex-1 min-w-0">
+                              <span className={`block w-full text-[16px] font-black px-8 py-6 rounded-[1.5rem] border-2 transition-all duration-500 truncate italic leading-none ${user?.referralCode ? "text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-800/30" : "text-gray-300 dark:text-gray-800 bg-gray-50/50 dark:bg-[#050816] border-gray-100 dark:border-gray-800 tracking-[0.4em]"}`}>
+                                 {user?.referralCode || "INACTIVE-NODE"}
+                              </span>
+                           </div>
+                           
+                           {user?.referralCode ? (
+                             <button onClick={copyReferral} className="w-20 h-20 shrink-0 flex items-center justify-center bg-blue-600 text-white rounded-[1.5rem] hover:bg-blue-700 shadow-2xl shadow-blue-900/30 transition-all active:scale-90 group">
+                                {copied ? <CheckCircle2 size={32} /> : <Copy size={32} className="group-hover:rotate-12 transition-transform" />}
+                             </button>
+                           ) : (
+                             <button onClick={handleGenerateReferral} className="px-10 h-20 flex items-center justify-center bg-blue-600 text-white text-[11px] font-black uppercase tracking-widest rounded-[1.5rem] hover:bg-blue-700 shadow-2xl shadow-blue-900/30 transition-all whitespace-nowrap italic active:scale-[0.98]">
+                                Activate Node Profile
+                             </button>
+                           )}
+                        </div>
+                     </div>
+                  </div>
               </div>
            </div>
 
            {/* ACTIONS */}
-           <div className="flex flex-col md:flex-row gap-6">
+           <div className="flex flex-col sm:flex-row gap-8 pt-12 pb-12">
                <button 
                  onClick={() => setIsEditing(!isEditing)}
-                 className="flex-1 py-6 bg-gray-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3"
+                 className={`flex-1 py-8 rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest transition-all duration-500 shadow-xl active:scale-[0.98] flex items-center justify-center gap-6 italic border-2 ${isEditing ? "bg-white dark:bg-gray-800 border-red-100 dark:border-red-900/30 text-red-500" : "bg-gray-900 dark:bg-gray-800 border-gray-900 dark:border-gray-700 text-white hover:bg-blue-600"}`}
                >
-                 {isEditing ? "Cancel Modification" : "Modify Identity Data"}
+                 {isEditing ? (
+                    <>Cancel Modification <X size={20} /></>
+                 ) : (
+                    <>Initiate Identity Protocol <Edit2 size={20} /></>
+                 )}
                </button>
                {isEditing && (
                  <button 
                    onClick={saveProfile}
-                   className="flex-1 py-6 bg-blue-600 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3"
+                   className="flex-1 py-8 bg-blue-600 text-white rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 active:scale-[0.98] flex items-center justify-center gap-6 animate-in zoom-in-95 duration-500 italic"
                  >
-                   Save Final Changes
+                   Commit Identity Synchronization
+                   <CheckCircle2 size={20} />
                  </button>
                )}
               <button 
                 onClick={handleLogout}
-                className="flex-1 py-6 border-2 border-red-50 text-red-500 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-red-50 transition-all flex items-center justify-center gap-3"
+                className="flex-1 py-8 bg-white dark:bg-[#0a0f29] border-2 border-red-50 dark:border-red-900/10 text-red-500 dark:text-red-600 rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center justify-center gap-6 italic active:scale-[0.98] shadow-sm"
               >
-                <LogOut size={18} /> Close Session
+                <LogOut size={20} /> Terminate Neural Session
               </button>
            </div>
+
+           <div className="flex items-center justify-center gap-6 text-gray-200 dark:text-gray-800 italic font-black uppercase tracking-[0.5em] text-[10px] pt-12">
+              <div className="w-16 h-px bg-gray-50 dark:bg-gray-900" />
+              Identity Vault Protocol v4.5.1
+              <div className="w-16 h-px bg-gray-50 dark:bg-gray-900" />
+           </div>
         </div>
-    </>
+    </div>
   );
 }
