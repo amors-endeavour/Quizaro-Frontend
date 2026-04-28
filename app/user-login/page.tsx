@@ -51,34 +51,32 @@ function UserLoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#050816] p-4 font-sans selection:bg-cyan-500/30">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,_#0891b220_0%,_transparent_50%)] pointer-events-none" />
-      
-      <div className="bg-white/[0.03] border border-white/10 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md backdrop-blur-2xl relative z-10">
-        <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-cyan-500/20">
-            <UserCircle className="text-white" size={32} />
+    <div className="flex items-center justify-center min-h-screen bg-[#f8f9fc] p-6 selection:bg-blue-100 selection:text-blue-600">
+      <div className="bg-white border border-gray-100 p-12 lg:p-16 rounded-[3rem] shadow-2xl shadow-blue-900/5 w-full max-w-md relative z-10 box-border animate-in fade-in zoom-in duration-700">
+        <div className="text-center mb-14">
+          <div className="w-20 h-20 bg-blue-600 text-white rounded-[1.5rem] flex items-center justify-center mx-auto mb-8 shadow-lg shadow-blue-900/20">
+            <UserCircle size={40} />
           </div>
-          <h2 className="text-4xl font-black text-white tracking-tight">Student Portal</h2>
-          <p className="text-gray-500 mt-2 text-sm font-medium">Log in to continue your preparation</p>
+          <h2 className="text-3xl font-black text-gray-900 tracking-tight italic">Scholar Portal</h2>
+          <p className="text-gray-400 mt-2 text-[11px] font-black uppercase tracking-widest">Resuming intellectual progression</p>
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-5 py-4 rounded-2xl mb-8 text-sm font-semibold flex items-center gap-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          <div className="bg-red-50 border border-red-100 text-red-600 px-6 py-4 rounded-2xl mb-10 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 animate-in slide-in-from-top-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
             {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 ml-1">Email</label>
+        <form onSubmit={handleLogin} className="space-y-8">
+          <div className="space-y-4">
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Identity Vector (Email)</label>
             <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-cyan-400 transition-colors" size={18} />
+              <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-600 transition-colors" size={20} />
               <input
                 type="email"
                 placeholder="student@quizaro.com"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 outline-none focus:border-cyan-500/50 focus:bg-white/[0.08] text-white transition-all placeholder:text-gray-700"
+                className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-6 py-4 outline-none focus:border-blue-400 focus:bg-white transition-all text-gray-900 font-bold placeholder:text-gray-300 text-sm shadow-inner"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -86,14 +84,14 @@ function UserLoginForm() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 ml-1">Password</label>
+          <div className="space-y-4">
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Access Cipher (Password)</label>
             <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-cyan-400 transition-colors" size={18} />
+              <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-600 transition-colors" size={20} />
               <input
                 type="password"
-                placeholder="••••••••"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 outline-none focus:border-cyan-500/50 focus:bg-white/[0.08] text-white transition-all placeholder:text-gray-700"
+                placeholder="••••••••••••"
+                className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-6 py-4 outline-none focus:border-blue-400 focus:bg-white transition-all text-gray-900 font-bold placeholder:text-gray-300 text-sm shadow-inner"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -104,57 +102,52 @@ function UserLoginForm() {
           <div className="flex justify-end pr-2">
             <Link 
               href="/forgot-password" 
-              className="text-[10px] uppercase font-black tracking-widest text-gray-500 hover:text-cyan-400 transition-colors"
+              className="text-[10px] uppercase font-black tracking-widest text-gray-400 hover:text-blue-600 transition-colors"
             >
-              Forgot Password?
+              Lost Cipher?
             </Link>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full relative group overflow-hidden bg-gradient-to-r from-cyan-600 to-blue-600 text-white py-4 rounded-2xl font-black text-lg transition-all active:scale-95 disabled:opacity-50 mt-4 shadow-xl shadow-cyan-900/20"
+            className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all hover:bg-blue-700 active:scale-95 disabled:opacity-50 mt-4 shadow-xl shadow-blue-900/10 flex items-center justify-center gap-3"
           >
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-            <span className="relative flex flex-col items-center gap-1">
-              {loading ? (
-                <>
-                  <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span className="text-[10px] font-black animate-pulse opacity-60">Waking up secure server...</span>
-                </>
-              ) : (
-                <div className="flex items-center gap-2">Enter Classroom <ArrowRight size={20} /></div>
-              )}
-            </span>
+            {loading ? (
+              <>
+                <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Synchronizing...</span>
+              </>
+            ) : (
+              <div className="flex items-center gap-3">Commence Session <ArrowRight size={18} /></div>
+            )}
           </button>
         </form>
 
-        <div className="mt-10 pt-8 border-t border-white/5 text-center space-y-4">
-          <p className="text-gray-500 text-sm font-medium">
-            New to Quizaro?{" "}
-            <Link href="/register" className="text-cyan-400 hover:text-cyan-300 transition-colors font-bold">
-              Join for Free
+        <div className="mt-12 pt-10 border-t border-gray-50 text-center space-y-6">
+          <p className="text-gray-400 text-[11px] font-black uppercase tracking-widest">
+            New Entity?{" "}
+            <Link href="/register" className="text-blue-600 hover:text-blue-700 transition-colors">
+              Initialize Enrollment
             </Link>
           </p>
-          <p>
-            <Link href="/admin-login" className="text-[10px] uppercase font-black tracking-[0.3em] text-gray-600 hover:text-purple-400 transition-colors">
-              ARE YOU AN ADMIN?
+          <div className="flex items-center justify-center gap-6">
+            <Link href="/admin-login" className="text-[9px] font-black text-gray-300 hover:text-blue-600 transition-colors uppercase tracking-widest">
+              Admin Node
             </Link>
-          </p>
-          <div className="pt-4">
-            <Link href="/" className="text-[10px] uppercase font-black tracking-[0.4em] text-cyan-500/50 hover:text-cyan-400 transition-colors">
-              [ EXIT TO HOME ]
+            <div className="w-px h-3 bg-gray-100" />
+            <Link href="/" className="text-[9px] font-black text-gray-300 hover:text-blue-600 transition-colors uppercase tracking-widest">
+              Exit Interface
             </Link>
           </div>
         </div>
-      </div>
     </div>
   );
 }
 
 export default function UserLoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#050816]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f9fc]" />}>
       <UserLoginForm />
     </Suspense>
   );

@@ -157,7 +157,7 @@ export default function StudentAccessPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#050816] text-white">
+    <div className="flex flex-col min-h-screen bg-[#f8f9fc] text-gray-900">
       <AdminHeader 
         title={activeTab === 'access' ? "Access Rights" : "Institutional Governance"} 
         path={[{ label: "Governance" }, { label: activeTab === 'access' ? "Access Rights" : "Security" }]} 
@@ -174,24 +174,23 @@ export default function StudentAccessPage() {
         
         {activeTab === 'access' ? (
           /* ACCESS RIGHTS VIEW */
-          <div className="bg-white/5 rounded-[3.5rem] border border-white/10 shadow-2xl p-12 lg:p-16 relative overflow-hidden flex flex-col lg:flex-row items-center gap-16 animate-in fade-in slide-in-from-bottom-10 duration-700 backdrop-blur-md">
-             <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-400/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="bg-white rounded-[3.5rem] border border-gray-100 shadow-2xl shadow-blue-900/5 p-12 lg:p-16 relative overflow-hidden flex flex-col lg:flex-row items-center gap-16 animate-in fade-in slide-in-from-bottom-10 duration-700">
              
              <div className="flex-1 space-y-8 z-10 w-full lg:w-auto">
                 <div className="flex items-center gap-4">
-                   <div className="w-14 h-14 bg-cyan-600 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-cyan-900/20">
+                   <div className="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/20">
                       <ShieldCheck size={28} />
                    </div>
                    <div>
-                      <h2 className="text-3xl font-black text-white tracking-tighter uppercase">Institutional Override</h2>
-                      <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1 italic">Grant premium access to specific candidates</p>
+                      <h2 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Institutional Override</h2>
+                      <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Grant premium access to specific candidates</p>
                    </div>
                 </div>
 
                 <form onSubmit={handleGrant} className="space-y-8">
                    <div className="space-y-4">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 flex items-center gap-2">
-                         <Mail size={12} className="text-cyan-400" /> Student Email Address
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2 leading-none">
+                         <Mail size={12} className="text-blue-600" /> Student Email Address
                       </label>
                       <input 
                         type="email"
@@ -199,14 +198,14 @@ export default function StudentAccessPage() {
                         placeholder="student@institution.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/[0.08] transition-all font-bold text-white shadow-inner"
+                        className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-gray-900 shadow-inner"
                       />
                    </div>
 
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-4">
-                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <Layers size={12} className="text-cyan-400" /> Target Series (Optional)
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2 leading-none">
+                            <Layers size={12} className="text-blue-600" /> Target Series (Optional)
                          </label>
                          <select 
                            value={selectedSeriesId}
@@ -214,40 +213,40 @@ export default function StudentAccessPage() {
                              setSelectedSeriesId(e.target.value);
                              if (e.target.value) setSelectedTestId("");
                            }}
-                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-400/50 transition-all font-bold text-white appearance-none"
+                           className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-gray-900 appearance-none shadow-sm"
                          >
-                            <option value="" className="bg-[#0b0f2a]">No Series Selected</option>
-                            {series.map(s => <option key={s._id} value={s._id} className="bg-[#0b0f2a]">{s.title}</option>)}
+                            <option value="">No Series Selected</option>
+                            {series.map(s => <option key={s._id} value={s._id}>{s.title}</option>)}
                          </select>
                       </div>
 
                       <div className="space-y-4">
-                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <TrendingUp size={12} className="text-cyan-400" /> Standalone Paper (Optional)
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2 leading-none">
+                            <TrendingUp size={12} className="text-blue-600" /> Standalone Paper (Optional)
                          </label>
                          <select 
                            value={selectedTestId}
                            onChange={(e) => {
-                              setSelectedTestId(e.target.value);
-                              if (e.target.value) setSelectedSeriesId("");
+                               setSelectedTestId(e.target.value);
+                               if (e.target.value) setSelectedSeriesId("");
                            }}
-                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-cyan-400/50 transition-all font-bold text-white appearance-none"
+                           className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-gray-900 appearance-none shadow-sm"
                          >
-                            <option value="" className="bg-[#0b0f2a]">No Paper Selected</option>
-                            {tests.map(t => <option key={t._id} value={t._id} className="bg-[#0b0f2a]">{t.title}</option>)}
+                            <option value="">No Paper Selected</option>
+                            {tests.map(t => <option key={t._id} value={t._id}>{t.title}</option>)}
                          </select>
                       </div>
                    </div>
 
                    {message && (
-                      <div className="bg-green-500/10 text-green-400 border border-green-500/20 p-6 rounded-[2rem] flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                      <div className="bg-green-50 text-green-700 border border-green-100 p-6 rounded-[2rem] flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
                          <CheckCircle2 size={24} />
                          <span className="text-xs font-black uppercase tracking-widest">{message}</span>
                       </div>
                    )}
 
                    {error && (
-                      <div className="bg-red-500/10 text-red-400 border border-red-500/20 p-6 rounded-[2rem] flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                      <div className="bg-red-50 text-red-600 border border-red-100 p-6 rounded-[2rem] flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
                          <AlertCircle size={24} />
                          <span className="text-xs font-black uppercase tracking-widest">{error}</span>
                       </div>
@@ -255,7 +254,7 @@ export default function StudentAccessPage() {
 
                    <button 
                      disabled={loading}
-                     className="w-full lg:w-fit px-12 py-5 bg-white text-gray-900 rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-2xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                     className="w-full lg:w-fit px-12 py-5 bg-blue-600 text-white rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
                    >
                       {loading ? "Authenticating Authority..." : "Authorize Student Access"}
                       <Key size={18} className="translate-y-[-1px]" />
@@ -264,18 +263,18 @@ export default function StudentAccessPage() {
              </div>
 
              <div className="w-full lg:w-80 space-y-8 flex-shrink-0">
-                <div className="bg-cyan-400/5 p-8 rounded-[2.5rem] border border-cyan-400/10 space-y-6">
-                   <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest leading-relaxed">
+                <div className="bg-blue-50/50 p-8 rounded-[2.5rem] border border-blue-100 space-y-6">
+                   <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-relaxed">
                       Override protocol allows granting expired or premium content bypass to verified candidates.
                    </p>
                    <div className="space-y-4">
                       <div className="flex items-center gap-3">
-                         <Zap size={16} className="text-cyan-400" />
-                         <span className="text-xs font-bold text-gray-400">Instant Registry Sync</span>
+                         <Zap size={16} className="text-blue-400" />
+                         <span className="text-xs font-bold text-gray-500">Instant Registry Sync</span>
                       </div>
                       <div className="flex items-center gap-3">
-                         <CheckCircle2 size={16} className="text-cyan-400" />
-                         <span className="text-xs font-bold text-gray-400">Audit Log Entries</span>
+                         <CheckCircle2 size={16} className="text-green-500" />
+                         <span className="text-xs font-bold text-gray-500">Audit Log Entries</span>
                       </div>
                    </div>
                 </div>
@@ -285,50 +284,50 @@ export default function StudentAccessPage() {
           /* GOVERNANCE VIEW */
           <div className="space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-700">
              {/* USER REGISTRY TABLE */}
-             <div className="bg-white/5 rounded-[3.5rem] border border-white/10 shadow-2xl p-12 lg:p-16 backdrop-blur-md">
-                <h3 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-4 mb-8">
-                   <Users size={24} className="text-cyan-400" /> Platform Security & Identity Matrix
+             <div className="bg-white rounded-[3.5rem] border border-gray-100 shadow-2xl shadow-blue-900/5 p-12 lg:p-16">
+                <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight flex items-center gap-4 mb-8 italic">
+                   <Users size={24} className="text-blue-600" /> Platform Security & Identity Matrix
                 </h3>
                 <div className="overflow-x-auto">
                    <table className="w-full text-left">
                       <thead>
-                         <tr className="bg-white/5">
-                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-500 rounded-l-3xl">Candidate</th>
-                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-500">Security / Role</th>
-                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-500">Registered</th>
-                            <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-widest text-gray-500 rounded-r-3xl">Moderation Action</th>
+                         <tr className="bg-gray-50/50">
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 rounded-l-3xl">Candidate</th>
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Security / Role</th>
+                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Registered</th>
+                            <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-widest text-gray-400 rounded-r-3xl">Moderation Action</th>
                          </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/5">
+                      <tbody className="divide-y divide-gray-50">
                          {filteredUsers.length === 0 ? (
-                            <tr><td colSpan={4} className="px-8 py-20 text-center text-gray-600 font-black uppercase text-[10px] tracking-widest italic">No candidates matching identity query</td></tr>
+                            <tr><td colSpan={4} className="px-8 py-20 text-center text-gray-300 font-black uppercase text-[10px] tracking-widest italic">No candidates matching identity query</td></tr>
                          ) : (
                             filteredUsers.map(u => (
-                               <tr key={u._id} className="hover:bg-white/5 transition-all group">
+                               <tr key={u._id} className="hover:bg-gray-50/50 transition-all group">
                                   <td className="px-8 py-6">
-                                     <p className="text-sm font-black text-white uppercase tracking-wide group-hover:text-cyan-400 transition-colors">{u.name}</p>
-                                     <p className="text-[10px] font-bold text-gray-500">{u.email}</p>
+                                     <p className="text-sm font-black text-gray-900 uppercase tracking-wide group-hover:text-blue-600 transition-colors italic">{u.name}</p>
+                                     <p className="text-[10px] font-bold text-gray-400">{u.email}</p>
                                   </td>
                                   <td className="px-8 py-6">
                                      <select 
                                        value={u.role || "student"}
                                        onChange={(e) => changeRole(u._id, e.target.value)}
-                                       className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl outline-none appearance-none cursor-pointer border ${u.role === 'admin' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-400/20' : 'bg-white/5 text-gray-400 border-white/10'} hover:opacity-80 transition-opacity`}
+                                       className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl outline-none appearance-none cursor-pointer border ${u.role === 'admin' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-gray-50 text-gray-500 border-gray-100'} hover:opacity-80 transition-opacity`}
                                      >
-                                       <option value="student" className="bg-[#0b0f2a]">Student Status</option>
-                                       <option value="admin" className="bg-[#0b0f2a]">Admin Authority</option>
+                                       <option value="student">Student Status</option>
+                                       <option value="admin">Admin Authority</option>
                                      </select>
                                   </td>
-                                  <td className="px-8 py-6 text-xs font-black text-gray-400">{new Date(u.createdAt).toLocaleDateString()}</td>
+                                  <td className="px-8 py-6 text-[11px] font-bold text-gray-400 uppercase">{new Date(u.createdAt).toLocaleDateString()}</td>
                                   <td className="px-8 py-6 text-right flex items-center justify-end gap-3">
                                      <button 
                                        onClick={() => toggleBan(u._id, u.isBanned)}
-                                       className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all flex items-center gap-2 ${u.isBanned ? 'bg-green-500/10 text-green-400 hover:bg-green-500/20' : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'}`}
+                                       className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all flex items-center gap-2 ${u.isBanned ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}
                                      >
-                                        {u.isBanned ? <><UserCheck size={14}/> Remove Suspension</> : <><UserX size={14}/> Enforce Ban</>}
+                                        {u.isBanned ? <><UserCheck size={14}/> Restore</> : <><UserX size={14}/> Ban</>}
                                      </button>
                                   </td>
-                               </tr>
+                                </tr>
                             ))
                          )}
                       </tbody>
@@ -337,29 +336,28 @@ export default function StudentAccessPage() {
              </div>
 
              {/* AUDIT LOGS */}
-             <div className="bg-gray-900 rounded-[3.5rem] p-12 lg:p-16 text-white overflow-hidden relative">
-                <div className="absolute top-0 left-0 w-full h-full bg-blue-600/5 blur-3xl pointer-events-none" />
-                <h3 className="text-xl font-black uppercase tracking-tighter italic mb-8 flex items-center gap-4">
-                   <Activity size={24} className="text-cyan-400" /> Security Audit Log
+             <div className="bg-white border border-gray-100 rounded-[3.5rem] p-12 lg:p-16 shadow-2xl shadow-blue-900/5 relative overflow-hidden">
+                <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic mb-8 flex items-center gap-4">
+                   <Activity size={24} className="text-blue-600" /> Security Audit Log
                 </h3>
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-4 scrollbar-hide">
                    {auditLogs.length === 0 ? (
-                     <div className="py-20 text-center text-gray-600 font-black uppercase text-[10px] tracking-widest italic">No security incidents recorded</div>
+                     <div className="py-20 text-center text-gray-300 font-black uppercase text-[10px] tracking-widest italic">No security incidents recorded</div>
                    ) : (
                      auditLogs.map(log => (
-                       <div key={log._id} className="bg-white/5 border border-white/5 p-6 rounded-[2rem] flex items-center justify-between group hover:border-cyan-400/20 transition-all">
+                       <div key={log._id} className="bg-gray-50 border border-gray-100 p-6 rounded-[2rem] flex items-center justify-between group hover:border-blue-200 transition-all">
                           <div className="flex items-center gap-6">
-                             <div className="w-12 h-12 rounded-2xl bg-cyan-400/10 flex items-center justify-center text-cyan-400 border border-cyan-400/20">
+                             <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-blue-600 shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-all">
                                 {log.action === 'GRANT_ROLE' ? <ShieldCheck size={20}/> : <Zap size={20}/>}
                              </div>
                              <div>
-                                <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">{log.action}</p>
-                                <p className="text-sm font-bold text-gray-300 mt-1">Admin: {log.adminId?.name || "System"}</p>
+                                <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-none">{log.action}</p>
+                                <p className="text-sm font-bold text-gray-900 mt-2 uppercase italic tracking-tight">Admin: {log.adminId?.name || "System"}</p>
                              </div>
                           </div>
                           <div className="text-right">
-                             <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{new Date(log.createdAt).toLocaleString()}</p>
-                             <p className="text-[9px] font-bold text-cyan-400/60 mt-1 uppercase tracking-tighter">{log.resourceType}</p>
+                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">{new Date(log.createdAt).toLocaleString()}</p>
+                             <p className="text-[9px] font-bold text-blue-400/60 mt-2 uppercase tracking-widest">{log.resourceType}</p>
                           </div>
                        </div>
                      ))

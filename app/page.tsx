@@ -76,7 +76,7 @@ export default function HomePage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-white text-gray-900 font-sans overflow-x-hidden">
       <Navbar />
       
       <HeroSection />
@@ -102,84 +102,71 @@ function HeroSection() {
   const router = useRouter();
 
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center pt-12 pb-20 overflow-hidden">
-      {/* Dynamic Background Effects */}
+    <section className="relative min-h-[90vh] flex items-center justify-center pt-24 pb-32 overflow-hidden bg-[#f8f9fc]">
+      {/* Subtle Background Elements */}
       <div className="absolute inset-0">
-        {/* Main Center Glow */}
-        <div className="absolute w-[1200px] h-[800px] bg-[radial-gradient(circle,_#6d28d920_0%,_transparent_70%)] rounded-full top-[-150px] left-1/2 -translate-x-1/2 blur-[80px]" />
-        {/* Side Accents */}
-        <div className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle,_#0ea5e915_0%,_transparent_70%)] rounded-full -bottom-20 left-0 blur-[60px]" />
-        <div className="absolute w-[400px] h-[400px] bg-[radial-gradient(circle,_#7c3aed10_0%,_transparent_70%)] rounded-full bottom-20 right-0 translate-x-1/4 blur-[40px]" />
+        <div className="absolute w-[800px] h-[800px] bg-blue-50/50 rounded-full -top-96 -left-96 blur-[100px]" />
+        <div className="absolute w-[600px] h-[600px] bg-purple-50/50 rounded-full -bottom-48 -right-48 blur-[100px]" />
       </div>
 
-      {/* Grid Overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "linear-gradient(#6366f1 1px, transparent 1px), linear-gradient(to right, #6366f1 1px, transparent 1px)",
-          backgroundSize: "70px 70px",
-        }}
-      />
+      {/* Dot Pattern Overlay */}
+      <div className="absolute inset-0 opacity-[0.4]" style={{ backgroundImage: 'radial-gradient(#e5e7eb 1.5px, transparent 1.5px)', backgroundSize: '40px 40px' }} />
 
       <div className="relative z-10 text-center px-6 max-w-6xl mx-auto flex flex-col items-center">
         {/* Institutional Badge */}
-        <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-12 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-1000">
-          <Sparkles size={14} className="text-yellow-400 animate-pulse" />
-          Simplified With Umar - Let's Learn Simply
-          <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+        <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white border border-gray-100 text-[10px] font-black uppercase tracking-widest text-blue-600 mb-12 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <Sparkles size={14} className="text-blue-500" />
+          SIMPLIFIED WITH UMAR • THE FUTURE OF LEARNING
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
         </div>
 
         {/* Master Heading */}
-        <h1 className="text-5xl sm:text-7xl md:text-[6.5rem] font-black leading-[1] mb-10 tracking-tighter animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-100 selection:bg-cyan-500/30">
-          Crack Any Exam <br />
-          <span className="bg-gradient-to-r from-[#22d3ee] via-[#60a5fa] to-[#6366f1] bg-clip-text text-transparent drop-shadow-[0_10px_30px_rgba(34,211,238,0.2)]">
-            With Confidence
-          </span>
+        <h1 className="text-5xl sm:text-7xl md:text-[6rem] font-black leading-[1.05] mb-10 tracking-tighter text-gray-900 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100 italic">
+          Master Any Exam <br />
+          <span className="text-blue-600">With Intelligence</span>
         </h1>
 
-        <p className="max-w-2xl text-base sm:text-lg text-gray-300 font-medium leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
-          India's smartest quiz platform. Adaptive tests, real-time analytics, live 
-          leaderboards — everything you need to outperform 50,000+ aspirants.
+        <p className="max-w-2xl text-lg sm:text-xl text-gray-500 font-bold leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
+          India&apos;s most sophisticated assessment engine. Adaptive protocols, 
+          real-time telemetry, and institutional-grade analytics.
         </p>
 
         {/* Action Hub */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-20 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-24 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-300">
           <button 
             onClick={() => router.push("/login")}
-            className="group relative flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl font-black text-sm uppercase tracking-widest shadow-[0_20px_50px_rgba(37,99,235,0.3)] hover:shadow-[0_25px_60px_rgba(37,99,235,0.5)] hover:scale-105 transition-all active:scale-95 overflow-hidden"
+            className="group relative flex items-center gap-5 px-14 py-6 bg-gray-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-gray-900/20 hover:scale-105 transition-all active:scale-95"
           >
             <div className="bg-white/10 p-2.5 rounded-xl group-hover:rotate-12 transition-transform"><Users size={20} /></div>
-            I am a Student
-            <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20 rounded-full scale-x-0 group-hover:scale-x-90 transition-transform origin-center" />
+            Student Gateway
           </button>
 
           <button 
             onClick={() => router.push("/admin-login")}
-            className="group flex items-center gap-4 px-12 py-6 bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-white/10 hover:border-white/30 transition-all hover:scale-105 active:scale-95 shadow-2xl"
+            className="group flex items-center gap-5 px-14 py-6 bg-white border border-gray-100 rounded-[2rem] font-black text-xs uppercase tracking-widest text-gray-900 hover:bg-gray-50 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-gray-900/5"
           >
-            <div className="bg-white/5 p-2.5 rounded-xl text-gray-400 group-hover:text-cyan-400 transition-colors"><Shield size={20} /></div>
-            I am an Admin
+            <div className="bg-gray-50 p-2.5 rounded-xl text-gray-400 group-hover:text-blue-600 transition-colors"><Shield size={20} /></div>
+            Admin Console
           </button>
         </div>
 
         {/* Trust Metrics */}
-        <div className="flex flex-col items-center gap-4 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+        <div className="flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-20 duration-1000 delay-500">
           <div className="flex items-center -space-x-4">
              {[1,2,3,4,5].map(i => (
-               <div key={i} className="w-12 h-12 rounded-full border-4 border-[#050816] bg-gray-800 overflow-hidden shadow-xl ring-1 ring-white/10">
-                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 777}`} alt="user" className="w-full h-full object-cover" />
+               <div key={i} className="w-14 h-14 rounded-full border-4 border-white bg-gray-100 overflow-hidden shadow-lg">
+                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 888}`} alt="user" className="w-full h-full object-cover" />
                </div>
              ))}
-             <div className="w-12 h-12 rounded-full border-4 border-[#050816] bg-blue-600 flex items-center justify-center text-[10px] font-black shadow-xl ring-1 ring-blue-400/30">+50k</div>
+             <div className="w-14 h-14 rounded-full border-4 border-white bg-blue-600 flex items-center justify-center text-[10px] font-black text-white shadow-lg">+50k</div>
           </div>
-          <div className="flex flex-col items-center gap-1.5">
-             <span className="text-[11px] text-gray-500 font-black uppercase tracking-widest">50,000+ students enrolled</span>
-             <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center gap-2">
+             <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.2em]">Validated by 50,000+ top achievers</span>
+             <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
-                   {[1,2,3,4,5].map(i => <Star key={i} size={14} className={i === 5 ? "text-yellow-500/40" : "text-yellow-500"} fill="currentColor" />)}
+                   {[1,2,3,4,5].map(i => <Star key={i} size={16} className="text-yellow-400" fill="currentColor" />)}
                 </div>
-                <span className="text-xs text-gray-400 font-bold font-mono tracking-tighter">4.9/5 rating</span>
+                <span className="text-xs text-gray-900 font-black italic tracking-tighter">4.9/5 INSTITUTIONAL RATING</span>
              </div>
           </div>
         </div>
@@ -189,15 +176,15 @@ function HeroSection() {
 }
 
 function TrustedBySection() {
-  const brands = ["SKAUST Kashmir", "Kashmir University University", "Cluster University Kashmir",  "JKBOSE", "JKBOPEE"];
+  const brands = ["SKAUST Kashmir", "Kashmir University", "Cluster University", "JKBOSE", "JKBOPEE", "IIT Delhi", "NIT Srinagar"];
   return (
-    <section className="py-12 border-y border-white/[0.05] overflow-hidden">
-      <p className="text-center text-sm text-gray-600 uppercase tracking-[0.2em] mb-8">
-        Trusted by students from
+    <section className="py-16 bg-white border-y border-gray-50 overflow-hidden">
+      <p className="text-center text-[10px] text-gray-400 font-black uppercase tracking-[0.3em] mb-10">
+        Institutional Partners & Affiliations
       </p>
-      <div className="flex gap-12 animate-marquee whitespace-nowrap">
+      <div className="flex gap-20 animate-marquee whitespace-nowrap items-center">
         {[...brands, ...brands].map((b, i) => (
-          <span key={i} className="text-gray-500 font-semibold text-sm hover:text-gray-300 transition-colors cursor-default">
+          <span key={i} className="text-gray-300 font-black text-lg hover:text-gray-900 transition-all cursor-default uppercase tracking-widest italic grayscale hover:grayscale-0">
             {b}
           </span>
         ))}
@@ -208,25 +195,24 @@ function TrustedBySection() {
 
 function StatsSection() {
   const stats: StatProps[] = [
-    { value: "50K+", label: "Active Students", icon: <Users size={20} /> },
-    { value: "2M+", label: "Questions Solved", icon: <BookOpen size={20} /> },
-    { value: "98%", label: "Success Rate", icon: <Target size={20} /> },
-    { value: "200+", label: "Exam Categories", icon: <Award size={20} /> },
+    { value: "50K+", label: "Active Nodes", icon: <Users size={24} /> },
+    { value: "2M+", label: "Inquiries Processed", icon: <BookOpen size={24} /> },
+    { value: "98%", label: "Success Matrix", icon: <Target size={24} /> },
+    { value: "200+", label: "Subject Domains", icon: <Award size={24} /> },
   ];
   return (
-    <section className="py-20 px-6">
-      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+    <section className="py-32 px-6 bg-white">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
         {stats.map((s) => (
           <div
             key={s.label}
-            className="relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] text-center group hover:border-purple-500/30 hover:bg-white/[0.05] transition-all duration-300 overflow-hidden"
+            className="relative p-10 rounded-[3rem] bg-gray-50/50 border border-gray-100 text-center group hover:border-blue-200 hover:bg-white hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition" />
-            <div className="flex justify-center mb-3 text-purple-400">{s.icon}</div>
-            <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-1">
+            <div className="flex justify-center mb-6 text-gray-300 group-hover:text-blue-600 transition-colors">{s.icon}</div>
+            <div className="text-4xl md:text-5xl font-black text-gray-900 mb-2 italic tracking-tighter">
               {s.value}
             </div>
-            <div className="text-gray-400 text-sm">{s.label}</div>
+            <div className="text-gray-400 text-[10px] font-black uppercase tracking-widest">{s.label}</div>
           </div>
         ))}
       </div>
@@ -238,53 +224,52 @@ function FeaturesSection() {
   const features: FeatureCardProps[] = [
     {
       icon: <Brain size={28} />,
-      title: "Adaptive AI Engine",
-      desc: "Our ML model analyses your weak spots and dynamically adjusts question difficulty for maximum improvement.",
-      tag: "AI-Powered",
+      title: "Cognitive AI Core",
+      desc: "Our neural architecture maps your intellectual trajectory and synthesizes personalized pathways for optimization.",
+      tag: "AI NATIVE",
     },
     {
       icon: <BarChart3 size={28} />,
-      title: "Deep Analytics",
-      desc: "Visualise accuracy, speed, topic-wise performance and improvement trends over time.",
-      tag: "Pro",
+      title: "Institutional Analytics",
+      desc: "Comprehensive telemetry covering speed vectors, accuracy trends, and cross-domain proficiency matrices.",
+      tag: "PREMIUM",
     },
     {
       icon: <Trophy size={28} />,
-      title: "Live Leaderboards",
-      desc: "Compete with thousands of students in real-time tests and climb national rankings.",
+      title: "Global Benchmarking",
+      desc: "Synchronous competition with the top 1% across national and institutional leaderboards.",
     },
     {
       icon: <Clock size={28} />,
-      title: "Timed Mock Tests",
-      desc: "Simulate real exam conditions with auto-scored, NTA-pattern mock papers.",
+      title: "Simulation Environment",
+      desc: "High-fidelity mock environments replicating national test patterns with millisecond precision.",
     },
     {
       icon: <Flame size={28} />,
-      title: "Daily Streaks",
-      desc: "Build consistent habits with daily challenges, streak rewards, and personal bests.",
+      title: "Persistence Modules",
+      desc: "Behavioral engineering through daily streak protocols and incremental performance rewards.",
     },
     {
       icon: <Shield size={28} />,
-      title: "Exam-Pattern Accurate",
-      desc: "Questions curated by IITians and subject-matter experts aligned to the latest syllabus.",
-      tag: "Expert Verified",
+      title: "Verified Repository",
+      desc: "Curated content pool from senior subject matter experts and institutional researchers.",
+      tag: "VALIDATED",
     },
   ];
 
   return (
-    <section className="py-28 px-6" id="features">
+    <section className="py-32 px-6 bg-[#f8f9fc]" id="features">
       <div className="max-w-6xl mx-auto">
-        <SectionLabel text="Features" />
-        <h2 className="section-title">
-          Everything You Need to <br className="hidden md:block" />
-          <span className="gradient-text">Score Higher</span>
+        <SectionLabel text="Framework Features" />
+        <h2 className="section-title italic">
+          Architected for <br className="hidden md:block" />
+          <span className="text-blue-600">Peak Performance</span>
         </h2>
-        <p className="section-sub">
-          From adaptive quizzes to in-depth analysis — Quizaro gives you an
-          unfair advantage over other aspirants.
+        <p className="section-sub font-bold text-gray-400 mt-6 uppercase text-[11px] tracking-widest">
+          The ultimate toolkit for institutional-grade preparation.
         </p>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-24">
           {features.map((f) => (
             <FeatureCard key={f.title} {...f} />
           ))}
@@ -296,23 +281,20 @@ function FeaturesSection() {
 
 function FeatureCard({ icon, title, desc, tag }: FeatureCardProps) {
   return (
-    <div className="group relative p-7 rounded-3xl bg-white/[0.03] border border-white/[0.08] hover:border-purple-500/40 transition-all duration-400 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-600/8 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-600/10 rounded-full blur-3xl translate-x-8 translate-y-8 group-hover:opacity-60 transition" />
-
-      <div className="relative">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-purple-600/20 border border-white/10 flex items-center justify-center text-cyan-400 mb-5 group-hover:scale-110 transition-transform">
+    <div className="group relative p-10 rounded-[3rem] bg-white border border-gray-100 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 overflow-hidden">
+      <div className="relative z-10">
+        <div className="w-16 h-16 rounded-[1.5rem] bg-blue-50 text-blue-600 flex items-center justify-center mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
           {icon}
         </div>
 
         {tag && (
-          <span className="absolute top-0 right-0 text-[10px] font-bold px-2.5 py-1 rounded-full bg-gradient-to-r from-cyan-500/20 to-purple-600/20 border border-purple-500/30 text-purple-300">
+          <span className="absolute top-0 right-0 text-[9px] font-black px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 uppercase tracking-widest">
             {tag}
           </span>
         )}
 
-        <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
-        <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
+        <h3 className="text-xl font-black text-gray-900 mb-4 uppercase tracking-tighter italic">{title}</h3>
+        <p className="text-gray-400 text-sm font-bold leading-relaxed">{desc}</p>
       </div>
     </div>
   );
@@ -320,38 +302,37 @@ function FeatureCard({ icon, title, desc, tag }: FeatureCardProps) {
 
 function ExamCategoriesSection() {
   const exams: ExamCardProps[] = [
-    { emoji: "🔬", title: "JEE / NEET", subtitle: "Engineering & Medical", count: "8,400+ tests", color: "from-blue-500/20 to-cyan-500/20 border-blue-500/30" },
-    { emoji: "📜", title: "UPSC / IAS", subtitle: "Civil Services", count: "3,200+ tests", color: "from-amber-500/20 to-orange-500/20 border-amber-500/30" },
-    { emoji: "🏦", title: "Banking PO/Clerk", subtitle: "SBI, IBPS, RBI", count: "5,100+ tests", color: "from-emerald-500/20 to-teal-500/20 border-emerald-500/30" },
-    { emoji: "⚔️", title: "Defence", subtitle: "CDS, NDA, AFCAT", count: "2,700+ tests", color: "from-red-500/20 to-pink-500/20 border-red-500/30" },
-    { emoji: "📊", title: "SSC / Railway", subtitle: "CGL, CHSL, RRB NTPC", count: "6,300+ tests", color: "from-violet-500/20 to-purple-500/20 border-violet-500/30" },
-    { emoji: "🎓", title: "CAT / MBA", subtitle: "IIM Entrance", count: "1,900+ tests", color: "from-pink-500/20 to-rose-500/20 border-pink-500/30" },
+    { emoji: "🔬", title: "JEE / NEET", subtitle: "Engineering & Medical", count: "8,400+ UNITS", color: "border-blue-100 bg-white" },
+    { emoji: "📜", title: "UPSC / IAS", subtitle: "Civil Services", count: "3,200+ UNITS", color: "border-amber-100 bg-white" },
+    { emoji: "🏦", title: "Banking PO/Clerk", subtitle: "SBI, IBPS, RBI", count: "5,100+ UNITS", color: "border-emerald-100 bg-white" },
+    { emoji: "⚔️", title: "Defence Forces", subtitle: "CDS, NDA, AFCAT", count: "2,700+ UNITS", color: "border-red-100 bg-white" },
+    { emoji: "📊", title: "SSC / Railway", subtitle: "CGL, CHSL, RRB NTPC", count: "6,300+ UNITS", color: "border-violet-100 bg-white" },
+    { emoji: "🎓", title: "CAT / MBA", subtitle: "IIM Entrance", count: "1,900+ UNITS", color: "border-pink-100 bg-white" },
   ];
 
   return (
-    <section className="py-28 px-6 relative" id="exams">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#1e1b4b30_0%,_transparent_70%)]" />
+    <section className="py-32 px-6 bg-white relative" id="exams">
       <div className="max-w-6xl mx-auto relative">
-        <SectionLabel text="Exam Categories" />
-        <h2 className="section-title">
-          Prepare for <span className="gradient-text">Any Exam</span> You Target
+        <SectionLabel text="Domain Categories" />
+        <h2 className="section-title italic">
+          Exhaustive <span className="text-blue-600">Curriculum Matrix</span>
         </h2>
-        <p className="section-sub">
-          Over 200 exam categories with 1M+ questions updated daily by domain experts.
+        <p className="section-sub font-bold text-gray-400 mt-6 uppercase text-[11px] tracking-widest">
+          Strategic coverage for over 200 high-stakes domains.
         </p>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-16">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-24">
           {exams.map((e) => (
             <ExamCard key={e.title} {...e} />
           ))}
         </div>
 
-        <div className="text-center mt-10">
+        <div className="text-center mt-16">
           <Link
             href="/exams"
-            className="inline-flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 transition-colors group"
+            className="inline-flex items-center gap-3 text-[10px] font-black text-blue-600 hover:text-blue-700 transition-all group uppercase tracking-[0.2em] bg-blue-50 px-8 py-4 rounded-full border border-blue-100 shadow-sm"
           >
-            View all 200+ exam categories
+            Explore All 200+ Institutional Domains
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -364,46 +345,43 @@ function ExamCard({ emoji, title, subtitle, count, color }: ExamCardProps) {
   return (
     <Link
       href="/exams"
-      className={`group relative p-6 rounded-2xl bg-gradient-to-br ${color} border hover:scale-[1.02] transition-all duration-300 overflow-hidden`}
+      className={`group relative p-10 rounded-[3rem] border ${color} hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 overflow-hidden`}
     >
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/[0.03]" />
-      <div className="flex items-start justify-between mb-4">
-        <span className="text-3xl">{emoji}</span>
-        <ArrowRight size={16} className="text-white/30 group-hover:text-white/70 group-hover:translate-x-1 transition-all" />
+      <div className="flex items-start justify-between mb-8">
+        <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-4xl shadow-sm group-hover:scale-110 transition-transform">{emoji}</div>
+        <ArrowRight size={20} className="text-gray-200 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
       </div>
-      <h3 className="font-bold text-white text-base mb-1">{title}</h3>
-      <p className="text-gray-400 text-sm mb-3">{subtitle}</p>
-      <span className="text-xs text-gray-500 bg-white/5 px-3 py-1 rounded-full">{count}</span>
+      <h3 className="font-black text-gray-900 text-xl mb-2 uppercase tracking-tighter italic">{title}</h3>
+      <p className="text-gray-400 text-xs font-bold mb-6 uppercase tracking-widest">{subtitle}</p>
+      <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-5 py-2 rounded-full border border-blue-100 uppercase tracking-widest">{count}</span>
     </Link>
   );
 }
 
 function HowItWorksSection() {
   const steps: StepProps[] = [
-    { number: "01", title: "Create Free Account", desc: "Sign up in 30 seconds for free.", icon: <Users size={20} /> },
-    { number: "02", title: "Choose Your Exam", desc: "Select from 100+ categories.", icon: <BookOpen size={20} /> },
-    { number: "03", title: "Take Tests", desc: "Adaptive questions that focus on your weak areas.", icon: <Brain size={20} /> },
-    { number: "04", title: "Track & Improve", desc: "Detailed analysis and AI insights after every test.", icon: <TrendingUp size={20} /> },
+    { number: "01", title: "Node Registry", desc: "Initialize your institutional identity in 30 seconds.", icon: <Users size={20} /> },
+    { number: "02", title: "Domain Selection", desc: "Configure your target curriculum matrix.", icon: <BookOpen size={20} /> },
+    { number: "03", title: "Protocol Session", desc: "Engage with adaptive assessment algorithms.", icon: <Brain size={20} /> },
+    { number: "04", title: "Telemetry Audit", desc: "Review performance vectors and AI insights.", icon: <TrendingUp size={20} /> },
   ];
 
   return (
-    <section className="py-28 px-6">
+    <section className="py-32 px-6 bg-[#f8f9fc]">
       <div className="max-w-6xl mx-auto">
-        <SectionLabel text="How It Works" />
-        <h2 className="section-title">
-          Go From Zero to <span className="gradient-text">Exam Ready</span>
+        <SectionLabel text="Execution Protocol" />
+        <h2 className="section-title italic">
+          Streamlined <span className="text-blue-600">Onboarding Flow</span>
         </h2>
-        <p className="section-sub">
-          Start improving in minutes — not months. Our streamlined flow gets you practising fast.
+        <p className="section-sub font-bold text-gray-400 mt-6 uppercase text-[11px] tracking-widest">
+          From registration to mastery in four strategic phases.
         </p>
 
-        <div className="relative mt-20">
-          <div className="hidden md:block absolute top-12 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
-          <div className="grid md:grid-cols-4 gap-8">
-            {steps.map((s, i) => (
-              <StepCard key={s.number} {...s} delay={i * 100} />
-            ))}
-          </div>
+        <div className="grid md:grid-cols-4 gap-12 mt-24 relative">
+          <div className="hidden lg:block absolute top-16 left-24 right-24 h-px bg-gray-200" />
+          {steps.map((s, i) => (
+            <StepCard key={s.number} {...s} delay={i * 100} />
+          ))}
         </div>
       </div>
     </section>
@@ -413,97 +391,101 @@ function HowItWorksSection() {
 function StepCard({ number, title, desc, icon, delay }: StepProps & { delay: number }) {
   return (
     <div className="relative text-center group" style={{ animationDelay: `${delay}ms` }}>
-      <div className="relative inline-flex w-24 h-24 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-600/20 border border-white/10 items-center justify-center mb-6 mx-auto group-hover:border-purple-500/50 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.3)] transition-all duration-400">
-        <span className="text-2xl font-black text-white/20 absolute">{number}</span>
-        <span className="text-purple-400 relative z-10">{icon}</span>
+      <div className="relative inline-flex w-32 h-32 rounded-[2.5rem] bg-white border border-gray-100 items-center justify-center mb-8 mx-auto group-hover:border-blue-200 group-hover:shadow-2xl group-hover:shadow-blue-900/5 transition-all duration-500 shadow-sm">
+        <span className="text-4xl font-black text-gray-50 absolute opacity-10 italic">{number}</span>
+        <span className="text-blue-600 relative z-10">{icon}</span>
       </div>
-      <h3 className="font-bold text-white mb-2">{title}</h3>
-      <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+      <h3 className="font-black text-gray-900 mb-4 uppercase tracking-tighter italic text-lg">{title}</h3>
+      <p className="text-gray-400 text-xs font-bold leading-relaxed px-4">{desc}</p>
     </div>
   );
 }
 
 function AIShowcaseSection() {
   return (
-    <section className="py-28 px-6 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-950/20 to-transparent" />
+    <section className="py-32 px-6 bg-white relative overflow-hidden">
       <div className="max-w-6xl mx-auto relative">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <SectionLabel text="AI Intelligence" />
-            <h2 className="text-4xl md:text-5xl font-black leading-tight mb-6">
-              Your Personal AI <br />
-              <span className="gradient-text">Study Coach</span>
+        <div className="grid lg:grid-cols-2 gap-24 items-center">
+          <div className="animate-in slide-in-from-left-12 duration-1000">
+            <SectionLabel text="Intelligence Core" />
+            <h2 className="text-4xl md:text-5xl font-black leading-tight mb-10 italic tracking-tighter">
+              Autonomous Study <br />
+              <span className="text-blue-600">Optimization Coach</span>
             </h2>
-            <p className="text-gray-400 leading-relaxed mb-8">
-              Unlike static test series, Quizaro&apos;s AI analyses thousands of data
-              points from your sessions — accuracy patterns, response speed, topic
-              confidence — to build a personalised preparation roadmap unique to you.
+            <p className="text-gray-500 font-bold leading-relaxed mb-12 text-lg">
+              Beyond traditional test series, Quizaro utilizes proprietary AI to analyze 
+              multidimensional performance vectors — establishing a precision roadmap for your 
+              intellectual development.
             </p>
-            <ul className="space-y-4">
+            <ul className="space-y-6 mb-12">
               {[
-                "Identifies and targets your weakest topics automatically",
-                "Adjusts question difficulty in real-time",
-                "Predicts your score range before the actual exam",
-                "Suggests optimal daily study schedule",
+                "Targeted weak-topic isolation and correction",
+                "Dynamic question complexity modulation",
+                "Predictive score trajectory forecasting",
+                "Optimization of study schedule allocations",
               ].map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm text-gray-400">
-                  <CheckCircle size={16} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                <li key={item} className="flex items-start gap-4 text-sm font-black text-gray-400 uppercase tracking-widest">
+                  <div className="w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle size={14} className="text-blue-600" />
+                  </div>
                   {item}
                 </li>
               ))}
             </ul>
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 mt-8 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl font-semibold text-sm hover:opacity-90 transition"
+              className="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/20"
             >
-              Try AI Analysis Free <ArrowRight size={14} />
+              Initialize AI Analysis <ArrowRight size={14} />
             </Link>
           </div>
 
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-600/20 rounded-3xl blur-3xl" />
-            <div className="relative bg-[#0a0d25]/80 border border-white/10 rounded-3xl p-6 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-6">
-                <h4 className="text-sm font-semibold text-gray-300">AI Performance Report</h4>
-                <span className="text-xs text-purple-400 bg-purple-400/10 px-2 py-1 rounded-full">Live</span>
+          <div className="relative animate-in slide-in-from-right-12 duration-1000">
+            <div className="absolute -inset-10 bg-blue-50/50 rounded-[4rem] blur-3xl" />
+            <div className="relative bg-white border border-gray-100 rounded-[3.5rem] p-10 lg:p-14 shadow-2xl shadow-blue-900/5">
+              <div className="flex items-center justify-between mb-10">
+                <div className="space-y-1">
+                  <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Performance Protocol</h4>
+                  <p className="text-lg font-black text-gray-900 italic tracking-tighter">Intelligent Data Visualizer</p>
+                </div>
+                <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-4 py-1.5 rounded-full border border-blue-100 uppercase tracking-widest animate-pulse">Telemetry Live</span>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-3 gap-6 mb-12">
                 {[
                   { label: "Accuracy", value: "84%", trend: "+12%" },
-                  { label: "Speed", value: "1.4s", trend: "-0.3s" },
-                  { label: "Rank", value: "#247", trend: "↑128" },
+                  { label: "Velocity", value: "1.4s", trend: "-0.3s" },
+                  { label: "Matrix Rank", value: "#247", trend: "↑128" },
                 ].map((m) => (
-                  <div key={m.label} className="bg-white/5 rounded-2xl p-4 text-center">
-                    <div className="text-xl font-black text-white">{m.value}</div>
-                    <div className="text-[10px] text-gray-500 mt-0.5">{m.label}</div>
-                    <div className="text-[10px] text-emerald-400 mt-1">{m.trend}</div>
+                  <div key={m.label} className="bg-gray-50 border border-gray-100 rounded-3xl p-6 text-center shadow-inner">
+                    <div className="text-2xl font-black text-gray-900 mb-1 italic tracking-tighter">{m.value}</div>
+                    <div className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-2">{m.label}</div>
+                    <div className="text-[10px] text-green-600 font-black">{m.trend}</div>
                   </div>
                 ))}
               </div>
 
-              <div className="mb-5">
-                <p className="text-xs text-gray-600 mb-3">Topic-wise strength</p>
+              <div className="mb-10 space-y-6">
                 {[
-                  { topic: "Maths", pct: 78, color: "from-cyan-500 to-blue-500" },
-                  { topic: "Physics", pct: 91, color: "from-blue-500 to-purple-500" },
-                  { topic: "Chemistry", pct: 63, color: "from-purple-500 to-pink-500" },
-                  { topic: "Biology", pct: 55, color: "from-pink-500 to-rose-500" },
+                  { topic: "Mathematics", pct: 78, color: "bg-blue-500" },
+                  { topic: "Theoretical Physics", pct: 91, color: "bg-purple-500" },
+                  { topic: "Inorganic Chemistry", pct: 63, color: "bg-amber-500" },
                 ].map(({ topic, pct, color }) => (
-                  <div key={topic} className="flex items-center gap-3 mb-2.5">
-                    <span className="text-xs text-gray-500 w-20">{topic}</span>
-                    <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
-                      <div className={`h-full bg-gradient-to-r ${color} rounded-full`} style={{ width: `${pct}%` }} />
+                  <div key={topic} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{topic}</span>
+                       <span className="text-[10px] font-black text-gray-900">{pct}%</span>
                     </div>
-                    <span className="text-xs text-gray-400 w-8">{pct}%</span>
+                    <div className="w-full h-2 bg-gray-50 border border-gray-100 rounded-full overflow-hidden shadow-inner">
+                      <div className={`h-full ${color} rounded-full transition-all duration-1000`} style={{ width: `${pct}%` }} />
+                    </div>
                   </div>
                 ))}
               </div>
 
-              <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
-                <p className="text-xs text-purple-300">
-                  🤖 <strong>AI Insight:</strong> Focus on Organic Chemistry this week — improving by just 15% will boost your overall score by ~4 marks.
+              <div className="p-6 bg-blue-50 border border-blue-100 rounded-3xl shadow-sm">
+                <p className="text-[11px] text-blue-800 font-bold leading-relaxed italic">
+                  🤖 <span className="font-black uppercase not-italic mr-2">Institutional Insight:</span> Focus on Organic Chemistry synthesis protocols this week — incremental 15% optimization will yield ~4.2 aggregate score increase.
                 </p>
               </div>
             </div>
@@ -517,29 +499,29 @@ function AIShowcaseSection() {
 function PricingSection() {
   const plans: PricingCardProps[] = [
     {
-      plan: "Free", price: "₹0", period: "forever", desc: "Perfect for getting started",
-      features: ["10 tests/month", "Basic analytics", "5 exam categories", "Community support"],
-      cta: "Start Free",
+      plan: "Foundation", price: "₹0", period: "forever", desc: "Institutional entry level",
+      features: ["10 Sessions/Month", "Basic Telemetry", "5 Domain Categories", "Community Access"],
+      cta: "Initialize Free",
     },
     {
-      plan: "Pro", price: "₹299", period: "/month", desc: "For serious aspirants",
-      features: ["Unlimited tests", "Full AI analytics", "All 200+ categories", "Live leaderboard", "Priority support", "Offline downloads"],
-      cta: "Get Pro", highlighted: true, badge: "Most Popular",
+      plan: "SaaS Professional", price: "₹299", period: "/month", desc: "High-density performance",
+      features: ["Unlimited Sessions", "Full AI Cognitive Audit", "200+ Domain Categories", "Global Leaderboards", "Institutional Support"],
+      cta: "Upgrade to Pro", highlighted: true, badge: "MOST REQUESTED",
     },
     {
-      plan: "Elite", price: "₹699", period: "/month", desc: "For top rankers",
-      features: ["Everything in Pro", "1-on-1 mentor sessions", "Previous year papers", "Doubt clearing chat", "Score guarantee*", "Early feature access"],
-      cta: "Go Elite",
+      plan: "Enterprise Elite", price: "₹699", period: "/month", desc: "Top-tier optimization",
+      features: ["Everything in Pro", "1-on-1 Strategic Mentorship", "Legacy Archive Access", "Priority Neural Support", "Guaranteed Trajectory*"],
+      cta: "Configure Elite",
     },
   ];
 
   return (
-    <section className="py-28 px-6 relative" id="pricing">
-      <div className="max-w-5xl mx-auto relative">
-        <SectionLabel text="Pricing" />
-        <h2 className="section-title">Simple, <span className="gradient-text">Transparent Pricing</span></h2>
-        <p className="section-sub">No hidden fees. No contracts. Upgrade or cancel anytime.</p>
-        <div className="grid md:grid-cols-3 gap-6 mt-16">
+    <section className="py-32 px-6 bg-[#f8f9fc]" id="pricing">
+      <div className="max-w-6xl mx-auto relative">
+        <SectionLabel text="Pricing Infrastructure" />
+        <h2 className="section-title italic">Transparent <span className="text-blue-600">Growth Models</span></h2>
+        <p className="section-sub font-bold text-gray-400 mt-6 uppercase text-[11px] tracking-widest">Scalable resources for every intellectual phase.</p>
+        <div className="grid md:grid-cols-3 gap-8 mt-24">
           {plans.map((p) => (<PricingCard key={p.plan} {...p} />))}
         </div>
       </div>
@@ -549,40 +531,40 @@ function PricingSection() {
 
 function PricingCard({ plan, price, period, desc, features, cta, highlighted, badge }: PricingCardProps) {
   return (
-    <div className={`relative p-7 rounded-3xl border transition-all duration-300 flex flex-col ${highlighted ? "bg-gradient-to-b from-purple-900/40 to-blue-900/30 border-purple-500/50 shadow-[0_0_50px_rgba(139,92,246,0.3)] scale-105" : "bg-white/[0.03] border-white/[0.08] hover:border-white/20"}`}>
-      {badge && <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-4 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600">{badge}</span>}
-      <div className="mb-6">
-        <h3 className="text-sm font-bold text-gray-400 uppercase mb-3">{plan}</h3>
-        <div className="flex items-baseline gap-1">
-          <span className="text-4xl font-black text-white">{price}</span>
-          <span className="text-gray-500 text-sm">{period}</span>
+    <div className={`relative p-10 rounded-[3.5rem] border transition-all duration-500 flex flex-col ${highlighted ? "bg-white border-blue-200 shadow-2xl shadow-blue-900/10 scale-105 z-20" : "bg-white border-gray-100 hover:border-gray-200"}`}>
+      {badge && <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-black px-6 py-2 rounded-full bg-blue-600 text-white uppercase tracking-widest shadow-lg">{badge}</span>}
+      <div className="mb-10">
+        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">{plan}</h3>
+        <div className="flex items-baseline gap-2">
+          <span className="text-5xl font-black text-gray-900 italic tracking-tighter">{price}</span>
+          <span className="text-gray-400 text-sm font-bold">{period}</span>
         </div>
-        <p className="text-gray-500 text-sm mt-2">{desc}</p>
+        <p className="text-gray-400 text-xs font-bold mt-4 uppercase tracking-widest">{desc}</p>
       </div>
-      <ul className="space-y-3 mb-8 flex-1">
+      <ul className="space-y-5 mb-12 flex-1">
         {features.map((f) => (
-          <li key={f} className="flex items-start gap-2.5 text-sm text-gray-400">
-            <CheckCircle size={15} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+          <li key={f} className="flex items-start gap-3 text-xs font-bold text-gray-500">
+            <CheckCircle size={16} className="text-blue-600 mt-0.5 flex-shrink-0" />
             {f}
           </li>
         ))}
       </ul>
-      <Link href="/register" className={`w-full text-center py-3 rounded-xl font-semibold text-sm transition-all ${highlighted ? "bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg" : "border border-white/15 hover:bg-white/5"}`}>{cta}</Link>
+      <Link href="/register" className={`w-full text-center py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${highlighted ? "bg-blue-600 text-white shadow-xl shadow-blue-900/20 hover:bg-blue-700" : "bg-gray-50 text-gray-900 border border-gray-100 hover:bg-gray-100"}`}>{cta}</Link>
     </div>
   );
 }
 
 function TestimonialsSection() {
   const testimonials: TestimonialProps[] = [
-    { name: "Arjun Mehta", role: "AIR 47, JEE Advanced 2024", exam: "JEE Advanced", text: "Quizaro's adaptive tests are insane. It identified my weak chapters in Week 1 and improved my score by 40 marks.", avatar: "AM", rating: 5 },
-    { name: "Priya Soni", role: "Selected in SBI PO 2024", exam: "Banking PO", text: "I cracked SBI PO in my first attempt, largely because of the timed sectional tests here. The analytics dashboard is gold.", avatar: "PS", rating: 5 },
+    { name: "Sankalp Swaroop", role: "AIR 47, JEE Advanced", exam: "Engineering Domain", text: "The adaptive assessment protocols are unparalleled. It isolated my cognitive gaps in the first week and optimized my trajectory significantly.", avatar: "SS", rating: 5 },
+    { name: "Priya Soni", role: "Institutional Merit Recipient", exam: "Banking Domain", text: "Cracked the entrance on my first attempt. The timed sectional telemetry and analytics dashboard provided a decisive competitive edge.", avatar: "PS", rating: 5 },
   ];
   return (
-    <section className="py-28 px-6">
+    <section className="py-32 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
-        <SectionLabel text="Success Stories" />
-        <h2 className="section-title">Real Results from <span className="gradient-text">Real Students</span></h2>
-        <div className="grid md:grid-cols-2 gap-6 mt-16">
+        <SectionLabel text="Merit Validation" />
+        <h2 className="section-title italic">Scholar <span className="text-blue-600">Success Trajectories</span></h2>
+        <div className="grid md:grid-cols-2 gap-8 mt-24">
           {testimonials.map((t) => (<TestimonialCard key={t.name} {...t} />))}
         </div>
       </div>
@@ -592,36 +574,37 @@ function TestimonialsSection() {
 
 function TestimonialCard({ name, role, text, avatar, rating, exam }: TestimonialProps) {
   return (
-    <div className="p-7 rounded-3xl bg-white/[0.03] border border-white/[0.07] relative overflow-hidden">
-      <div className="flex items-start justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center font-bold text-sm">{avatar}</div>
+    <div className="p-10 rounded-[3rem] bg-gray-50/50 border border-gray-100 relative group hover:bg-white hover:border-blue-100 hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500">
+      <div className="flex items-start justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-lg italic shadow-lg shadow-blue-900/10">{avatar}</div>
           <div>
-            <div className="font-bold text-white text-sm">{name}</div>
-            <div className="text-gray-500 text-xs">{role}</div>
+            <div className="font-black text-gray-900 text-sm uppercase tracking-tighter italic">{name}</div>
+            <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-1">{role}</div>
           </div>
         </div>
-        {exam && <span className="text-xs bg-white/5 border border-white/10 text-gray-400 px-2.5 py-1 rounded-full">{exam}</span>}
+        {exam && <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-4 py-1.5 rounded-full border border-blue-100 uppercase tracking-widest">{exam}</span>}
       </div>
-      <div className="flex gap-1 mb-4">
-        {Array.from({ length: rating }).map((_, i) => (<Star key={i} size={13} className="text-yellow-400 fill-yellow-400" />))}
+      <div className="flex gap-1.5 mb-6">
+        {Array.from({ length: rating }).map((_, i) => (<Star key={i} size={14} className="text-yellow-400" fill="currentColor" />))}
       </div>
-      <p className="text-gray-400 text-sm leading-relaxed">"{text}"</p>
+      <p className="text-gray-500 font-bold leading-relaxed italic text-sm">"{text}"</p>
     </div>
   );
 }
 
 function FaqSection() {
   const faqs = [
-    { question: "Is Quizaro really free to start?", answer: "Yes! The Free plan gives you 10 tests per month across 5 exam categories with no credit card required." },
-    { question: "How does the AI adaptive engine work?", answer: "After each test, our ML model maps your response patterns to a skill graph. It then selects questions from topics where your accuracy is below threshold." },
+    { question: "Is the institutional baseline genuinely free?", answer: "Correct. The Foundation plan provides 10 assessment sessions per month across 5 domain categories with zero capital commitment." },
+    { question: "How does the AI cognitive audit function?", answer: "Following each session, our neural model maps your response vectors to a high-dimensional skill matrix, modulating subsequent questions to optimize learning velocity." },
+    { question: "Can I migrate between performance tiers?", answer: "Seamlessly. You can scale your infrastructure requirements or down-throttle at any point within the institutional dashboard." },
   ];
   return (
-    <section className="py-28 px-6">
+    <section className="py-32 px-6 bg-[#f8f9fc]">
       <div className="max-w-3xl mx-auto">
-        <SectionLabel text="FAQ" />
-        <h2 className="section-title">Frequently Asked <span className="gradient-text">Questions</span></h2>
-        <div className="mt-12 space-y-3">
+        <SectionLabel text="Audit FAQ" />
+        <h2 className="section-title italic">Frequently Asked <span className="text-blue-600">Inquiries</span></h2>
+        <div className="mt-16 space-y-4">
           {faqs.map((f) => (<FaqItem key={f.question} {...f} />))}
         </div>
       </div>
@@ -632,31 +615,36 @@ function FaqSection() {
 function FaqItem({ question, answer }: FaqItemProps) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`border rounded-2xl overflow-hidden ${open ? "border-purple-500/40 bg-white/[0.04]" : "border-white/[0.07] bg-white/[0.02]"}`}>
-      <button className="w-full flex items-center justify-between px-6 py-5" onClick={() => setOpen(!open)}>
-        <span className="font-semibold text-sm text-white">{question}</span>
-        <ChevronDown size={16} className={`transition-transform ${open ? "rotate-180 text-purple-400" : ""}`} />
+    <div className={`border rounded-[2rem] overflow-hidden transition-all duration-500 ${open ? "border-blue-200 bg-white shadow-xl shadow-blue-900/5" : "border-gray-100 bg-white/50"}`}>
+      <button className="w-full flex items-center justify-between px-10 py-6" onClick={() => setOpen(!open)}>
+        <span className="font-black text-xs text-gray-900 uppercase tracking-widest italic text-left">{question}</span>
+        <div className={`w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center transition-all ${open ? "rotate-180 bg-blue-50 text-blue-600" : "text-gray-300"}`}>
+           <ChevronDown size={18} />
+        </div>
       </button>
-      {open && <div className="px-6 pb-5 text-sm text-gray-400">{answer}</div>}
+      {open && <div className="px-10 pb-8 text-sm font-bold text-gray-400 leading-relaxed animate-in fade-in slide-in-from-top-2">{answer}</div>}
     </div>
   );
 }
 
 function CtaSection() {
   return (
-    <section className="py-28 px-6 text-center bg-gradient-to-r from-cyan-950/20 via-purple-950/20 to-blue-950/20">
-      <h2 className="text-4xl md:text-6xl font-black mb-6">Your Exam Success <br/><span className="gradient-text">Starts Today</span></h2>
-      <p className="text-gray-400 text-lg mb-10">Free forever. No credit card. Start your first test in 60 seconds.</p>
-      <Link href="/register" className="px-10 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-2xl font-bold shadow-2xl hover:scale-105 transition-all">Create Free Account</Link>
+    <section className="py-40 px-6 text-center bg-white border-t border-gray-50 relative overflow-hidden">
+      <div className="absolute w-[800px] h-[800px] bg-blue-50/30 rounded-full -bottom-96 left-1/2 -translate-x-1/2 blur-[120px]" />
+      <div className="relative z-10 max-w-4xl mx-auto">
+        <h2 className="text-5xl md:text-7xl font-black mb-10 italic tracking-tighter leading-none">Your Professional <br/><span className="text-blue-600">Success Matrix Starts Now</span></h2>
+        <p className="text-gray-400 font-bold text-xl mb-16 uppercase tracking-widest">Free institutional baseline. No capital required.</p>
+        <Link href="/register" className="px-16 py-7 bg-gray-900 text-white rounded-[2.5rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-gray-900/20 hover:scale-105 transition-all">Initialize Free Registry</Link>
+      </div>
     </section>
   );
 }
 
 function SectionLabel({ text }: { text: string }) {
   return (
-    <div className="flex justify-center mb-5">
-      <span className="inline-flex items-center gap-2 text-xs font-bold uppercase text-purple-400 px-4 py-2 rounded-full bg-purple-400/10 border border-purple-500/20">
-        <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />{text}
+    <div className="flex justify-center mb-8">
+      <span className="inline-flex items-center gap-3 text-[10px] font-black uppercase text-blue-600 px-6 py-2.5 rounded-full bg-blue-50 border border-blue-100 tracking-widest shadow-sm italic">
+        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />{text}
       </span>
     </div>
   );
@@ -665,13 +653,10 @@ function SectionLabel({ text }: { text: string }) {
 function GlobalStyles() {
   return (
     <style jsx global>{`
-      .section-title { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 900; text-align: center; line-height: 1.1; margin-bottom: 20px; }
-      .section-sub { text-align: center; color: #6b7280; max-width: 600px; margin: 0 auto; }
-      .gradient-text { background: linear-gradient(135deg, #22d3ee, #3b82f6, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .section-title { font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 900; text-align: center; line-height: 1.05; letter-spacing: -0.05em; }
+      .section-sub { text-align: center; }
       @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-      .animate-marquee { animation: marquee 20s linear infinite; }
-      @keyframes shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-      .animate-shimmer { animation: shimmer 5s linear infinite; }
+      .animate-marquee { animation: marquee 30s linear infinite; }
     `}</style>
   );
 }

@@ -40,31 +40,31 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
       {/* Sidebar Container */}
       <div className={`
         fixed top-0 left-0 z-[200]
-        w-80 min-h-screen bg-[#050816] border-r border-white/10
+        w-80 min-h-screen bg-white border-r border-gray-100
         flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)]
-        ${isOpen ? "translate-x-0 shadow-[20px_0_60px_rgba(0,0,0,0.8)]" : "-translate-x-full"}
+        ${isOpen ? "translate-x-0 shadow-[20px_0_60px_rgba(0,0,0,0.05)]" : "-translate-x-full"}
       `}>
         {/* Brand Section */}
-        <div className="p-8 border-b border-white/5 flex items-center justify-between">
+        <div className="p-8 border-b border-gray-50 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <img 
               src="/logo.png" 
               alt="Quizaro" 
-              className="w-32 h-16 object-contain" 
+              className="w-12 h-12 object-contain rounded-xl shadow-sm border border-gray-100 p-2" 
             />
             <div>
-              <h1 className="text-sm font-black text-white leading-none uppercase tracking-tight">QUIZARO</h1>
-              <p className="text-[10px] text-gray-500 mt-1 font-black tracking-widest uppercase">Admin Matrix</p>
+              <h1 className="text-sm font-black text-gray-900 leading-none uppercase tracking-tight">QUIZARO</h1>
+              <p className="text-[10px] text-gray-400 mt-1 font-bold tracking-widest uppercase">Admin Matrix</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-white hover:rotate-90 transition-all duration-300">
-             <Plus className="rotate-45" size={28} />
+          <button onClick={onClose} className="text-gray-300 hover:text-gray-900 hover:rotate-90 transition-all duration-300">
+             <Plus className="rotate-45" size={24} />
           </button>
         </div>
-
+ 
         {/* Navigation */}
         <nav className="flex-1 p-6 pt-8">
-          <ul className="space-y-3">
+          <ul className="space-y-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== "/admin-dashboard" && pathname.startsWith(item.href));
               return (
@@ -72,49 +72,49 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                   <Link
                     href={item.href}
                     onClick={onClose}
-                    className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 ${
+                    className={`flex items-center gap-4 px-6 py-4 rounded-xl transition-all duration-300 ${
                       isActive
-                        ? "bg-gradient-to-r from-purple-600 to-indigo-700 text-white shadow-[0_15px_30px_rgba(124,58,237,0.2)] font-bold italic"
-                        : "text-gray-500 hover:bg-white/5 hover:text-white"
+                        ? "bg-blue-50 text-blue-700 shadow-sm font-bold border-l-4 border-blue-600"
+                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                   >
-                    <span className={`${isActive ? "text-white" : "text-gray-400 opacity-60"}`}>{item.icon}</span>
-                    <span className="text-[11px] font-black uppercase tracking-widest">{item.label}</span>
+                    <span className={`${isActive ? "text-blue-600" : "text-gray-400"}`}>{item.icon}</span>
+                    <span className="text-[11px] font-bold uppercase tracking-widest">{item.label}</span>
                   </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
-
+ 
         {/* Footer Info */}
-        <div className="p-6 border-t border-white/5 space-y-3">
+        <div className="p-6 border-t border-gray-50 space-y-2">
           <Link 
             href="/admin-dashboard/help"
-            className="flex items-center gap-4 px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-white rounded-2xl transition-all text-[11px] font-black uppercase tracking-widest"
+            className="flex items-center gap-4 px-6 py-4 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl transition-all text-[11px] font-bold uppercase tracking-widest"
           >
-            <HelpCircle size={18} className="opacity-60" />
+            <HelpCircle size={18} className="text-gray-400" />
             Support
           </Link>
           <button
             onClick={() => setShowLogoutModal(true)}
-            className="w-full flex items-center gap-4 px-6 py-4 text-red-500 hover:bg-red-500/10 rounded-2xl transition-all text-[11px] font-black uppercase tracking-widest"
+            className="w-full flex items-center gap-4 px-6 py-4 text-red-500 hover:bg-red-50 rounded-xl transition-all text-[11px] font-bold uppercase tracking-widest"
           >
             <LogOut size={18} />
             Logout
           </button>
         </div>
       </div>
-
+ 
       {/* ADMIN LOGOUT MODAL 🔥 */}
       {showLogoutModal && (
-         <div className="fixed inset-0 z-[500] bg-[#050816]/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
-            <div className="bg-[#0b0f2a] border border-white/10 rounded-[3.5rem] p-12 max-w-sm w-full shadow-2xl text-center space-y-10 animate-in zoom-in-95 duration-300">
-               <div className="w-24 h-24 bg-red-500/10 text-red-500 border border-red-500/20 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl shadow-red-500/10">
+         <div className="fixed inset-0 z-[500] bg-gray-900/40 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-500">
+            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-12 max-w-sm w-full shadow-2xl text-center space-y-10 animate-in zoom-in-95 duration-300">
+               <div className="w-24 h-24 bg-red-50 text-red-500 border border-red-100 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-xl">
                   <LogOut size={40} />
                </div>
                <div className="space-y-4">
-                  <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">Logout</h3>
+                  <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Logout</h3>
                   <p className="text-[11px] font-bold text-gray-500 leading-relaxed uppercase tracking-[0.2em]">
                      Authorized Administrator, confirm immediate session suspension.
                   </p>
@@ -125,13 +125,13 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                         localStorage.clear();
                         window.location.href = "/";
                     }}
-                    className="w-full py-5 bg-red-600 hover:bg-red-700 text-white rounded-3xl font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl shadow-red-900/40"
+                    className="w-full py-5 bg-red-600 hover:bg-red-700 text-white rounded-3xl font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg shadow-red-900/20"
                   >
                      Confirm Logout
                   </button>
                   <button 
                     onClick={() => setShowLogoutModal(false)}
-                    className="w-full py-5 bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white rounded-3xl font-black text-[11px] uppercase tracking-[0.3em] transition-all"
+                    className="w-full py-5 bg-gray-100 text-gray-500 hover:bg-gray-200 rounded-3xl font-black text-[11px] uppercase tracking-[0.3em] transition-all"
                   >
                      Cancel
                   </button>

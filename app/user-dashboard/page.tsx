@@ -173,359 +173,323 @@ export default function UserDashboard() {
 
   const resourceCategories = ["All", ...Array.from(new Set(resources.map(r => r.category)))];
 
+  if (loading && !attempts.length) return (
+    <div className="min-h-screen bg-[#f8f9fc] flex flex-col items-center justify-center space-y-6">
+      <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
+      <p className="font-bold animate-pulse text-blue-600 uppercase tracking-widest text-[10px]">
+        Synchronizing Neural Progress...
+      </p>
+    </div>
+  );
+
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-[#f8f9fc] text-gray-900">
         <UserHeader 
-          title="Intelligence Command" 
+          title="Command Center" 
           breadcrumbs={["Intelligence", "Command Dashboard"]} 
         />
 
-        {loading && !attempts.length ? (
-           <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12 animate-pulse overflow-hidden">
-              <div className="h-64 bg-white/5 rounded-[3rem] border border-white/10" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                 {[1,2,3].map(i => <div key={i} className="h-40 bg-white/5 rounded-[2.5rem] border border-white/10" />)}
-              </div>
-              <div className="space-y-6">
-                 <div className="h-10 w-48 bg-white/5 rounded-xl" />
-                 {[1,2,3].map(i => <div key={i} className="h-32 bg-white/5 rounded-[2.5rem] border border-white/10" />)}
-              </div>
-           </div>
-        ) : (
-          <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-12 animate-in fade-in duration-700">
-            
-            <div className="flex items-center justify-between">
-               <h2 className="text-xl font-black uppercase tracking-tighter italic text-white">Student Intelligence Hub</h2>
-               <button 
-                 onClick={() => router.push("/")}
-                 className="px-6 py-2.5 bg-white text-[#050816] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all shadow-lg"
-               >
-                  Go to Institutional Home
-               </button>
-            </div>
+        <div className="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+          
+          <div className="flex items-center justify-between">
+             <h2 className="text-xl font-black uppercase tracking-tight text-gray-900 italic">Student Intelligence Hub</h2>
+             <button 
+               onClick={() => router.push("/")}
+               className="px-6 py-2.5 bg-white text-gray-600 border border-gray-200 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm"
+             >
+                Return to Campus
+             </button>
+          </div>
 
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-               {[
-                  { label: "Papers Submitted", val: papersSubmitted, icon: <CheckCircle2 size={24} />, color: "green" },
-                  { label: "Global Attempts", val: totalAttempts, icon: <History size={24} />, color: "blue" },
-                  { label: "Training Velocity", val: `${totalTimeSpent}m`, icon: <Clock size={24} />, color: "purple" }
-               ].map((stat) => (
-                  <div key={stat.label} className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center justify-between group hover:border-white/20 transition-all backdrop-blur-md">
-                     <div>
-                        <h4 className="text-3xl font-black text-white italic tracking-tighter leading-none">{stat.val}</h4>
-                        <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mt-3">{stat.label}</p>
-                     </div>
-                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
-                        stat.color === 'green' ? "bg-green-500/10 text-green-400" :
-                        stat.color === 'blue' ? "bg-blue-500/10 text-blue-400" : "bg-purple-500/10 text-purple-400"
-                     }`}>
-                        {stat.icon}
-                     </div>
-                  </div>
-               ))}
-            </section>
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             {[
+                { label: "Papers Submitted", val: papersSubmitted, icon: <CheckCircle2 size={24} />, color: "green" },
+                { label: "Global Attempts", val: totalAttempts, icon: <History size={24} />, color: "blue" },
+                { label: "Training Velocity", val: `${totalTimeSpent}m`, icon: <Clock size={24} />, color: "purple" }
+             ].map((stat) => (
+                <div key={stat.label} className="bg-white border border-gray-100 p-8 rounded-3xl flex items-center justify-between group hover:border-blue-200 transition-all shadow-sm">
+                   <div>
+                      <h4 className="text-3xl font-black text-gray-900 tracking-tight leading-none">{stat.val}</h4>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-3">{stat.label}</p>
+                   </div>
+                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
+                      stat.color === 'green' ? "bg-green-50 text-green-600" :
+                      stat.color === 'blue' ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"
+                   }`}>
+                      {stat.icon}
+                   </div>
+                </div>
+             ))}
+          </section>
 
-            <section className="bg-white/5 border border-white/10 p-10 rounded-[3rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-600/5 blur-[100px] rounded-full pointer-events-none" />
-               <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
-                  <div className="space-y-1 text-center md:text-left">
-                     <h2 className="text-3xl font-black tracking-tighter uppercase italic">Welcome back, {user?.name?.split(' ')[0] || "Scholar"}</h2>
-                     <div className="flex items-center gap-3 justify-center md:justify-start">
-                        <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Neural Link Active</p>
-                        {search && (
-                          <div className="flex gap-2">
-                             <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{myTests.length + availableRegistry.length + librarySeries.length} Tests Found</span>
-                             <span className="px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-md text-[8px] font-black uppercase tracking-tighter">{filteredResources.length} Notes Found</span>
-                          </div>
+          <section className="bg-white border border-gray-100 p-10 rounded-[2.5rem] shadow-sm relative overflow-hidden group">
+             <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
+                <div className="space-y-1 text-center md:text-left">
+                   <h2 className="text-3xl font-black tracking-tight uppercase italic text-gray-900">Welcome, {user?.name?.split(' ')[0] || "Scholar"}</h2>
+                   <div className="flex items-center gap-3 justify-center md:justify-start">
+                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Connection Stable</p>
+                      {search && (
+                        <div className="flex gap-2">
+                           <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase">{myTests.length + availableRegistry.length} Tests Active</span>
+                        </div>
+                      )}
+                   </div>
+                </div>
+                <div className="relative w-full md:w-[500px]">
+                   <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={20} />
+                   <input 
+                     type="text" 
+                     placeholder="Search across Tests, Manuals, & Study Notes..." 
+                     value={search}
+                     onChange={(e) => setSearch(e.target.value)}
+                     className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-16 pr-8 py-4 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-sm text-gray-900 placeholder:text-gray-400 shadow-inner"
+                   />
+                </div>
+             </div>
+          </section>
+
+          {/* SECTION 1: CONSOLIDATED INTELLIGENCE REGISTRY */}
+          <section className="space-y-6">
+              <div className="flex items-center justify-between px-2">
+                <div className="flex items-center gap-4">
+                   <div className="w-10 h-10 bg-blue-50 text-blue-600 border border-blue-100 rounded-2xl flex items-center justify-center shadow-sm"><BookOpen size={20} /></div>
+                   <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Active Assessments</h3>
+                </div>
+                {!search && <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{myTests.length + availableRegistry.length} Protocols available</span>}
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                {/* Part A: Active & Completed Protocols */}
+                {myTests.map((pt) => (
+                  <div key={pt._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 transition-all group flex flex-col md:flex-row items-center justify-between gap-6">
+                     <div className="flex items-center gap-6">
+                        <div className={`w-14 h-14 ${pt.isCompleted ? "bg-green-50 text-green-600" : "bg-blue-600 text-white shadow-lg shadow-blue-900/20"} rounded-xl flex items-center justify-center transition-all`}>
+                           {pt.isCompleted ? <CheckCircle2 size={28} /> : <FileText size={28} />}
+                        </div>
+                        <div>
+                           <h4 className="text-lg font-black text-gray-900 group-hover:text-blue-600 transition-colors uppercase italic tracking-tight">{pt.testId.title}</h4>
+                           <div className="flex items-center gap-4 mt-2">
+                              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100">{pt.testId.category || "General"}</span>
+                              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><Clock size={12} className="text-blue-600" /> {pt.testId.duration} Min</span>
+                               {(pt.testId as any).pdfUrl && (
+                                 <a 
+                                   href={(pt.testId as any).pdfUrl} 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   className="text-[9px] font-bold text-blue-600 uppercase tracking-widest flex items-center gap-1 hover:underline"
+                                   onClick={(e) => e.stopPropagation()}
+                                 >
+                                   <Download size={12} /> PDF
+                                 </a>
+                               )}
+                           </div>
+                        </div>
+                     </div>
+                     
+                     <div className="flex items-center gap-3">
+                        {pt.isCompleted ? (
+                           <button
+                              onClick={() => router.push(`/result?attemptId=${pt._id}`)}
+                              className="px-8 py-3 bg-gray-50 text-gray-600 border border-gray-200 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-gray-100 transition-all"
+                           >
+                              <Award size={16} /> Analysis
+                           </button>
+                        ) : (
+                           <button
+                              onClick={() => window.open(`/quiz/${pt.testId._id}`, '_blank')}
+                              className="px-8 py-4 bg-blue-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-900/10"
+                           >
+                              <Play size={16} fill="white" /> Resume
+                           </button>
                         )}
                      </div>
                   </div>
-                  <div className="relative w-full md:w-[500px]">
-                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-cyan-400 transition-colors" size={20} />
-                     <input 
-                       type="text" 
-                       placeholder="Search across Tests, Manuals, & Study Notes..." 
-                       value={search}
-                       onChange={(e) => setSearch(e.target.value)}
-                       className="w-full bg-white/5 border border-white/10 rounded-[2rem] pl-16 pr-8 py-5 outline-none focus:border-cyan-500/50 focus:bg-white/[0.08] transition-all font-bold text-sm text-white placeholder:text-gray-700 shadow-inner"
-                     />
-                  </div>
-               </div>
-            </section>
+                ))}
 
-            {/* SECTION 1: CONSOLIDATED INTELLIGENCE REGISTRY 🔥 */}
-            <section className="space-y-8">
-                <div className="flex items-center justify-between px-4">
-                  <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-2xl flex items-center justify-center shadow-lg"><BookOpen size={20} /></div>
-                     <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Institutional Intelligence Registry</h3>
-                  </div>
-                  {!search && <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{myTests.length + availableRegistry.length} Global Protocols</span>}
-                </div>
-
-                <div className="grid grid-cols-1 gap-6">
-                  {/* Part A: Active & Completed Protocols */}
-                  {myTests.map((pt) => (
-                    <div key={pt._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-xl hover:shadow-cyan-500/5 hover:bg-white/[0.07] transition-all duration-300 group flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-md relative overflow-hidden">
-                       <div className="flex items-center gap-8 relative z-10">
-                          <div className={`w-16 h-16 ${pt.isCompleted ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-blue-500/20"} border rounded-2xl flex items-center justify-center transition-all group-hover:scale-110`}>
-                             {pt.isCompleted ? <CheckCircle2 size={32} /> : <FileText size={32} />}
-                          </div>
-                          <div>
-                             <h4 className="text-xl font-black text-white leading-tight group-hover:text-cyan-400 transition-colors uppercase italic tracking-tighter">{pt.testId.title}</h4>
-                             <div className="flex items-center gap-6 mt-3">
-                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{pt.testId.category || "General"}</span>
-                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Clock size={12} className="text-cyan-400" /> {pt.testId.duration} Min</span>
-                                 {(pt.testId as any).pdfUrl && (
-                                   <a 
-                                     href={(pt.testId as any).pdfUrl} 
-                                     target="_blank" 
-                                     rel="noopener noreferrer"
-                                     className="text-[9px] font-black text-cyan-400 uppercase tracking-widest flex items-center gap-2 hover:underline ml-4"
-                                     onClick={(e) => e.stopPropagation()}
-                                   >
-                                     <Download size={12} /> Download PDF
-                                   </a>
-                                 )}
-                             </div>
-                          </div>
-                       </div>
-                       
-                       <div className="flex items-center gap-4 relative z-10">
-                          {pt.isCompleted ? (
-                             <button
-                                onClick={() => router.push(`/result?attemptId=${pt._id}`)}
-                                className="px-10 py-4 bg-white/5 text-gray-400 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-white/10 hover:text-white transition-all"
-                             >
-                                <Award size={18} /> View Analysis
-                             </button>
-                          ) : (
-                             <button
-                                onClick={() => window.open(`/quiz/${pt.testId._id}`, '_blank')}
-                                className="px-10 py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 hover:shadow-2xl hover:shadow-cyan-900/40 transition-all font-black"
-                             >
-                                <Play size={18} fill="white" /> Resume Session
-                             </button>
-                          )}
-                       </div>
-                    </div>
-                  ))}
-
-                  {/* Part B: Newly Published Institutional Nodes */}
-                  {availableRegistry.map((test) => (
-                    <div key={test._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 border-dashed shadow-xl hover:shadow-amber-500/5 hover:bg-white/[0.07] transition-all duration-300 group flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-md relative overflow-hidden">
-                       <div className="flex items-center gap-8 relative z-10">
-                          <div className={`w-16 h-16 bg-white/5 border border-white/10 text-gray-400 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 group-hover:text-amber-400 group-hover:border-amber-400/20`}>
-                             <Sparkles size={32} />
-                          </div>
-                          <div>
-                             <div className="flex items-center gap-3">
-                                <h4 className="text-xl font-black text-white leading-tight group-hover:text-amber-400 transition-colors uppercase italic tracking-tighter">{test.title}</h4>
-                                <span className="px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest">New Protocol</span>
-                                {test.seriesId && (
-                                   <span className="px-3 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest flex items-center gap-2">
-                                      <Layers size={10} /> Series Member
-                                   </span>
-                                )}
-                             </div>
-                             <div className="flex items-center gap-6 mt-3">
-                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{test.category || "General"}</span>
-                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Clock size={12} className="text-amber-400" /> {test.duration} Min</span>
-                                 {(test as any).pdfUrl && (
-                                   <a 
-                                     href={(test as any).pdfUrl} 
-                                     target="_blank" 
-                                     rel="noopener noreferrer"
-                                     className="text-[9px] font-black text-amber-500 uppercase tracking-widest flex items-center gap-2 hover:underline ml-4"
-                                     onClick={(e) => e.stopPropagation()}
-                                   >
-                                     <Download size={12} /> Download PDF
-                                   </a>
-                                 )}
-                             </div>
-                          </div>
-                       </div>
-                       
-                       <div className="flex items-center gap-4 relative z-10">
-                          <button
-                             onClick={() => handleJoinSession(test._id)}
-                             className="px-10 py-5 bg-white/5 hover:bg-amber-600 text-gray-400 hover:text-white border border-white/10 hover:border-amber-600 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 hover:shadow-2xl hover:shadow-amber-900/40 transition-all font-black"
-                          >
-                             <Play size={18} /> Initiate Session
-                          </button>
-                       </div>
-                    </div>
-                  ))}
-
-                  {myTests.length === 0 && availableRegistry.length === 0 && (
-                    <div className="py-16 text-center bg-white/5 rounded-[2.5rem] border border-dashed border-white/10 flex flex-col items-center gap-4 opacity-40">
-                      <History size={32} className="text-gray-600" />
-                      <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">No intelligence nodes found in registry</p>
-                    </div>
-                  )}
-                </div>
-            </section>
-
-            {/* SECTION 2: STUDY MANUALS & NOTES REPOSITORY */}
-            <section className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-                <div className="flex flex-col md:flex-row md:items-center justify-between px-4 gap-6">
-                  <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 bg-green-500/10 text-green-400 border border-green-500/20 rounded-2xl flex items-center justify-center shadow-lg"><FileText size={20} /></div>
-                     <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">Knowledge & Notes Mesh</h3>
-                  </div>
-                  
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                     {resourceCategories.map(cat => (
-                       <button
-                         key={cat}
-                         onClick={() => setResourceCategory(cat)}
-                         className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${
-                           resourceCategory === cat 
-                           ? "bg-green-600 border-green-500 text-white shadow-lg shadow-green-900/20" 
-                           : "bg-white/5 border-white/10 text-gray-500 hover:border-white/30"
-                         }`}
-                       >
-                          {cat}
-                       </button>
-                     ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredResources.length === 0 ? (
-                    <div className="md:col-span-3 py-24 text-center bg-white/5 rounded-[2.5rem] border border-dashed border-white/10 flex flex-col items-center gap-4 opacity-40">
-                       <AlertCircle size={40} className="text-gray-700" />
-                       <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">No matching knowledge nodes found in repository</p>
-                    </div>
-                  ) : (
-                    filteredResources.map((res) => {
-                      const isNew = new Date().getTime() - new Date(res.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000;
-                      return (
-                        <div key={res._id} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-xl group hover:bg-[#0b0f2a] transition-all duration-300 backdrop-blur-md flex flex-col relative overflow-hidden">
-                           <div className="flex items-center gap-5 mb-6">
-                              <div className="w-14 h-14 bg-green-500/10 text-green-400 rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                                 <FileText size={28} />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                 <div className="flex items-center gap-2 mb-1">
-                                    <h4 className="text-md font-black text-white tracking-tight uppercase leading-none truncate group-hover:text-green-400 transition-colors">{res.title}</h4>
-                                    {isNew && <Sparkles size={12} className="text-amber-500 animate-pulse" />}
-                                 </div>
-                                 <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">{res.category || "Study Manual"}</p>
-                              </div>
-                           </div>
-                           <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 italic leading-relaxed">{res.description || "Official institutional study material."}</p>
-                           
-                           <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
-                              <span className="text-[8px] font-black text-gray-700 uppercase tracking-widest italic">Node: {res._id.slice(-6)}</span>
-                              <a 
-                                href={res.fileUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="px-6 py-3 bg-white/5 text-white border border-white/10 rounded-xl hover:bg-green-600 hover:border-green-600 transition-all font-black text-[9px] uppercase tracking-widest flex items-center gap-2"
-                              >
-                                 <Download size={14} /> Open Manual
-                              </a>
-                           </div>
-                           {isNew && (
-                              <div className="absolute -top-1 -right-1 w-20 h-20 bg-green-500/10 blur-3xl pointer-events-none" />
-                           )}
+                {/* Part B: Newly Published Institutional Nodes */}
+                {availableRegistry.map((test) => (
+                  <div key={test._id} className="bg-white p-6 rounded-2xl border border-gray-100 border-dashed shadow-sm hover:border-amber-200 transition-all group flex flex-col md:flex-row items-center justify-between gap-6">
+                     <div className="flex items-center gap-6">
+                        <div className={`w-14 h-14 bg-gray-50 border border-gray-100 text-gray-400 rounded-xl flex items-center justify-center transition-all group-hover:text-amber-500 group-hover:bg-amber-50`}>
+                           <Sparkles size={28} />
                         </div>
-                      );
-                    })
-                  )}
-                </div>
-            </section>
-
-            {/* SECTION 3: INSTITUTIONAL SERIES MESH 🔥 */}
-            <section className="bg-white/5 border border-white/10 p-10 lg:p-14 rounded-[3.5rem] backdrop-blur-3xl space-y-10">
-                <div className="flex items-center justify-between px-4">
-                  <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-2xl flex items-center justify-center shadow-lg"><Layers size={20} /></div>
-                     <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Institutional Series Mesh</h3>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {librarySeries.map((s) => (
-                    <div key={s._id} className="bg-white/5 p-8 rounded-[3rem] border border-white/10 shadow-2xl flex flex-col group hover:-translate-y-2 transition-all duration-300 relative backdrop-blur-md">
-                       <div className="w-16 h-16 bg-white/5 border border-white/5 text-purple-400 rounded-2xl flex items-center justify-center mb-8 shadow-inner group-hover:bg-purple-600 group-hover:text-white transition-all">
-                          <Layers size={28} />
-                       </div>
-                       <h4 className="text-lg font-black text-white tracking-tighter leading-none mb-3 italic">{s.title}</h4>
-                       <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-6">{s.category}</p>
-                       
-                       <p className="text-[11px] text-gray-500 font-bold mb-10 line-clamp-2 italic leading-relaxed font-black">{s.description || "Comprehensive multi-paper series."}</p>
-                       
-                       <button
-                          onClick={() => router.push(`/tests?seriesId=${s._id}`)}
-                          className="w-full mt-auto py-5 bg-white/5 border border-white/10 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-purple-600 hover:border-purple-600 transition shadow-2xl active:scale-95"
-                       >
-                         Explore System Grid
-                       </button>
-                    </div>
-                  ))}
-                </div>
-            </section>
-
-            {/* SECTION 4: CENTRALIZED INSTITUTIONAL HUD 🌐 */}
-            <div className="flex justify-center pb-20">
-               <section className="bg-[#0b0f2a] border border-white/10 rounded-[4rem] p-12 lg:p-16 max-w-[1000px] w-full relative overflow-hidden group shadow-2xl">
-                  <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-cyan-600/5 blur-[120px] rounded-full pointer-events-none" />
-                  
-                  <div className="relative z-10 flex flex-col items-center text-center space-y-12">
-                     <div className="flex flex-col items-center gap-4">
-                        <div className="w-16 h-16 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-[2rem] flex items-center justify-center shadow-lg"><Award size={32} /></div>
                         <div>
-                           <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Global Ranking Matrix</h3>
-                           <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mt-1">Institutional Pulse</p>
-                        </div>
-                     </div>
-
-                     <div className="w-full max-w-2xl bg-white/5 border border-white/10 rounded-[2.5rem] p-12 space-y-8 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-600/5 opacity-50" />
-                        <div className="relative z-10 space-y-6">
-                           <Zap size={48} className="mx-auto text-blue-500/40 animate-pulse" />
-                           <div className="space-y-2">
-                              <p className="text-md font-black text-white uppercase tracking-widest italic">Awaiting Initial Performance Data</p>
-                              <p className="text-xs font-bold text-gray-500 italic leading-relaxed max-w-md mx-auto">Complete institutional protocols to activate your neural signature and synchronize with the global ranking mesh.</p>
+                           <div className="flex items-center gap-3">
+                              <h4 className="text-lg font-black text-gray-900 group-hover:text-amber-600 transition-colors uppercase italic tracking-tight">{test.title}</h4>
+                              <span className="px-2 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded text-[8px] font-bold uppercase">New</span>
                            </div>
-                           <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden max-w-sm mx-auto border border-white/5">
-                              <div className="h-full w-1/3 bg-gradient-to-r from-blue-600 to-cyan-500 animate-pulse" />
+                           <div className="flex items-center gap-4 mt-2">
+                              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100">{test.category || "General"}</span>
+                              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><Clock size={12} className="text-amber-500" /> {test.duration} Min</span>
                            </div>
                         </div>
                      </div>
-
-                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
-                        {[
-                           { label: "Institutional HUD", val: "V4.5.1 LIVE", color: "blue" },
-                           { label: "Neural Load", val: "Optimal", color: "cyan" },
-                           { label: "Sync Status", val: "Active", color: "purple" },
-                           { label: "Mesh Integrity", val: "99.8%", color: "green" }
-                        ].map(stat => (
-                           <div key={stat.label} className="bg-white/5 border border-white/10 p-6 rounded-[2rem] space-y-1.5 hover:bg-white/[0.08] transition-all group/stat">
-                              <p className="text-[8px] font-black text-gray-600 uppercase tracking-widest group-hover/stat:text-gray-400 transition-colors">{stat.label}</p>
-                              <h4 className="text-lg font-black text-white tracking-tighter uppercase italic leading-none">{stat.val}</h4>
-                           </div>
-                        ))}
+                     
+                     <div className="flex items-center gap-3">
+                        <button
+                           onClick={() => handleJoinSession(test._id)}
+                           className="px-8 py-4 bg-white text-gray-600 border border-gray-200 hover:bg-amber-600 hover:text-white hover:border-amber-600 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all"
+                        >
+                           <Play size={16} /> Initiate
+                        </button>
                      </div>
                   </div>
-               </section>
-            </div>
+                ))}
 
+                {myTests.length === 0 && availableRegistry.length === 0 && (
+                  <div className="py-12 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200 flex flex-col items-center gap-3">
+                    <History size={32} className="text-gray-300" />
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">No intelligence nodes found in registry</p>
+                  </div>
+                )}
+              </div>
+          </section>
+
+          {/* SECTION 2: STUDY MANUALS & NOTES REPOSITORY */}
+          <section className="space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between px-2 gap-4">
+                <div className="flex items-center gap-4">
+                   <div className="w-10 h-10 bg-green-50 text-green-600 border border-green-100 rounded-2xl flex items-center justify-center shadow-sm"><FileText size={20} /></div>
+                   <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest italic">Knowledge Repository</h3>
+                </div>
+                
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                   {resourceCategories.map(cat => (
+                     <button
+                       key={cat}
+                       onClick={() => setResourceCategory(cat)}
+                       className={`px-4 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all border ${
+                         resourceCategory === cat 
+                         ? "bg-green-600 border-green-600 text-white shadow-sm" 
+                         : "bg-white border-gray-200 text-gray-400 hover:bg-gray-50"
+                       }`}
+                     >
+                        {cat}
+                     </button>
+                   ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredResources.length === 0 ? (
+                  <div className="md:col-span-3 py-16 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200 flex flex-col items-center gap-3">
+                     <AlertCircle size={32} className="text-gray-300" />
+                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">No matching knowledge nodes found</p>
+                  </div>
+                ) : (
+                  filteredResources.map((res) => {
+                    const isNew = new Date().getTime() - new Date(res.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000;
+                    return (
+                      <div key={res._id} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm group hover:border-green-200 transition-all flex flex-col">
+                         <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center shadow-sm">
+                               <FileText size={24} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                               <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="text-md font-black text-gray-900 uppercase truncate group-hover:text-green-600 transition-colors">{res.title}</h4>
+                                  {isNew && <Sparkles size={12} className="text-amber-500 animate-pulse" />}
+                               </div>
+                               <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{res.category || "Study Manual"}</p>
+                            </div>
+                         </div>
+                         <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 italic leading-relaxed">{res.description || "Official institutional study material."}</p>
+                         
+                         <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
+                            <span className="text-[8px] font-bold text-gray-300 uppercase tracking-widest">NODE-{res._id.slice(-4)}</span>
+                            <a 
+                              href={res.fileUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="px-5 py-2.5 bg-gray-50 text-gray-600 border border-gray-200 rounded-xl hover:bg-green-600 hover:text-white hover:border-green-600 transition-all font-bold text-[9px] uppercase tracking-widest flex items-center gap-2"
+                            >
+                               <Download size={14} /> Open
+                            </a>
+                         </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+          </section>
+
+          {/* SECTION 3: INSTITUTIONAL SERIES MESH */}
+          <section className="bg-white border border-gray-100 p-10 rounded-[2.5rem] shadow-sm space-y-8">
+              <div className="flex items-center gap-4">
+                 <div className="w-10 h-10 bg-purple-50 text-purple-600 border border-purple-100 rounded-2xl flex items-center justify-center shadow-sm"><Layers size={20} /></div>
+                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Series Collections</h3>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {librarySeries.map((s) => (
+                  <div key={s._id} className="bg-gray-50 p-6 rounded-3xl border border-gray-100 flex flex-col group hover:bg-white hover:border-purple-200 transition-all duration-300 shadow-sm">
+                     <div className="w-12 h-12 bg-white border border-gray-100 text-purple-600 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-purple-600 group-hover:text-white transition-all">
+                        <Layers size={24} />
+                     </div>
+                     <h4 className="text-md font-black text-gray-900 mb-2 italic">{s.title}</h4>
+                     <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-4">{s.category}</p>
+                     
+                     <p className="text-[11px] text-gray-500 font-bold mb-8 line-clamp-2 leading-relaxed">{s.description || "Comprehensive multi-paper series."}</p>
+                     
+                     <button
+                        onClick={() => router.push(`/tests?seriesId=${s._id}`)}
+                        className="w-full mt-auto py-4 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-[9px] uppercase tracking-widest hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200 transition active:scale-95 shadow-sm"
+                     >
+                       Explore Series
+                     </button>
+                  </div>
+                ))}
+              </div>
+          </section>
+
+          {/* SECTION 4: GLOBAL RANKING HUD */}
+          <div className="flex justify-center pb-12">
+             <section className="bg-white border border-gray-100 rounded-[2.5rem] p-10 lg:p-14 max-w-[1000px] w-full shadow-sm text-center space-y-10">
+                <div className="flex flex-col items-center gap-4">
+                   <div className="w-16 h-16 bg-blue-50 text-blue-600 border border-blue-100 rounded-3xl flex items-center justify-center shadow-sm"><Award size={32} /></div>
+                   <div>
+                      <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tight italic">Global Ranking Matrix</h3>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Institutional Leaderboard</p>
+                   </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-100 rounded-3xl p-10 space-y-6 relative overflow-hidden">
+                   <Zap size={48} className="mx-auto text-blue-100" />
+                   <div className="space-y-2">
+                      <p className="text-md font-black text-gray-900 uppercase tracking-widest italic">Awaiting Performance Data</p>
+                      <p className="text-xs font-bold text-gray-400 italic leading-relaxed max-w-md mx-auto">Complete assessments to activate your rank and synchronize with the global cohort.</p>
+                   </div>
+                   <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden max-w-sm mx-auto">
+                      <div className="h-full w-1/4 bg-blue-600 animate-pulse" />
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+                   {[
+                      { label: "HUD VERSION", val: "V4.5.1", color: "blue" },
+                      { label: "NEURAL LOAD", val: "OPTIMAL", color: "cyan" },
+                      { label: "SYNC STATUS", val: "ACTIVE", color: "purple" },
+                      { label: "INTEGRITY", val: "99.8%", color: "green" }
+                   ].map(stat => (
+                      <div key={stat.label} className="bg-gray-50 border border-gray-100 p-4 rounded-2xl space-y-1">
+                         <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{stat.label}</p>
+                         <h4 className="text-sm font-black text-gray-900 tracking-tight">{stat.val}</h4>
+                      </div>
+                   ))}
+                </div>
+             </section>
           </div>
-        )}
-      
+
+        </div>
 
       {statusMsg && (
-        <div className={`fixed bottom-10 left-10 z-[300] px-10 py-6 rounded-[2.5rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-5 backdrop-blur-3xl ${statusMsg.type === 'success' ? "bg-green-500/10 border-green-500/20 text-green-400" : statusMsg.type === 'alert' ? "bg-amber-500/10 border-amber-500/20 text-amber-400" : "bg-red-500/10 border-red-500/20 text-red-500"}`}>
-           <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-500/20" : statusMsg.type === 'alert' ? "bg-amber-500/20" : "bg-red-500/20"}`}>
+        <div className={`fixed bottom-8 left-8 z-[300] px-8 py-5 rounded-2xl border shadow-2xl animate-in slide-in-from-left-8 duration-500 flex items-center gap-4 backdrop-blur-md ${statusMsg.type === 'success' ? "bg-white border-green-200 text-green-600" : statusMsg.type === 'alert' ? "bg-white border-amber-200 text-amber-600" : "bg-white border-red-200 text-red-600"}`}>
+           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-50" : statusMsg.type === 'alert' ? "bg-amber-50" : "bg-red-50"}`}>
               {statusMsg.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
            </div>
-           <p className="text-[11px] font-black uppercase tracking-widest">{statusMsg.text}</p>
+           <p className="text-[11px] font-bold uppercase tracking-widest">{statusMsg.text}</p>
         </div>
       )}
-    </>
+    </div>
   );
 }

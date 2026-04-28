@@ -114,13 +114,13 @@ export default function Navbar() {
             <>
               <button
                 onClick={handleDashboardRedirect}
-                className="px-6 py-2.5 bg-[#050816] text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-gray-900 transition-all shadow-xl shadow-gray-950/20"
+                className="px-8 py-3 bg-blue-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-900/10 active:scale-95"
               >
                 Dashboard
               </button>
               <button
                 onClick={handleLogout}
-                className="p-2.5 text-red-500 hover:bg-red-50 rounded-xl transition-all border border-red-100"
+                className="p-3 text-red-500 hover:bg-red-50 rounded-2xl transition-all border border-red-100"
                 title="Logout"
               >
                 <LogOut size={20} />
@@ -130,17 +130,17 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="text-base font-medium text-gray-600 hover:text-gray-900 transition"
+                className="text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors px-4"
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="px-6 py-2.5 text-sm font-semibold rounded-xl text-white 
-                bg-gradient-to-r from-blue-600 to-indigo-600 
-                hover:opacity-90 transition shadow-lg shadow-blue-500/20"
+                className="px-8 py-3 text-[11px] font-black uppercase tracking-widest rounded-2xl text-white 
+                bg-blue-600 hover:bg-blue-700 
+                transition-all shadow-lg shadow-blue-900/10 active:scale-95"
               >
-                Register
+                Enroll
               </Link>
             </>
           )}

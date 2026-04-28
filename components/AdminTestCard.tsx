@@ -39,83 +39,78 @@ export default function AdminTestCard({
   };
 
   return (
-    <div className={`bg-white border rounded-3xl p-6 transition-all duration-500 group relative flex items-center gap-6 ${isSelected ? "border-blue-500 shadow-xl shadow-blue-50 bg-blue-50/10" : "border-gray-100/80 hover:shadow-2xl hover:shadow-gray-100/50"}`}>
+    <div className={`bg-white border rounded-lg p-4 transition-all duration-300 group relative flex items-center gap-4 ${isSelected ? "border-blue-300 bg-blue-50/20" : "border-gray-200 hover:border-gray-300"}`}>
       
       {/* SELECTION CHECKBOX */}
       <div 
         onClick={() => onSelect?.(!isSelected)}
-        className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-100" : "border-gray-200 hover:border-blue-400"}`}
+        className={`w-4 h-4 rounded border flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-blue-600 border-blue-600" : "border-gray-300 hover:border-blue-400 bg-white"}`}
       >
-        {isSelected && <div className="w-2 h-2 bg-white rounded-full shadow-sm" />}
+        {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
       </div>
 
-      <div className="flex-1 flex flex-col md:flex-row md:items-center gap-6">
-        <div className="flex items-center gap-5 flex-1 min-w-0">
-           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${isSelected ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-600 group-hover:scale-110"}`}>
-             <FileText size={24} />
-           </div>
+      <div className="flex-1 flex items-center gap-4 min-w-0">
+         <div className="w-10 h-10 rounded bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
+           <FileText size={20} />
+         </div>
 
-           <div className="truncate">
-              <h3 className="text-sm font-black text-gray-900 group-hover:text-blue-600 transition truncate uppercase tracking-tight">
-                {title}
-              </h3>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1 opacity-60">
-                {description || "Independent Session"}
-              </p>
-           </div>
+         <div className="flex-1 min-w-0">
+            <h3 className="text-[13px] font-bold text-gray-800 truncate">
+              {title}
+            </h3>
+            <p className="text-[11px] font-medium text-gray-500 truncate uppercase mt-0.5 tracking-tight">
+              {description || "No Categories Specified"}
+            </p>
+         </div>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <div className="flex flex-col items-end mr-4">
+           <span className="text-[11px] font-medium text-gray-500 whitespace-nowrap">{date}</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="flex flex-col items-end">
-             <span className="text-[10px] font-black text-gray-400 font-mono opacity-50 mb-1">{date}</span>
-             <button 
-               disabled={status === "Attempted"}
-               onClick={() => {
-                 if (status !== "Attempted") {
-                   onStatusToggle?.(status === "Published" ? "Draft" : "Published");
-                 }
-               }}
-               className={`text-[9px] uppercase font-black tracking-[0.15em] px-4 py-1.5 rounded-xl transition-all ${statusColors[status]} ${status !== "Attempted" ? "cursor-pointer" : "cursor-default opacity-80"}`}
-             >
-               {status === "Attempted" ? "Live session active" : status}
-             </button>
-          </div>
+        <div className="flex items-center gap-1.5">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onQuestions(); }}
+            className="px-3 py-1.5 text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded transition-all flex items-center gap-1.5"
+          >
+            <FileEdit size={12} /> Questions
+          </button>
+          
+          <button 
+            onClick={(e) => { e.stopPropagation(); onAnalytics?.(); }}
+            className="px-3 py-1.5 text-[11px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded transition-all flex items-center gap-1.5"
+          >
+            <BarChart3 size={12} /> Analytics
+          </button>
 
-          <div className="flex items-center gap-3 pl-6 border-l border-gray-100">
-            <button 
-              onClick={onQuestions}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-gray-200 active:scale-95"
-            >
-              <FileEdit size={14} />
-              Studio
-            </button>
-            <button 
-              onClick={onEdit}
-              className="w-10 h-10 border border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-100 rounded-xl flex items-center justify-center transition-all group/opt"
-            >
-              <MoreVertical size={16} className="group-hover/opt:scale-125 transition-transform" />
-            </button>
-            <button 
-               onClick={onExport}
-               className="w-10 h-10 border border-gray-100 text-gray-400 hover:text-purple-600 hover:border-purple-100 rounded-xl flex items-center justify-center transition-all group/opt"
-               title="Export JSON"
-            >
-              <Download size={16} className="group-hover/opt:scale-125 transition-transform" />
-            </button>
-            <button 
-               onClick={onAnalytics}
-               className="w-10 h-10 border border-gray-100 text-gray-400 hover:text-green-600 hover:border-green-100 rounded-xl flex items-center justify-center transition-all group/opt"
-               title="View Analytics"
-            >
-              <BarChart3 size={16} className="group-hover/opt:scale-125 transition-transform" />
-            </button>
-            <button 
-              onClick={onDelete}
-              className="w-10 h-10 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-xl flex items-center justify-center transition-all"
-            >
-              <Trash2 size={16} />
-            </button>
-          </div>
+          <button 
+            onClick={(e) => { e.stopPropagation(); onExport?.(); }}
+            className="px-3 py-1.5 text-[11px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded transition-all flex items-center gap-1.5"
+          >
+            <Download size={12} /> Export
+          </button>
+
+          <button 
+            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+            className="px-3 py-1.5 text-[11px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded transition-all"
+          >
+            Edit
+          </button>
+
+          <button 
+            onClick={(e) => { e.stopPropagation(); onStatusToggle?.(status === "Published" ? "Draft" : "Published"); }}
+            className={`px-3 py-1.5 text-[11px] font-bold rounded transition-all ${status === "Published" ? "text-green-600 bg-green-50 hover:bg-green-100" : "text-gray-400 bg-gray-50 hover:bg-gray-100"}`}
+          >
+            {status}
+          </button>
+
+          <button 
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
+          >
+            <Trash2 size={14} />
+          </button>
         </div>
       </div>
     </div>

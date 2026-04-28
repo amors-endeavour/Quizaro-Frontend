@@ -6,7 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
 import API from "@/app/lib/api";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, BookOpen, Search, ArrowRight, Clock } from "lucide-react";
 
 interface Test {
   _id: string;
@@ -105,16 +105,21 @@ export default function TestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white font-sans selection:bg-cyan-500/30">
+    <div className="min-h-screen bg-[#f8f9fc] text-gray-900 font-sans selection:bg-blue-100 selection:text-blue-600">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-8 py-20">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-20 animate-in fade-in slide-in-from-top-10 duration-700">
-           <div className="space-y-4">
-              <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-white uppercase italic">
-                {seriesTitle || "Intelligence Registry"}
-              </h1>
-              <p className="text-sm font-bold text-gray-500 uppercase tracking-[0.4em] italic mb-2">
+      <div className="max-w-[1400px] mx-auto px-8 py-20 lg:py-32">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-24 animate-in fade-in slide-in-from-top-10 duration-700">
+           <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                 <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-blue-900/20">
+                    <BookOpen size={24} />
+                 </div>
+                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-gray-900 uppercase italic">
+                   {seriesTitle || "Intelligence Registry"}
+                 </h1>
+              </div>
+              <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.4em] ml-1">
                 {seriesId ? "Institutional Series Sequence" : "Complete Platform Assessment Catalog"}
               </p>
               {seriesId && isAuthenticated && (
@@ -129,72 +134,71 @@ export default function TestsPage() {
                       setLoading(false);
                     }
                   }}
-                  className="mt-6 px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-[0_15px_40px_rgba(37,99,235,0.3)] flex items-center gap-4 w-fit border border-white/10"
+                  className="mt-10 px-12 py-5 bg-blue-600 text-white rounded-[2.5rem] font-black text-[11px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/20 flex items-center gap-5 w-fit active:scale-95"
                 >
-                  <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center shadow-lg">✓</div>
                   Enroll in Intelligence Sequence
+                  <ArrowRight size={18} />
                 </button>
               )}
            </div>
            
-           <div className="w-full md:w-96 relative group">
+           <div className="w-full md:w-[450px] relative group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-600 transition-colors" size={20} />
               <input
                 type="text"
                 placeholder="Locate intelligence nodes..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-cyan-400/50 focus:bg-white/10 focus:shadow-[0_0_30px_rgba(34,211,238,0.1)] transition-all font-bold text-sm text-white placeholder:text-gray-600 shadow-2xl shadow-black/20"
+                className="w-full bg-white border border-gray-100 rounded-[2.5rem] pl-16 pr-8 py-5 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-sm text-gray-900 placeholder:text-gray-300 shadow-xl shadow-blue-900/5"
               />
-              <div className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 group-hover:text-cyan-400 transition-colors">
-                <AlertCircle size={18} />
-              </div>
            </div>
         </div>
 
         {filteredTests.length === 0 ? (
-          <div className="text-center py-40 bg-white/5 rounded-[4rem] border border-dashed border-white/10 animate-pulse">
-            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">No matching intellectual assets found in registry.</p>
+          <div className="text-center py-40 bg-white rounded-[4rem] border border-dashed border-gray-200 animate-pulse">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">No matching intellectual assets found in registry.</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-            {filteredTests.map((test) => (
+            {filteredTests.map((test, idx) => (
               <div
                 key={test._id}
-                className="bg-white/5 backdrop-blur-xl rounded-[3rem] border border-white/5 p-10 hover:border-cyan-400/30 hover:shadow-[0_30px_70px_rgba(0,0,0,0.5)] transition-all duration-500 group flex flex-col relative overflow-hidden"
+                className="bg-white rounded-[3.5rem] border border-gray-100 p-12 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 group flex flex-col relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-100 transition-colors" />
                 
-                <div className="flex items-center gap-5 mb-8 relative z-10">
-                   <div className="w-14 h-14 bg-white/5 border border-white/5 text-gray-500 rounded-2xl flex items-center justify-center font-black text-xs font-mono group-hover:bg-cyan-600 group-hover:text-white group-hover:border-cyan-400 transition-all shadow-xl group-hover:shadow-cyan-900/40">
+                <div className="flex items-center gap-6 mb-10 relative z-10">
+                   <div className="w-16 h-16 bg-gray-50 border border-gray-100 text-gray-400 rounded-3xl flex items-center justify-center font-black text-sm italic group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all shadow-sm">
                       {test.paperNumber ? `P${test.paperNumber}` : "★"}
                    </div>
-                   <div>
-                      <h3 className="text-lg font-black text-white tracking-tight leading-none group-hover:text-cyan-400 transition-colors uppercase italic">{test.title}</h3>
-                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-2 italic">{test.duration || 30} Min Assessment</p>
+                   <div className="flex-1 min-w-0">
+                      <h3 className="text-xl font-black text-gray-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors uppercase italic truncate">{test.title}</h3>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-3 flex items-center gap-2">
+                        <Clock size={12} className="text-blue-600" /> {test.duration || 30} Min Assessment
+                      </p>
                    </div>
                 </div>
 
                 {test.description && (
-                  <p className="text-gray-400 font-bold text-[11px] mb-8 line-clamp-2 leading-relaxed italic relative z-10">{test.description}</p>
+                  <p className="text-gray-500 font-bold text-[12px] mb-10 line-clamp-2 leading-relaxed italic relative z-10">{test.description}</p>
                 )}
 
-                <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between relative z-10">
+                <div className="mt-auto pt-10 border-t border-gray-50 flex items-center justify-between relative z-10">
                    <div className="flex flex-col">
-                      <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Nodes</span>
-                      <span className="text-lg font-black text-white tracking-tighter">{test.totalQuestions || 0}</span>
+                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Nodes</span>
+                      <span className="text-2xl font-black text-gray-900 tracking-tighter">{test.totalQuestions || 0}</span>
                    </div>
 
-                   {/* PRICE BADGE 🔥 */}
                    {test.price > 0 && (
-                      <div className="flex flex-col items-end">
-                         <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Registry Fee</span>
-                         <span className="text-lg font-black text-amber-500 tracking-tighter drop-shadow-[0_0_10px_rgba(245,158,11,0.3)]">₹{test.price}</span>
+                      <div className="flex flex-col items-end mr-4">
+                         <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1">Registry Fee</span>
+                         <span className="text-2xl font-black text-amber-600 tracking-tighter">₹{test.price}</span>
                       </div>
                    )}
                    
                    <button
                     onClick={() => handleLaunchPaper(test._id)}
-                    className={`px-10 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all shadow-2xl active:scale-95 border border-white/10 ${test.price > 0 ? "bg-amber-600 text-white hover:bg-amber-700 shadow-amber-950/20" : "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:scale-105 shadow-blue-900/20"}`}
+                    className={`px-10 py-5 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95 ${test.price > 0 ? "bg-amber-600 text-white hover:bg-amber-700 shadow-amber-900/20" : "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-900/20"}`}
                    >
                     {!isAuthenticated ? "Authenticate" : test.price > 0 ? `Unlock Paper` : "Initialize Paper"}
                    </button>
@@ -204,13 +208,13 @@ export default function TestsPage() {
           </div>
         )}
       </div>
-      {/* INSTITUTIONAL STATUS HUD 🔥 */}
+
       {statusMsg && (
-        <div className={`fixed bottom-10 left-10 z-[300] px-8 py-5 rounded-[2rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-4 backdrop-blur-xl ${statusMsg.type === 'success' ? "bg-white/5 border-cyan-400/20 text-cyan-400" : statusMsg.type === 'alert' ? "bg-white/5 border-amber-400/20 text-amber-400" : "bg-white/5 border-red-400/20 text-red-500"}`}>
-           <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-cyan-400/10" : statusMsg.type === 'alert' ? "bg-amber-400/10" : "bg-red-400/10"}`}>
-              {statusMsg.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+        <div className={`fixed bottom-12 left-12 z-[300] px-10 py-6 rounded-[2.5rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-6 bg-white ${statusMsg.type === 'success' ? "border-green-100 text-green-600" : statusMsg.type === 'alert' ? "border-amber-100 text-amber-600" : "border-red-100 text-red-600"}`}>
+           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-50" : statusMsg.type === 'alert' ? "bg-amber-50" : "bg-red-50"}`}>
+              {statusMsg.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
            </div>
-           <p className="text-[10px] font-black uppercase tracking-widest leading-none italic">{statusMsg.text}</p>
+           <p className="text-[11px] font-black uppercase tracking-widest leading-none italic">{statusMsg.text}</p>
         </div>
       )}
     </div>

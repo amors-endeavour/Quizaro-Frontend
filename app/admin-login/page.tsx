@@ -47,88 +47,88 @@ function AdminLoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#02040a] p-4 font-mono select-none">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#9333ea15_0%,_transparent_70%)] pointer-events-none" />
-      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 blur-[100px] rounded-full pointer-events-none" />
-      
-      <div className="bg-zinc-950 border border-zinc-900 p-12 rounded-3xl shadow-[0_0_100px_rgba(147,51,234,0.05)] w-full max-w-sm relative z-10 box-border overflow-hidden group animate-in fade-in zoom-in duration-700">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 animate-pulse" />
+    <div className="flex items-center justify-center min-h-screen bg-[#f8f9fc] p-6 selection:bg-blue-100 selection:text-blue-600">
+      <div className="bg-white border border-gray-100 p-12 lg:p-16 rounded-[3rem] shadow-2xl shadow-blue-900/5 w-full max-w-md relative z-10 box-border animate-in fade-in zoom-in duration-700">
         
-        <div className="text-center mb-12">
-          <div className="w-14 h-14 bg-zinc-900 border border-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-purple-500/10">
-            <ShieldAlert className="text-purple-400" size={28} />
+        <div className="text-center mb-14">
+          <div className="w-20 h-20 bg-blue-50 text-blue-600 border border-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-sm">
+            <ShieldAlert size={32} />
           </div>
-          <h2 className="text-2xl font-black text-white uppercase tracking-[0.4em]">ADMIN CONSOLE</h2>
-          <p className="text-zinc-600 mt-3 text-[10px] uppercase font-bold tracking-[0.2em]">Private Administrative Access</p>
+          <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight italic leading-none">Administrative Core</h2>
+          <p className="text-gray-400 mt-3 text-[10px] uppercase font-black tracking-widest leading-relaxed">Authorized Personnel Access Protocol</p>
         </div>
 
         {error && (
-          <div className="bg-red-950/20 border border-red-950/50 text-red-500 px-4 py-3 rounded-xl mb-10 text-[10px] uppercase font-black tracking-wider flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping" />
+          <div className="bg-red-50 border border-red-100 text-red-600 px-6 py-4 rounded-2xl mb-10 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 animate-in slide-in-from-top-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
             {error}
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-8">
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center justify-between ml-1">
-              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700">Admin Email</label>
-              <Terminal size={12} className="text-zinc-800" />
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Registry Email</label>
             </div>
-            <input
-              type="email"
-              placeholder="admin@quizaro.internal"
-              className="w-full bg-zinc-900/50 border border-zinc-900 rounded-2xl px-6 py-4 outline-none focus:border-purple-600/50 transition-all text-white placeholder:text-zinc-800 text-sm font-medium"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <div className="relative group">
+               <Terminal className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-600 transition-colors" size={18} />
+               <input
+                 type="email"
+                 placeholder="admin@quizaro.internal"
+                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-6 py-4 outline-none focus:border-blue-400 focus:bg-white transition-all text-gray-900 font-bold placeholder:text-gray-300 text-sm shadow-inner"
+                 value={email}
+                 onChange={(e) => setEmail(e.target.value)}
+                 required
+               />
+            </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center justify-between ml-1">
-              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700">Access Key</label>
-              <Lock size={12} className="text-zinc-800" />
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Security Cipher</label>
             </div>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full bg-zinc-900/50 border border-zinc-900 rounded-2xl px-6 py-4 outline-none focus:border-purple-600/50 transition-all text-white placeholder:text-zinc-800 text-sm font-medium"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="relative group">
+               <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-600 transition-colors" size={18} />
+               <input
+                 type="password"
+                 placeholder="••••••••••••"
+                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-6 py-4 outline-none focus:border-blue-400 focus:bg-white transition-all text-gray-900 font-bold placeholder:text-gray-300 text-sm shadow-inner"
+                 value={password}
+                 onChange={(e) => setPassword(e.target.value)}
+                 required
+               />
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white text-black py-4 rounded-2xl font-black text-xs uppercase tracking-[0.3em] transition-all hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 mt-4 shadow-xl"
+            className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all hover:bg-blue-700 active:scale-95 disabled:opacity-50 mt-4 shadow-xl shadow-blue-900/10"
           >
             {loading ? (
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-5 h-5 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin mx-auto" />
-                <span className="text-[8px] font-black animate-pulse opacity-50">Connecting to Private Server...</span>
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Authenticating...</span>
               </div>
             ) : (
-              "Initialize Access"
+              "Initialize Secure Session"
             )}
           </button>
         </form>
 
-        <div className="mt-12 flex items-center justify-center gap-6">
-          <Link href="/user-login" className="text-[10px] font-black text-zinc-700 hover:text-white transition-colors uppercase tracking-widest border-b border-dashed border-zinc-800 pb-1">
-            Student Exit
+        <div className="mt-14 flex items-center justify-center gap-8">
+          <Link href="/user-login" className="text-[9px] font-black text-gray-400 hover:text-blue-600 transition-colors uppercase tracking-widest">
+            Student Portal
           </Link>
-          <div className="w-px h-3 bg-zinc-900" />
-          <Link href="/" className="text-[10px] font-black text-zinc-700 hover:text-white transition-colors uppercase tracking-widest border-b border-dashed border-zinc-800 pb-1">
-            Main Entry
+          <div className="w-px h-3 bg-gray-100" />
+          <Link href="/" className="text-[9px] font-black text-gray-400 hover:text-blue-600 transition-colors uppercase tracking-widest">
+            Home Interface
           </Link>
         </div>
       </div>
       
-      <div className="absolute bottom-8 text-[10px] text-zinc-800 font-bold uppercase tracking-[0.5em] flex items-center gap-4">
-        <Monitor size={14} className="animate-pulse" /> SYSTEM VERSION 4.0.1
+      <div className="absolute bottom-12 text-[10px] text-gray-300 font-black uppercase tracking-widest flex items-center gap-4 italic">
+        Institutional System Framework v4.0.1
       </div>
     </div>
   );
@@ -136,7 +136,7 @@ function AdminLoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#02040a]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f9fc]" />}>
       <AdminLoginForm />
     </Suspense>
   );
