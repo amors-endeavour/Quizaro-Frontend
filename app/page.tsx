@@ -122,13 +122,13 @@ function HeroSection() {
 
         {/* Master Heading */}
         <h1 className="text-5xl sm:text-7xl md:text-[6rem] font-black leading-[1.05] mb-10 tracking-tighter text-gray-900 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100 italic">
-          Master Any Exam <br />
-          <span className="text-blue-600">With Intelligence</span>
+          Crack Any Exam <br />
+          <span className="text-blue-600">With Confidence</span>
         </h1>
 
         <p className="max-w-2xl text-lg sm:text-xl text-gray-500 font-bold leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
-          India&apos;s most sophisticated assessment engine. Adaptive protocols, 
-          real-time telemetry, and institutional-grade analytics.
+          India&apos;s smartest quiz platform. Adaptive test, real time analytics, 
+          live leaderboards - everything you need to outperform 50,000+ aspirants.
         </p>
 
         {/* Action Hub */}
@@ -138,7 +138,7 @@ function HeroSection() {
             className="group relative flex items-center gap-5 px-14 py-6 bg-gray-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-gray-900/20 hover:scale-105 transition-all active:scale-95"
           >
             <div className="bg-white/10 p-2.5 rounded-xl group-hover:rotate-12 transition-transform"><Users size={20} /></div>
-            Student Gateway
+            I am a student
           </button>
 
           <button 
@@ -146,7 +146,7 @@ function HeroSection() {
             className="group flex items-center gap-5 px-14 py-6 bg-white border border-gray-100 rounded-[2rem] font-black text-xs uppercase tracking-widest text-gray-900 hover:bg-gray-50 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-gray-900/5"
           >
             <div className="bg-gray-50 p-2.5 rounded-xl text-gray-400 group-hover:text-blue-600 transition-colors"><Shield size={20} /></div>
-            Admin Console
+            I am an admin
           </button>
         </div>
 
