@@ -1,78 +1,160 @@
 @import "tailwindcss";
 
+/* ====================================================
+   QUIZARO — WHITE MINIMALIST DESIGN SYSTEM
+   Primary palette: white, off-white, light grays
+   Text: dark gray / near-black for maximum contrast
+   Accent: blue-600 for CTAs, links, highlights
+==================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #050816;
+  /* Backgrounds */
+  --bg-primary:   #FFFFFF;
+  --bg-secondary: #FAFAFA;
+  --bg-tertiary:  #F5F5F5;
+  --bg-card:      #FFFFFF;
+
+  /* Borders */
+  --border-light:  #E5E7EB;
+  --border-medium: #D1D5DB;
+
+  /* Text */
+  --text-primary:   #111827;
+  --text-secondary: #374151;
+  --text-muted:     #6B7280;
+  --text-subtle:    #9CA3AF;
+
+  /* Accent */
+  --accent:       #2563EB;
+  --accent-light: #EFF6FF;
+  --accent-hover: #1D4ED8;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 16px -2px rgb(0 0 0 / 0.08), 0 2px 6px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 20px 48px -8px rgb(0 0 0 / 0.10), 0 8px 20px -4px rgb(0 0 0 / 0.06);
+
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
 }
 
+/* Dark mode — keep as optional but don't break it */
 .dark {
-  --background: #050816;
-  --foreground: #ffffff;
+  --bg-primary:   #050816;
+  --bg-secondary: #0a0f29;
+  --bg-card:      #0a0f29;
+  --border-light:  #1f2937;
+  --border-medium: #374151;
+  --text-primary:   #f9fafb;
+  --text-secondary: #e5e7eb;
+  --text-muted:     #9ca3af;
+  --text-subtle:    #4b5563;
+  --accent-light: #1e3a5f;
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Institutional Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 20px;
-  border: 3px solid transparent;
-  background-clip: content-box;
+  background: var(--border-medium);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+.dark ::-webkit-scrollbar-thumb { background: #2563eb; }
+
+/* ===== UTILITY CLASSES ===== */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Card base — white surface with subtle border + shadow */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: #2563eb;
-  border: 3px solid #050816;
+/* Section label pill */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid #BFDBFE;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
-  background-clip: content-box;
+/* Section title */
+.section-title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text-primary);
 }
 
-/* GitHub Calendar Heatmap Overrides - Adaptive */
-.react-calendar-heatmap rect {
-  rx: 3px;
+/* Section sub */
+.section-sub {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1.6;
 }
 
-.color-empty { fill: #f3f4f6; }
-.dark .color-empty { fill: #0a0f29; }
+/* Divider */
+.divider { height: 1px; background: var(--border-light); }
 
+/* Glass panel for overlays */
+.glass-panel {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
+}
+.dark .glass-panel {
+  background: rgba(10,15,41,0.85);
+  border-color: var(--border-light);
+}
+
+/* Marquee animation */
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.animate-marquee { animation: marquee 40s linear infinite; }
+
+/* Calendar heatmap */
+.react-calendar-heatmap rect { rx: 4px; }
+.color-empty { fill: #F3F4F6; }
+.dark .color-empty { fill: #111827; }
 .color-scale-1 { fill: #86efac; }
 .color-scale-2 { fill: #4ade80; }
 .color-scale-3 { fill: #22c55e; }
 .color-scale-4 { fill: #16a34a; }
 
-/* Custom Utilities for Premium Look */
-.glass-panel {
-  @apply bg-white/80 dark:bg-[#0a0f29]/80 backdrop-blur-xl border border-gray-100 dark:border-gray-800 shadow-2xl;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Animated Gradient Background for Heroes */
-.bg-mesh {
-  background-image: 
-    radial-gradient(at 0% 0%, hsla(225,100%,10%,1) 0, transparent 50%), 
-    radial-gradient(at 50% 0%, hsla(225,100%,5%,1) 0, transparent 50%), 
-    radial-gradient(at 100% 0%, hsla(225,100%,8%,1) 0, transparent 50%);
-}
+/* Custom scrollbar for horizontal elements */
+.custom-scrollbar-horizontal::-webkit-scrollbar { height: 4px; }
+.custom-scrollbar-horizontal::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar-horizontal::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
+.custom-scrollbar-horizontal:hover::-webkit-scrollbar-thumb { background: #D1D5DB; }
