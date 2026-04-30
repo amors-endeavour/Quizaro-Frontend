@@ -128,11 +128,11 @@ export default function TestsPage() {
     });
   }, [series, tests, activeView]);
 
-  const paidSeries = useMemo(() => filteredSeries.filter(s => tests.some(t => t.seriesId === s._id && t.price > 0)), [filteredSeries, tests]);
-  const freeSeries = useMemo(() => filteredSeries.filter(s => tests.some(t => t.seriesId === s._id && t.price === 0)), [filteredSeries, tests]);
+  const paidSeries = useMemo(() => filteredSeries.filter(s => tests.some(t => t.seriesId === s._id && (t.price ?? 0) > 0)), [filteredSeries, tests]);
+  const freeSeries = useMemo(() => filteredSeries.filter(s => tests.some(t => t.seriesId === s._id && (t.price ?? 0) === 0)), [filteredSeries, tests]);
 
-  const paidTests = useMemo(() => tests.filter(t => !t.seriesId && t.price > 0 && (activeView === "Active" ? t.isPublished : !t.isPublished)), [tests, activeView]);
-  const freeTests = useMemo(() => tests.filter(t => !t.seriesId && t.price === 0 && (activeView === "Active" ? t.isPublished : !t.isPublished)), [tests, activeView]);
+  const paidTests = useMemo(() => tests.filter(t => !t.seriesId && (t.price ?? 0) > 0 && (activeView === "Active" ? t.isPublished : !t.isPublished)), [tests, activeView]);
+  const freeTests = useMemo(() => tests.filter(t => !t.seriesId && (t.price ?? 0) === 0 && (activeView === "Active" ? t.isPublished : !t.isPublished)), [tests, activeView]);
 
   const handleSeriesSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
