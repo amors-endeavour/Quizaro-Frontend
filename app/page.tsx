@@ -170,12 +170,12 @@ function TrustedBySection() {
   const brands = ["SKAUST Kashmir", "Kashmir University", "Cluster University", "JKBOSE", "JKBOPEE", "IIT Delhi", "NIT Srinagar"];
   return (
     <section className="py-20 bg-white dark:bg-[#0a0f29] border-y-2 border-gray-50 dark:border-gray-800 overflow-hidden transition-all duration-500">
-      <p className="text-center text-[11px] text-gray-300 dark:text-gray-800 font-black uppercase tracking-[0.8em] mb-12 italic">
+      <p className="text-center text-[11px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-[0.8em] mb-12 italic">
         Institutional Partners & Strategic Affiliations
       </p>
       <div className="flex gap-24 animate-marquee whitespace-nowrap items-center py-4">
         {[...brands, ...brands, ...brands].map((b, i) => (
-          <span key={i} className="text-gray-200 dark:text-gray-900 font-black text-2xl hover:text-blue-600 dark:hover:text-blue-500 transition-all cursor-default uppercase tracking-[0.3em] italic grayscale hover:grayscale-0 active:scale-110">
+          <span key={i} className="text-gray-300 dark:text-gray-400 font-black text-2xl hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-default uppercase tracking-[0.3em] italic grayscale hover:grayscale-0 active:scale-110">
             {b}
           </span>
         ))}
