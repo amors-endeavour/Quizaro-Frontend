@@ -5,12 +5,9 @@ import { useRouter } from "next/navigation";
 import { BarChart3 } from "lucide-react";
 import AdminSidebar from "@/components/AdminSidebar";
 import API from "@/app/lib/api";
-import { useTheme } from "next-themes";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

@@ -5,8 +5,6 @@ import { getInitials } from "@/app/lib/utils";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import API from "@/app/lib/api";
-import { useTheme } from "next-themes";
-import { ThemeToggle } from "./ThemeToggle";
 
 interface AdminHeaderProps {
   title: string;
@@ -34,7 +32,6 @@ export default function AdminHeader({
   const router = useRouter();
   const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
   const [showMenu, setShowMenu] = useState(false);
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

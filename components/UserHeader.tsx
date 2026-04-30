@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { Bell, HelpCircle, ChevronRight, LayoutGrid, Calendar, X, Sparkles, AlertCircle, User, Settings, LogOut, Sun, Moon, Monitor, Activity, Shield, Command, Terminal } from "lucide-react";
 import { getInitials } from "@/app/lib/utils";
 import API from "@/app/lib/api";
-import { useTheme } from "next-themes";
-import { ThemeToggle } from "./ThemeToggle";
 
 interface UserHeaderProps {
   title: string;
@@ -18,7 +16,6 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
   const [showMenu, setShowMenu] = useState(false);
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '/');
