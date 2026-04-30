@@ -7,7 +7,7 @@ import AdminFolderCard from "@/components/AdminFolderCard";
 import AdminTestCard from "@/components/AdminTestCard";
 import AnalyticsModal from "@/components/AnalyticsModal";
 import API from "@/app/lib/api";
-import { X, AlertCircle, CheckCircle2, Zap, Plus, ChevronRight, Info, Search, Filter, Download, Trash2, Edit3, Settings } from "lucide-react";
+import { X, AlertCircle, CheckCircle2, Zap, Plus, ChevronRight, Info, Search, Filter, Download, Trash2, Edit3, Settings, Shield, Monitor, BookOpen, ArrowRight, FolderPlus } from "lucide-react";
 
 interface Test {
   _id: string;
@@ -40,6 +40,8 @@ export default function TestsPage() {
   const [showModal, setShowModal] = useState(false);
   const [showAutoIngestModal, setShowAutoIngestModal] = useState(false);
   const [showSeriesModal, setShowSeriesModal] = useState(false);
+  const [createInlineSeries, setCreateInlineSeries] = useState(false);
+  const [inlineSeriesTitle, setInlineSeriesTitle] = useState("");
   const [editingTest, setEditingTest] = useState<Test | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState<{show: boolean, type: 'delete' | 'series_delete' | 'bulk_delete', targetId?: string, targetName?: string}>({show: false, type: 'delete'});
   const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'error'} | null>(null);
@@ -47,7 +49,9 @@ export default function TestsPage() {
   
   // Navigation State
   const [currentSeriesId, setCurrentSeriesId] = useState<string | null>(null);
+  const [currentCategory, setCurrentCategory] = useState<"Standard" | "Free" | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeView, setActiveView] = useState<"Active" | "Drafts">("Active");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -109,11 +113,26 @@ export default function TestsPage() {
   // Logic: Filter tests based on current series and search
   const filteredTests = useMemo(() => {
     return tests.filter((t) => {
+      const isCorrectStatus = activeView === "Active" ? t.isPublished : !t.isPublished;
       const matchesSeries = currentSeriesId ? t.seriesId === currentSeriesId : true;
       const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesSeries && matchesSearch;
+      return isCorrectStatus && matchesSeries && matchesSearch;
     });
-  }, [tests, currentSeriesId, searchQuery]);
+  }, [tests, currentSeriesId, searchQuery, activeView]);
+
+  const filteredSeries = useMemo(() => {
+    return series.filter(s => {
+      const seriesTests = tests.filter(t => t.seriesId === s._id);
+      const matchesStatus = seriesTests.some(t => (activeView === "Active" ? t.isPublished : !t.isPublished));
+      return matchesStatus;
+    });
+  }, [series, tests, activeView]);
+
+  const paidSeries = useMemo(() => filteredSeries.filter(s => tests.some(t => t.seriesId === s._id && t.price > 0)), [filteredSeries, tests]);
+  const freeSeries = useMemo(() => filteredSeries.filter(s => tests.some(t => t.seriesId === s._id && t.price === 0)), [filteredSeries, tests]);
+
+  const paidTests = useMemo(() => tests.filter(t => !t.seriesId && t.price > 0 && (activeView === "Active" ? t.isPublished : !t.isPublished)), [tests, activeView]);
+  const freeTests = useMemo(() => tests.filter(t => !t.seriesId && t.price === 0 && (activeView === "Active" ? t.isPublished : !t.isPublished)), [tests, activeView]);
 
   const handleSeriesSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,16 +149,36 @@ export default function TestsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (editingTest) {
-        await API.put(`/admin/test/${editingTest._id}`, formData);
-      } else {
-        await API.post("/test/create", formData);
+      let finalSeriesId = formData.seriesId;
+
+      // If creating a new series inline, do that first
+      if (!editingTest && createInlineSeries && inlineSeriesTitle.trim()) {
+        const { data: newSeries } = await API.post("/admin/series/create", {
+          title: inlineSeriesTitle.trim(),
+          category: formData.category || "General",
+        });
+        finalSeriesId = newSeries._id;
+        // Reload series list in background
+        setSeries(prev => [...prev, newSeries]);
       }
-      setStatusMsg({ text: "Assessment metadata preserved in registry.", type: 'success' });
-      setTimeout(() => window.location.reload(), 1500);
+
+      if (editingTest) {
+        await API.put(`/admin/test/${editingTest._id}`, { ...formData, seriesId: finalSeriesId || undefined });
+        setStatusMsg({ text: "Paper updated successfully.", type: 'success' });
+        setTimeout(() => { setShowModal(false); window.location.reload(); }, 1200);
+      } else {
+        const { data } = await API.post("/test/create", {
+          ...formData,
+          seriesId: finalSeriesId || undefined,
+          isPublished: false,
+        });
+        setShowModal(false);
+        setStatusMsg({ text: "Paper created! Redirecting to Question Studio...", type: 'success' });
+        setTimeout(() => router.push(`/admin-dashboard/${data._id}`), 800);
+      }
     } catch (err: any) {
-      setStatusMsg({ text: "Registry preservation error detected.", type: 'error' });
-      setTimeout(() => setStatusMsg(null), 3000);
+      setStatusMsg({ text: err?.response?.data?.message || "Failed to create paper. Please try again.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 4000);
     }
   };
 
@@ -311,11 +350,13 @@ export default function TestsPage() {
         title={currentSeriesId ? series.find(s => s._id === currentSeriesId)?.title || "Assessment Registry" : "Institutional Intelligence Library"}
         path={[
           { label: "Governance" },
-          { label: "Library", href: "/admin-dashboard/tests" },
+          { label: "Instructional Catalog", href: "/admin-dashboard/tests" },
           ...(currentSeriesId ? [{ label: series.find(s => s._id === currentSeriesId)?.title || "Nodes" }] : [])
         ]}
         onNew={() => {
           setEditingTest(null);
+          setCreateInlineSeries(false);
+          setInlineSeriesTitle("");
           setFormData({
             title: "",
             description: "",
@@ -347,11 +388,24 @@ export default function TestsPage() {
                      className="w-7 h-7 rounded-xl border-gray-200 dark:border-gray-700 text-blue-600 focus:ring-blue-500 cursor-pointer bg-white dark:bg-[#0a0f29] transition-all" 
                    />
                 </div>
-                <div className="space-y-1">
+                 <div className="space-y-1">
                    <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest italic leading-none">
                       {!currentSeriesId ? `Cluster Matrix [${series.length}]` : `Node Matrix [${filteredTests.length}]`}
                    </h3>
-                   <p className="text-[9px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-widest italic leading-none">Registry Synchronization Status: Optimal</p>
+                   <div className="flex gap-4 mt-3">
+                      <button 
+                        onClick={() => setActiveView("Active")}
+                        className={`text-[10px] font-black uppercase tracking-widest italic px-4 py-1.5 rounded-full border-2 transition-all ${activeView === "Active" ? "bg-blue-600 border-blue-600 text-white" : "border-gray-100 dark:border-gray-800 text-gray-400"}`}
+                      >
+                        Active Registry
+                      </button>
+                      <button 
+                        onClick={() => setActiveView("Drafts")}
+                        className={`text-[10px] font-black uppercase tracking-widest italic px-4 py-1.5 rounded-full border-2 transition-all ${activeView === "Drafts" ? "bg-amber-500 border-amber-500 text-white" : "border-gray-100 dark:border-gray-800 text-gray-400"}`}
+                      >
+                        Draft Protocol
+                      </button>
+                   </div>
                 </div>
                 {selectedTests.length > 0 && (
                    <div className="flex items-center gap-8 ml-8 pl-8 border-l-2 border-gray-100 dark:border-gray-800 animate-in slide-in-from-left-6 duration-500">
@@ -392,92 +446,158 @@ export default function TestsPage() {
                     </button>
                  )}
 
-                 {currentSeriesId && (
-                   <button 
-                     onClick={() => setCurrentSeriesId(null)}
-                     className="px-10 py-5 bg-white dark:bg-[#0a0f29] text-gray-600 dark:text-gray-400 border-2 border-gray-50 dark:border-gray-800 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 dark:hover:bg-blue-500 transition-all shadow-sm italic active:scale-[0.98]"
-                   >
-                     Back to Global Registry
-                   </button>
-                 )}
+                  {currentSeriesId && (
+                    <button 
+                      onClick={() => setCurrentSeriesId(null)}
+                      className="px-10 py-5 bg-white dark:bg-[#0a0f29] text-gray-600 dark:text-gray-400 border-2 border-gray-50 dark:border-gray-800 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 dark:hover:bg-blue-500 transition-all shadow-sm italic active:scale-[0.98]"
+                    >
+                      Back to Global Registry
+                    </button>
+                  )}
              </div>
           </div>
 
           {loading ? (
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-10">
                {[1,2,3,4,5,6,7,8,9,10].map(i => (
-                 <div key={i} className="h-72 bg-white dark:bg-[#0a0f29] border border-gray-50 dark:border-gray-800 rounded-[3.5rem] animate-pulse shadow-sm" />
+                 <div key={i} className="h-72 bg-white dark:bg-[#0a0f29] border border-gray-100 dark:border-gray-800 rounded-[3.5rem] animate-pulse shadow-sm" />
                ))}
              </div>
           ) : !currentSeriesId ? (
-            <div className="space-y-20 transition-all duration-700">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-12">
-                {series.map((s) => (
-                  <AdminFolderCard 
-                    key={s._id} 
-                    name={s.title} 
-                    onClick={() => {
-                      setCurrentSeriesId(s._id);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    onDelete={() => setShowConfirmModal({ show: true, type: 'series_delete', targetId: s._id, targetName: s.title })}
-                  />
-                ))}
-              </div>
-
-              {tests.filter(t => !t.seriesId).length > 0 && (
-                <div className="space-y-12 pt-12 border-t border-gray-50 dark:border-gray-800">
-                   <div className="flex items-center gap-6">
-                      <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm border border-blue-100 dark:border-blue-800/30"><Info size={24} /></div>
-                      <div className="space-y-1">
-                         <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.4em] italic leading-none whitespace-nowrap">Standalone Intelligence Nodes</h3>
-                         <p className="text-[9px] text-gray-300 dark:text-gray-800 font-black uppercase tracking-widest italic leading-none">Unclustered Assessment Entities</p>
-                      </div>
-                      <div className="w-full h-px bg-gray-50 dark:bg-gray-800/50" />
-                   </div>
-                  <div className="grid grid-cols-1 gap-8">
-                    {tests.filter(t => !t.seriesId).map((test) => (
-                      <AdminTestCard 
-                        key={test._id}
-                        title={test.title}
-                        description={test.description || "Foundational Institutional Assessment Node Synchronized with Grid"}
-                        date={new Date(test.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}
-                        status={test.isPublished ? "Published" : "Draft"}
-                        onStatusToggle={(ns) => handleStatusToggle(test._id, ns)}
-                        onEdit={() => {
-                          setEditingTest(test);
-                          setFormData({
-                            title: test.title,
-                            description: test.description || "",
-                            duration: test.duration || 30,
-                            price: test.price || 0,
-                            seriesId: "",
-                            paperNumber: test.paperNumber || 1,
-                            difficulty: test.difficulty || "Medium",
-                            category: test.category || "General"
-                          });
-                          setShowModal(true);
+            /* GLOBAL UNIFIED VIEW 🏛️ */
+            <div className="space-y-32 transition-all duration-700">
+               {/* PAID SECTION */}
+               <div className="space-y-16">
+                  <div className="flex items-center gap-6">
+                     <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl rotate-3"><Shield size={24} /></div>
+                     <div className="space-y-1">
+                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em] italic leading-none">Premium Intelligence Grid</h3>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Standard Synthesis Matrix nodes</p>
+                     </div>
+                     <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800/50" />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-12">
+                    {paidSeries.map((s) => (
+                      <AdminFolderCard 
+                        key={s._id} 
+                        name={s.title}
+                        count={tests.filter(t => t.seriesId === s._id).length}
+                        onClick={() => {
+                          setCurrentSeriesId(s._id);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
-                        onQuestions={() => router.push(`/admin-dashboard/${test._id}`)}
-                        onDelete={() => setShowConfirmModal({ show: true, type: 'delete', targetId: test._id })}
-                        onExport={() => handleExport(test._id)}
-                        onAnalytics={() => setSelectedAnalyticsTest({ id: test._id, title: test.title })}
+                        onDelete={() => setShowConfirmModal({ show: true, type: 'series_delete', targetId: s._id, targetName: s.title })}
                       />
                     ))}
                   </div>
-                </div>
-              )}
+
+                  {paidTests.length > 0 && (
+                    <div className="grid grid-cols-1 gap-8 mt-12">
+                      {paidTests.map((test) => (
+                        <AdminTestCard 
+                          key={test._id}
+                          title={test.title}
+                          description={test.description || "Foundational Institutional Assessment Node"}
+                          date={new Date(test.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}
+                          status={test.isPublished ? "Published" : "Draft"}
+                          onStatusToggle={(ns) => handleStatusToggle(test._id, ns)}
+                          onEdit={() => {
+                            setEditingTest(test);
+                            setFormData({
+                              title: test.title,
+                              description: test.description || "",
+                              duration: test.duration || 30,
+                              price: test.price || 0,
+                              seriesId: "",
+                              paperNumber: test.paperNumber || 1,
+                              difficulty: test.difficulty || "Medium",
+                              category: test.category || "General"
+                            });
+                            setShowModal(true);
+                          }}
+                          onQuestions={() => router.push(`/admin-dashboard/${test._id}`)}
+                          onDelete={() => setShowConfirmModal({ show: true, type: 'delete', targetId: test._id })}
+                          onExport={() => handleExport(test._id)}
+                          onAnalytics={() => setSelectedAnalyticsTest({ id: test._id, title: test.title })}
+                        />
+                      ))}
+                    </div>
+                  )}
+               </div>
+
+               {/* FREE SECTION */}
+               <div className="space-y-16">
+                  <div className="flex items-center gap-6">
+                     <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-xl -rotate-3"><Monitor size={24} /></div>
+                     <div className="space-y-1">
+                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em] italic leading-none">Open Access Registry</h3>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Community synthesis and free access nodes</p>
+                     </div>
+                     <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800/50" />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-12">
+                    {freeSeries.map((s) => (
+                      <AdminFolderCard 
+                        key={s._id} 
+                        name={s.title}
+                        count={tests.filter(t => t.seriesId === s._id).length}
+                        onClick={() => {
+                          setCurrentSeriesId(s._id);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        onDelete={() => setShowConfirmModal({ show: true, type: 'series_delete', targetId: s._id, targetName: s.title })}
+                      />
+                    ))}
+                  </div>
+
+                  {freeTests.length > 0 && (
+                    <div className="grid grid-cols-1 gap-8 mt-12">
+                      {freeTests.map((test) => (
+                        <AdminTestCard 
+                          key={test._id}
+                          title={test.title}
+                          description={test.description || "Community Institutional Assessment Node"}
+                          date={new Date(test.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}
+                          status={test.isPublished ? "Published" : "Draft"}
+                          onStatusToggle={(ns) => handleStatusToggle(test._id, ns)}
+                          onEdit={() => {
+                            setEditingTest(test);
+                            setFormData({
+                              title: test.title,
+                              description: test.description || "",
+                              duration: test.duration || 30,
+                              price: test.price || 0,
+                              seriesId: "",
+                              paperNumber: test.paperNumber || 1,
+                              difficulty: test.difficulty || "Medium",
+                              category: test.category || "General"
+                            });
+                            setShowModal(true);
+                          }}
+                          onQuestions={() => router.push(`/admin-dashboard/${test._id}`)}
+                          onDelete={() => setShowConfirmModal({ show: true, type: 'delete', targetId: test._id })}
+                          onExport={() => handleExport(test._id)}
+                          onAnalytics={() => setSelectedAnalyticsTest({ id: test._id, title: test.title })}
+                        />
+                      ))}
+                    </div>
+                  )}
+               </div>
             </div>
           ) : (
+            /* SERIES VIEW 📄 */
             <div className="grid grid-cols-1 gap-8 animate-in slide-in-from-right-10 duration-700">
                <button 
                   onClick={() => {
+                    const parentTest = tests.find(t => t.seriesId === currentSeriesId);
                     setEditingTest(null);
                     setFormData({
                       title: "",
                       description: "",
                       duration: 30,
-                      price: 0,
+                      price: parentTest?.price || 0,
                       seriesId: currentSeriesId || "",
                       paperNumber: tests.filter(t => t.seriesId === currentSeriesId).length + 1,
                       difficulty: "Medium",
@@ -621,100 +741,194 @@ export default function TestsPage() {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-[600] bg-gray-900/60 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
-          <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[5rem] w-full max-w-3xl shadow-2xl animate-in zoom-in-95 duration-700 overflow-hidden flex flex-col max-h-[95vh] relative">
-            <div className="absolute top-0 left-0 w-full h-2 bg-blue-600" />
-            <div className="px-20 py-12 bg-gray-50/30 dark:bg-[#050816]/30 border-b-2 border-gray-50 dark:border-gray-800 flex items-center justify-between transition-all duration-500">
-               <div className="space-y-2">
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic leading-none">
-                    {editingTest ? "Configure Entity" : "Initialize Matrix Entity"}
-                  </h3>
-                  <p className="text-[10px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] italic leading-none">Intelligence Metadata Provisioning Hub</p>
-               </div>
-               <button onClick={() => setShowModal(false)} className="w-16 h-16 bg-white dark:bg-gray-800 shadow-sm border-2 border-gray-50 dark:border-gray-700 rounded-3xl flex items-center justify-center text-gray-300 hover:text-red-600 transition-all active:scale-90 group">
-                 <X size={32} className="group-hover:rotate-90 transition-transform" />
-               </button>
-            </div>
+        <div className="fixed inset-0 z-[600] bg-gray-900/70 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+          <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[3rem] w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500 overflow-hidden flex flex-col max-h-[95vh] relative">
             
-            <form onSubmit={handleSubmit} className="p-20 space-y-12 overflow-y-auto custom-scrollbar flex-1">
-              <div className="space-y-5">
-                <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 italic leading-none">Cluster Attachment (Series)</label>
-                <div className="relative">
-                   <select 
-                     className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-3xl px-10 py-7 outline-none focus:border-blue-600 font-black text-[15px] text-gray-900 dark:text-white uppercase tracking-tighter italic appearance-none cursor-pointer shadow-inner"
-                     value={formData.seriesId}
-                     onChange={(e) => setFormData({...formData, seriesId: e.target.value})}
-                   >
-                     <option value="">STANDALONE ENTITY // NO CLUSTER</option>
-                     {series.map(s => <option key={s._id} value={s._id}>{s.title.toUpperCase()}</option>)}
-                   </select>
-                   <div className="absolute right-10 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><Filter size={20} /></div>
-                </div>
-              </div>
+            {/* Top accent bar */}
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600" />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="space-y-5">
-                  <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 italic leading-none">Entity Identifier (Title)</label>
-                  <input 
-                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-3xl px-10 py-7 outline-none focus:border-blue-600 font-black text-[18px] text-gray-900 dark:text-white italic placeholder:text-gray-200 dark:placeholder:text-gray-900 transition-all shadow-inner"
+            {/* Header */}
+            <div className="px-10 pt-10 pb-8 border-b border-gray-100 dark:border-gray-800 flex items-start justify-between gap-6">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg">
+                    {editingTest ? <Edit3 size={16} /> : <BookOpen size={16} />}
+                  </div>
+                  <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
+                    {editingTest ? "Edit Paper" : "Create New Paper"}
+                  </h3>
+                </div>
+                <p className="text-xs text-gray-400 dark:text-gray-600 font-medium ml-12">
+                  {editingTest
+                    ? "Update paper metadata below"
+                    : "Step 1 of 2 — Set up paper details, then add your MCQs in the studio"}
+                </p>
+              </div>
+              <button
+                onClick={() => { setShowModal(false); setCreateInlineSeries(false); setInlineSeriesTitle(""); }}
+                className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all active:scale-90 flex-shrink-0 group"
+              >
+                <X size={18} className="group-hover:rotate-90 transition-transform" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-10 space-y-8 overflow-y-auto flex-1">
+
+              {/* SERIES SECTION */}
+              {!editingTest && (
+                <div className="space-y-3">
+                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
+                    Series / Folder
+                  </label>
+
+                  {!createInlineSeries ? (
+                    <div className="space-y-3">
+                      {/* Existing series select */}
+                      <div className="relative">
+                        <select
+                          className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white appearance-none cursor-pointer transition-all"
+                          value={formData.seriesId}
+                          onChange={(e) => setFormData({ ...formData, seriesId: e.target.value })}
+                        >
+                          <option value="">— No Series (Standalone Paper) —</option>
+                          {series.map(s => <option key={s._id} value={s._id}>{s.title}</option>)}
+                        </select>
+                        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                          <Filter size={16} />
+                        </div>
+                      </div>
+                      {/* Inline create new series option */}
+                      <button
+                        type="button"
+                        onClick={() => { setCreateInlineSeries(true); setFormData({ ...formData, seriesId: "" }); }}
+                        className="flex items-center gap-2.5 text-blue-600 dark:text-blue-400 text-xs font-bold hover:text-blue-700 transition-colors group"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                          <FolderPlus size={13} />
+                        </div>
+                        Create a new series folder instead
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 p-5 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border-2 border-blue-200 dark:border-blue-800/40">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest">New Series Folder</span>
+                        <button
+                          type="button"
+                          onClick={() => { setCreateInlineSeries(false); setInlineSeriesTitle(""); }}
+                          className="text-xs text-gray-400 hover:text-gray-600 font-semibold"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <input
+                        autoFocus
+                        required={createInlineSeries}
+                        className="w-full bg-white dark:bg-[#050816] border-2 border-blue-200 dark:border-blue-800/60 rounded-xl px-4 py-3.5 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-700 transition-all"
+                        placeholder="e.g. NEET 2024 Series, UPSC Prelims Batch..."
+                        value={inlineSeriesTitle}
+                        onChange={(e) => setInlineSeriesTitle(e.target.value)}
+                      />
+                      <p className="text-[11px] text-blue-500 dark:text-blue-500 font-medium">
+                        A new folder will be created and this paper will be added inside it.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* PAPER TITLE + NUMBER */}
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2.5 col-span-2 sm:col-span-1">
+                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
+                    Paper Title <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-700 transition-all"
                     value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     required
-                    placeholder="Ex: Assessment Protocol A-01"
+                    placeholder="e.g. Paper 1, Mock Test A, Full Syllabus Test"
                   />
                 </div>
-                <div className="space-y-5">
-                  <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 italic leading-none">Sequence Ordinal (#)</label>
-                  <input 
+                <div className="space-y-2.5">
+                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
+                    Paper No.
+                  </label>
+                  <input
                     type="number"
-                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-3xl px-10 py-7 outline-none focus:border-blue-600 font-black text-[18px] text-gray-900 dark:text-white italic transition-all shadow-inner"
+                    min={1}
+                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white transition-all"
                     value={formData.paperNumber}
-                    onChange={(e) => setFormData({...formData, paperNumber: Number(e.target.value)})}
+                    onChange={(e) => setFormData({ ...formData, paperNumber: Number(e.target.value) })}
                     required
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="space-y-5">
-                  <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 italic leading-none">Temporal Protocol (Minutes)</label>
-                  <input 
+              {/* DURATION + PRICE */}
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2.5">
+                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
+                    Duration (minutes)
+                  </label>
+                  <input
                     type="number"
-                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-3xl px-10 py-7 outline-none focus:border-blue-600 font-black text-[18px] text-gray-900 dark:text-white italic transition-all shadow-inner"
+                    min={1}
+                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white transition-all"
                     value={formData.duration}
-                    onChange={(e) => setFormData({...formData, duration: Number(e.target.value)})}
+                    onChange={(e) => setFormData({ ...formData, duration: Number(e.target.value) })}
                   />
                 </div>
-                <div className="space-y-5">
-                  <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 italic leading-none">Registry Access Credit (INR)</label>
-                  <input 
+                <div className="space-y-2.5">
+                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
+                    Price (INR) <span className="text-green-500 font-medium normal-case tracking-normal">— 0 for free</span>
+                  </label>
+                  <input
                     type="number"
-                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-3xl px-10 py-7 outline-none focus:border-blue-600 font-black text-[18px] text-gray-900 dark:text-white italic transition-all shadow-inner"
+                    min={0}
+                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white transition-all"
                     value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
+                    onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-8 pt-12">
-                <button 
-                  type="button" 
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 py-8 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-700 hover:text-gray-900 dark:hover:text-white rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest transition-all italic active:scale-[0.98] border-2 border-transparent hover:border-gray-100 dark:hover:border-gray-700 shadow-sm"
+              {/* WORKFLOW NOTE — only for new papers */}
+              {!editingTest && (
+                <div className="flex items-start gap-3 px-5 py-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-2xl">
+                  <Info size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-amber-700 dark:text-amber-400 font-medium leading-relaxed">
+                    After clicking <strong>"Create Paper"</strong>, you'll be taken directly to the <strong>Question Studio</strong> where you can add all your MCQs. You'll then choose to <strong>Save as Draft</strong> or <strong>Make Active</strong>.
+                  </p>
+                </div>
+              )}
+
+              {/* ACTIONS */}
+              <div className="flex gap-4 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowModal(false); setCreateInlineSeries(false); setInlineSeriesTitle(""); }}
+                  className="flex-1 py-4 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-2xl font-bold text-sm transition-all active:scale-[0.98]"
                 >
-                  Discard Configuration
+                  Cancel
                 </button>
-                <button 
+                <button
                   type="submit"
-                  className="flex-1 py-8 bg-blue-600 text-white rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest transition-all shadow-2xl shadow-blue-900/40 hover:bg-blue-700 active:scale-[0.98] italic flex items-center justify-center gap-4"
+                  className="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-blue-600/30 hover:bg-blue-700 active:scale-[0.98] flex items-center justify-center gap-3"
                 >
-                  <CheckCircle2 size={20} /> {editingTest ? "Commit Matrix Updates" : "Deploy Entity To Grid"}
+                  {editingTest ? (
+                    <><CheckCircle2 size={18} /> Save Changes</>
+                  ) : (
+                    <><ArrowRight size={18} /> Create Paper &amp; Enter Studio</>
+                  )}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
 
       {showSeriesModal && (
         <div className="fixed inset-0 z-[600] bg-gray-900/60 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">

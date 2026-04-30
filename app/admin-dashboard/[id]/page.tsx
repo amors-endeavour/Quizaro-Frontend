@@ -146,12 +146,13 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
     loadData();
   }, [id, isAuthChecked]);
 
-  const handleUpdateTest = async () => {
+  const handleUpdateTest = async (overrides = {}) => {
     setSaving(true);
     try {
       await API.put(`/admin/test/${id}`, {
         ...testSettings,
-        description: testSettings.instructions
+        description: testSettings.instructions,
+        ...overrides
       });
       setStatusMsg({ text: "Institutional parameters synchronized.", type: 'success' });
       setTimeout(() => setStatusMsg(null), 3000);
@@ -163,6 +164,16 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
       setSaving(false);
     }
   };
+
+  const [isPublished, setIsPublished] = useState(false);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      const { data } = await API.get(`/test/${id}`);
+      setIsPublished(data.isPublished);
+    };
+    if (isAuthChecked) fetchStatus();
+  }, [id, isAuthChecked]);
 
   const handleSaveQuestion = async (q: Question) => {
     setSaving(true);
@@ -264,11 +275,26 @@ export default function QuestionStudio({ params }: { params: Promise<{ id: strin
                           <div className="space-y-3">
                              <div className="flex items-center gap-4">
                                 <h2 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em] italic leading-none">Assessment Intelligence</h2>
-                                <div className="px-4 py-1.5 bg-blue-600 text-white rounded-full text-[9px] font-black uppercase tracking-widest italic shadow-lg shadow-blue-900/20">Studio v4.0</div>
+                                <div className={`px-4 py-1.5 ${isPublished ? "bg-green-600" : "bg-amber-500"} text-white rounded-full text-[9px] font-black uppercase tracking-widest italic shadow-lg shadow-blue-900/20`}>
+                                   {isPublished ? "ACTIVE NODE" : "DRAFT PROTOCOL"}
+                                </div>
                              </div>
                              <p className="text-[10px] text-gray-400 dark:text-gray-600 font-black uppercase tracking-widest italic leading-none">Active session neural configuration</p>
                           </div>
                           <div className="flex items-center gap-4">
+                             <button 
+                               onClick={() => { handleUpdateTest({ isPublished: false }); setIsPublished(false); }}
+                               className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest italic transition-all ${!isPublished ? "bg-amber-500 text-white shadow-xl" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}
+                             >
+                               Save as Draft
+                             </button>
+                             <button 
+                               onClick={() => { handleUpdateTest({ isPublished: true }); setIsPublished(true); }}
+                               className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest italic transition-all ${isPublished ? "bg-blue-600 text-white shadow-xl" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}
+                             >
+                               Make Active
+                             </button>
+                             <div className="w-px h-8 bg-gray-100 dark:bg-gray-800 mx-2" />
                              <button className="p-4 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl text-gray-400 dark:text-gray-500 hover:text-blue-600 transition-all shadow-sm"><Download size={20} /></button>
                              <button className="p-4 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl text-gray-400 dark:text-gray-500 hover:text-blue-600 transition-all shadow-sm"><Activity size={20} /></button>
                           </div>
