@@ -26,7 +26,7 @@ export default function HomePage() {
       <FeaturesSection />
       <ExamCategoriesSection />
       <HowItWorksSection />
-      <AIShowcaseSection />
+
       <TestimonialsSection />
       <FaqSection />
       <CtaSection />
@@ -264,104 +264,6 @@ function HowItWorksSection() {
               <p className="text-gray-500 text-sm leading-relaxed">{s.desc}</p>
             </div>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ── AI SHOWCASE ──────────────────────────────────── */
-function AIShowcaseSection() {
-  return (
-    <section className="py-24 px-6 bg-white">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left */}
-          <div>
-            <span className="section-label mb-6 inline-flex"><span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" /> AI Engine</span>
-            <h2 className="section-title mt-4 mb-6">
-              Intelligent Learning,<br />
-              <span className="text-blue-600">Personalized for You</span>
-            </h2>
-            <p className="text-gray-500 leading-relaxed mb-8">
-              Quizaro&apos;s AI continuously maps your performance patterns and adapts question difficulty,
-              topic focus, and revision schedules in real-time — so every minute you study counts.
-            </p>
-            <ul className="space-y-4 mb-10">
-              {[
-                "Targeted weak-area identification",
-                "Dynamic difficulty adjustment (real-time)",
-                "Predictive score forecasting (ML)",
-                "Smart study time allocation",
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-gray-700 text-sm font-medium">
-                  <CheckCircle size={18} className="text-blue-600 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 px-7 py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
-            >
-              Try AI Analytics Free <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          {/* Right — mock analytics card */}
-          <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-lg shadow-gray-100">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <p className="text-xs text-gray-400 font-semibold uppercase tracking-widest mb-1">Performance Dashboard</p>
-                <h4 className="text-lg font-black text-gray-900">AI Analytics</h4>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full text-xs font-bold text-green-700">
-                <Activity size={12} /> Live Sync
-              </div>
-            </div>
-
-            {/* Stat row */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              {[
-                { label: "Accuracy", value: "84%", trend: "+12%", color: "text-green-600" },
-                { label: "Avg Speed", value: "1.4s", trend: "−0.3s", color: "text-blue-600" },
-                { label: "Rank", value: "#247", trend: "↑128", color: "text-amber-600" },
-              ].map((m) => (
-                <div key={m.label} className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
-                  <div className="text-xl font-black text-gray-900">{m.value}</div>
-                  <div className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide mt-0.5">{m.label}</div>
-                  <div className={`text-xs font-bold mt-1 ${m.color}`}>{m.trend}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Progress bars */}
-            <div className="space-y-5 mb-8">
-              {[
-                { topic: "Mathematics", pct: 78, color: "bg-blue-600" },
-                { topic: "Physics", pct: 91, color: "bg-indigo-500" },
-                { topic: "Chemistry", pct: 63, color: "bg-amber-500" },
-              ].map(({ topic, pct, color }) => (
-                <div key={topic}>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-xs font-semibold text-gray-700">{topic}</span>
-                    <span className="text-xs font-bold text-gray-900">{pct}%</span>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className={`h-full ${color} rounded-full`} style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* AI tip */}
-            <div className="flex items-start gap-3 px-5 py-4 bg-blue-50 border border-blue-100 rounded-2xl">
-              <span className="text-lg">🤖</span>
-              <p className="text-sm text-blue-800 font-medium leading-relaxed">
-                <strong>AI Insight:</strong> Focus on organic chemistry this week — a 15% improvement will boost your overall score by ~4 marks.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </section>
