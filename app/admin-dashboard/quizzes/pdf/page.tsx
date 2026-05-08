@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AdminHeader from "@/components/AdminHeader";
 import { 
   UploadCloud, 
@@ -17,7 +17,9 @@ import {
   Loader2,
   Save,
   Check,
-  X
+  X,
+  AlertCircle,
+  Upload
 } from "lucide-react";
 
 export default function PDFManagement() {
@@ -33,6 +35,11 @@ export default function PDFManagement() {
   const [showReview, setShowReview] = useState(false);
   const [selectedPDF, setSelectedPDF] = useState<any>(null);
   const [generatedQuestions, setGeneratedQuestions] = useState<any[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [stagedFile, setStagedFile] = useState<File | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const steps = [
     "Reading PDF Content...",
@@ -40,6 +47,17 @@ export default function PDFManagement() {
     "Drafting MCQ Questions...",
     "Finalizing Explanations..."
   ];
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+  };
 
   const handleAutoGenerate = (pdf: any) => {
     setSelectedPDF(pdf);
@@ -54,7 +72,6 @@ export default function PDFManagement() {
       }, 2000);
       return () => clearTimeout(timer);
     } else if (isProcessing && currentStep === steps.length) {
-      // Mock generated data
       setGeneratedQuestions([
         { id: 1, question: "What is the primary goal of Artificial Intelligence?", options: ["Automating physical labor", "Simulating human intelligence", "Data storage", "Internet connectivity"], answer: "Simulating human intelligence", explanation: "As stated on page 3, AI aims to simulate human cognitive functions.", status: 'keep' },
         { id: 2, question: "Which algorithm is commonly used for classification?", options: ["Merge Sort", "Random Forest", "Binary Search", "Dijkstra"], answer: "Random Forest", explanation: "The PDF highlights Random Forest as a robust classification method in Section 2.", status: 'keep' },
@@ -69,6 +86,58 @@ export default function PDFManagement() {
     setGeneratedQuestions(prev => prev.map(q => 
       q.id === id ? { ...q, status: q.status === 'keep' ? 'discard' : 'keep' } : q
     ));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    validateAndStageFile(file);
+  };
+
+  const validateAndStageFile = (file: File | undefined) => {
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      showToast("Error: Only PDF files are allowed", "error");
+      return;
+    }
+    setStagedFile(file);
+    showToast("File staged successfully!", "success");
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    validateAndStageFile(file);
+  };
+
+  const clearStagedFile = () => {
+    setStagedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleStartAnalysis = () => {
+    if (stagedFile) {
+      handleAutoGenerate({ name: stagedFile.name });
+      setStagedFile(null);
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   return (
@@ -89,11 +158,59 @@ export default function PDFManagement() {
               <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">Upload PDF</h3>
               <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic">Drag and drop a PDF here, or click to browse</p>
            </div>
-           <div className="w-full max-w-2xl p-16 border-4 border-dashed border-gray-100 rounded-[3rem] flex flex-col items-center justify-center gap-8 hover:border-purple-200 transition-all group cursor-pointer">
-              <button className="px-10 py-5 bg-[#7C3AED] text-white rounded-2xl text-[12px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 group-hover:scale-105 transition-all">
-                Choose File
-              </button>
-              <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest italic">Only PDF files are allowed.</p>
+
+           <div 
+             onDragOver={handleDragOver}
+             onDragLeave={handleDragLeave}
+             onDrop={handleDrop}
+             className={`w-full max-w-2xl p-16 border-4 border-dashed rounded-[3rem] flex flex-col items-center justify-center gap-8 transition-all relative group ${
+               isDragging ? "border-[#7C3AED] bg-purple-50/50" : "border-gray-100 bg-white"
+             }`}
+           >
+              <input 
+                type="file" 
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept=".pdf"
+                className="hidden"
+              />
+
+              {!stagedFile ? (
+                <>
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-10 py-5 bg-[#7C3AED] text-white rounded-2xl text-[12px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all"
+                  >
+                    Choose File
+                  </button>
+                  <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest italic">Only PDF files are allowed.</p>
+                </>
+              ) : (
+                <div className="w-full flex flex-col items-center gap-8 animate-in zoom-in duration-300">
+                   <div className="flex items-center gap-6 p-6 bg-purple-50 rounded-[2rem] border border-purple-100 w-full relative group/item">
+                      <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-purple-600 shadow-sm">
+                         <FileText size={24} />
+                      </div>
+                      <div className="flex-1 space-y-1">
+                         <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic leading-none truncate max-w-[300px]">{stagedFile.name}</p>
+                         <p className="text-[10px] text-purple-400 font-black uppercase tracking-widest italic">{formatFileSize(stagedFile.size)}</p>
+                      </div>
+                      <button 
+                        onClick={clearStagedFile}
+                        className="p-3 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      >
+                        <X size={20} />
+                      </button>
+                   </div>
+                   
+                   <button 
+                     onClick={handleStartAnalysis}
+                     className="px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl text-[12px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
+                   >
+                     <Sparkles size={18} /> Start AI Analysis
+                   </button>
+                </div>
+              )}
            </div>
         </section>
 
@@ -187,17 +304,6 @@ export default function PDFManagement() {
               </tbody>
             </table>
           </div>
-          
-          <div className="p-10 border-t border-gray-50 flex items-center justify-between">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Showing 1 to 4 of 24 PDFs</p>
-            <div className="flex items-center gap-2">
-              <button className="p-2 text-gray-300 hover:text-gray-900 bg-gray-50 rounded-lg"><ChevronRight size={16} className="rotate-180" /></button>
-              <button className="w-8 h-8 bg-purple-600 text-white rounded-lg text-[10px] font-black">1</button>
-              <button className="w-8 h-8 bg-gray-50 text-gray-400 rounded-lg text-[10px] font-black">2</button>
-              <button className="w-8 h-8 bg-gray-50 text-gray-400 rounded-lg text-[10px] font-black">3</button>
-              <button className="p-2 text-gray-300 hover:text-gray-900 bg-gray-50 rounded-lg"><ChevronRight size={16} /></button>
-            </div>
-          </div>
         </section>
 
       </main>
@@ -231,16 +337,11 @@ export default function PDFManagement() {
                     </div>
                  ))}
               </div>
-
-              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex items-center gap-4">
-                 <Sparkles className="text-purple-400" size={20} />
-                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] italic">AI is crafting high-quality assessments based on your content.</p>
-              </div>
            </div>
         </div>
       )}
 
-      {/* REVIEW & EDIT SCREEN (MODAL) */}
+      {/* REVIEW SCREEN */}
       {showReview && (
         <div className="fixed inset-0 z-[1000] bg-[#F9FAFB] flex flex-col animate-in slide-in-from-right duration-700">
            <div className="p-8 lg:p-12 border-b border-gray-100 flex items-center justify-between bg-white shadow-sm">
@@ -251,16 +352,8 @@ export default function PDFManagement() {
                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest italic">Source: {selectedPDF?.name}</p>
               </div>
               <div className="flex items-center gap-4">
-                 <button 
-                  onClick={() => setShowReview(false)}
-                  className="px-8 py-4 bg-gray-50 text-gray-400 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all"
-                 >
-                   Discard All
-                 </button>
-                 <button 
-                  onClick={() => setShowReview(false)}
-                  className="px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 active:scale-95 transition-all flex items-center gap-3"
-                 >
+                 <button onClick={() => setShowReview(false)} className="px-8 py-4 bg-gray-50 text-gray-400 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all">Discard All</button>
+                 <button onClick={() => setShowReview(false)} className="px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 active:scale-95 transition-all flex items-center gap-3">
                    <Save size={18} /> Save & Publish Quiz
                  </button>
               </div>
@@ -307,6 +400,18 @@ export default function PDFManagement() {
                    </div>
                 </div>
               ))}
+           </div>
+        </div>
+      )}
+
+      {/* TOAST NOTIFICATION */}
+      {toast && (
+        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[2000] animate-in slide-in-from-bottom-8 duration-500">
+           <div className={`px-8 py-4 rounded-2xl shadow-2xl border flex items-center gap-4 ${
+             toast.type === 'success' ? "bg-white border-green-100 text-green-600" : "bg-white border-red-100 text-red-500"
+           }`}>
+              {toast.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+              <span className="text-[11px] font-black uppercase tracking-widest italic">{toast.message}</span>
            </div>
         </div>
       )}
