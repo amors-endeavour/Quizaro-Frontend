@@ -23,14 +23,6 @@ import {
   Search,
   Bell,
   User as UserIcon,
-  CheckCircle2,
-  Clock,
-  LayoutGrid,
-  Activity,
-  Star,
-  Search,
-  Bell,
-  User as UserIcon,
   ChevronDown,
   XCircle
 } from "lucide-react";
