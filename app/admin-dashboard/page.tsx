@@ -75,7 +75,9 @@ export default function AdminDashboard() {
     const checkAuth = async () => {
       try {
         const { data } = await API.get("/user/profile");
-        const role = (data?.role || data?.user?.role)?.toString().toLowerCase();
+        const rawRole = data?.role || data?.user?.role || data?.data?.role || data?.data?.user?.role || "student";
+        const role = rawRole.toString().toLowerCase();
+        
         if (role !== "admin") {
           router.replace("/admin-login");
           return;

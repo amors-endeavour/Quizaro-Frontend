@@ -107,7 +107,8 @@ export default function UserDashboard() {
 
       try {
         const { data: profile } = await API.get("/user/profile");
-        const role = (profile?.role || profile?.user?.role)?.toLowerCase();
+        const rawRole = profile?.role || profile?.user?.role || profile?.data?.role || profile?.data?.user?.role || "student";
+        const role = rawRole.toString().toLowerCase();
         
         if (role === "admin") {
            router.replace("/admin-dashboard");
