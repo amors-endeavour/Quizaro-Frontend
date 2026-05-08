@@ -1,12 +1,23 @@
 import type { ReactNode } from "react";
+import { Barlow, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import HelpButton from "@/components/HelpButton";
 import SmoothFlowRegistry from "@/components/SmoothFlowRegistry";
-import { ThemeProvider } from "@/components/ThemeProvider";
+
+const barlow = Barlow({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-barlow",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+});
 
 export const metadata = {
-  title: "Quizaro | Institutional Intelligence Core",
-  description: "AI-Powered Advanced Adaptive Assessment & Examination Platform for Institutional Excellence.",
+  title: "Quizaro — Deploy Your Data-Driven Apps",
+  description: "A clean, technical platform for building data-intensive applications. Prisma-powered, developer-friendly, production-ready.",
 };
 
 export default function RootLayout({
@@ -16,20 +27,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
-      <body className="antialiased bg-white dark:bg-[#050816] text-gray-900 dark:text-white transition-colors duration-500 selection:bg-blue-100 dark:selection:bg-blue-900/30 selection:text-blue-600">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          forcedTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <SmoothFlowRegistry />
-          <div className="relative min-h-screen flex flex-col">
-             {children}
-          </div>
-          <HelpButton />
-        </ThemeProvider>
+      <body className={`${barlow.variable} ${jetbrains.variable} antialiased bg-bg text-ink selection:bg-brand/30 selection:text-ink`}>
+        <SmoothFlowRegistry />
+        <div className="relative min-h-screen flex flex-col">
+          {children}
+        </div>
+        <HelpButton />
       </body>
     </html>
   );

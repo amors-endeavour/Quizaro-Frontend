@@ -5,9 +5,9 @@ type Props = {
 
 export default function FeatureCard({ title, desc }: Props) {
   return (
-    <div className="bg-white p-8 rounded-xl shadow hover:shadow-lg transition">
-      <h3 className="text-xl font-semibold mb-4">{title}</h3>
-      <p className="text-gray-600">{desc}</p>
+    <div className="bg-[#111111] border border-[#333333] p-8 rounded-lg hover:border-[#666666] transition-colors">
+      <h3 className="text-2xl font-semibold mb-4 text-foreground">{title}</h3>
+      <p className="text-gray-500 leading-relaxed">{desc}</p>
     </div>
   );
 }
