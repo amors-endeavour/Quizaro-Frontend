@@ -31,11 +31,16 @@ export default function PaidQuizzes() {
         
         {/* CREATE SERIES FORM */}
         <section className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-10 space-y-10">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic">Create Paid Quiz Series</h3>
-            <button className="px-6 py-3 bg-[#7C3AED] text-white rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-lg shadow-purple-900/20 active:scale-95 transition-all">
-              <Plus size={16} /> Create Paid Quiz Series
-            </button>
+            <div className="flex items-center gap-4">
+              <button className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-lg shadow-purple-900/20 active:scale-95 transition-all">
+                <Sparkles size={16} /> ✨ Auto-Generate Quiz
+              </button>
+              <button className="px-6 py-3 bg-[#7C3AED] text-white rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-lg shadow-purple-900/20 active:scale-95 transition-all">
+                <Plus size={16} /> Create Paid Quiz Series
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-8">

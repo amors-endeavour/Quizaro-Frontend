@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/AdminHeader";
-import { Plus, Search, Filter, MoreVertical, Edit2, ChevronRight, BookOpen } from "lucide-react";
+import { Plus, Search, Filter, MoreVertical, Edit2, ChevronRight, BookOpen, Sparkles } from "lucide-react";
 
 export default function UnpaidQuizzes() {
   const [quizzes] = useState([
@@ -113,14 +113,19 @@ export default function UnpaidQuizzes() {
 
         {/* CREATE UNPAID QUIZ FORM */}
         <section className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-10 space-y-12">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-1">
               <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Create Unpaid Quiz</h3>
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic leading-none">Add standalone direct assessment</p>
             </div>
-            <button className="px-8 py-4 bg-[#7C3AED] text-white rounded-[1.2rem] text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 active:scale-95 transition-all">
-              Create Quiz
-            </button>
+            <div className="flex items-center gap-4">
+              <button className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-lg shadow-purple-900/20 active:scale-95 transition-all">
+                <Sparkles size={16} /> ✨ Auto-Generate Quiz
+              </button>
+              <button className="px-8 py-4 bg-[#7C3AED] text-white rounded-[1.2rem] text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 active:scale-95 transition-all">
+                Create Quiz
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
