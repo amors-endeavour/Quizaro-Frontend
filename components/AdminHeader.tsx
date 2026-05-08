@@ -35,11 +35,85 @@ export default function AdminHeader({
   const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [mounted, setMounted] = useState(false);
+  
+  // Search State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<{ type: string; id: string; name: string; extra?: string; icon: any }[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+
+  // Mock Data for Global Search
+  const mockSearchData = {
+    quizzes: [
+      { id: "1", name: "Science Fundamentals", subject: "Science" },
+      { id: "2", name: "JavaScript Advanced", subject: "Computer Science" },
+      { id: "3", name: "JEE Mains 2025 Mock", subject: "Entrance" },
+      { id: "4", name: "AI Ethics & Logic", subject: "Technology" }
+    ],
+    users: [
+      { id: "u1", name: "Aarav Mehta", email: "aarav@gmail.com" },
+      { id: "u2", name: "Priya Sharma", email: "priya@gmail.com" },
+      { id: "u3", name: "Sankalp Swaroop", email: "sankalp@quizaro.com" }
+    ],
+    payments: [
+      { id: "#TXN-1024", name: "Transaction #1024", user: "Aarav Mehta" },
+      { id: "#TXN-1025", name: "Transaction #1025", user: "Priya Sharma" }
+    ]
+  };
 
   useEffect(() => {
     setMounted(true);
     API.get("/user/profile").then(res => setUser(res.data.user || res.data)).catch(() => {});
   }, []);
+
+  // Debounced Search Logic
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const timer = setTimeout(() => {
+      const query = searchQuery.toLowerCase();
+      const results: any[] = [];
+
+      // Filter Quizzes
+      mockSearchData.quizzes.forEach(q => {
+        if (q.name.toLowerCase().includes(query) || q.subject.toLowerCase().includes(query)) {
+          results.push({ type: "Quizzes", id: q.id, name: q.name, extra: q.subject, icon: <LayoutGrid size={14} /> });
+        }
+      });
+
+      // Filter Users
+      mockSearchData.users.forEach(u => {
+        if (u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)) {
+          results.push({ type: "Users", id: u.id, name: u.name, extra: u.email, icon: <User size={14} /> });
+        }
+      });
+
+      // Filter Payments
+      mockSearchData.payments.forEach(p => {
+        if (p.id.toLowerCase().includes(query) || p.user.toLowerCase().includes(query)) {
+          results.push({ type: "Payments", id: p.id, name: p.id, extra: p.user, icon: <BarChart3 size={14} /> });
+        }
+      });
+
+      setSearchResults(results);
+      setIsSearching(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const handleResultClick = (result: any) => {
+    setSearchQuery("");
+    setShowResults(false);
+    if (result.type === "Quizzes") router.push(`/admin-dashboard/quizzes/unpaid`); // Simplified for demo
+    if (result.type === "Users") router.push(`/admin-dashboard/users`);
+    if (result.type === "Payments") router.push(`/admin-dashboard/payments`);
+  };
 
   const displayTabs = tabs || [
     { id: 'intelligence', label: 'Paper Registry', icon: <LayoutGrid size={14} /> },
@@ -55,10 +129,67 @@ export default function AdminHeader({
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={18} />
           <input 
             type="text"
+            value={searchQuery}
+            onFocus={() => setShowResults(true)}
             placeholder="Search quizzes, users, payments..."
-            className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-8 py-3.5 text-sm focus:border-blue-600 focus:bg-white outline-none transition-all placeholder:text-gray-400"
-            onChange={(e) => onSearchChange?.(e.target.value)}
+            className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-14 py-3.5 text-sm focus:border-blue-600 focus:bg-white outline-none transition-all placeholder:text-gray-400 font-medium"
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
+          {searchQuery && (
+            <button 
+              onClick={() => setSearchQuery("")}
+              className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-900 transition-colors"
+            >
+              <LogOut size={16} className="rotate-45" /> {/* Using LogOut as a placeholder for X */}
+            </button>
+          )}
+
+          {/* SEARCH RESULTS DROPDOWN */}
+          {showResults && searchQuery && (
+            <div className="absolute top-[120%] left-0 w-full bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-300 z-[200]">
+              <div className="max-h-[400px] overflow-y-auto">
+                {isSearching ? (
+                  <div className="p-10 flex items-center justify-center gap-3 text-gray-400">
+                     <Plus size={18} className="animate-spin" />
+                     <span className="text-[11px] font-bold uppercase tracking-widest">Searching...</span>
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  <div className="py-4">
+                    {["Quizzes", "Users", "Payments"].map(category => {
+                      const categoryResults = searchResults.filter(r => r.type === category);
+                      if (categoryResults.length === 0) return null;
+                      return (
+                        <div key={category} className="mb-4 last:mb-0">
+                          <p className="px-6 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest italic">{category}</p>
+                          {categoryResults.map(result => (
+                            <button
+                              key={result.id + result.type}
+                              onClick={() => handleResultClick(result)}
+                              className="w-full px-6 py-3 flex items-center gap-4 hover:bg-gray-50 transition-all text-left group"
+                            >
+                              <div className="w-8 h-8 bg-gray-50 text-gray-400 rounded-lg flex items-center justify-center group-hover:bg-blue-50 group-hover:text-blue-600 transition-all">
+                                 {result.icon}
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-[11px] font-black text-gray-900 uppercase tracking-tighter italic">{result.name}</p>
+                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{result.extra}</p>
+                              </div>
+                              <ChevronRight size={14} className="text-gray-200 group-hover:text-blue-600 transition-all" />
+                            </button>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="p-10 text-center space-y-2">
+                     <p className="text-sm font-black text-gray-900 uppercase italic leading-none">No results found</p>
+                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">We couldn't find anything for "{searchQuery}"</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* UTILITIES & PROFILE (Matching Image 1) */}
