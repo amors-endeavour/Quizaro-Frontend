@@ -101,7 +101,7 @@ function RegisterForm() {
                 <span className="flex-1">{error}</span>
               </div>
               {error.toLowerCase().includes("exists") && (
-                <Link href="/user-login" className="ml-7 text-blue-600 underline underline-offset-8 hover:text-blue-700 transition-all font-black tracking-widest decoration-2">
+                <Link href="/login" className="ml-7 text-blue-600 underline underline-offset-8 hover:text-blue-700 transition-all font-black tracking-widest decoration-2">
                   ACCESS ACTIVE PORTAL INSTEAD →
                 </Link>
               )}
