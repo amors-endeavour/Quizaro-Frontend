@@ -23,7 +23,16 @@ import {
   Search,
   Bell,
   User as UserIcon,
-  ChevronDown
+  CheckCircle2,
+  Clock,
+  LayoutGrid,
+  Activity,
+  Star,
+  Search,
+  Bell,
+  User as UserIcon,
+  ChevronDown,
+  XCircle
 } from "lucide-react";
 import { 
   LineChart, 
@@ -76,6 +85,9 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [activeTab, setActiveTab] = useState('All');
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -251,62 +263,164 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-[3rem] border border-gray-50 shadow-sm p-10 flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight">All Quizzes</h3>
-              <div className="flex items-center gap-6">
+              <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic">All Quizzes</h3>
+              <div className="flex items-center gap-8 relative">
                 {['All', 'Paid', 'Unpaid'].map((tab) => (
                   <button 
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`text-[11px] font-black uppercase tracking-[0.2em] pb-2 border-b-4 transition-all ${
-                      activeTab === tab ? "border-blue-600 text-blue-600" : "border-transparent text-gray-300 hover:text-gray-900"
+                    className={`text-[11px] font-black uppercase tracking-[0.2em] pb-3 transition-all relative z-10 ${
+                      activeTab === tab ? "text-blue-600" : "text-gray-300 hover:text-gray-900"
                     }`}
                   >
                     {tab}
+                    {activeTab === tab && (
+                      <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 rounded-full animate-in fade-in slide-in-from-left-2 duration-300"></div>
+                    )}
                   </button>
                 ))}
               </div>
             </div>
-            <button className="px-8 py-4 bg-[#6366f1] text-white rounded-[1.2rem] text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-xl shadow-blue-900/20 active:scale-95 transition-all">
-              <PlusCircle size={18} /> + Create Quiz
+            <button 
+              onClick={() => router.push("/admin-dashboard/quizzes/unpaid")}
+              className="px-10 py-5 bg-[#6366f1] text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-xl shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all"
+            >
+              <PlusCircle size={20} /> + Create Quiz
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-            {allQuizzes.map((quiz) => (
-              <div key={quiz.id} className="bg-gray-50/50 rounded-[2rem] border border-gray-100 p-8 flex flex-col gap-8 group hover:bg-white hover:border-blue-200 transition-all relative overflow-hidden">
-                <div className="flex items-center justify-between">
-                  <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${
-                    quiz.type === 'Free' ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"
-                  }`}>
-                    {quiz.type}
-                  </span>
-                  <button className="text-gray-300 hover:text-gray-900"><MoreVertical size={18} /></button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {allQuizzes
+              .filter(q => {
+                if (activeTab === 'Paid') return q.type === 'Premium';
+                if (activeTab === 'Unpaid') return q.type === 'Free';
+                return true;
+              })
+              .map((quiz) => (
+                <div key={quiz.id} className="bg-white rounded-[2.5rem] border border-gray-100 p-8 flex flex-col gap-8 group hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 relative">
+                  <div className="flex items-center justify-between">
+                    <span className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                      quiz.type === 'Free' ? "bg-green-50 text-green-600 border-green-100" : "bg-blue-50 text-blue-600 border-blue-100"
+                    }`}>
+                      {quiz.type}
+                    </span>
+                    <button className="p-2.5 text-gray-200 hover:text-gray-900 transition-colors"><MoreVertical size={20} /></button>
+                  </div>
+                  
+                  <div className="flex flex-col items-center text-center gap-6">
+                     <div className="w-24 h-24 bg-gray-50 rounded-[2rem] flex items-center justify-center text-4xl shadow-inner border border-gray-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-all duration-500">
+                        {quiz.icon}
+                     </div>
+                     <div className="space-y-3">
+                       <h4 className="text-lg font-black text-gray-900 uppercase tracking-tighter italic leading-none">{quiz.title}</h4>
+                       <div className="flex items-center justify-center gap-3">
+                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{quiz.questions} Questions</span>
+                          <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
+                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{quiz.difficulty}</span>
+                       </div>
+                     </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 pt-6 border-t border-gray-50 mt-auto">
+                    {quiz.price > 0 ? (
+                      <div className="w-full flex items-center gap-6">
+                        <div className="flex flex-col">
+                           <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Price</span>
+                           <span className="text-2xl font-black text-gray-900 tracking-tighter">₹{quiz.price}</span>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            setSelectedQuiz(quiz);
+                            setIsPricingModalOpen(true);
+                          }}
+                          className="flex-1 py-5 bg-[#2563eb] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-blue-900/20 active:scale-95 transition-all"
+                        >
+                          Buy Now
+                        </button>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={() => {
+                          setSelectedQuiz(quiz);
+                          setIsPreviewModalOpen(true);
+                        }}
+                        className="w-full py-5 bg-[#22c55e] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-green-900/20 active:scale-95 transition-all"
+                      >
+                        Start Quiz
+                      </button>
+                    )}
+                  </div>
                 </div>
-                
-                <div className="flex flex-col items-center text-center gap-4">
-                   <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-3xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform">
-                      {quiz.icon}
+              ))}
+          </div>
+        </div>
+
+        {/* MODALS */}
+        {isPreviewModalOpen && (
+          <div className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
+             <div className="bg-white rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl space-y-10 animate-in zoom-in duration-500 relative">
+                <button onClick={() => setIsPreviewModalOpen(false)} className="absolute top-8 right-8 p-3 text-gray-300 hover:text-gray-900 transition-all"><XCircle size={28} /></button>
+                <div className="flex flex-col items-center gap-8 text-center">
+                   <div className="w-24 h-24 bg-green-50 text-green-600 rounded-[2rem] flex items-center justify-center text-4xl shadow-inner border border-green-100">{selectedQuiz?.icon}</div>
+                   <div className="space-y-3">
+                      <span className="px-5 py-2 bg-green-50 text-green-600 rounded-xl text-[10px] font-black uppercase tracking-widest">Preview Mode (Admin)</span>
+                      <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">{selectedQuiz?.title}</h3>
+                      <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic">Take this assessment as a student to verify the quality.</p>
                    </div>
-                   <div className="space-y-2">
-                     <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight italic">{quiz.title}</h4>
-                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{quiz.questions} Questions • {quiz.difficulty}</p>
+                   <div className="grid grid-cols-3 gap-6 w-full py-8 border-y border-gray-100">
+                      <div>
+                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Time Limit</p>
+                         <p className="text-lg font-black text-gray-900 uppercase tracking-tighter italic">30 Mins</p>
+                      </div>
+                      <div>
+                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pass Mark</p>
+                         <p className="text-lg font-black text-gray-900 uppercase tracking-tighter italic">75%</p>
+                      </div>
+                      <div>
+                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Difficulty</p>
+                         <p className="text-lg font-black text-gray-900 uppercase tracking-tighter italic">{selectedQuiz?.difficulty}</p>
+                      </div>
+                   </div>
+                   <button className="w-full py-6 bg-[#22c55e] text-white rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-green-900/20 hover:scale-105 active:scale-95 transition-all">Launch Preview</button>
+                </div>
+             </div>
+          </div>
+        )}
+
+        {isPricingModalOpen && (
+          <div className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
+             <div className="bg-white rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl space-y-12 animate-in zoom-in duration-500 relative">
+                <button onClick={() => setIsPricingModalOpen(false)} className="absolute top-8 right-8 p-3 text-gray-300 hover:text-gray-900 transition-all"><XCircle size={28} /></button>
+                <div className="space-y-4">
+                   <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Pricing & Access Rules</h3>
+                   <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic">Configure how students access {selectedQuiz?.title}</p>
+                </div>
+
+                <div className="space-y-8">
+                   <div className="grid grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                         <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">Series Price (₹)</label>
+                         <input type="number" defaultValue={selectedQuiz?.price} className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-5 text-xl font-black focus:border-blue-600 outline-none transition-all" />
+                      </div>
+                      <div className="space-y-3">
+                         <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">Access Level</label>
+                         <select className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-5 text-sm font-black uppercase tracking-widest outline-none focus:border-blue-600">
+                            <option>One-time Purchase</option>
+                            <option>Subscription Required</option>
+                            <option>Bundle Exclusive</option>
+                         </select>
+                      </div>
+                   </div>
+                   <div className="p-8 bg-blue-50/50 rounded-3xl border border-blue-100 space-y-3">
+                      <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest leading-none italic">Admin Advisory</p>
+                      <p className="text-[11px] text-blue-600 font-bold italic leading-relaxed">Adjusting the price will affect all future transactions for this quiz. Students who have already purchased will retain their access.</p>
                    </div>
                 </div>
 
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-                  {quiz.price > 0 ? (
-                    <>
-                      <span className="text-lg font-black text-gray-900">₹{quiz.price}</span>
-                      <button className="flex-1 py-3.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Buy Now</button>
-                    </>
-                  ) : (
-                    <button className="w-full py-3.5 bg-green-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Start Quiz</button>
-                  )}
-                </div>
-              </div>
-            ))}
+                <button className="w-full py-6 bg-[#2563eb] text-white rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-900/20 hover:scale-105 active:scale-95 transition-all">Update Access Settings</button>
+             </div>
           </div>
-        </div>
+        )}
 
         {/* BOTTOM SECTION: ADDITIONAL METRICS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
