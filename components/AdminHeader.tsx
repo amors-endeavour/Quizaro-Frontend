@@ -47,111 +47,64 @@ export default function AdminHeader({
   ];
 
   return (
-    <div className="bg-white/95 backdrop-blur-2xl border-b-2 border-gray-100 flex flex-col sticky top-0 z-[110] transition-all duration-500 shadow-sm">
+    <div className="bg-white border-b border-gray-100 flex flex-col sticky top-0 z-[110] transition-all duration-500 shadow-sm">
       {/* GLOBAL GOVERNANCE BAR */}
-      <div className="px-10 h-24 flex items-center justify-between gap-12">
-        {/* BREADCRUMB NAVIGATION PROTOCOL */}
-        <div className="flex items-center gap-6 min-w-0 flex-1">
-          <button 
-            onClick={() => router.back()}
-            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-all duration-500 border-2 border-gray-100 active:scale-95 shadow-sm"
-          >
-            <ArrowLeft size={22} className="group-hover:-translate-x-1 transition-transform" />
-          </button>
-          <div className="flex items-center gap-3 text-[11px] font-black text-gray-300 truncate uppercase tracking-[0.2em] italic">
-             {path.map((p, i) => (
-               <div key={i} className="flex items-center gap-3 truncate">
-                 {i > 0 && <span className="opacity-30 text-gray-200"> / </span>}
-                 {p.href ? (
-                   <button onClick={() => router.push(p.href!)} className="hover:text-blue-600 transition-all truncate hover:translate-x-1">{p.label}</button>
-                 ) : (
-                   <span className="text-gray-900 truncate font-black">{p.label}</span>
-                 )}
-               </div>
-             ))}
-          </div>
-        </div>
-
-        {/* SYSTEM SEARCH INTERFACE */}
-        <div className="relative hidden lg:block flex-1 max-w-2xl group/search">
-          <div className="absolute left-8 top-1/2 -translate-y-1/2 flex items-center gap-4 text-gray-300 group-focus-within/search:text-blue-600 transition-colors duration-500">
-             <Terminal size={18} />
-             <div className="w-px h-6 bg-current opacity-20" />
-          </div>
-          <input 
-            type="text"
-            placeholder="Search Governance Systems..."
-            onChange={(e) => onSearchChange?.(e.target.value)}
-            className="w-full bg-gray-50 border-2 border-gray-100 rounded-[2rem] pl-20 pr-8 py-5 text-[12px] font-black uppercase tracking-widest outline-none focus:border-blue-600 focus:bg-white transition-all duration-700 text-gray-900 placeholder:text-gray-300 shadow-inner italic"
-          />
+      <div className="px-10 h-20 flex items-center justify-between gap-12">
+        {/* LEFT SIDE: TITLE ONLY */}
+        <div className="flex items-center gap-6">
+          <h1 className="text-xl font-bold text-gray-900 uppercase tracking-tighter italic">{title}</h1>
         </div>
 
         {/* GOVERNANCE ACTIONS HUB */}
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3 p-2 bg-gray-50/50 rounded-[1.5rem] border-2 border-gray-100 shadow-inner">
+          <div className="flex items-center gap-3">
             <button 
               onClick={onSettings}
-              className="w-12 h-12 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-white rounded-2xl transition-all duration-500 border border-transparent hover:border-gray-100 active:scale-95"
+              className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-all duration-500 active:scale-95"
               title="System Configuration"
             >
               <Settings size={20} />
             </button>
           </div>
 
-          {onNew && (
-            <button 
-              onClick={onNew}
-              className="px-10 py-5 bg-gray-900 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] hover:bg-blue-600 flex items-center gap-4 transition-all duration-700 shadow-2xl shadow-gray-900/20 active:scale-95 italic group/new"
-            >
-              <Plus size={18} className="group-hover:rotate-90 transition-transform" /> 
-              {onNewBtnLabel || "Deploy New Node"}
-            </button>
-          )}
-          
           <div className="relative">
             <button 
               onClick={() => setShowMenu(!showMenu)}
-              className="w-14 h-14 rounded-[1.5rem] bg-white border-2 border-gray-100 flex items-center justify-center text-blue-600 font-black text-sm uppercase tracking-tighter hover:border-blue-600 transition-all duration-500 shadow-xl active:scale-95 group/user"
+              className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-blue-600 font-bold text-xs hover:border-blue-600 transition-all duration-500 active:scale-95 group/user"
             >
-              {user ? getInitials(user.name) : <User size={24} />}
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-4 border-white shadow-sm animate-pulse" />
+              {user ? getInitials(user.name) : <User size={20} />}
             </button>
             
             {showMenu && (
-              <div className="absolute top-[120%] right-0 w-80 bg-white/95 backdrop-blur-3xl border-2 border-gray-100 rounded-[3rem] shadow-2xl p-10 animate-in slide-in-from-top-6 duration-700 z-[200] overflow-hidden">
-                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
-                 
-                 <div className="flex items-center gap-6 mb-10 pb-10 border-b-2 border-gray-50 relative z-10">
-                    <div className="w-16 h-16 rounded-[1.5rem] bg-blue-50 text-blue-600 flex items-center justify-center font-black text-lg uppercase border-2 border-blue-100 rotate-3 group-hover:rotate-0 transition-transform">
-                       {user ? getInitials(user.name) : <User size={24} />}
+              <div className="absolute top-[120%] right-0 w-64 bg-white border border-gray-100 rounded-2xl shadow-2xl p-6 animate-in slide-in-from-top-6 duration-700 z-[200]">
+                 <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-50 relative z-10">
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm uppercase">
+                       {user ? getInitials(user.name) : <User size={18} />}
                     </div>
                     <div className="flex-1 min-w-0">
-                       <h4 className="text-sm font-black text-gray-900 truncate leading-none uppercase tracking-tighter italic">GOVERNANCE ENTITY</h4>
-                       <div className="flex items-center gap-2 mt-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
-                          <p className="text-[10px] text-gray-400 font-black truncate uppercase tracking-[0.3em] italic">{user?.role} CLEARANCE</p>
-                       </div>
+                       <h4 className="text-xs font-bold text-gray-900 truncate uppercase italic tracking-tighter">Admin User</h4>
+                       <p className="text-[9px] text-gray-400 font-bold truncate uppercase tracking-widest italic">{user?.role}</p>
                     </div>
                  </div>
                  
-                 <div className="space-y-4 relative z-10">
+                 <div className="space-y-2 relative z-10">
                     <button 
-                      onClick={() => { setShowMenu(false); router.push("/admin-dashboard/profile"); }}
-                      className="w-full flex items-center justify-between px-6 py-5 text-[11px] font-black text-gray-400 hover:bg-gray-50 hover:text-blue-600 rounded-2xl transition-all duration-500 uppercase tracking-widest italic group/item border-2 border-transparent hover:border-gray-100"
+                      onClick={() => { setShowMenu(false); router.push("/admin-dashboard/settings"); }}
+                      className="w-full flex items-center justify-between px-4 py-3 text-[11px] font-bold text-gray-500 hover:bg-gray-50 hover:text-blue-600 rounded-xl transition-all duration-500 uppercase tracking-widest italic border border-transparent"
                     >
-                       <div className="flex items-center gap-4">
-                          <User size={18} className="group-hover/item:scale-110 transition-transform" /> Governance Identity
+                       <div className="flex items-center gap-3">
+                          <Settings size={16} /> Add Admin Setting
                        </div>
-                       <ChevronRight size={14} className="opacity-0 group-hover/item:opacity-100 transition-all translate-x-[-10px] group-hover/item:translate-x-0" />
+                       <ChevronRight size={14} />
                     </button>
                     <button 
                       onClick={() => { localStorage.clear(); window.location.href = "/"; }}
-                      className="w-full flex items-center justify-between px-6 py-5 text-[11px] font-black text-red-500 hover:bg-red-50 hover:text-red-600 rounded-2xl transition-all duration-500 uppercase tracking-widest italic group/item border-2 border-transparent hover:border-red-100"
+                      className="w-full flex items-center justify-between px-4 py-3 text-[11px] font-bold text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all duration-500 uppercase tracking-widest italic border border-transparent"
                     >
-                       <div className="flex items-center gap-4">
-                          <LogOut size={18} className="group-hover/item:-translate-x-1 transition-transform" /> Log out
+                       <div className="flex items-center gap-3">
+                          <LogOut size={16} /> Log out
                        </div>
-                       <ChevronRight size={14} className="opacity-0 group-hover/item:opacity-100 transition-all translate-x-[-10px] group-hover/item:translate-x-0" />
+                       <ChevronRight size={14} />
                     </button>
                  </div>
               </div>
