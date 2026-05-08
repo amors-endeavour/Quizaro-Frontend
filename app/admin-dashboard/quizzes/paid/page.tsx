@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/AdminHeader";
-import { Plus, Trash2, MoreVertical, BookOpen, Calendar, Search, ChevronRight } from "lucide-react";
+import { Plus, Trash2, MoreVertical, BookOpen, Calendar, Search, ChevronRight, Sparkles } from "lucide-react";
 
 export default function PaidQuizzes() {
   const [papers, setPapers] = useState([{ id: 1, name: "", price: "" }]);
