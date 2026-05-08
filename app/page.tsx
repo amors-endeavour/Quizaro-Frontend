@@ -355,19 +355,20 @@ function FaqSection() {
 /* ── CTA ──────────────────────────────────────────── */
 function CtaSection() {
   return (
-    <section className="py-40 px-6 relative overflow-hidden bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600">
-      {/* Abstract mesh for premium feel */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.15),transparent)] pointer-events-none" />
+    <section className="py-48 px-6 relative overflow-hidden bg-[#fbfbfe]">
+      {/* Ultra-Premium Mesh Gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(245,245,220,0.4),transparent_70%)] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(37,99,235,0.03),transparent)] pointer-events-none" />
       
-      <div className="max-w-4xl mx-auto text-center relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        <h2 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tighter leading-none italic">
+      <div className="max-w-5xl mx-auto text-center relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+        <h2 className="text-6xl md:text-9xl font-black text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.05)] mb-12 tracking-tighter leading-none italic">
           Your Success Story<br />Starts Today
         </h2>
-        <p className="text-blue-50 text-sm md:text-lg mb-14 max-w-xl mx-auto font-black uppercase tracking-[0.3em] italic opacity-80 leading-relaxed">
+        <p className="text-gray-400 text-sm md:text-lg mb-16 max-w-xl mx-auto font-black uppercase tracking-[0.4em] italic opacity-60 leading-relaxed">
           Free plan. No credit card. Start in 30 seconds.
         </p>
         <div className="flex justify-center">
-          <Link href="/register" className="px-14 py-6 bg-white text-blue-700 rounded-full font-black text-xs uppercase tracking-[0.3em] italic shadow-[0_25px_60px_rgba(255,255,255,0.3)] hover:shadow-[0_35px_80px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-6 group">
+          <Link href="/register" className="px-16 py-6 bg-white text-gray-900 border border-gray-100 rounded-full font-black text-xs uppercase tracking-[0.3em] italic shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_70px_rgba(0,0,0,0.1)] hover:scale-105 active:scale-95 transition-all flex items-center gap-6 group">
             Create Free Account <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
           </Link>
         </div>

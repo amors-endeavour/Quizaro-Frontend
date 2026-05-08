@@ -128,7 +128,7 @@ export default function Footer() {
             <Link href="#" className="text-[10px] font-black text-gray-400 hover:text-gray-900 uppercase tracking-widest transition-colors italic">Terms</Link>
             <div className="flex items-center gap-3 text-[10px] font-black text-gray-400 uppercase tracking-widest italic">
               <Globe size={14} className="text-gray-300" />
-              Asia / South
+              Patna, Bihar, India
             </div>
           </div>
         </div>
