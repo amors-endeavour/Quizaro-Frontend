@@ -329,19 +329,19 @@ function FaqSection() {
     { q: "Can I switch plans anytime?", a: "Yes, you can upgrade, downgrade, or cancel your subscription at any time from your dashboard." }
   ];
   return (
-    <section className="py-24 px-6 bg-white">
+    <section className="py-24 px-6 bg-[#fbfbfe]">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-20">
-          <span className="section-label mb-6"><span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" /> FAQ</span>
-          <h2 className="section-title mb-6">Common <span className="text-blue-600">Questions</span></h2>
+          <span className="section-label mb-6"><span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" /> Common Queries</span>
+          <h2 className="section-title mb-6">Frequently Asked <span className="text-blue-600">Questions</span></h2>
         </div>
         <div className="space-y-4">
           {faqs.map((f, i) => (
-            <div key={i} className="bg-gray-50/50 border border-gray-100 rounded-3xl p-8 group">
-              <div className="flex items-center justify-between gap-4 cursor-pointer">
-                <h4 className="font-black text-gray-900 tracking-tight">{f.q}</h4>
-                <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-white transition-all">
-                  <ArrowRight size={14} className="text-gray-400 group-hover:rotate-90 transition-all" />
+            <div key={i} className="bg-white border border-gray-50 rounded-[2rem] p-8 group hover:border-blue-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500 cursor-pointer">
+              <div className="flex items-center justify-between gap-6">
+                <h4 className="text-sm font-black text-gray-900 tracking-widest uppercase italic">{f.q}</h4>
+                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                  <ArrowRight size={16} className="group-hover:rotate-90 transition-transform" />
                 </div>
               </div>
             </div>
