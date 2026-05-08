@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminHeader from "@/components/AdminHeader";
 import { 
   DollarSign, 
@@ -14,7 +14,9 @@ import {
   ChevronRight,
   User as UserIcon,
   CreditCard,
-  AlertCircle
+  AlertCircle,
+  Loader2,
+  CheckCircle2
 } from "lucide-react";
 
 const transactions = [
@@ -29,6 +31,61 @@ const transactions = [
 
 export default function PaymentsPage() {
   const [activeTab, setActiveTab] = useState("All Transactions");
+  const [isExporting, setIsExporting] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    
+    // Simulate processing
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+      const filteredData = transactions.filter(txn => 
+        activeTab === "All Transactions" ? true : txn.status === activeTab
+      );
+
+      // Data Mapping for CSV
+      const headers = ["Transaction ID", "User Name", "User Email", "Plan/Item", "Amount", "Status", "Date/Time"];
+      const rows = filteredData.map(txn => [
+        txn.id,
+        txn.user,
+        txn.email,
+        `${txn.plan} (${txn.period})`,
+        txn.amount.replace('$', ''),
+        txn.status,
+        `${txn.date} ${txn.time}`
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(e => e.join(","))
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Quizaro_Transactions_${activeTab.replace(' ', '_')}_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setToast("Transaction report downloaded successfully");
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
@@ -112,14 +169,18 @@ export default function PaymentsPage() {
                     May 1, 2025 - May 31, 2025
                  </div>
               </div>
-              <button className="px-8 py-4 bg-white border border-gray-100 text-purple-600 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-sm hover:bg-purple-50 transition-all border-purple-100">
-                 <Download size={18} /> Export
+              <button 
+                disabled={isExporting}
+                onClick={handleExport}
+                className="px-8 py-4 bg-white border border-gray-100 text-purple-600 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-sm hover:bg-purple-50 transition-all border-purple-100 disabled:opacity-50"
+              >
+                 {isExporting ? <><Loader2 size={18} className="animate-spin" /> Exporting...</> : <><Download size={18} /> Export</>}
               </button>
            </div>
         </div>
 
         {/* DATA TABLE SECTION */}
-        <section className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden">
+        <section className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden relative">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -134,7 +195,9 @@ export default function PaymentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {transactions.map((txn) => (
+                {transactions
+                  .filter(txn => activeTab === "All Transactions" ? true : txn.status === activeTab)
+                  .map((txn) => (
                   <tr key={txn.id} className="group hover:bg-gray-50 transition-all duration-500 cursor-pointer">
                     <td className="px-10 py-8">
                        <div className="space-y-1">
@@ -202,6 +265,16 @@ export default function PaymentsPage() {
         </section>
 
       </main>
+
+      {/* CUSTOM TOAST */}
+      {toast && (
+        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[2000] animate-in slide-in-from-bottom-8 duration-500">
+           <div className="px-8 py-4 bg-white rounded-2xl shadow-2xl border border-purple-100 flex items-center gap-4 text-purple-600">
+              <CheckCircle2 size={20} />
+              <span className="text-[11px] font-black uppercase tracking-widest italic">{toast}</span>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
