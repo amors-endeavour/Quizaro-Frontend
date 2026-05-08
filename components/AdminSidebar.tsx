@@ -115,7 +115,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
               key={item.href}
               href={item.href}
               className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-[13px] font-bold uppercase tracking-widest ${
-                pathname === item.href ? "bg-blue-50 text-blue-600" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
+                pathname === item.href ? "bg-purple-50 text-purple-600" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
               {item.icon}
