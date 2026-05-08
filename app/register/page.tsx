@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { User, Mail, Lock, UserPlus, LogIn, ArrowRight, Activity, Shield, Rocket } from "lucide-react";
+import React, { useState, Suspense } from "react";
+import { User, Mail, Lock, UserPlus, LogIn, ArrowRight, Activity, Shield, Rocket, Zap, Globe } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import API from "@/app/lib/api";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,9 +36,7 @@ export default function RegisterPage() {
       }
 
       router.replace("/user-dashboard");
-
     } catch (err: any) {
-      console.error("Registration error:", err);
       const msg = err?.response?.data?.message || err.message || "Institutional registration failed.";
       setError(msg);
     } finally {
@@ -47,143 +45,162 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#f8f9fc] dark:bg-[#050816] p-8 selection:bg-blue-100 dark:selection:bg-blue-900 selection:text-blue-600 transition-colors duration-500 overflow-hidden relative font-sans">
-      {/* Background Decorative Mesh */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute w-[700px] h-[700px] bg-blue-600/5 dark:bg-blue-600/10 rounded-full -top-48 -left-48 blur-[120px] animate-pulse" />
-        <div className="absolute w-[600px] h-[600px] bg-purple-600/5 dark:bg-purple-600/10 rounded-full -bottom-48 -right-48 blur-[100px] animate-pulse delay-1000" />
-      </div>
-
-      <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 p-12 lg:p-20 rounded-[4.5rem] shadow-2xl shadow-blue-900/5 w-full max-w-2xl relative z-10 box-border animate-in fade-in zoom-in-95 duration-1000 group/form">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl pointer-events-none group-hover/form:scale-150 transition-transform duration-1000" />
+    <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] flex items-center justify-center p-6 relative overflow-hidden transition-colors duration-500 font-jetbrains">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/5 dark:bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/5 dark:bg-purple-600/10 rounded-full blur-[100px] animate-pulse duration-700" />
+      
+      <div className="relative z-10 w-full max-w-[540px] animate-in fade-in slide-in-from-bottom-10 duration-1000">
         
-        <div className="text-center mb-16">
-          <div className="w-24 h-24 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-500 border-2 border-blue-100 dark:border-blue-800/30 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-sm group hover:rotate-12 transition-transform duration-700">
-            <UserPlus size={40} />
+        {/* Branding */}
+        <div className="text-center mb-12 space-y-3">
+          <div className="inline-flex items-center gap-3 px-6 py-2 bg-white dark:bg-[#0a0f29] rounded-full border border-gray-100 dark:border-gray-800 shadow-sm mb-4 animate-in slide-in-from-top-4 duration-700">
+            <Zap size={14} className="text-blue-600" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-600 italic">Neural Network Initialization</span>
           </div>
-          <h2 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tighter italic uppercase leading-none">Scholar Enrollment</h2>
-          <div className="flex items-center justify-center gap-4 mt-6">
-             <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-             <p className="text-gray-400 dark:text-gray-700 text-[11px] font-black uppercase tracking-[0.4em] leading-relaxed italic">Initializing Personal Intellectual Registry</p>
-          </div>
+          <h1 className="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
+            Quizaro
+          </h1>
+          <p className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.4em] italic leading-none">
+            Scholar Entity Creation Portal
+          </p>
         </div>
 
-        {error && (
-          <div className="bg-red-50/50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 px-8 py-5 rounded-[2rem] mb-12 text-[11px] font-black uppercase tracking-widest flex items-center gap-5 animate-in slide-in-from-top-4 italic leading-none">
-            <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_8px_#dc2626]" />
-            {error}
-          </div>
-        )}
+        {/* Card */}
+        <div className="bg-white dark:bg-[#0a0f29] rounded-[3.5rem] shadow-2xl shadow-blue-900/5 border border-gray-100 dark:border-gray-800 p-12 lg:p-16 relative group transition-all duration-500 hover:border-blue-200 dark:hover:border-blue-900/50">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
 
-        <form onSubmit={handleSubmit} className="space-y-10">
-          <div className="space-y-4">
-            <label className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-800 ml-4 italic">Entity Label (Full Name)</label>
-            <div className="relative group/input">
-              <div className="absolute inset-y-0 left-8 flex items-center text-gray-300 dark:text-gray-800 group-focus-within/input:text-blue-600 dark:group-focus-within/input:text-blue-500 transition-colors duration-500">
-                 <User size={24} />
-              </div>
-              <input
-                type="text"
-                placeholder="Enter full legal nomenclature..."
-                className="w-full bg-gray-50/50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-[2.5rem] pl-20 pr-8 py-6 outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-[#0a0f29] transition-all duration-700 text-gray-900 dark:text-white font-black placeholder:text-gray-200 dark:placeholder:text-gray-900 text-lg shadow-inner italic"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
+          {/* Header */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight italic mb-2">Initialize Registry</h2>
+            <p className="text-[10px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-widest italic leading-none">Register your identity vector in the mesh</p>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="bg-red-50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 px-6 py-4 rounded-[1.5rem] mb-10 text-[11px] font-black uppercase tracking-widest italic flex items-center gap-4 animate-in shake duration-500">
+              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              {error}
             </div>
-          </div>
+          )}
 
-          <div className="space-y-4">
-            <label className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-800 ml-4 italic">Identity Vector (Email)</label>
-            <div className="relative group/input">
-              <div className="absolute inset-y-0 left-8 flex items-center text-gray-300 dark:text-gray-800 group-focus-within/input:text-blue-600 dark:group-focus-within/input:text-blue-500 transition-colors duration-500">
-                 <Mail size={24} />
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-8">
+            
+            <div className="space-y-6">
+              {/* Name */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] ml-2 italic">Entity Label (Full Name)</label>
+                <div className="relative group/input">
+                  <User size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 dark:text-gray-800 group-focus-within/input:text-blue-600 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Scholar Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="w-full pl-16 pr-6 py-5 bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-[1.5rem] text-sm font-bold text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-900 outline-none focus:border-blue-600 dark:focus:border-blue-500 focus:bg-white dark:focus:bg-[#0a0f29] transition-all italic shadow-inner"
+                  />
+                </div>
               </div>
-              <input
-                type="email"
-                placeholder="Synchronize email protocol..."
-                className="w-full bg-gray-50/50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-[2.5rem] pl-20 pr-8 py-6 outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-[#0a0f29] transition-all duration-700 text-gray-900 dark:text-white font-black placeholder:text-gray-200 dark:placeholder:text-gray-900 text-lg shadow-inner italic"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-          </div>
 
-          <div className="space-y-4">
-            <label className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-800 ml-4 italic">Access Cipher (Password)</label>
-            <div className="relative group/input">
-              <div className="absolute inset-y-0 left-8 flex items-center text-gray-300 dark:text-gray-800 group-focus-within/input:text-blue-600 dark:group-focus-within/input:text-blue-500 transition-colors duration-500">
-                 <Lock size={24} />
+              {/* Email */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] ml-2 italic">Neural Identifier (Email)</label>
+                <div className="relative group/input">
+                  <Mail size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 dark:text-gray-800 group-focus-within/input:text-indigo-600 transition-colors" />
+                  <input
+                    type="email"
+                    placeholder="you@institutional.net"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full pl-16 pr-6 py-5 bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-[1.5rem] text-sm font-bold text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-900 outline-none focus:border-indigo-600 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#0a0f29] transition-all italic shadow-inner"
+                  />
+                </div>
               </div>
-              <input
-                type="password"
-                placeholder="••••••••••••••••"
-                className="w-full bg-gray-50/50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-[2.5rem] pl-20 pr-8 py-6 outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-[#0a0f29] transition-all duration-700 text-gray-900 dark:text-white font-black placeholder:text-gray-200 dark:placeholder:text-gray-900 text-lg shadow-inner italic"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-              />
-            </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-8 rounded-[2.5rem] font-black text-[13px] uppercase tracking-[0.3em] transition-all duration-700 hover:bg-blue-700 active:scale-95 disabled:opacity-50 mt-4 shadow-2xl shadow-blue-900/40 flex items-center justify-center gap-6 italic group/btn overflow-hidden relative"
-          >
-            <span className="relative z-10 flex items-center gap-6">
+              {/* Password */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] ml-2 italic">Access Cipher (Password)</label>
+                <div className="relative group/input">
+                  <Lock size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 dark:text-gray-800 group-focus-within/input:text-purple-600 transition-colors" />
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="w-full pl-16 pr-6 py-5 bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-[1.5rem] text-sm font-bold text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-900 outline-none focus:border-purple-600 dark:focus:border-purple-500 focus:bg-white dark:focus:bg-[#0a0f29] transition-all italic shadow-inner"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-4 py-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-[1.8rem] font-black text-[12px] uppercase tracking-[0.2em] italic transition-all shadow-xl shadow-blue-600/20 hover:shadow-blue-600/40 active:scale-[0.98] disabled:opacity-60 group"
+            >
               {loading ? (
-                <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <>Initialize Scholar Registry <Rocket size={24} className="group-hover/btn:-translate-y-1 group-hover/btn:translate-x-1 transition-transform duration-700" /></>
+                <>Establish Identity Matrix <Rocket size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" /></>
               )}
-            </span>
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
-          </button>
-        </form>
+            </button>
+          </form>
 
-        <div className="mt-16 pt-12 border-t-2 border-gray-50 dark:border-gray-800 text-center space-y-10">
+          {/* OAuth Divider */}
+          <div className="flex items-center gap-6 my-10">
+            <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
+            <span className="text-[9px] font-black text-gray-300 dark:text-gray-700 uppercase tracking-widest italic">External Sync</span>
+            <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
+          </div>
+
+          {/* Google */}
           <button
             onClick={() => {
               const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
               window.location.href = `${baseUrl}/auth/google`;
             }}
-            className="w-full flex items-center justify-center gap-6 bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 text-gray-500 dark:text-gray-700 py-6 rounded-[2.5rem] hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:border-blue-600 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-500 transition-all duration-700 font-black text-[12px] uppercase tracking-[0.2em] group shadow-sm italic active:scale-95"
+            className="w-full flex items-center justify-center gap-4 py-5 bg-white dark:bg-[#050816] border-2 border-gray-50 dark:border-gray-800 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 hover:border-blue-600 transition-all italic active:scale-95 shadow-sm"
           >
-            <div className="w-10 h-10 bg-white dark:bg-gray-800 border-2 border-gray-50 dark:border-gray-700 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-               <svg className="w-6 h-6" viewBox="0 0 24 24">
-                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-               </svg>
-            </div>
-            Enroll with Institutional Google
+            <Globe size={16} className="text-blue-600" /> Synchronize with Google Registry
           </button>
-          
-          <div className="space-y-6">
-            <p className="text-gray-300 dark:text-gray-800 text-[12px] font-black uppercase tracking-[0.4em] italic">
-              Existing Neural Entity?{" "}
-              <Link href="/login" className="text-blue-600 dark:text-blue-500 hover:scale-105 transition-all inline-block underline underline-offset-4">
-                Access Active Session
-              </Link>
+
+          {/* Login Trigger */}
+          <div className="text-center mt-12 space-y-2">
+            <p className="text-[10px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-widest italic">
+              Existing Neural Entity?
             </p>
-            <div className="pt-4">
-              <Link href="/" className="text-[11px] uppercase font-black tracking-[0.6em] text-gray-200 dark:text-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-all italic active:scale-90 flex items-center justify-center gap-4">
-                <div className="w-10 h-px bg-current opacity-20" /> [ ABORT TO MISSION HOME ] <div className="w-10 h-px bg-current opacity-20" />
-              </Link>
-            </div>
+            <Link href="/login" className="inline-block text-[12px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] italic hover:scale-105 transition-transform active:scale-95">
+              Access Active Session
+            </Link>
           </div>
         </div>
-      </div>
 
-      {/* Institutional Security Badge */}
-      <div className="fixed bottom-12 left-12 flex items-center gap-6 text-gray-200 dark:text-gray-900 animate-in slide-in-from-left-12 duration-1000 opacity-50">
-         <Shield size={24} />
-         <p className="text-[10px] font-black uppercase tracking-[0.8em] italic">Secure Enrollment Active</p>
+        {/* Back Link */}
+        <div className="text-center mt-10">
+          <Link href="/" className="inline-flex items-center gap-3 text-[10px] font-black text-gray-300 dark:text-gray-800 uppercase tracking-widest italic hover:text-blue-600 dark:hover:text-blue-400 transition-colors group">
+            <Shield size={14} className="group-hover:rotate-12 transition-transform" /> Return to Base Node
+          </Link>
+        </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] flex flex-col items-center justify-center space-y-6">
+        <div className="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 border-t-blue-600 rounded-full animate-spin" />
+        <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.4em] italic animate-pulse leading-none">Mapping Neural Space...</p>
+      </div>
+    }>
+      <RegisterForm />
+    </Suspense>
   );
 }

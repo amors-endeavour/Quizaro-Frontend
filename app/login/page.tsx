@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Mail, Lock, LogIn, Shield, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, LogIn, Shield, Eye, EyeOff, ArrowRight, Zap, Globe, Github } from "lucide-react";
 import API from "@/app/lib/api";
 
 function LoginForm() {
@@ -25,12 +25,14 @@ function LoginForm() {
     try {
       const { data } = await API.post("/user/login", { email, password });
       const role = (data?.role || data?.user?.role || data?.data?.role)?.toString().toLowerCase();
-      if (!role) throw new Error("User role not identified. Please contact support.");
+      if (!role) throw new Error("Authentication node mapping failed. Access restricted.");
+      
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token || "");
         localStorage.setItem("role", role);
         localStorage.setItem("user", JSON.stringify(data.user || data.data?.user || {}));
       }
+      
       if (role === "admin") {
         router.replace("/admin-dashboard");
       } else if (redirect) {
@@ -39,84 +41,98 @@ function LoginForm() {
         router.replace("/user-dashboard");
       }
     } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Login failed. Please check your credentials.");
+      setError(err?.response?.data?.message || err.message || "Synchronization failure. Verify credentials.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      {/* Subtle background blob */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-50 rounded-full blur-3xl opacity-60 pointer-events-none" />
-
-      <div className="relative z-10 w-full max-w-md">
+    <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] flex items-center justify-center p-6 relative overflow-hidden transition-colors duration-500 font-jetbrains">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/5 dark:bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/5 dark:bg-purple-600/10 rounded-full blur-[100px] animate-pulse duration-700" />
+      
+      <div className="relative z-10 w-full max-w-[480px] animate-in fade-in slide-in-from-bottom-10 duration-1000">
+        
+        {/* Branding */}
+        <div className="text-center mb-12 space-y-3">
+          <div className="inline-flex items-center gap-3 px-6 py-2 bg-white dark:bg-[#0a0f29] rounded-full border border-gray-100 dark:border-gray-800 shadow-sm mb-4 animate-in slide-in-from-top-4 duration-700">
+            <Zap size={14} className="text-blue-600" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-600 italic">Neural Sync Active</span>
+          </div>
+          <h1 className="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
+            Quizaro
+          </h1>
+          <p className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.4em] italic leading-none">
+            Institutional Intelligence Access
+          </p>
+        </div>
 
         {/* Card */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/80 border border-gray-200 p-8 sm:p-10">
+        <div className="bg-white dark:bg-[#0a0f29] rounded-[3.5rem] shadow-2xl shadow-blue-900/5 border border-gray-100 dark:border-gray-800 p-12 lg:p-16 relative group transition-all duration-500 hover:border-blue-200 dark:hover:border-blue-900/50">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
 
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-200">
-              <Shield size={26} className="text-white" />
-            </div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-1">Welcome back</h1>
-            <p className="text-gray-500 text-sm">Sign in to your Quizaro account</p>
+          <div className="mb-12">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight italic mb-2">Welcome Back Node</h2>
+            <p className="text-[10px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-widest italic leading-none">Initialize session credentials to synchronize</p>
           </div>
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm font-medium flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
+            <div className="bg-red-50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 px-6 py-4 rounded-[1.5rem] mb-10 text-[11px] font-black uppercase tracking-widest italic flex items-center gap-4 animate-in shake duration-500">
+              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
               {error}
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
-
-            {/* Email */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Email address</label>
-              <div className="relative">
-                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-                />
+          <form onSubmit={handleLogin} className="space-y-8">
+            
+            <div className="space-y-6">
+              {/* Email */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] ml-2 italic">Neural Identifier (Email)</label>
+                <div className="relative group/input">
+                  <Mail size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 dark:text-gray-800 group-focus-within/input:text-blue-600 transition-colors" />
+                  <input
+                    type="email"
+                    placeholder="you@institutional.net"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full pl-16 pr-6 py-5 bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-[1.5rem] text-sm font-bold text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-900 outline-none focus:border-blue-600 dark:focus:border-blue-500 focus:bg-white dark:focus:bg-[#0a0f29] transition-all italic shadow-inner"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Password */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Password</label>
-                <Link href="/forgot-password" className="text-xs text-blue-600 hover:text-blue-700 font-medium">
-                  Forgot password?
-                </Link>
-              </div>
-              <div className="relative">
-                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+              {/* Password */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between ml-2">
+                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] italic">Access Code (Password)</label>
+                  <Link href="/forgot-password" title="Initialize Recovery" className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest italic hover:underline underline-offset-4">
+                    Lost Code?
+                  </Link>
+                </div>
+                <div className="relative group/input">
+                  <Lock size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 dark:text-gray-800 group-focus-within/input:text-purple-600 transition-colors" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full pl-16 pr-16 py-5 bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-[1.5rem] text-sm font-bold text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-900 outline-none focus:border-purple-600 dark:focus:border-purple-500 focus:bg-white dark:focus:bg-[#0a0f29] transition-all italic shadow-inner"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 dark:text-gray-800 dark:hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -124,55 +140,58 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60 transition-all shadow-md shadow-blue-200 mt-2"
+              className="w-full flex items-center justify-center gap-4 py-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-[1.8rem] font-black text-[12px] uppercase tracking-[0.2em] italic transition-all shadow-xl shadow-blue-600/20 hover:shadow-blue-600/40 active:scale-[0.98] disabled:opacity-60 group"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <><LogIn size={16} /> Sign In</>
+                <>Synchronize Session <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" /></>
               )}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 font-medium">or continue with</span>
-            <div className="flex-1 h-px bg-gray-200" />
+          {/* OAuth Divider */}
+          <div className="flex items-center gap-6 my-10">
+            <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
+            <span className="text-[9px] font-black text-gray-300 dark:text-gray-700 uppercase tracking-widest italic">External Portals</span>
+            <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
           </div>
 
-          {/* Google */}
-          <button
-            onClick={() => {
-              const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
-              window.location.href = `${baseUrl}/auth/google`;
-            }}
-            className="w-full flex items-center justify-center gap-3 py-3 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Continue with Google
-          </button>
+          {/* Social Logins */}
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => {
+                const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://quizaro-backend-3fkj.onrender.com";
+                window.location.href = `${baseUrl}/auth/google`;
+              }}
+              className="flex items-center justify-center gap-3 py-4 bg-white dark:bg-[#050816] border-2 border-gray-50 dark:border-gray-800 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 hover:border-blue-600 transition-all italic active:scale-95 shadow-sm"
+            >
+              <Globe size={16} className="text-blue-600" /> Google
+            </button>
+            <button
+              className="flex items-center justify-center gap-3 py-4 bg-white dark:bg-[#050816] border-2 border-gray-50 dark:border-gray-800 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 hover:border-purple-600 transition-all italic active:scale-95 shadow-sm opacity-50 cursor-not-allowed"
+            >
+              <Github size={16} /> GitHub
+            </button>
+          </div>
 
-          {/* Footer */}
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-blue-600 font-semibold hover:text-blue-700">
-              Sign up free
+          {/* Registration Trigger */}
+          <div className="text-center mt-12 space-y-2">
+            <p className="text-[10px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-widest italic">
+              New Intelligence Entity?
+            </p>
+            <Link href="/register" className="inline-block text-[12px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] italic hover:scale-105 transition-transform active:scale-95">
+              Initialize Account Matrix
             </Link>
-          </p>
+          </div>
         </div>
 
-        {/* Back link */}
-        <p className="text-center mt-5">
-          <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
-            ← Back to home
+        {/* Back Link */}
+        <div className="text-center mt-10">
+          <Link href="/" className="inline-flex items-center gap-3 text-[10px] font-black text-gray-300 dark:text-gray-800 uppercase tracking-widest italic hover:text-blue-600 dark:hover:text-blue-400 transition-colors group">
+            <Shield size={14} className="group-hover:rotate-12 transition-transform" /> Back to Base Node
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
@@ -181,11 +200,9 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
-          <p className="text-sm text-gray-500 font-medium">Loading...</p>
-        </div>
+      <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] flex flex-col items-center justify-center space-y-6">
+        <div className="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 border-t-blue-600 rounded-full animate-spin" />
+        <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.4em] italic animate-pulse leading-none">Booting Auth Mesh...</p>
       </div>
     }>
       <LoginForm />
