@@ -11,11 +11,22 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export default function HomePage() {
+  const [authState, setAuthState] = React.useState<{token: string | null, role: string | null}>({token: null, role: null});
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      setAuthState({
+        token: localStorage.getItem("token"),
+        role: localStorage.getItem("role")
+      });
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-white selection:bg-blue-100 selection:text-blue-600">
       <Navbar />
       <main>
-        <HeroSection />
+        <HeroSection auth={authState} />
         <TrustedBySection />
         <StatsSection />
         <FeaturesSection />
@@ -23,7 +34,7 @@ export default function HomePage() {
         <HowItWorksSection />
         <TestimonialsSection />
         <FaqSection />
-        <CtaSection />
+        <CtaSection auth={authState} />
       </main>
       <Footer />
     </div>
@@ -31,7 +42,7 @@ export default function HomePage() {
 }
 
 /* ── HERO ─────────────────────────────────────────── */
-function HeroSection() {
+function HeroSection({ auth }: { auth: { token: string | null, role: string | null } }) {
   return (
     <section className="relative pt-32 pb-24 px-6 overflow-hidden">
       {/* Background blobs */}
@@ -53,12 +64,23 @@ function HeroSection() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Link href="/register" className="w-full sm:w-auto px-10 py-5 bg-blue-600 text-white rounded-2xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 active:scale-95">
-            <Users size={18} /> I am a Student
-          </Link>
-          <Link href="/admin-login" className="w-full sm:w-auto px-10 py-5 bg-white border-2 border-gray-100 text-gray-600 rounded-2xl font-bold text-sm uppercase tracking-widest hover:border-blue-600 hover:text-blue-600 transition-all flex items-center justify-center gap-3 active:scale-95">
-            <Shield size={18} /> I am an Admin
-          </Link>
+          {auth.token ? (
+            <Link 
+              href={auth.role === "admin" ? "/admin-dashboard" : "/user-dashboard"} 
+              className="w-full sm:w-auto px-12 py-5 bg-blue-600 text-white rounded-2xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 active:scale-95 animate-in zoom-in duration-500"
+            >
+              <Zap size={18} /> Access Your Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link href="/register" className="w-full sm:w-auto px-10 py-5 bg-blue-600 text-white rounded-2xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 active:scale-95">
+                <Users size={18} /> I am a Student
+              </Link>
+              <Link href="/admin-login" className="w-full sm:w-auto px-10 py-5 bg-white border-2 border-gray-100 text-gray-600 rounded-2xl font-bold text-sm uppercase tracking-widest hover:border-blue-600 hover:text-blue-600 transition-all flex items-center justify-center gap-3 active:scale-95">
+                <Shield size={18} /> I am an Admin
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Social Proof */}
@@ -353,11 +375,11 @@ function FaqSection() {
 }
 
 /* ── CTA ──────────────────────────────────────────── */
-function CtaSection() {
+function CtaSection({ auth }: { auth: { token: string | null, role: string | null } }) {
   return (
     <section className="py-48 px-6 relative overflow-hidden bg-[#fbfbfe]">
       {/* Ultra-Premium Mesh Gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(245,245,220,0.4),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(245,245,2 beige,0.4),transparent_70%)] pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(37,99,235,0.03),transparent)] pointer-events-none" />
       
       <div className="max-w-5xl mx-auto text-center relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
@@ -365,12 +387,21 @@ function CtaSection() {
           Your Success Story<br />Starts Today
         </h2>
         <p className="text-gray-400 text-sm md:text-lg mb-16 max-w-xl mx-auto font-black uppercase tracking-[0.4em] italic opacity-60 leading-relaxed">
-          Free plan. No credit card. Start in 30 seconds.
+          {auth.token ? "Welcome back, entity. Re-establishing neural link." : "Free plan. No credit card. Start in 30 seconds."}
         </p>
         <div className="flex justify-center">
-          <Link href="/register" className="px-16 py-6 bg-white text-gray-900 border border-gray-100 rounded-full font-black text-xs uppercase tracking-[0.3em] italic shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_70px_rgba(0,0,0,0.1)] hover:scale-105 active:scale-95 transition-all flex items-center gap-6 group">
-            Create Free Account <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-          </Link>
+          {auth.token ? (
+            <Link 
+              href={auth.role === "admin" ? "/admin-dashboard" : "/user-dashboard"} 
+              className="px-16 py-6 bg-blue-600 text-white rounded-full font-black text-xs uppercase tracking-[0.3em] italic shadow-[0_20px_50px_rgba(37,99,235,0.2)] hover:shadow-[0_30px_70px_rgba(37,99,235,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-6 group"
+            >
+              Return to Command Center <Zap size={20} className="group-hover:translate-x-2 transition-transform" />
+            </Link>
+          ) : (
+            <Link href="/register" className="px-16 py-6 bg-white text-gray-900 border border-gray-100 rounded-full font-black text-xs uppercase tracking-[0.3em] italic shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_70px_rgba(0,0,0,0.1)] hover:scale-105 active:scale-95 transition-all flex items-center gap-6 group">
+              Create Free Account <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+            </Link>
+          )}
         </div>
       </div>
     </section>

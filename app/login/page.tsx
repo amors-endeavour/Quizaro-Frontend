@@ -35,7 +35,8 @@ function LoginForm() {
     setError("");
     try {
       const { data } = await API.post("/user/login", { email, password });
-      const role = (data?.role || data?.user?.role || data?.data?.role || "student").toString().toLowerCase();
+      const rawRole = data?.role || data?.user?.role || data?.data?.role || data?.data?.user?.role || "student";
+      const role = rawRole.toString().toLowerCase();
       
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token || "");
@@ -43,12 +44,13 @@ function LoginForm() {
         localStorage.setItem("user", JSON.stringify(data.user || data.data?.user || {}));
       }
       
+      // Strict Redirection Logic
       if (role === "admin") {
         router.replace("/admin-dashboard");
-      } else if (redirect) {
-        router.replace(redirect.startsWith("/") ? redirect : "/user-dashboard");
       } else {
-        router.replace("/user-dashboard");
+        // Default all other entities to student dashboard
+        const finalRedirect = redirect && redirect.startsWith("/") ? redirect : "/user-dashboard";
+        router.replace(finalRedirect);
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || err.message || "Credential verification protocol failure.");
