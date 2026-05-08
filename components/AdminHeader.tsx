@@ -48,63 +48,67 @@ export default function AdminHeader({
 
   return (
     <div className="bg-white border-b border-gray-100 flex flex-col sticky top-0 z-[110] transition-all duration-500 shadow-sm">
-      {/* GLOBAL GOVERNANCE BAR */}
-      <div className="px-10 h-20 flex items-center justify-between gap-12">
-        {/* LEFT SIDE: TITLE ONLY */}
-        <div className="flex items-center gap-6">
-          <h1 className="text-xl font-bold text-gray-900 uppercase tracking-tighter italic">{title}</h1>
+      <div className="px-8 h-20 flex items-center justify-between gap-12">
+        
+        {/* SEARCH BAR (Matching Image 1) */}
+        <div className="relative flex-1 max-w-xl group">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={18} />
+          <input 
+            type="text"
+            placeholder="Search quizzes, users, payments..."
+            className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-8 py-3.5 text-sm focus:border-blue-600 focus:bg-white outline-none transition-all placeholder:text-gray-400"
+            onChange={(e) => onSearchChange?.(e.target.value)}
+          />
         </div>
 
-        {/* GOVERNANCE ACTIONS HUB */}
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={onSettings}
-              className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-all duration-500 active:scale-95"
-              title="System Configuration"
-            >
-              <Settings size={20} />
+        {/* UTILITIES & PROFILE (Matching Image 1) */}
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4">
+            <button className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50 rounded-xl transition-all">
+              <Moon size={20} />
             </button>
+            <div className="relative">
+              <button className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50 rounded-xl transition-all">
+                <Bell size={20} />
+              </button>
+              <div className="absolute top-2 right-2 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">3</div>
+            </div>
           </div>
+
+          <div className="h-8 w-px bg-gray-100" />
 
           <div className="relative">
             <button 
               onClick={() => setShowMenu(!showMenu)}
-              className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-blue-600 font-bold text-xs hover:border-blue-600 transition-all duration-500 active:scale-95 group/user"
+              className="flex items-center gap-4 hover:bg-gray-50 p-2 rounded-2xl transition-all group"
             >
-              {user ? getInitials(user.name) : <User size={20} />}
+              <div className="text-right hidden sm:block">
+                <h4 className="text-sm font-bold text-gray-900 leading-none">Admin</h4>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Super Admin</p>
+              </div>
+              <div className="w-11 h-11 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 border-2 border-white shadow-sm overflow-hidden group-hover:scale-105 transition-transform">
+                {user ? getInitials(user.name) : <User size={22} />}
+              </div>
             </button>
             
             {showMenu && (
               <div className="absolute top-[120%] right-0 w-64 bg-white border border-gray-100 rounded-2xl shadow-2xl p-6 animate-in slide-in-from-top-6 duration-700 z-[200]">
-                 <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-50 relative z-10">
-                    <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm uppercase">
-                       {user ? getInitials(user.name) : <User size={18} />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                       <h4 className="text-xs font-bold text-gray-900 truncate uppercase italic tracking-tighter">Admin User</h4>
-                       <p className="text-[9px] text-gray-400 font-bold truncate uppercase tracking-widest italic">{user?.role}</p>
-                    </div>
-                 </div>
-                 
-                 <div className="space-y-2 relative z-10">
+                 <div className="space-y-2">
                     <button 
                       onClick={() => { setShowMenu(false); router.push("/admin-dashboard/settings"); }}
-                      className="w-full flex items-center justify-between px-4 py-3 text-[11px] font-bold text-gray-500 hover:bg-gray-50 hover:text-blue-600 rounded-xl transition-all duration-500 uppercase tracking-widest italic border border-transparent"
+                      className="w-full flex items-center justify-between px-4 py-3 text-[11px] font-bold text-gray-500 hover:bg-gray-50 hover:text-blue-600 rounded-xl transition-all duration-500 uppercase tracking-widest border border-transparent"
                     >
                        <div className="flex items-center gap-3">
-                          <Settings size={16} /> Add Admin Setting
+                          <Settings size={16} /> Admin Settings
                        </div>
-                       <ChevronRight size={14} />
                     </button>
                     <button 
                       onClick={() => { localStorage.clear(); window.location.href = "/"; }}
-                      className="w-full flex items-center justify-between px-4 py-3 text-[11px] font-bold text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all duration-500 uppercase tracking-widest italic border border-transparent"
+                      className="w-full flex items-center justify-between px-4 py-3 text-[11px] font-bold text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all duration-500 uppercase tracking-widest border border-transparent"
                     >
                        <div className="flex items-center gap-3">
                           <LogOut size={16} /> Log out
                        </div>
-                       <ChevronRight size={14} />
                     </button>
                  </div>
               </div>
