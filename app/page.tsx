@@ -139,37 +139,37 @@ function FeaturesSection() {
     {
       title: "AI-Powered Learning",
       desc: "Our AI maps your strengths and weaknesses to generate personalized study paths.",
-      icon: <Activity />,
+      icon: <Activity size={24} />,
       tag: "AI"
     },
     {
       title: "Deep Analytics",
       desc: "Track speed, accuracy, topic-wise performance with comprehensive breakdowns.",
-      icon: <Activity />,
+      icon: <Activity size={24} />,
       tag: "PREMIUM"
     },
     {
       title: "Live Leaderboards",
       desc: "Compete in real-time with thousands of aspirants on national rankings.",
-      icon: <Trophy />,
+      icon: <Trophy size={24} />,
       tag: "LIVE"
     },
     {
       title: "Timed Mock Tests",
       desc: "Exam-accurate simulations with millisecond-precision timers.",
-      icon: <Clock />,
+      icon: <Clock size={24} />,
       tag: "REAL-TIME"
     },
     {
       title: "Daily Streaks",
       desc: "Build consistent habits through streak tracking and reward systems.",
-      icon: <Flame />,
+      icon: <Flame size={24} />,
       tag: "HABITS"
     },
     {
       title: "Expert Content",
       desc: "All questions curated by senior educators and subject matter experts.",
-      icon: <Shield />,
+      icon: <Shield size={24} />,
       tag: "VERIFIED"
     }
   ];
@@ -187,7 +187,7 @@ function FeaturesSection() {
           {features.map((f) => (
             <div key={f.title} className="bg-white border border-gray-100 p-8 rounded-[2.5rem] group hover:shadow-2xl hover:shadow-blue-900/5 transition-all">
               <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                {React.cloneElement(f.icon as React.ReactElement, { size: 24 })}
+                {f.icon}
               </div>
               <span className="text-[9px] font-black bg-blue-50 text-blue-600 px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">{f.tag}</span>
               <h3 className="text-xl font-black text-gray-900 mb-4 tracking-tight">{f.title}</h3>
@@ -248,10 +248,10 @@ function ExamCategoriesSection() {
 /* ── HOW IT WORKS ─────────────────────────────────── */
 function HowItWorksSection() {
   const steps = [
-    { title: "Create Account", desc: "Sign up in 30 seconds — no credit card required.", icon: <Users /> },
-    { title: "Pick Your Exam", desc: "Choose from 200+ exam categories and set your target.", icon: <BookOpen /> },
-    { title: "Take Mock Tests", desc: "Practice with adaptive tests that mirror the real exam.", icon: <Target /> },
-    { title: "Analyze & Improve", desc: "Get AI-powered insights and fix your weak spots.", icon: <Activity /> },
+    { title: "Create Account", desc: "Sign up in 30 seconds — no credit card required.", icon: <Users size={24} /> },
+    { title: "Pick Your Exam", desc: "Choose from 200+ exam categories and set your target.", icon: <BookOpen size={24} /> },
+    { title: "Take Mock Tests", desc: "Practice with adaptive tests that mirror the real exam.", icon: <Target size={24} /> },
+    { title: "Analyze & Improve", desc: "Get AI-powered insights and fix your weak spots.", icon: <Activity size={24} /> },
   ];
   return (
     <section className="py-24 px-6 bg-gray-50/50">
@@ -268,7 +268,7 @@ function HowItWorksSection() {
           {steps.map((s, i) => (
             <div key={s.title} className="relative z-10 text-center">
               <div className="w-16 h-16 bg-white border border-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-8 text-blue-600 shadow-sm group-hover:scale-110 transition-transform">
-                {React.cloneElement(s.icon as React.ReactElement, { size: 24 })}
+                {s.icon}
               </div>
               <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest block mb-4">0{i+1}</span>
               <h4 className="text-lg font-black text-gray-900 mb-2">{s.title}</h4>
