@@ -16,6 +16,17 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Auto-Login Redirection
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      if (token) {
+        router.replace(role === "admin" ? "/admin-dashboard" : "/user-dashboard");
+      }
+    }
+  }, [router]);
+
   const redirect = searchParams?.get("redirect") || "";
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {

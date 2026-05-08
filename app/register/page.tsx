@@ -12,6 +12,17 @@ function RegisterForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Auto-Login Redirection
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      if (token) {
+        router.replace(role === "admin" ? "/admin-dashboard" : "/user-dashboard");
+      }
+    }
+  }, [router]);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
