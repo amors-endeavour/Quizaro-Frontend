@@ -12,6 +12,7 @@ function RegisterForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   // Auto-Login Redirection
   React.useEffect(() => {
@@ -23,7 +24,6 @@ function RegisterForm() {
       }
     }
   }, [router]);
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
