@@ -369,6 +369,7 @@ export default function TestsPage() {
           });
           setShowModal(true);
         }}
+        onNewBtnLabel="Create New Paper"
         onSearchChange={setSearchQuery}
       />
 
@@ -469,10 +470,10 @@ export default function TestsPage() {
                {/* PAID SECTION */}
                <div className="space-y-16">
                   <div className="flex items-center gap-6">
-                     <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl rotate-3"><Shield size={24} /></div>
+                     <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl rotate-3"><BookOpen size={24} /></div>
                      <div className="space-y-1">
-                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em] italic leading-none">Premium Intelligence Grid</h3>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Standard Synthesis Matrix nodes</p>
+                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em] italic leading-none">New Papers Folder</h3>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Manage premium series and standalone papers</p>
                      </div>
                      <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800/50" />
                   </div>
@@ -531,8 +532,8 @@ export default function TestsPage() {
                   <div className="flex items-center gap-6">
                      <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-xl -rotate-3"><Monitor size={24} /></div>
                      <div className="space-y-1">
-                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em] italic leading-none">Open Access Registry</h3>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Community synthesis and free access nodes</p>
+                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em] italic leading-none">Free New Papers Folder</h3>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Open access papers and free trial series</p>
                      </div>
                      <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800/50" />
                   </div>
@@ -760,8 +761,8 @@ export default function TestsPage() {
                 </div>
                 <p className="text-xs text-gray-400 dark:text-gray-600 font-medium ml-12">
                   {editingTest
-                    ? "Update paper metadata below"
-                    : "Step 1 of 2 — Set up paper details, then add your MCQs in the studio"}
+                    ? "Step 1: Update configuration, then modify questions in studio"
+                    : "Step 1 of 2: Set paper configuration (Title, Series, Duration)"}
                 </p>
               </div>
               <button
@@ -777,8 +778,8 @@ export default function TestsPage() {
               {/* SERIES SECTION */}
               {!editingTest && (
                 <div className="space-y-3">
-                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
-                    Series / Folder
+                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em] flex items-center gap-2">
+                    <Folder size={14} className="text-blue-600" /> Destination Folder (Series)
                   </label>
 
                   {!createInlineSeries ? (
@@ -918,9 +919,9 @@ export default function TestsPage() {
                   className="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-blue-600/30 hover:bg-blue-700 active:scale-[0.98] flex items-center justify-center gap-3"
                 >
                   {editingTest ? (
-                    <><CheckCircle2 size={18} /> Save Changes</>
+                    <><Edit3 size={18} /> Update Configuration</>
                   ) : (
-                    <><ArrowRight size={18} /> Create Paper &amp; Enter Studio</>
+                    <><ArrowRight size={18} /> Save Configuration & Proceed to MCQ Studio</>
                   )}
                 </button>
               </div>

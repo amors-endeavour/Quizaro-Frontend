@@ -13,6 +13,7 @@ interface AdminHeaderProps {
   onTabChange?: (tab: string) => void;
   tabs?: { id: string; label: string; icon?: React.ReactNode }[];
   onNew?: () => void;
+  onNewBtnLabel?: string;
   onSettings?: () => void;
   onFilter?: () => void;
   onSearchChange?: (val: string) => void;
@@ -25,6 +26,7 @@ export default function AdminHeader({
   onTabChange, 
   tabs,
   onNew, 
+  onNewBtnLabel,
   onSettings, 
   onFilter, 
   onSearchChange 
@@ -102,7 +104,7 @@ export default function AdminHeader({
               className="px-10 py-5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] hover:bg-blue-600 dark:hover:bg-blue-600 dark:hover:text-white flex items-center gap-4 transition-all duration-700 shadow-2xl shadow-gray-900/20 active:scale-95 italic group/new"
             >
               <Plus size={18} className="group-hover:rotate-90 transition-transform" /> 
-              Deploy New Node
+              {onNewBtnLabel || "Deploy New Node"}
             </button>
           )}
           
