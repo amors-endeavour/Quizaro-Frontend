@@ -355,7 +355,7 @@ function FaqSection() {
 /* ── CTA ──────────────────────────────────────────── */
 function CtaSection() {
   return (
-    <section className="py-40 px-6 relative overflow-hidden bg-gradient-to-br from-blue-400 via-blue-600 to-indigo-700">
+    <section className="py-40 px-6 relative overflow-hidden bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600">
       {/* Abstract mesh for premium feel */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.15),transparent)] pointer-events-none" />
       
