@@ -365,3 +365,52 @@ a {
   transition: opacity 0.2s;
 }
 a:hover { opacity: 0.8; }
+
+/* ══════════════════════════════════════════════════════
+   QUIZARO GRADIENT OVERRIDES
+   Remap Tailwind blue-600 primary actions → purple×blue
+   gradient across dashboards + quiz. No JSX changes.
+   ══════════════════════════════════════════════════════ */
+
+/* Page background: remove leftover dark refs */
+.bg-\[\#f8f9fc\]  { background-color: #FFFFFF !important; }
+.bg-\[\#050816\]  { background-color: #F9FAFB !important; }
+.bg-\[\#0a0f29\]  { background-color: #FFFFFF !important; }
+
+/* Force light on dark-mode utilities */
+.dark\:border-gray-800 { border-color: #E5E7EB !important; }
+.dark\:text-white      { color: #111827 !important; }
+.dark\:text-gray-100   { color: #374151 !important; }
+
+/* Primary button / active state: gradient */
+.bg-blue-600 {
+  background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%) !important;
+}
+.hover\:bg-blue-700:hover {
+  background: linear-gradient(135deg, #6D28D9 0%, #1D4ED8 100%) !important;
+}
+.hover\:bg-blue-600:hover {
+  background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%) !important;
+}
+
+/* Focus / border accents */
+.focus\:border-blue-600:focus  { border-color: #7C3AED !important; }
+.border-blue-600               { border-color: #7C3AED !important; }
+.hover\:border-blue-600:hover  { border-color: #7C3AED !important; }
+
+/* Text accents */
+.text-blue-600                 { color: #7C3AED !important; }
+.hover\:text-blue-600:hover    { color: #7C3AED !important; }
+.group-hover\:text-blue-600    { color: #7C3AED !important; }
+
+/* Soft tint backgrounds */
+.bg-blue-50   { background-color: #EDE9FE !important; }
+.bg-blue-100  { background-color: #DDD6FE !important; }
+.border-blue-100 { border-color: #DDD6FE !important; }
+.border-blue-200 { border-color: #C4B5FD !important; }
+
+/* Keep danger + success colors unchanged */
+.bg-red-600  { background: #DC2626 !important; }
+.bg-green-600 { background: #059669 !important; }
+.bg-amber-500 { background: #F59E0B !important; }
+
