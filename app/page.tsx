@@ -361,7 +361,7 @@ function CtaSection() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(37,99,235,0.03),transparent)] pointer-events-none" />
       
       <div className="max-w-5xl mx-auto text-center relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        <h2 className="text-6xl md:text-9xl font-black text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.05)] mb-12 tracking-tighter leading-none italic">
+        <h2 className="text-6xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700 drop-shadow-[0_2px_10px_rgba(37,99,235,0.1)] mb-12 tracking-tighter leading-none italic">
           Your Success Story<br />Starts Today
         </h2>
         <p className="text-gray-400 text-sm md:text-lg mb-16 max-w-xl mx-auto font-black uppercase tracking-[0.4em] italic opacity-60 leading-relaxed">
