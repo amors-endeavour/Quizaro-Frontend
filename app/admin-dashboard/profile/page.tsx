@@ -133,28 +133,28 @@ export default function AdminProfilePage() {
                  
                  <div className="space-y-16">
                     <div className="space-y-5">
-                        <p className="text-[12px] font-black text-gray-200 uppercase tracking-widest italic leading-none ml-3">Administrative Alias</p>
+                        <p className="text-[12px] font-black text-gray-300 uppercase tracking-widest italic leading-none ml-3">Administrative Alias</p>
                         {isEditing ? (
                           <div className="relative group/input">
                              <input 
                                type="text" 
                                value={editName} 
                                onChange={e => setEditName(e.target.value)}
-                               className="w-full bg-gray-50 border-2 border-gray-50 rounded-[2rem] px-10 py-7 outline-none focus:border-blue-600 transition-all font-black text-2xl text-gray-900 italic shadow-inner"
+                               className="w-full bg-gray-50 border-2 border-gray-100 rounded-[2rem] px-10 py-7 outline-none focus:border-blue-600 transition-all font-black text-2xl text-gray-900 italic shadow-inner"
                                placeholder="Ex: Command Node"
                              />
                           </div>
                         ) : (
-                          <div className="px-10 py-8 bg-gray-50/50 rounded-[2rem] border-2 border-transparent group-hover:border-gray-50 transition-all">
+                          <div className="px-10 py-8 bg-gray-50 rounded-[2rem] border-2 border-transparent group-hover:border-gray-50 transition-all">
                              <p className="text-3xl font-black text-gray-900 italic leading-none tabular-nums">{user?.name}</p>
                           </div>
                         )}
                     </div>
                     <div className="space-y-5">
-                        <p className="text-[12px] font-black text-gray-200 uppercase tracking-widest italic leading-none ml-3">Network Protocol (Email)</p>
-                        <div className="px-10 py-8 bg-gray-50/50 rounded-[2rem] border-2 border-transparent group-hover:border-gray-50 transition-all flex items-center justify-between">
+                        <p className="text-[12px] font-black text-gray-300 uppercase tracking-widest italic leading-none ml-3">Network Protocol (Email)</p>
+                        <div className="px-10 py-8 bg-gray-50 rounded-[2rem] border-2 border-transparent group-hover:border-gray-50 transition-all flex items-center justify-between">
                            <p className="text-2xl font-black text-gray-900 italic leading-none lowercase tracking-tight">{user?.email}</p>
-                           <Mail size={24} className="text-gray-100" />
+                           <Mail size={24} className="text-gray-300" />
                         </div>
                     </div>
                  </div>
@@ -173,17 +173,17 @@ export default function AdminProfilePage() {
                  </div>
 
                  <div className="space-y-16">
-                    <div className="flex items-center justify-between bg-gray-50/50 p-10 rounded-[2.5rem] group/row hover:bg-white transition-all border-2 border-transparent hover:border-gray-50 shadow-inner hover:shadow-xl hover:shadow-gray-900/5">
+                    <div className="flex items-center justify-between bg-gray-50 p-10 rounded-[2.5rem] group/row hover:bg-white transition-all border-2 border-transparent hover:border-gray-50 shadow-inner hover:shadow-xl hover:shadow-gray-900/5">
                        <div className="space-y-3">
-                          <p className="text-[12px] font-black text-gray-200 uppercase tracking-widest italic leading-none">Authority Level</p>
+                          <p className="text-[12px] font-black text-gray-300 uppercase tracking-widest italic leading-none">Authority Level</p>
                           <p className="text-2xl font-black text-blue-600 uppercase tracking-tighter italic leading-none">Master Governance Root</p>
                        </div>
                        <Zap size={32} className="text-blue-600 group-hover:scale-110 transition-transform" />
                     </div>
                     
-                    <div className="flex items-center justify-between bg-gray-50/50 p-10 rounded-[2.5rem] group/row hover:bg-white transition-all border-2 border-transparent hover:border-gray-50 shadow-inner hover:shadow-xl hover:shadow-gray-900/5">
+                    <div className="flex items-center justify-between bg-gray-50 p-10 rounded-[2.5rem] group/row hover:bg-white transition-all border-2 border-transparent hover:border-gray-50 shadow-inner hover:shadow-xl hover:shadow-gray-900/5">
                        <div className="space-y-3">
-                          <p className="text-[12px] font-black text-gray-200 uppercase tracking-widest italic leading-none">Registry Inception</p>
+                          <p className="text-[12px] font-black text-gray-300 uppercase tracking-widest italic leading-none">Registry Inception</p>
                           <div className="flex items-center gap-5">
                              <Calendar size={22} className="text-gray-900" />
                              <p className="text-2xl font-black text-gray-900 italic leading-none tabular-nums">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase() : "INSTITUTIONAL EPOCH"}</p>

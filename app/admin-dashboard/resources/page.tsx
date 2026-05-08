@@ -370,7 +370,7 @@ export default function AdminResources() {
                      <button 
                         type="button"
                         onClick={() => setShowAutoIngestModal(false)}
-                        className="flex-1 py-8 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest transition-all italic active:scale-95 border-2 border-transparent hover:border-gray-100"
+                        className="flex-1 py-8 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest italic transition-all active:scale-95 border-2 border-transparent hover:border-gray-100"
                      >
                         Abort Protocol
                      </button>
@@ -495,7 +495,7 @@ export default function AdminResources() {
                      <button 
                         type="button"
                         onClick={() => setShowAddModal(false)}
-                        className="flex-1 py-8 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest transition-all italic active:scale-95 border-2 border-transparent hover:border-gray-100"
+                        className="flex-1 py-8 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest italic transition-all active:scale-95 border-2 border-transparent hover:border-gray-100"
                      >
                         Abort Deposit
                      </button>
@@ -519,205 +519,6 @@ export default function AdminResources() {
               {statusMsg.type === 'success' ? <CheckCircle2 size={28} /> : <AlertCircle size={28} />}
            </div>
            <p className="text-[12px] font-black uppercase tracking-[0.2em] italic">{statusMsg.text}</p>
-        </div>
-      )}
-
-      {/* AUTO-INGEST MODAL 🤖 */}
-      {showAutoIngestModal && (
-         <div className="fixed inset-0 z-[500] bg-gray-900/40 dark:bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
-            <div className="bg-white dark:bg-[#0a0f29] border border-gray-100 dark:border-gray-800 rounded-[4rem] p-16 max-w-2xl w-full shadow-2xl space-y-12 animate-in zoom-in-95 duration-500 overflow-y-auto max-h-[90vh] custom-scrollbar">
-               <div className="text-center space-y-4">
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white italic tracking-tighter uppercase leading-none">Neural Ingestion Protocol</h3>
-                  <p className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest italic">AI will scan PDF intelligence and synthesize MCQs automatically</p>
-               </div>
-
-               <form onSubmit={handleAutoIngest} className="space-y-8">
-                  <div className="space-y-4">
-                     <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1 italic leading-none">Source Intelligence (PDF Payload)</label>
-                     <input 
-                        type="file"
-                        accept=".pdf"
-                        className="w-full bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl px-8 py-5 outline-none text-[11px] font-black text-gray-900 dark:text-white italic"
-                        id="auto-pdf-upload"
-                        required
-                     />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1 italic leading-none">Synthesis Title</label>
-                        <input 
-                           required
-                           className="w-full bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl px-8 py-5 outline-none focus:border-blue-500 text-sm font-black text-gray-900 dark:text-white italic placeholder:text-gray-300 dark:placeholder:text-gray-700"
-                           placeholder="Ex: Advanced Matrix Synthesis"
-                           value={formData.title}
-                           onChange={(e) => setFormData({...formData, title: e.target.value})}
-                        />
-                     </div>
-                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1 italic leading-none">Categorization</label>
-                        <input 
-                           className="w-full bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl px-8 py-5 outline-none focus:border-blue-500 text-sm font-black text-gray-900 dark:text-white italic placeholder:text-gray-300 dark:placeholder:text-gray-700"
-                           placeholder="Ex: Academic Governance"
-                           value={formData.category}
-                           onChange={(e) => setFormData({...formData, category: e.target.value})}
-                        />
-                     </div>
-                  </div>
-
-                  {isUploading && (
-                    <div className="space-y-4 bg-blue-50/50 dark:bg-blue-900/10 p-8 rounded-[2rem] border border-blue-100 dark:border-blue-800/30">
-                       <div className="h-2.5 w-full bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">
-                          <div className="h-full bg-blue-600 transition-all duration-500 shadow-sm shadow-blue-500" style={{ width: `${uploadProgress}%` }} />
-                       </div>
-                       <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest text-center italic">Scanning Neural Pathways... {uploadProgress}%</p>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col sm:flex-row gap-6 pt-6">
-                     <button 
-                        type="button"
-                        onClick={() => setShowAutoIngestModal(false)}
-                        className="flex-1 py-7 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white rounded-[2rem] font-black text-[11px] uppercase tracking-widest transition-all italic active:scale-95"
-                     >
-                        Abort Protocol
-                     </button>
-                     <button 
-                        type="submit"
-                        disabled={isUploading}
-                        className="flex-[1.5] py-7 bg-blue-600 text-white rounded-[2rem] font-black text-[11px] uppercase tracking-widest transition-all shadow-xl shadow-blue-900/20 disabled:opacity-50 flex items-center justify-center gap-4 italic active:scale-95"
-                     >
-                        <Zap size={20} /> {isUploading ? "Ingesting..." : "Commence Ingestion"}
-                     </button>
-                  </div>
-               </form>
-            </div>
-         </div>
-      )}
-
-      {/* ADD RESOURCE MODAL 🔥 */}
-      {showAddModal && (
-         <div className="fixed inset-0 z-[500] bg-gray-900/40 dark:bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
-            <div className="bg-white dark:bg-[#0a0f29] border border-gray-100 dark:border-gray-800 rounded-[4rem] p-16 max-w-2xl w-full shadow-2xl space-y-12 animate-in zoom-in-95 duration-500 overflow-y-auto max-h-[90vh] custom-scrollbar">
-               <div className="text-center space-y-4">
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white italic tracking-tighter uppercase leading-none">Resource Deposit</h3>
-                  <p className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest italic">Provisioning Intelligence Core to Registry</p>
-               </div>
-
-               <form onSubmit={handleAddResource} className="space-y-10">
-                  {/* File Upload Section */}
-                  <div className="space-y-4">
-                     <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1 italic leading-none">Asset Payload (PDF)</label>
-                     <div className="relative group">
-                        <input 
-                           type="file"
-                           accept=".pdf"
-                           onChange={handleFileUpload}
-                           className="hidden"
-                           id="pdf-upload"
-                           disabled={isUploading}
-                        />
-                        <label 
-                           htmlFor="pdf-upload"
-                           className={`w-full h-40 border-4 border-dashed rounded-[3rem] flex flex-col items-center justify-center gap-5 cursor-pointer transition-all duration-500 ${isUploading ? "bg-gray-50 dark:bg-[#050816] border-gray-100 dark:border-gray-800 opacity-50" : "bg-gray-50 dark:bg-[#050816] border-gray-100 dark:border-gray-800 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-white dark:hover:bg-gray-800"}`}
-                        >
-                           {isUploading ? (
-                              <div className="flex flex-col items-center gap-4">
-                                 <div className="w-14 h-14 border-4 border-blue-600/10 border-t-blue-600 rounded-full animate-spin" />
-                                 <p className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest italic">Encrypting... {uploadProgress}%</p>
-                              </div>
-                           ) : (
-                              <>
-                                 <div className="w-16 h-16 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl flex items-center justify-center text-gray-300 group-hover:text-blue-600 transition-all duration-500 shadow-sm">
-                                    <Plus size={32} />
-                                 </div>
-                                 <p className="text-[10px] font-black text-gray-400 dark:text-gray-600 group-hover:text-gray-900 dark:group-hover:text-white uppercase tracking-widest italic">Drop PDF or click to browse</p>
-                              </>
-                           )}
-                        </label>
-                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <div className="md:col-span-2 space-y-4">
-                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1 italic leading-none">Protocol Title</label>
-                        <input 
-                           required
-                           className="w-full bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl px-8 py-5 outline-none focus:border-blue-500 text-sm font-black text-gray-900 dark:text-white italic placeholder:text-gray-300 dark:placeholder:text-gray-700"
-                           placeholder="Ex: Physics 2024 Final Registry"
-                           value={formData.title}
-                           onChange={(e) => setFormData({...formData, title: e.target.value})}
-                        />
-                     </div>
-                     <div className="md:col-span-2 space-y-4">
-                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1 italic leading-none">Vault Access Point (URL)</label>
-                        <input 
-                           required
-                           className="w-full bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl px-8 py-5 outline-none focus:border-blue-500 text-[11px] font-bold font-mono text-blue-600/70 dark:text-blue-400/70 truncate"
-                           placeholder="https://institutional-vault.com/..."
-                           value={formData.fileUrl}
-                           onChange={(e) => setFormData({...formData, fileUrl: e.target.value})}
-                        />
-                     </div>
-                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1 italic leading-none">Categorization</label>
-                        <input 
-                           className="w-full bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl px-8 py-5 outline-none focus:border-blue-500 text-sm font-black text-gray-900 dark:text-white italic placeholder:text-gray-300 dark:placeholder:text-gray-700"
-                           placeholder="Ex: Institutional Exams"
-                           value={formData.category}
-                           onChange={(e) => setFormData({...formData, category: e.target.value})}
-                        />
-                     </div>
-                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1 italic leading-none">Access Protocol</label>
-                        <select 
-                           className="w-full bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-2xl px-8 py-5 outline-none focus:border-blue-500 text-[11px] font-black text-gray-900 dark:text-white uppercase tracking-widest appearance-none cursor-pointer italic"
-                           value={formData.isFree ? "true" : "false"}
-                           onChange={(e) => setFormData({...formData, isFree: e.target.value === "true"})}
-                        >
-                           <option value="true">Public / Free</option>
-                           <option value="false">Restricted (Vault Access)</option>
-                        </select>
-                     </div>
-                     <div className="md:col-span-2 space-y-4">
-                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1 italic leading-none">Contextual Narrative</label>
-                        <textarea 
-                           className="w-full bg-gray-50 dark:bg-[#050816] border border-gray-100 dark:border-gray-800 rounded-[2rem] px-8 py-6 outline-none focus:border-blue-500 text-sm font-black text-gray-900 dark:text-white italic h-32 resize-none placeholder:text-gray-300 dark:placeholder:text-gray-700"
-                           placeholder="Provide metadata for the intelligence node..."
-                           value={formData.description}
-                           onChange={(e) => setFormData({...formData, description: e.target.value})}
-                        />
-                     </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-6 pt-6">
-                     <button 
-                        type="button"
-                        onClick={() => setShowAddModal(false)}
-                        className="flex-1 py-7 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white rounded-[2rem] font-black text-[11px] uppercase tracking-widest transition-all italic active:scale-95"
-                     >
-                        Abort Deposit
-                     </button>
-                     <button 
-                        type="submit"
-                        disabled={isUploading}
-                        className="flex-[1.5] py-7 bg-blue-600 text-white rounded-[2rem] font-black text-[11px] uppercase tracking-widest transition-all shadow-xl shadow-blue-900/20 disabled:opacity-50 italic active:scale-95"
-                     >
-                        Deploy to Registry
-                     </button>
-                  </div>
-               </form>
-            </div>
-         </div>
-      )}
-
-      {/* Persistence HUD */}
-      {statusMsg && (
-        <div className={`fixed bottom-10 left-10 z-[600] px-10 py-7 rounded-[2.5rem] border shadow-2xl animate-in slide-in-from-left-10 duration-500 flex items-center gap-6 backdrop-blur-3xl bg-white/80 dark:bg-gray-900/80 ${statusMsg.type === 'success' ? "border-green-100 dark:border-green-900/30 text-green-700 dark:text-green-400" : "border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400"}`}>
-           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${statusMsg.type === 'success' ? "bg-green-50 dark:bg-green-900/20" : "bg-red-50 dark:bg-red-900/20"}`}>
-              {statusMsg.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
-           </div>
-           <p className="text-[11px] font-black uppercase tracking-widest italic">{statusMsg.text}</p>
         </div>
       )}
     </div>

@@ -171,9 +171,9 @@ export default function TestsPage() {
 
   if (loading && tests.length === 0) {
     return (
-      <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] flex flex-col items-center justify-center space-y-8 transition-colors duration-300">
-        <div className="w-20 h-20 border-4 border-blue-100 dark:border-blue-900/30 border-t-blue-600 rounded-full animate-spin shadow-sm" />
-        <div className="text-center font-black text-blue-600 dark:text-blue-400 tracking-[0.5em] uppercase animate-pulse leading-none text-[10px] italic">
+      <div className="min-h-screen bg-[#fbfbfe] flex flex-col items-center justify-center space-y-8 transition-colors duration-300">
+        <div className="w-20 h-20 border-4 border-blue-50 border-t-blue-600 rounded-full animate-spin shadow-sm" />
+        <div className="text-center font-black text-blue-600 tracking-[0.5em] uppercase animate-pulse leading-none text-[10px] italic">
            Synchronizing Registry Node Matrix...
         </div>
       </div>
@@ -181,21 +181,21 @@ export default function TestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] text-gray-900 dark:text-gray-100 font-sans selection:bg-blue-100 dark:selection:bg-blue-900 selection:text-blue-600 transition-colors duration-500 overflow-x-hidden">
+    <div className="min-h-screen bg-[#fbfbfe] text-gray-900 font-sans selection:bg-blue-100 selection:text-blue-600 transition-colors duration-500 overflow-x-hidden">
       <Navbar />
 
       <div className="max-w-[1700px] mx-auto px-10 py-32 lg:py-48 pb-32">
         <div className="flex flex-col xl:flex-row justify-between items-end gap-16 mb-32 animate-in fade-in slide-in-from-top-10 duration-1000">
            <div className="space-y-10 flex-1 w-full">
               <div className="flex items-center gap-10">
-                 <div className="w-20 h-20 bg-blue-600 text-white rounded-[2rem] flex items-center justify-center shadow-2xl shadow-blue-900/40 group hover:rotate-12 transition-transform duration-700 border-4 border-white dark:border-[#050816] shrink-0">
+                 <div className="w-20 h-20 bg-blue-600 text-white rounded-[2rem] flex items-center justify-center shadow-2xl shadow-blue-900/40 group hover:rotate-12 transition-transform duration-700 border-4 border-white shrink-0">
                     <BookOpen size={40} />
                  </div>
                  <div className="space-y-3">
-                    <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-gray-900 dark:text-white uppercase italic leading-none truncate max-w-[800px]">
+                    <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-gray-900 uppercase italic leading-none truncate max-w-[800px]">
                       {seriesTitle || "Intelligence Registry"}
                     </h1>
-                    <p className="text-[12px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.5em] italic leading-none pt-2">
+                    <p className="text-[12px] font-black text-gray-400 uppercase tracking-[0.5em] italic leading-none pt-2">
                       {seriesId ? "Institutional Series Sequence Node // Cluster Active" : "Complete Platform Assessment Catalog // Global Mesh"}
                     </p>
                  </div>
@@ -216,69 +216,69 @@ export default function TestsPage() {
            
            <div className="w-full xl:w-[600px] relative group/search">
               <div className="absolute inset-0 bg-blue-600/5 rounded-[3rem] blur-2xl opacity-0 group-focus-within/search:opacity-100 transition-opacity duration-700" />
-              <Search className="absolute left-10 top-1/2 -translate-y-1/2 text-gray-300 dark:text-gray-800 group-focus-within/search:text-blue-600 transition-all duration-700 relative z-10" size={32} />
+              <Search className="absolute left-10 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within/search:text-blue-600 transition-all duration-700 relative z-10" size={32} />
               <input
                 type="text"
                 placeholder="Locate intelligence nodes within spectral mesh..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[3rem] pl-28 pr-12 py-9 outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-[#050816] transition-all duration-700 font-black text-[20px] text-gray-900 dark:text-white placeholder:text-gray-200 dark:placeholder:text-gray-900 shadow-2xl shadow-blue-900/5 dark:shadow-none italic tracking-tighter relative z-10"
+                className="w-full bg-white border-2 border-gray-100 rounded-[3rem] pl-28 pr-12 py-9 outline-none focus:border-blue-600 focus:bg-white transition-all duration-700 font-black text-[20px] text-gray-900 placeholder:text-gray-200 shadow-2xl shadow-blue-900/5 italic tracking-tighter relative z-10"
               />
            </div>
         </div>
 
         {filteredTests.length === 0 ? (
-          <div className="text-center py-56 bg-white dark:bg-[#0a0f29] rounded-[6rem] border-4 border-dashed border-gray-100 dark:border-gray-800 flex flex-col items-center gap-12 animate-in zoom-in-95 duration-1000 shadow-sm group">
+          <div className="text-center py-56 bg-white rounded-[6rem] border-4 border-dashed border-gray-100 flex flex-col items-center gap-12 animate-in zoom-in-95 duration-1000 shadow-sm group">
             <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/5 transition-all duration-1000" />
-            <Layers size={80} className="text-gray-100 dark:text-gray-900 group-hover:scale-110 transition-transform duration-1000 relative z-10" />
-            <p className="text-[14px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.5em] italic leading-none relative z-10">No Intellectual Assets Located In Selective Registry Mesh</p>
+            <Layers size={80} className="text-gray-100 group-hover:scale-110 transition-transform duration-1000 relative z-10" />
+            <p className="text-[14px] font-black text-gray-400 uppercase tracking-[0.5em] italic leading-none relative z-10">No Intellectual Assets Located In Selective Registry Mesh</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-16 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             {filteredTests.map((test, idx) => (
               <div
                 key={test._id}
-                className="bg-white dark:bg-[#0a0f29] rounded-[5rem] border border-gray-100 dark:border-gray-800 p-14 hover:border-blue-600/50 hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-700 group flex flex-col relative overflow-hidden shadow-sm active:scale-[0.98]"
+                className="bg-white rounded-[5rem] border-2 border-gray-50 p-14 hover:border-blue-200 hover:shadow-2xl shadow-blue-900/5 transition-all duration-700 group flex flex-col relative overflow-hidden shadow-sm active:scale-[0.98]"
               >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000 pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
                 
                 <div className="flex items-center gap-10 mb-14 relative z-10">
-                   <div className="w-24 h-24 bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 text-gray-200 dark:text-gray-800 rounded-[2.5rem] flex items-center justify-center font-black text-2xl italic group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 group-hover:rotate-12 transition-all duration-1000 shadow-inner shrink-0">
+                   <div className="w-24 h-24 bg-gray-50 border-2 border-gray-100 text-gray-200 rounded-[2.5rem] flex items-center justify-center font-black text-2xl italic group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 group-hover:rotate-12 transition-all duration-1000 shadow-inner shrink-0">
                       {test.paperNumber ? `P${test.paperNumber}` : "★"}
                    </div>
                    <div className="flex-1 min-w-0 space-y-4">
-                      <h3 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter leading-none group-hover:text-blue-600 dark:group-hover:text-blue-500 transition-colors uppercase italic truncate">{test.title}</h3>
+                      <h3 className="text-3xl font-black text-gray-900 tracking-tighter leading-none group-hover:text-blue-600 transition-colors uppercase italic truncate">{test.title}</h3>
                       <div className="flex items-center gap-6">
-                        <div className="px-6 py-2.5 bg-blue-50/50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/30 rounded-full text-[11px] font-black uppercase tracking-[0.2em] italic leading-none shadow-sm">{test.duration || 30} Min Provision</div>
-                        <div className="w-2 h-2 rounded-full bg-blue-600/30 animate-pulse" />
+                        <div className="px-6 py-2.5 bg-blue-50/50 text-blue-600 border-2 border-blue-100 rounded-full text-[11px] font-black uppercase tracking-[0.2em] italic leading-none shadow-sm">{test.duration || 30} Min Provision</div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-blue-600/30 animate-pulse" />
                       </div>
                    </div>
                 </div>
 
                 {test.description && (
-                  <p className="text-gray-500 dark:text-gray-700 font-black text-[15px] mb-14 line-clamp-3 leading-relaxed italic relative z-10 uppercase tracking-tight">{test.description}</p>
+                  <p className="text-gray-500 font-black text-[15px] mb-14 line-clamp-3 leading-relaxed italic relative z-10 uppercase tracking-tight">{test.description}</p>
                 )}
 
-                <div className="mt-auto pt-12 border-t-2 border-gray-50 dark:border-gray-800 flex items-center justify-between relative z-10">
+                <div className="mt-auto pt-12 border-t-2 border-gray-50 flex items-center justify-between relative z-10">
                    <div className="flex flex-col gap-3">
-                      <span className="text-[11px] font-black text-gray-300 dark:text-gray-800 uppercase tracking-[0.4em] leading-none italic">Inquiry Nodes</span>
-                      <span className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter leading-none italic tabular-nums">{test.totalQuestions || 0}</span>
+                      <span className="text-[11px] font-black text-gray-300 uppercase tracking-[0.4em] leading-none italic">Inquiry Nodes</span>
+                      <span className="text-4xl font-black text-gray-900 tracking-tighter leading-none italic tabular-nums">{test.totalQuestions || 0}</span>
                    </div>
 
                    {test.price > 0 ? (
                       <div className="flex flex-col items-end gap-3 pr-6">
-                         <span className="text-[11px] font-black text-amber-600 dark:text-amber-500 uppercase tracking-[0.4em] leading-none italic">Registry Token</span>
+                         <span className="text-[11px] font-black text-amber-600 uppercase tracking-[0.4em] leading-none italic">Registry Token</span>
                          <div className="flex items-center gap-3">
-                            <span className="text-4xl font-black text-amber-600 dark:text-amber-500 tracking-tighter leading-none italic tabular-nums">₹{test.price}</span>
+                            <span className="text-4xl font-black text-amber-600 tracking-tighter leading-none italic tabular-nums">₹{test.price}</span>
                             <Zap size={20} className="text-amber-500" />
                          </div>
                       </div>
                    ) : (
                       <div className="flex flex-col items-end gap-3 pr-6">
-                         <span className="text-[11px] font-black text-green-600 dark:text-green-500 uppercase tracking-[0.4em] leading-none italic">Access Node</span>
+                         <span className="text-[11px] font-black text-green-600 uppercase tracking-[0.4em] leading-none italic">Access Node</span>
                          <div className="flex items-center gap-3">
-                            <span className="text-4xl font-black text-green-600 dark:text-green-500 tracking-tighter leading-none italic uppercase">Free</span>
+                            <span className="text-4xl font-black text-green-600 tracking-tighter leading-none italic uppercase">Free</span>
                             <CheckCircle2 size={24} className="text-green-500" />
                          </div>
                       </div>
@@ -300,22 +300,22 @@ export default function TestsPage() {
           </div>
         )}
 
-        <div className="mt-32 pt-16 border-t-2 border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-center justify-between gap-12 opacity-50 italic">
+        <div className="mt-32 pt-16 border-t-2 border-gray-100 flex flex-col md:flex-row items-center justify-between gap-12 opacity-50 italic">
            <div className="flex items-center gap-8">
-              <Activity size={24} className="text-blue-600 dark:text-blue-500" />
-              <p className="text-[11px] font-black uppercase tracking-[0.5em] text-gray-400 dark:text-gray-700">Institutional Registry Active // Sync Integrity 99.98%</p>
+              <Activity size={24} className="text-blue-600" />
+              <p className="text-[11px] font-black uppercase tracking-[0.5em] text-gray-400">Institutional Registry Active // Sync Integrity 99.98%</p>
            </div>
            <div className="flex items-center gap-10">
               <Link href="/about" className="text-[11px] font-black uppercase tracking-widest hover:text-blue-600 transition-colors">Governance</Link>
               <Link href="/contact" className="text-[11px] font-black uppercase tracking-widest hover:text-blue-600 transition-colors">Support</Link>
-              <Award size={24} className="text-gray-300 dark:text-gray-800" />
+              <Award size={24} className="text-gray-300" />
            </div>
         </div>
       </div>
 
       {statusMsg && (
-        <div className={`fixed bottom-12 left-12 z-[700] px-12 py-8 rounded-[3.5rem] border-2 shadow-2xl animate-in slide-in-from-left-12 duration-700 flex items-center gap-10 backdrop-blur-3xl bg-white/90 dark:bg-[#0a0f29]/90 transition-all ${statusMsg.type === 'success' ? "border-green-100 dark:border-green-900/30 text-green-700 dark:text-green-400" : statusMsg.type === 'alert' ? "border-amber-100 dark:border-amber-900/30 text-amber-700 dark:text-amber-400" : "border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400"}`}>
-           <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-xl ${statusMsg.type === 'success' ? "bg-green-50 dark:bg-green-900/20" : statusMsg.type === 'alert' ? "bg-amber-50 dark:bg-amber-900/20" : "bg-red-50 dark:bg-red-900/20"}`}>
+        <div className={`fixed bottom-12 left-12 z-[700] px-12 py-8 rounded-[3.5rem] border-2 shadow-2xl animate-in slide-in-from-left-12 duration-700 flex items-center gap-10 backdrop-blur-3xl bg-white/90 transition-all ${statusMsg.type === 'success' ? "border-green-100 text-green-700" : statusMsg.type === 'alert' ? "border-amber-100 text-amber-700" : "border-red-100 text-red-600"}`}>
+           <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-xl ${statusMsg.type === 'success' ? "bg-green-50" : statusMsg.type === 'alert' ? "bg-amber-50" : "bg-red-50"}`}>
               {statusMsg.type === 'success' ? <CheckCircle2 size={36} /> : <AlertCircle size={36} />}
            </div>
            <p className="text-[15px] font-black uppercase tracking-widest leading-none italic">{statusMsg.text}</p>

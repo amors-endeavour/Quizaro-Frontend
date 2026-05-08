@@ -201,8 +201,8 @@ export default function StudentAccessPage() {
 
                       <form onSubmit={handleGrant} className="space-y-10">
                          <div className="space-y-5">
-                            <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 flex items-center gap-3 leading-none italic">
-                               <Mail size={14} className="text-blue-600 dark:text-blue-400" /> Candidate Identifier (Email)
+                            <label className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em] ml-2 flex items-center gap-3 leading-none italic">
+                               <Mail size={14} className="text-blue-600" /> Candidate Identifier (Email)
                             </label>
                             <input 
                               type="email"
@@ -210,7 +210,7 @@ export default function StudentAccessPage() {
                               placeholder="candidate@institutional-vault.com"
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
-                              className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-[2rem] px-10 py-7 outline-none focus:border-blue-600 transition-all font-black text-[16px] text-gray-900 dark:text-white shadow-inner placeholder:text-gray-300 dark:placeholder:text-gray-800 italic"
+                              className="w-full bg-gray-50 border-2 border-gray-100 rounded-[2rem] px-10 py-7 outline-none focus:border-blue-600 transition-all font-black text-[16px] text-gray-900 shadow-inner placeholder:text-gray-300 italic"
                             />
                          </div>
 
@@ -257,14 +257,14 @@ export default function StudentAccessPage() {
                          </div>
 
                          {message && (
-                            <div className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-2 border-green-100 dark:border-green-800/30 p-8 rounded-[2.5rem] flex items-center gap-6 animate-in fade-in slide-in-from-top-6 duration-500 shadow-sm">
+                            <div className="bg-green-50 text-green-700 border-2 border-green-100 p-8 rounded-[2.5rem] flex items-center gap-6 animate-in fade-in slide-in-from-top-6 duration-500 shadow-sm">
                                <CheckCircle2 size={32} />
                                <span className="text-[13px] font-black uppercase tracking-widest italic">{message}</span>
                             </div>
                          )}
 
                          {error && (
-                            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-2 border-red-100 dark:border-red-800/30 p-8 rounded-[2.5rem] flex items-center gap-6 animate-in fade-in slide-in-from-top-6 duration-500 shadow-sm">
+                            <div className="bg-red-50 text-red-600 border-2 border-red-100 p-8 rounded-[2.5rem] flex items-center gap-6 animate-in fade-in slide-in-from-top-6 duration-500 shadow-sm">
                                <AlertCircle size={32} />
                                <span className="text-[13px] font-black uppercase tracking-widest italic">{error}</span>
                             </div>

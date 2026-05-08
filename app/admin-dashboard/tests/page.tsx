@@ -376,7 +376,7 @@ export default function TestsPage() {
       <main className="flex-1 overflow-y-auto p-8 lg:p-14">
         <div className="max-w-[1700px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-1000 pb-20">
           
-          <div className="flex flex-col xl:flex-row xl:items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-12 gap-10 transition-all duration-500">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between border-b-2 border-gray-50 pb-12 gap-10 transition-all duration-500">
              <div className="flex items-center gap-8">
                 <div className="relative flex items-center">
                    <input 
@@ -386,82 +386,82 @@ export default function TestsPage() {
                        if (e.target.checked) setSelectedTests(filteredTests.map(t => t._id));
                        else setSelectedTests([]);
                      }}
-                     className="w-7 h-7 rounded-xl border-gray-200 dark:border-gray-700 text-blue-600 focus:ring-blue-500 cursor-pointer bg-white dark:bg-[#0a0f29] transition-all" 
+                     className="w-7 h-7 rounded-xl border-gray-200 text-blue-600 focus:ring-blue-500 cursor-pointer bg-white transition-all" 
                    />
                 </div>
                  <div className="space-y-1">
-                   <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest italic leading-none">
+                   <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest italic leading-none">
                       {!currentSeriesId ? `Cluster Matrix [${series.length}]` : `Node Matrix [${filteredTests.length}]`}
                    </h3>
                    <div className="flex gap-4 mt-3">
                       <button 
                         onClick={() => setActiveView("Active")}
-                        className={`text-[10px] font-black uppercase tracking-widest italic px-4 py-1.5 rounded-full border-2 transition-all ${activeView === "Active" ? "bg-blue-600 border-blue-600 text-white" : "border-gray-100 dark:border-gray-800 text-gray-400"}`}
+                        className={`text-[10px] font-black uppercase tracking-widest italic px-4 py-1.5 rounded-full border-2 transition-all ${activeView === "Active" ? "bg-blue-600 border-blue-600 text-white" : "border-gray-100 text-gray-400"}`}
                       >
                         Active Registry
                       </button>
                       <button 
                         onClick={() => setActiveView("Drafts")}
-                        className={`text-[10px] font-black uppercase tracking-widest italic px-4 py-1.5 rounded-full border-2 transition-all ${activeView === "Drafts" ? "bg-amber-500 border-amber-500 text-white" : "border-gray-100 dark:border-gray-800 text-gray-400"}`}
+                        className={`text-[10px] font-black uppercase tracking-widest italic px-4 py-1.5 rounded-full border-2 transition-all ${activeView === "Drafts" ? "bg-amber-500 border-amber-500 text-white" : "border-gray-100 text-gray-400"}`}
                       >
                         Draft Protocol
                       </button>
                    </div>
                 </div>
                 {selectedTests.length > 0 && (
-                   <div className="flex items-center gap-8 ml-8 pl-8 border-l-2 border-gray-100 dark:border-gray-800 animate-in slide-in-from-left-6 duration-500">
+                   <div className="flex items-center gap-8 ml-8 pl-8 border-l-2 border-gray-100 animate-in slide-in-from-left-6 duration-500">
                       <button onClick={() => setShowConfirmModal({ show: true, type: 'bulk_delete' })} className="px-6 py-3 bg-red-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest italic hover:bg-red-700 transition-all shadow-xl shadow-red-900/20 active:scale-95 flex items-center gap-3">
                          <Trash2 size={14} /> Batch Purge
                       </button>
-                      <button onClick={() => setSelectedTests([])} className="text-[10px] font-black text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white uppercase tracking-widest italic transition-all active:scale-95">Clear Selective Nodes</button>
+                      <button onClick={() => setSelectedTests([])} className="text-[10px] font-black text-gray-400 hover:text-gray-900 uppercase tracking-widest italic transition-all active:scale-95">Clear Selective Nodes</button>
                    </div>
                 )}
              </div>
              
              <div className="flex flex-wrap gap-5 justify-end items-center">
-                 <div className="relative group">
-                    <button className="px-10 py-5 bg-white dark:bg-[#0a0f29] text-gray-600 dark:text-gray-400 border-2 border-gray-50 dark:border-gray-800 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:border-blue-600 dark:hover:border-blue-500 transition-all shadow-sm italic active:scale-[0.98] flex items-center gap-3">
-                      <Download size={16} /> Port Registry Payload
-                    </button>
-                    <input 
-                       type="file" 
-                       accept=".json,.csv" 
-                       onChange={handleImport}
-                       className="absolute inset-0 opacity-0 cursor-pointer"
-                    />
-                 </div>
+                  <div className="relative group">
+                     <button className="px-10 py-5 bg-white text-gray-600 border-2 border-gray-50 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:border-blue-600 transition-all shadow-sm italic active:scale-[0.98] flex items-center gap-3">
+                       <Download size={16} /> Port Registry Payload
+                     </button>
+                     <input 
+                        type="file" 
+                        accept=".json,.csv" 
+                        onChange={handleImport}
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                     />
+                  </div>
 
-                 <button 
-                   onClick={() => setShowAutoIngestModal(true)}
-                   className="px-10 py-5 bg-indigo-600 dark:bg-indigo-700 text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 dark:hover:bg-indigo-800 transition-all shadow-2xl shadow-indigo-900/30 flex items-center gap-4 italic active:scale-[0.98]"
-                 >
-                   <Zap size={18} /> Neural Auto-Ingest
-                 </button>
+                  <button 
+                    onClick={() => setShowAutoIngestModal(true)}
+                    className="px-10 py-5 bg-indigo-600 text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-900/30 flex items-center gap-4 italic active:scale-[0.98]"
+                  >
+                    <Zap size={18} /> Neural Auto-Ingest
+                  </button>
 
-                 {!currentSeriesId && (
-                    <button 
-                      onClick={() => setShowSeriesModal(true)}
-                      className="px-10 py-5 bg-blue-600 text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 italic active:scale-[0.98] flex items-center gap-3"
-                    >
-                      <Plus size={18} /> Generate Series Matrix
-                    </button>
-                 )}
-
-                  {currentSeriesId && (
-                    <button 
-                      onClick={() => setCurrentSeriesId(null)}
-                      className="px-10 py-5 bg-white dark:bg-[#0a0f29] text-gray-600 dark:text-gray-400 border-2 border-gray-50 dark:border-gray-800 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 dark:hover:bg-blue-500 transition-all shadow-sm italic active:scale-[0.98]"
-                    >
-                      Back to Global Registry
-                    </button>
+                  {!currentSeriesId && (
+                     <button 
+                       onClick={() => setShowSeriesModal(true)}
+                       className="px-10 py-5 bg-blue-600 text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 italic active:scale-[0.98] flex items-center gap-3"
+                     >
+                       <Plus size={18} /> Generate Series Matrix
+                     </button>
                   )}
+
+                   {currentSeriesId && (
+                     <button 
+                       onClick={() => setCurrentSeriesId(null)}
+                       className="px-10 py-5 bg-white text-gray-600 border-2 border-gray-50 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-sm italic active:scale-[0.98]"
+                     >
+                       Back to Global Registry
+                     </button>
+                   )}
              </div>
           </div>
 
           {loading ? (
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-10">
                {[1,2,3,4,5,6,7,8,9,10].map(i => (
-                 <div key={i} className="h-72 bg-white dark:bg-[#0a0f29] border border-gray-100 dark:border-gray-800 rounded-[3.5rem] animate-pulse shadow-sm" />
+                 <div key={i} className="h-72 bg-white border border-gray-50 rounded-[3.5rem] animate-pulse shadow-sm" />
                ))}
              </div>
           ) : !currentSeriesId ? (
@@ -619,7 +619,7 @@ export default function TestsPage() {
                </button>
 
                {filteredTests.length === 0 ? (
-                 <div className="py-64 text-center bg-white border-4 border-dashed border-gray-100 rounded-[6rem] shadow-sm flex flex-col items-center gap-12 transition-all duration-700">
+                 <div className="py-64 text-center bg-white border-4 border-dashed border-gray-50 rounded-[6rem] shadow-sm flex flex-col items-center gap-12 transition-all duration-700">
                    <div className="w-32 h-32 bg-gray-50 rounded-[3.5rem] flex items-center justify-center text-gray-100 shadow-inner"><Info size={64} /></div>
                    <div className="space-y-6">
                       <p className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Registry Void Detected</p>
@@ -673,27 +673,27 @@ export default function TestsPage() {
 
       {/* AUTO-INGEST MODAL 🤖 */}
       {showAutoIngestModal && (
-         <div className="fixed inset-0 z-[600] bg-gray-900/60 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
-            <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[5rem] p-20 max-w-2xl w-full shadow-2xl space-y-16 animate-in zoom-in-95 duration-700 relative overflow-hidden">
-               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 animate-pulse" />
+         <div className="fixed inset-0 z-[600] bg-gray-900/60 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
+            <div className="bg-white border-2 border-gray-50 rounded-[5rem] p-20 max-w-2xl w-full shadow-2xl space-y-16 animate-in zoom-in-95 duration-700 relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 animate-pulse" />
                <div className="text-center space-y-6">
-                  <div className="w-28 h-28 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-[3rem] flex items-center justify-center mx-auto shadow-2xl border-4 border-white dark:border-[#0a0f29] rotate-3 hover:rotate-0 transition-transform duration-700">
+                  <div className="w-28 h-28 bg-blue-50 text-blue-600 rounded-[3rem] flex items-center justify-center mx-auto shadow-2xl border-4 border-white rotate-3 hover:rotate-0 transition-transform duration-700">
                     <Zap size={56} />
                   </div>
                   <div className="space-y-2">
-                     <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter uppercase italic leading-none">Neural Ingestion Protocol</h3>
-                     <p className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.4em] italic leading-none">AI-Powered Institutional Synthesis Loop</p>
+                     <h3 className="text-4xl font-black text-gray-900 tracking-tighter uppercase italic leading-none">Neural Ingestion Protocol</h3>
+                     <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.4em] italic leading-none">AI-Powered Institutional Synthesis Loop</p>
                   </div>
                </div>
 
                <form onSubmit={handleAutoIngest} className="space-y-12">
                   <div className="space-y-5">
-                     <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 italic leading-none">Payload Source (PDF Registry)</label>
+                     <label className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em] ml-2 italic leading-none">Payload Source (PDF Registry)</label>
                      <div className="relative group/input">
                         <input 
                            type="file"
                            accept=".pdf"
-                           className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-3xl px-10 py-6 outline-none focus:border-blue-600 text-[12px] font-black text-gray-900 dark:text-white italic cursor-pointer transition-all"
+                           className="w-full bg-gray-50 border-2 border-gray-100 rounded-3xl px-10 py-6 outline-none focus:border-blue-600 text-[12px] font-black text-gray-900 italic cursor-pointer transition-all"
                            id="auto-pdf-upload"
                            required
                         />
@@ -701,10 +701,10 @@ export default function TestsPage() {
                   </div>
 
                   <div className="space-y-5">
-                     <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 italic leading-none">Entity Metadata Title</label>
+                     <label className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em] ml-2 italic leading-none">Entity Metadata Title</label>
                      <input 
                         required
-                        className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-3xl px-10 py-6 outline-none focus:border-blue-600 text-[16px] font-black text-gray-900 dark:text-white italic placeholder:text-gray-200 dark:placeholder:text-gray-900 transition-all shadow-inner"
+                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-3xl px-10 py-6 outline-none focus:border-blue-600 text-[16px] font-black text-gray-900 italic placeholder:text-gray-200 transition-all shadow-inner"
                         placeholder="Ex: Advanced Matrix Synthesis Phase I"
                         value={formData.title}
                         onChange={(e) => setFormData({...formData, title: e.target.value})}
@@ -712,11 +712,11 @@ export default function TestsPage() {
                   </div>
 
                   {loading && (
-                    <div className="space-y-6 bg-blue-50/50 dark:bg-blue-900/10 p-12 rounded-[3.5rem] border-2 border-blue-100 dark:border-blue-800/30 animate-in fade-in duration-500">
-                       <div className="h-3.5 w-full bg-gray-200 dark:bg-[#050816] rounded-full overflow-hidden shadow-inner">
+                    <div className="space-y-6 bg-blue-50/50 p-12 rounded-[3.5rem] border-2 border-blue-100 animate-in fade-in duration-500">
+                       <div className="h-3.5 w-full bg-gray-200 rounded-full overflow-hidden shadow-inner">
                           <div className="h-full bg-blue-600 animate-pulse w-full shadow-[0_0_20px_rgba(37,99,235,0.5)]" />
                        </div>
-                       <p className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.4em] text-center italic leading-none animate-pulse">Codifying Ingested Intelligence Nodes...</p>
+                       <p className="text-[11px] font-black text-blue-600 uppercase tracking-[0.4em] text-center italic leading-none animate-pulse">Codifying Ingested Intelligence Nodes...</p>
                     </div>
                   )}
 
@@ -724,7 +724,7 @@ export default function TestsPage() {
                      <button 
                         type="button" 
                         onClick={() => setShowAutoIngestModal(false)}
-                        className="flex-1 py-8 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-700 hover:text-gray-900 dark:hover:text-white rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest italic transition-all active:scale-[0.98] border-2 border-transparent hover:border-gray-100 dark:hover:border-gray-700 shadow-sm"
+                        className="flex-1 py-8 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest italic transition-all active:scale-[0.98] border-2 border-transparent hover:border-gray-50 shadow-sm"
                      >
                         Abort Protocol
                      </button>
@@ -742,44 +742,44 @@ export default function TestsPage() {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-[600] bg-gray-900/70 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-6 animate-in fade-in duration-500">
-          <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[3rem] w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500 overflow-hidden flex flex-col max-h-[95vh] relative">
+        <div className="fixed inset-0 z-[600] bg-gray-900/70 backdrop-blur-2xl flex items-center justify-center p-6 animate-in fade-in duration-500">
+          <div className="bg-white border-2 border-gray-50 rounded-[3rem] w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500 overflow-hidden flex flex-col max-h-[95vh] relative">
             
             {/* Top accent bar */}
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600" />
+            <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600" />
 
             {/* Header */}
-            <div className="px-10 pt-10 pb-8 border-b border-gray-100 dark:border-gray-800 flex items-start justify-between gap-6">
+            <div className="px-10 pt-10 pb-8 border-b-2 border-gray-50 flex items-start justify-between gap-6">
               <div className="space-y-1.5">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg">
                     {editingTest ? <Edit3 size={16} /> : <BookOpen size={16} />}
                   </div>
-                  <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
-                    {editingTest ? "Edit Paper" : "Create New Paper"}
+                  <h3 className="text-xl font-black text-gray-900 tracking-tight italic uppercase">
+                    {editingTest ? "Edit Paper Configuration" : "Initialize New Paper"}
                   </h3>
                 </div>
-                <p className="text-xs text-gray-400 dark:text-gray-600 font-medium ml-12">
+                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest ml-12 italic">
                   {editingTest
-                    ? "Step 1: Update configuration, then modify questions in studio"
-                    : "Step 1 of 2: Set paper configuration (Title, Series, Duration)"}
+                    ? "Institutional Registry Update Sequence"
+                    : "Step 1 of 2: Neural Configuration Provisioning"}
                 </p>
               </div>
               <button
                 onClick={() => { setShowModal(false); setCreateInlineSeries(false); setInlineSeriesTitle(""); }}
-                className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all active:scale-90 flex-shrink-0 group"
+                className="w-10 h-10 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all active:scale-90 flex-shrink-0 group"
               >
                 <X size={18} className="group-hover:rotate-90 transition-transform" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-10 space-y-8 overflow-y-auto flex-1">
+            <form onSubmit={handleSubmit} className="p-10 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
 
               {/* SERIES SECTION */}
               {!editingTest && (
                 <div className="space-y-3">
-                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em] flex items-center gap-2">
-                    <FolderPlus size={14} className="text-blue-600" /> Destination Folder (Series)
+                  <label className="text-[11px] font-black text-gray-500 uppercase tracking-[0.25em] flex items-center gap-2 italic">
+                    <FolderPlus size={14} className="text-blue-600" /> Destination Folder (Series Matrix)
                   </label>
 
                   {!createInlineSeries ? (
@@ -787,51 +787,52 @@ export default function TestsPage() {
                       {/* Existing series select */}
                       <div className="relative">
                         <select
-                          className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white appearance-none cursor-pointer transition-all"
+                          className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-black text-sm text-gray-900 appearance-none cursor-pointer transition-all italic"
                           value={formData.seriesId}
                           onChange={(e) => setFormData({ ...formData, seriesId: e.target.value })}
                         >
-                          <option value="">— No Series (Standalone Paper) —</option>
-                          {series.map(s => <option key={s._id} value={s._id}>{s.title}</option>)}
+                          <option value="">— NO SERIES (STANDALONE NODE) —</option>
+                          {series.map(s => <option key={s._id} value={s._id}>{s.title.toUpperCase()}</option>)}
                         </select>
                         <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                           <Filter size={16} />
                         </div>
                       </div>
+                      
                       {/* Inline create new series option */}
                       <button
                         type="button"
                         onClick={() => { setCreateInlineSeries(true); setFormData({ ...formData, seriesId: "" }); }}
-                        className="flex items-center gap-2.5 text-blue-600 dark:text-blue-400 text-xs font-bold hover:text-blue-700 transition-colors group"
+                        className="flex items-center gap-2.5 text-blue-600 text-[10px] font-black uppercase tracking-widest hover:text-blue-700 transition-colors group italic"
                       >
-                        <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                        <div className="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                           <FolderPlus size={13} />
                         </div>
-                        Create a new series folder instead
+                        Generate a new series matrix folder
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-3 p-5 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border-2 border-blue-200 dark:border-blue-800/40">
+                    <div className="space-y-3 p-5 bg-blue-50 rounded-2xl border-2 border-blue-200">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest">New Series Folder</span>
+                        <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest italic">New Series Matrix Cluster</span>
                         <button
                           type="button"
                           onClick={() => { setCreateInlineSeries(false); setInlineSeriesTitle(""); }}
-                          className="text-xs text-gray-400 hover:text-gray-600 font-semibold"
+                          className="text-[10px] text-gray-400 hover:text-gray-600 font-black uppercase tracking-widest italic"
                         >
-                          Cancel
+                          Abort
                         </button>
                       </div>
                       <input
                         autoFocus
                         required={createInlineSeries}
-                        className="w-full bg-white dark:bg-[#050816] border-2 border-blue-200 dark:border-blue-800/60 rounded-xl px-4 py-3.5 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-700 transition-all"
-                        placeholder="e.g. NEET 2024 Series, UPSC Prelims Batch..."
+                        className="w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3.5 outline-none focus:border-blue-500 font-black text-sm text-gray-900 placeholder:text-gray-300 transition-all italic"
+                        placeholder="e.g. Institutional Synthesis 2024..."
                         value={inlineSeriesTitle}
                         onChange={(e) => setInlineSeriesTitle(e.target.value)}
                       />
-                      <p className="text-[11px] text-blue-500 dark:text-blue-500 font-medium">
-                        A new folder will be created and this paper will be added inside it.
+                      <p className="text-[10px] text-blue-500 font-black uppercase tracking-widest italic leading-none">
+                        A new cluster will be initialized and this node will be added inside it.
                       </p>
                     </div>
                   )}
@@ -841,25 +842,25 @@ export default function TestsPage() {
               {/* PAPER TITLE + NUMBER */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2.5 col-span-2 sm:col-span-1">
-                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
-                    Paper Title <span className="text-red-400">*</span>
+                  <label className="text-[11px] font-black text-gray-500 uppercase tracking-[0.25em] italic">
+                    Node Title <span className="text-red-400">*</span>
                   </label>
                   <input
-                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-700 transition-all"
+                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-black text-sm text-gray-900 placeholder:text-gray-300 transition-all italic"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     required
-                    placeholder="e.g. Paper 1, Mock Test A, Full Syllabus Test"
+                    placeholder="e.g. Phase I Mock Terminal"
                   />
                 </div>
                 <div className="space-y-2.5">
-                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
-                    Paper No.
+                  <label className="text-[11px] font-black text-gray-500 uppercase tracking-[0.25em] italic">
+                    Sequence No.
                   </label>
                   <input
                     type="number"
                     min={1}
-                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white transition-all"
+                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-black text-sm text-gray-900 transition-all italic"
                     value={formData.paperNumber}
                     onChange={(e) => setFormData({ ...formData, paperNumber: Number(e.target.value) })}
                     required
@@ -870,25 +871,25 @@ export default function TestsPage() {
               {/* DURATION + PRICE */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2.5">
-                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
-                    Duration (minutes)
+                  <label className="text-[11px] font-black text-gray-500 uppercase tracking-[0.25em] italic">
+                    Duration (Minutes)
                   </label>
                   <input
                     type="number"
                     min={1}
-                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white transition-all"
+                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-black text-sm text-gray-900 transition-all italic"
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: Number(e.target.value) })}
                   />
                 </div>
                 <div className="space-y-2.5">
-                  <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em]">
-                    Price (INR) <span className="text-green-500 font-medium normal-case tracking-normal">— 0 for free</span>
+                  <label className="text-[11px] font-black text-gray-500 uppercase tracking-[0.25em] italic">
+                    Credit Value (INR) <span className="text-green-500 font-black normal-case tracking-normal">— 0 FOR FREE</span>
                   </label>
                   <input
                     type="number"
                     min={0}
-                    className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-semibold text-sm text-gray-900 dark:text-white transition-all"
+                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 font-black text-sm text-gray-900 transition-all italic"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
                   />
@@ -897,10 +898,10 @@ export default function TestsPage() {
 
               {/* WORKFLOW NOTE — only for new papers */}
               {!editingTest && (
-                <div className="flex items-start gap-3 px-5 py-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-2xl">
+                <div className="flex items-start gap-3 px-5 py-4 bg-amber-50 border-2 border-amber-100 rounded-2xl">
                   <Info size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-amber-700 dark:text-amber-400 font-medium leading-relaxed">
-                    After clicking <strong>"Create Paper"</strong>, you'll be taken directly to the <strong>Question Studio</strong> where you can add all your MCQs. You'll then choose to <strong>Save as Draft</strong> or <strong>Make Active</strong>.
+                  <p className="text-[11px] text-amber-700 font-black uppercase tracking-widest leading-relaxed italic">
+                    After clicking <strong>"Initialize Paper"</strong>, you'll be redirected to the <strong>Question Studio</strong> to provision MCQs.
                   </p>
                 </div>
               )}
@@ -910,18 +911,18 @@ export default function TestsPage() {
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); setCreateInlineSeries(false); setInlineSeriesTitle(""); }}
-                  className="flex-1 py-4 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-2xl font-bold text-sm transition-all active:scale-[0.98]"
+                  className="flex-1 py-4 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-2xl font-black text-[12px] uppercase tracking-widest transition-all active:scale-[0.98] border-2 border-transparent hover:border-gray-100 italic"
                 >
-                  Cancel
+                  Abort Protocol
                 </button>
                 <button
                   type="submit"
-                  className="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-blue-600/30 hover:bg-blue-700 active:scale-[0.98] flex items-center justify-center gap-3"
+                  className="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest transition-all shadow-xl shadow-blue-600/30 hover:bg-blue-700 active:scale-[0.98] flex items-center justify-center gap-3 italic"
                 >
                   {editingTest ? (
-                    <><Edit3 size={18} /> Update Configuration</>
+                    <><Edit3 size={18} /> Update Metadata Commit</>
                   ) : (
-                    <><ArrowRight size={18} /> Save Configuration & Proceed to MCQ Studio</>
+                    <><ArrowRight size={18} /> Initialize Paper & Proceed to Studio</>
                   )}
                 </button>
               </div>
@@ -932,24 +933,24 @@ export default function TestsPage() {
 
 
       {showSeriesModal && (
-        <div className="fixed inset-0 z-[600] bg-gray-900/60 dark:bg-black/90 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
-          <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[5rem] w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-700 overflow-hidden flex flex-col relative transition-all duration-500">
-            <div className="absolute top-0 left-0 w-full h-2 bg-blue-600" />
-            <div className="px-20 py-12 bg-gray-50/30 dark:bg-[#050816]/30 border-b-2 border-gray-50 dark:border-gray-800 flex items-center justify-between transition-all duration-500">
+        <div className="fixed inset-0 z-[600] bg-gray-900/60 backdrop-blur-2xl flex items-center justify-center p-8 animate-in fade-in duration-500">
+          <div className="bg-white border-2 border-gray-50 rounded-[5rem] w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-700 overflow-hidden flex flex-col relative transition-all duration-500">
+            <div className="absolute top-0 left-0 w-full h-2.5 bg-blue-600" />
+            <div className="px-20 py-12 bg-gray-50/30 border-b-2 border-gray-50 flex items-center justify-between transition-all duration-500">
                <div className="space-y-2">
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic leading-none">Generate Series Matrix</h3>
-                  <p className="text-[10px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] italic leading-none">Multi-Node Cluster Infrastructure Provisioning</p>
+                  <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Generate Series Matrix</h3>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] italic leading-none">Multi-Node Cluster Infrastructure Provisioning</p>
                </div>
-               <button onClick={() => setShowSeriesModal(false)} className="w-16 h-16 bg-white dark:bg-gray-800 shadow-sm border-2 border-gray-50 dark:border-gray-700 rounded-3xl flex items-center justify-center text-gray-300 hover:text-red-600 transition-all active:scale-90 group">
+               <button onClick={() => setShowSeriesModal(false)} className="w-16 h-16 bg-white shadow-sm border-2 border-gray-50 rounded-3xl flex items-center justify-center text-gray-200 hover:text-red-600 transition-all active:scale-90 group">
                  <X size={32} className="group-hover:rotate-90 transition-transform" />
                </button>
             </div>
             
             <form onSubmit={handleSeriesSubmit} className="p-20 space-y-12">
               <div className="space-y-5">
-                <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 italic leading-none">Cluster Identifier (Title)</label>
+                <label className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em] ml-2 italic leading-none">Cluster Identifier (Title)</label>
                 <input 
-                  className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-3xl px-10 py-7 outline-none focus:border-blue-600 font-black text-[18px] text-gray-900 dark:text-white italic placeholder:text-gray-200 dark:placeholder:text-gray-900 transition-all shadow-inner"
+                  className="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl px-10 py-7 outline-none focus:border-blue-600 font-black text-[18px] text-gray-900 italic placeholder:text-gray-200 transition-all shadow-inner"
                   value={seriesFormData.title}
                   onChange={(e) => setSeriesFormData({...seriesFormData, title: e.target.value})}
                   required
@@ -958,10 +959,10 @@ export default function TestsPage() {
               </div>
 
               <div className="space-y-5">
-                <label className="text-[11px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] ml-2 italic leading-none">Institutional Sector (Category)</label>
+                <label className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em] ml-2 italic leading-none">Institutional Sector (Category)</label>
                 <div className="relative">
                    <input 
-                     className="w-full bg-gray-50 dark:bg-[#050816] border-2 border-gray-100 dark:border-gray-800 rounded-3xl px-10 py-7 outline-none focus:border-blue-600 font-black text-[18px] text-gray-900 dark:text-white italic placeholder:text-gray-200 dark:placeholder:text-gray-900 transition-all shadow-inner"
+                     className="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl px-10 py-7 outline-none focus:border-blue-600 font-black text-[18px] text-gray-900 italic placeholder:text-gray-200 transition-all shadow-inner"
                      value={seriesFormData.category}
                      onChange={(e) => setSeriesFormData({...seriesFormData, category: e.target.value})}
                      required
@@ -975,7 +976,7 @@ export default function TestsPage() {
                 <button 
                   type="button" 
                   onClick={() => setShowSeriesModal(false)}
-                  className="flex-1 py-8 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-700 hover:text-gray-900 dark:hover:text-white rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest italic transition-all active:scale-[0.98] border-2 border-transparent hover:border-gray-100 dark:hover:border-gray-700 shadow-sm"
+                  className="flex-1 py-8 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest italic transition-all active:scale-[0.98] border-2 border-transparent hover:border-gray-50 shadow-sm"
                 >
                   Discard Generation
                 </button>
@@ -992,8 +993,8 @@ export default function TestsPage() {
       )}
 
       {statusMsg && (
-        <div className={`fixed bottom-12 left-12 z-[700] px-12 py-8 rounded-[3rem] border-2 shadow-2xl flex items-center gap-8 animate-in slide-in-from-left-12 duration-700 bg-white/90 dark:bg-[#0a0f29]/90 backdrop-blur-3xl transition-all ${statusMsg.type === 'success' ? "border-green-100 dark:border-green-900/30 text-green-700 dark:text-green-400" : "border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400"}`}>
-           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl ${statusMsg.type === 'success' ? "bg-green-50 dark:bg-green-900/20" : "bg-red-50 dark:bg-red-900/20"}`}>
+        <div className={`fixed bottom-12 left-12 z-[700] px-12 py-8 rounded-[3rem] border-2 shadow-2xl flex items-center gap-8 animate-in slide-in-from-left-12 duration-700 bg-white/90 backdrop-blur-3xl transition-all ${statusMsg.type === 'success' ? "border-green-100 text-green-700" : "border-red-100 text-red-600"}`}>
+           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl ${statusMsg.type === 'success' ? "bg-green-50" : "bg-red-50"}`}>
               {statusMsg.type === 'success' ? <CheckCircle2 size={32} /> : <AlertCircle size={32} />}
            </div>
            <p className="text-[13px] font-black uppercase tracking-widest italic leading-none">{statusMsg.text}</p>
@@ -1002,18 +1003,18 @@ export default function TestsPage() {
 
       {/* CONFIRMATION OVERLAY */}
       {showConfirmModal.show && (
-         <div className="fixed inset-0 z-[800] bg-gray-900/60 dark:bg-black/95 backdrop-blur-3xl flex items-center justify-center p-8 animate-in fade-in duration-500">
-            <div className="bg-white dark:bg-[#0a0f29] border-2 border-gray-100 dark:border-gray-800 rounded-[5rem] p-20 max-w-xl w-full shadow-2xl text-center space-y-16 animate-in zoom-in-95 duration-700 relative overflow-hidden">
-               <div className="absolute top-0 left-0 w-full h-2 bg-red-600" />
-               <div className="w-28 h-28 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-4 border-white dark:border-[#0a0f29] rounded-[3rem] flex items-center justify-center mx-auto shadow-2xl rotate-3 hover:rotate-0 transition-all duration-700">
+         <div className="fixed inset-0 z-[800] bg-gray-900/60 backdrop-blur-3xl flex items-center justify-center p-8 animate-in fade-in duration-500">
+            <div className="bg-white border-2 border-gray-50 rounded-[5rem] p-20 max-w-xl w-full shadow-2xl text-center space-y-16 animate-in zoom-in-95 duration-700 relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-full h-2.5 bg-red-600" />
+               <div className="w-28 h-28 bg-red-50 text-red-600 border-4 border-white rounded-[3rem] flex items-center justify-center mx-auto shadow-2xl rotate-3 hover:rotate-0 transition-all duration-700">
                   <AlertCircle size={56} />
                </div>
                <div className="space-y-6">
-                  <h3 className="text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic leading-none">Confirm Grid Purge</h3>
-                  <p className="text-[14px] text-gray-400 dark:text-gray-700 font-black leading-relaxed uppercase tracking-widest italic">Permanent expungement of node intelligence and associated analytics from institutional registry. Are you sure?</p>
+                  <h3 className="text-4xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Confirm Grid Purge</h3>
+                  <p className="text-[14px] text-gray-400 font-black leading-relaxed uppercase tracking-widest italic">Permanent expungement of node intelligence and associated analytics from institutional registry. Are you sure?</p>
                </div>
                <div className="flex flex-col gap-6">
-                  <button onClick={() => setShowConfirmModal({ show: false, type: 'delete' })} className="w-full py-8 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-700 hover:text-gray-900 dark:hover:text-white rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest italic transition-all active:scale-[0.98] border-2 border-transparent hover:border-gray-100 dark:hover:border-gray-700">Abort Deletion Protocol</button>
+                  <button onClick={() => setShowConfirmModal({ show: false, type: 'delete' })} className="w-full py-8 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-[2.5rem] font-black text-[12px] uppercase tracking-widest italic transition-all active:scale-[0.98] border-2 border-transparent hover:border-gray-50">Abort Deletion Protocol</button>
                   <button 
                     onClick={() => {
                       if (showConfirmModal.type === 'series_delete') handleDeleteSeries(showConfirmModal.targetId!);

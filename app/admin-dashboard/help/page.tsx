@@ -121,7 +121,7 @@ export default function SupportPage() {
                     "Overriding institutional access for specific scholars",
                     "Moderation protocols for administrative authorities"
                   ].map((q, i) => (
-                    <div key={i} className="p-10 bg-gray-50/30 border-2 border-gray-50 rounded-[3rem] hover:border-blue-600 transition-all cursor-pointer group flex items-center justify-between">
+                    <div key={i} className="p-10 bg-gray-50 border-2 border-gray-50 rounded-[3rem] hover:border-blue-600 transition-all cursor-pointer group flex items-center justify-between">
                        <p className="text-gray-600 text-sm font-black uppercase tracking-[0.2em] group-hover:text-gray-900 transition-colors italic leading-none">
                          {q}
                        </p>

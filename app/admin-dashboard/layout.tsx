@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         setIsAuth(true);
       } catch (err: any) {
         console.error("Layout auth check failed:", err);
-        router.replace("/login");
+        router.replace("/admin-login");
       }
     };
 

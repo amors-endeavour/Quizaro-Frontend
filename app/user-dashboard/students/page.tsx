@@ -44,7 +44,7 @@ export default function UserStudentsPage() {
   const filtered = students.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="flex min-h-screen bg-[#f8f9fc]">
+    <div className="flex min-h-screen bg-[#fbfbfe]">
       <UserSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} userName="" />
       
       <div className="flex-1 flex flex-col min-w-0">
@@ -69,11 +69,11 @@ export default function UserStudentsPage() {
                    className="w-full bg-white border-2 border-gray-100 rounded-[2rem] py-6 pl-16 pr-8 text-sm font-black text-gray-900 focus:outline-none focus:border-blue-500 transition-all placeholder:text-gray-300 italic tracking-tight shadow-sm"
                  />
               </div>
-              <div className="bg-blue-50 border border-blue-100 p-6 rounded-[2rem] flex items-center gap-6">
+              <div className="bg-blue-50 border-2 border-blue-100 p-6 rounded-[2rem] flex items-center gap-6 shadow-sm">
                  <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/20"><Trophy size={20} /></div>
                  <div>
-                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Active Scholars</p>
-                    <h3 className="text-xl font-black text-gray-900 uppercase italic tracking-tighter">{students.length} Nodes</h3>
+                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest italic">Active Scholars</p>
+                    <h3 className="text-xl font-black text-gray-900 uppercase italic tracking-tighter leading-none">{students.length} Nodes</h3>
                  </div>
               </div>
            </div>
@@ -88,7 +88,7 @@ export default function UserStudentsPage() {
               {loading ? (
                 <div className="space-y-4">
                    {[1,2,3,4,5].map(i => (
-                     <div key={i} className="h-24 bg-white border border-gray-100 rounded-[2rem] animate-pulse" />
+                     <div key={i} className="h-24 bg-white border-2 border-gray-50 rounded-[2rem] animate-pulse" />
                    ))}
                 </div>
               ) : (
@@ -96,25 +96,25 @@ export default function UserStudentsPage() {
                    {filtered.map((s, idx) => (
                      <div 
                         key={s._id} 
-                        className="bg-white border-2 border-gray-50 rounded-[2.5rem] p-6 flex items-center gap-6 hover:bg-gray-50/50 hover:border-blue-200 transition-all duration-500 group shadow-sm"
+                        className="bg-white border-2 border-gray-100 rounded-[2.5rem] p-6 flex items-center gap-6 hover:bg-gray-50/50 hover:border-blue-200 transition-all duration-500 group shadow-sm active:scale-[0.99]"
                      >
-                        <div className="w-16 h-16 rounded-2xl bg-gray-50 text-blue-600 border border-gray-100 flex items-center justify-center font-black text-sm uppercase group-hover:scale-110 transition-transform shadow-sm">
+                        <div className="w-16 h-16 rounded-2xl bg-gray-50 text-blue-600 border-2 border-gray-100 flex items-center justify-center font-black text-sm uppercase group-hover:scale-110 transition-transform shadow-inner">
                            {getInitials(s.name)}
                         </div>
                         <div className="flex-1 min-w-0">
                            <div className="flex items-center gap-3">
-                              <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight truncate">{s.name}</h4>
+                              <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight truncate italic">{s.name}</h4>
                               {idx < 3 && <Sparkles size={14} className="text-amber-500 shrink-0" />}
                            </div>
                            <div className="flex items-center gap-4 mt-1">
-                              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Scholar</span>
+                              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic leading-none">Scholar</span>
                               <div className="w-1 h-1 bg-gray-200 rounded-full" />
-                              <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Lvl {s.level || 1}</span>
+                              <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest italic leading-none">Lvl {s.level || 1}</span>
                            </div>
                         </div>
                         <div className="text-right pr-4">
-                           <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">XP Points</p>
-                           <h5 className="text-lg font-black text-gray-900 tracking-tighter">{s.points || 0}</h5>
+                           <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic">XP Points</p>
+                           <h5 className="text-lg font-black text-gray-900 tracking-tighter uppercase italic tabular-nums leading-none">{s.points || 0}</h5>
                         </div>
                      </div>
                    ))}
