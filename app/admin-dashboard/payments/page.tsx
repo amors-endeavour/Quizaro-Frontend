@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import AdminHeader from "@/components/AdminHeader";
 import { 
   DollarSign, 
@@ -16,23 +16,78 @@ import {
   CreditCard,
   AlertCircle,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  Inbox
 } from "lucide-react";
 
-const transactions = [
-  { id: "#TXN-000124", hash: "ch_3N8...a1B2", user: "Aarav Mehta", email: "aarav@gmail.com", plan: "Premium Plan", period: "Monthly", amount: "$49.00", status: "Successful", date: "May 31, 2025", time: "10:30 AM", avatar: "AM" },
-  { id: "#TXN-000123", hash: "ch_3N7...Z9Y8", user: "Priya Sharma", email: "priya@gmail.com", plan: "Premium Plan", period: "Monthly", amount: "$49.00", status: "Successful", date: "May 31, 2025", time: "09:15 AM", avatar: "PS" },
-  { id: "#TXN-000122", hash: "ch_3N6...X7W6", user: "Rohan Verma", email: "rohan@gmail.com", plan: "Basic Plan", period: "Monthly", amount: "$29.00", status: "Pending", date: "May 31, 2025", time: "08:45 AM", avatar: "RV" },
-  { id: "#TXN-000121", hash: "ch_3N5...V5U4", user: "Sneha Iyer", email: "sneha@gmail.com", plan: "Premium Plan", period: "Yearly", amount: "$490.00", status: "Successful", date: "May 30, 2025", time: "06:20 PM", avatar: "SI" },
-  { id: "#TXN-000120", hash: "ch_3N4...T3S2", user: "Vikram Singh", email: "vikram@gmail.com", plan: "Basic Plan", period: "Monthly", amount: "$29.00", status: "Failed", date: "May 30, 2025", time: "04:10 PM", avatar: "VS" },
-  { id: "#TXN-000119", hash: "ch_3N3...R2Q1", user: "Neha Kapoor", email: "neha@gmail.com", plan: "Premium Plan", period: "Monthly", amount: "$49.00", status: "Successful", date: "May 29, 2025", time: "02:05 PM", avatar: "NK" },
-  { id: "#TXN-000118", hash: "ch_3N2...P100", user: "Dev Patel", email: "dev@gmail.com", plan: "Premium Plan", period: "Yearly", amount: "$490.00", status: "Refunded", date: "May 29, 2025", time: "11:30 AM", avatar: "DP" },
-];
+// MOCK DATA GENERATOR FOR LAST 30 DAYS
+const generateMockTransactions = () => {
+  const statuses = ["Successful", "Pending", "Failed", "Refunded"];
+  const plans = ["Premium Plan", "Basic Plan", "Enterprise Plan"];
+  const users = [
+    { name: "Aarav Mehta", email: "aarav@gmail.com", avatar: "AM" },
+    { name: "Priya Sharma", email: "priya@gmail.com", avatar: "PS" },
+    { name: "Rohan Verma", email: "rohan@gmail.com", avatar: "RV" },
+    { name: "Sneha Iyer", email: "sneha@gmail.com", avatar: "SI" },
+    { name: "Vikram Singh", email: "vikram@gmail.com", avatar: "VS" },
+    { name: "Neha Kapoor", email: "neha@gmail.com", avatar: "NK" },
+    { name: "Dev Patel", email: "dev@gmail.com", avatar: "DP" },
+    { name: "Karan Johar", email: "karan@gmail.com", avatar: "KJ" },
+    { name: "Ananya Panday", email: "ananya@gmail.com", avatar: "AP" },
+    { name: "Ishaan Khatter", email: "ishaan@gmail.com", avatar: "IK" },
+  ];
+
+  return Array.from({ length: 60 }, (_, i) => {
+    const user = users[i % users.length];
+    const status = i === 0 ? "Successful" : statuses[Math.floor(Math.random() * statuses.length)];
+    const plan = plans[Math.floor(Math.random() * plans.length)];
+    const date = new Date();
+    date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+    
+    return {
+      id: `#TXN-${(1000 + i).toString()}`,
+      hash: `ch_${Math.random().toString(36).substring(7)}`,
+      user: user.name,
+      email: user.email,
+      plan: plan,
+      period: Math.random() > 0.5 ? "Monthly" : "Yearly",
+      amount: plan === "Premium Plan" ? "$49.00" : plan === "Enterprise Plan" ? "$99.00" : "$29.00",
+      status: status,
+      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+      avatar: user.avatar,
+      timestamp: date.getTime()
+    };
+  }).sort((a, b) => b.timestamp - a.timestamp);
+};
+
+const transactions = generateMockTransactions();
 
 export default function PaymentsPage() {
-  const [activeTab, setActiveTab] = useState("All Transactions");
+  const [paymentStatus, setPaymentStatus] = useState("ALL_TRANSACTIONS");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+
+  const itemsPerPage = 8;
+
+  // Filtering Logic
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter(txn => {
+      const matchesStatus = paymentStatus === "ALL_TRANSACTIONS" || 
+                           txn.status.toUpperCase() === paymentStatus;
+      const matchesSearch = txn.user.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           txn.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           txn.email.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesStatus && matchesSearch;
+    });
+  }, [paymentStatus, searchQuery]);
+
+  // Reset pagination on tab change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [paymentStatus, searchQuery]);
 
   useEffect(() => {
     if (toast) {
@@ -41,51 +96,42 @@ export default function PaymentsPage() {
     }
   }, [toast]);
 
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredTransactions.slice(start, start + itemsPerPage);
+  }, [filteredTransactions, currentPage]);
+
   const handleExport = async () => {
     setIsExporting(true);
-    
-    // Simulate processing
     await new Promise(resolve => setTimeout(resolve, 2000));
-
     try {
-      const filteredData = transactions.filter(txn => 
-        activeTab === "All Transactions" ? true : txn.status === activeTab
-      );
-
-      // Data Mapping for CSV
       const headers = ["Transaction ID", "User Name", "User Email", "Plan/Item", "Amount", "Status", "Date/Time"];
-      const rows = filteredData.map(txn => [
-        txn.id,
-        txn.user,
-        txn.email,
-        `${txn.plan} (${txn.period})`,
-        txn.amount.replace('$', ''),
-        txn.status,
-        `${txn.date} ${txn.time}`
+      const rows = filteredTransactions.map(txn => [
+        txn.id, txn.user, txn.email, `${txn.plan} (${txn.period})`,
+        txn.amount.replace('$', ''), txn.status, `${txn.date} ${txn.time}`
       ]);
-
-      const csvContent = [
-        headers.join(","),
-        ...rows.map(e => e.join(","))
-      ].join("\n");
-
+      const csvContent = [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", `Quizaro_Transactions_${activeTab.replace(' ', '_')}_${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
+      link.setAttribute("download", `Quizaro_Payments_${paymentStatus}_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
       setToast("Transaction report downloaded successfully");
-    } catch (error) {
-      console.error("Export failed:", error);
     } finally {
       setIsExporting(false);
     }
   };
+
+  const tabs = [
+    { label: "All Transactions", value: "ALL_TRANSACTIONS" },
+    { label: "Successful", value: "SUCCESSFUL" },
+    { label: "Pending", value: "PENDING" },
+    { label: "Failed", value: "FAILED" },
+    { label: "Refunded", value: "REFUNDED" },
+  ];
 
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
@@ -140,16 +186,19 @@ export default function PaymentsPage() {
 
         {/* TRANSACTIONS FILTER & NAVIGATION */}
         <div className="space-y-8">
-           <div className="flex items-center gap-10 border-b border-gray-100 overflow-x-auto no-scrollbar">
-              {["All Transactions", "Successful", "Pending", "Failed", "Refunded"].map((tab) => (
+           <div className="flex items-center gap-10 border-b border-gray-100 overflow-x-auto no-scrollbar relative">
+              {tabs.map((tab) => (
                 <button 
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`pb-4 text-[11px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-b-4 italic ${
-                    activeTab === tab ? "border-purple-600 text-purple-600" : "border-transparent text-gray-300 hover:text-gray-900"
+                  key={tab.value}
+                  onClick={() => setPaymentStatus(tab.value)}
+                  className={`relative pb-4 text-[11px] font-black uppercase tracking-widest whitespace-nowrap transition-all italic ${
+                    paymentStatus === tab.value ? "text-purple-600" : "text-gray-300 hover:text-gray-900"
                   }`}
                 >
-                  {tab}
+                  {tab.label}
+                  {paymentStatus === tab.value && (
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-purple-600 rounded-full animate-in slide-in-from-left-4 duration-300" />
+                  )}
                 </button>
               ))}
            </div>
@@ -160,13 +209,15 @@ export default function PaymentsPage() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                     <input 
                       type="text" 
-                      placeholder="Search transactions..." 
-                      className="w-full bg-white border border-gray-100 rounded-xl pl-12 pr-4 py-4 text-sm focus:border-purple-600 outline-none transition-all placeholder:text-gray-300"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search by ID, Name or Email..." 
+                      className="w-full bg-white border border-gray-100 rounded-xl pl-12 pr-4 py-4 text-sm focus:border-purple-600 outline-none transition-all placeholder:text-gray-300 font-bold italic"
                     />
                  </div>
                  <div className="flex items-center gap-3 px-6 py-4 bg-white border border-gray-100 rounded-xl text-sm font-bold text-gray-500 shadow-sm cursor-pointer hover:border-purple-200 transition-all">
                     <Calendar size={18} className="text-gray-400" />
-                    May 1, 2025 - May 31, 2025
+                    Last 30 Days
                  </div>
               </div>
               <button 
@@ -180,88 +231,130 @@ export default function PaymentsPage() {
         </div>
 
         {/* DATA TABLE SECTION */}
-        <section className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden relative">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-gray-50/50">
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Transaction</th>
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">User</th>
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Plan / Item</th>
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Amount</th>
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Status</th>
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Date</th>
-                  <th className="px-10 py-8 text-right text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {transactions
-                  .filter(txn => activeTab === "All Transactions" ? true : txn.status === activeTab)
-                  .map((txn) => (
-                  <tr key={txn.id} className="group hover:bg-gray-50 transition-all duration-500 cursor-pointer">
-                    <td className="px-10 py-8">
-                       <div className="space-y-1">
-                          <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic leading-none">{txn.id}</p>
-                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{txn.hash}</p>
-                       </div>
-                    </td>
-                    <td className="px-10 py-8">
-                       <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-black text-xs italic border border-purple-100">
-                             {txn.avatar}
-                          </div>
-                          <div className="space-y-1">
-                             <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic leading-none">{txn.user}</p>
-                             <p className="text-[10px] text-gray-400 font-bold italic leading-none lowercase">{txn.email}</p>
-                          </div>
-                       </div>
-                    </td>
-                    <td className="px-10 py-8">
-                       <div className="space-y-1">
-                          <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic leading-none">{txn.plan}</p>
-                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{txn.period}</p>
-                       </div>
-                    </td>
-                    <td className="px-10 py-8">
-                       <span className="text-sm font-black text-gray-900 italic">{txn.amount}</span>
-                    </td>
-                    <td className="px-10 py-8">
-                       <span className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
-                         txn.status === 'Successful' ? "bg-green-50 text-green-600 border-green-100" :
-                         txn.status === 'Pending' ? "bg-orange-50 text-orange-600 border-orange-100" :
-                         txn.status === 'Failed' ? "bg-red-50 text-red-500 border-red-100" : "bg-gray-50 text-gray-400 border-gray-100"
-                       }`}>
-                          {txn.status}
-                       </span>
-                    </td>
-                    <td className="px-10 py-8">
-                       <div className="space-y-1">
-                          <p className="text-[11px] font-black text-gray-500 uppercase tracking-widest italic leading-none">{txn.date}</p>
-                          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic leading-none">{txn.time}</p>
-                       </div>
-                    </td>
-                    <td className="px-10 py-8 text-right">
-                       <button className="p-2.5 text-gray-300 hover:text-gray-900 transition-colors"><MoreVertical size={18} /></button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <section className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden relative min-h-[500px] flex flex-col">
+          {filteredTransactions.length > 0 ? (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-gray-50/50">
+                      <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Transaction</th>
+                      <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">User</th>
+                      <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Plan / Item</th>
+                      <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Amount</th>
+                      <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Status</th>
+                      <th className="px-10 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Date</th>
+                      <th className="px-10 py-8 text-right text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {paginatedData.map((txn) => (
+                      <tr key={txn.id} className="group hover:bg-gray-50 transition-all duration-500 cursor-pointer">
+                        <td className="px-10 py-8">
+                           <div className="space-y-1">
+                              <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic leading-none">{txn.id}</p>
+                              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{txn.hash}</p>
+                           </div>
+                        </td>
+                        <td className="px-10 py-8">
+                           <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-black text-xs italic border border-purple-100">
+                                 {txn.avatar}
+                              </div>
+                              <div className="space-y-1">
+                                 <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic leading-none">{txn.user}</p>
+                                 <p className="text-[10px] text-gray-400 font-bold italic leading-none lowercase">{txn.email}</p>
+                              </div>
+                           </div>
+                        </td>
+                        <td className="px-10 py-8">
+                           <div className="space-y-1">
+                              <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic leading-none">{txn.plan}</p>
+                              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{txn.period}</p>
+                           </div>
+                        </td>
+                        <td className="px-10 py-8">
+                           <span className="text-sm font-black text-gray-900 italic">{txn.amount}</span>
+                        </td>
+                        <td className="px-10 py-8">
+                           <span className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                             txn.status === 'Successful' ? "bg-green-50 text-green-600 border-green-100" :
+                             txn.status === 'Pending' ? "bg-orange-50 text-orange-600 border-orange-100" :
+                             txn.status === 'Failed' ? "bg-red-50 text-red-500 border-red-100" : "bg-gray-50 text-gray-400 border-gray-100"
+                           }`}>
+                              {txn.status}
+                           </span>
+                        </td>
+                        <td className="px-10 py-8">
+                           <div className="space-y-1">
+                              <p className="text-[11px] font-black text-gray-500 uppercase tracking-widest italic leading-none">{txn.date}</p>
+                              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic leading-none">{txn.time}</p>
+                           </div>
+                        </td>
+                        <td className="px-10 py-8 text-right">
+                           <button className="p-2.5 text-gray-300 hover:text-gray-900 transition-colors"><MoreVertical size={18} /></button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          {/* PAGINATION */}
-          <div className="p-10 border-t border-gray-50 flex items-center justify-between">
-             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Showing 1 to 7 of 128 transactions</p>
-             <div className="flex items-center gap-2">
-                <button className="p-2.5 bg-gray-50 text-gray-300 hover:text-gray-900 rounded-xl transition-all"><ChevronRight size={16} className="rotate-180" /></button>
-                <button className="w-9 h-9 bg-purple-600 text-white rounded-xl text-[10px] font-black shadow-lg shadow-purple-900/20">1</button>
-                <button className="w-9 h-9 bg-gray-50 text-gray-400 rounded-xl text-[10px] font-black hover:bg-gray-100">2</button>
-                <button className="w-9 h-9 bg-gray-50 text-gray-400 rounded-xl text-[10px] font-black hover:bg-gray-100">3</button>
-                <span className="text-gray-300 px-2">...</span>
-                <button className="w-9 h-9 bg-gray-50 text-gray-400 rounded-xl text-[10px] font-black hover:bg-gray-100">12</button>
-                <button className="p-2.5 bg-gray-50 text-gray-300 hover:text-gray-900 rounded-xl transition-all"><ChevronRight size={16} /></button>
-             </div>
-          </div>
+              {/* PAGINATION */}
+              <div className="p-10 border-t border-gray-50 flex items-center justify-between mt-auto">
+                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">
+                    Showing {Math.min(filteredTransactions.length, (currentPage - 1) * itemsPerPage + 1)} to {Math.min(filteredTransactions.length, currentPage * itemsPerPage)} of {filteredTransactions.length} transactions
+                 </p>
+                 <div className="flex items-center gap-2">
+                    <button 
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(p => p - 1)}
+                      className="p-2.5 bg-gray-50 text-gray-300 hover:text-gray-900 rounded-xl transition-all disabled:opacity-30"
+                    >
+                      <ChevronRight size={16} className="rotate-180" />
+                    </button>
+                    {Array.from({ length: Math.ceil(filteredTransactions.length / itemsPerPage) }, (_, i) => i + 1)
+                      .filter(p => p === 1 || p === Math.ceil(filteredTransactions.length / itemsPerPage) || Math.abs(p - currentPage) <= 1)
+                      .map((p, index, array) => (
+                        <div key={p} className="flex items-center gap-2">
+                          {index > 0 && array[index - 1] !== p - 1 && <span className="text-gray-300 px-1">...</span>}
+                          <button 
+                            onClick={() => setCurrentPage(p)}
+                            className={`w-9 h-9 rounded-xl text-[10px] font-black transition-all ${
+                              currentPage === p ? "bg-purple-600 text-white shadow-lg shadow-purple-900/20" : "bg-gray-50 text-gray-400 hover:bg-gray-100"
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        </div>
+                      ))}
+                    <button 
+                      disabled={currentPage === Math.ceil(filteredTransactions.length / itemsPerPage)}
+                      onClick={() => setCurrentPage(p => p + 1)}
+                      className="p-2.5 bg-gray-50 text-gray-300 hover:text-gray-900 rounded-xl transition-all disabled:opacity-30"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                 </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center p-20 text-center space-y-6">
+               <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center text-gray-200">
+                  <Inbox size={48} />
+               </div>
+               <div className="space-y-2">
+                  <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic">No transactions found</h3>
+                  <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic">Try adjusting your filters or search query.</p>
+               </div>
+               <button 
+                onClick={() => { setPaymentStatus("ALL_TRANSACTIONS"); setSearchQuery(""); }}
+                className="px-8 py-3 bg-purple-50 text-purple-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-purple-100 transition-all"
+               >
+                Reset All Filters
+               </button>
+            </div>
+          )}
         </section>
 
       </main>
