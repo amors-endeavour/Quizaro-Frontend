@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Lock, ShieldCheck, ShieldAlert, Eye, EyeOff, LogIn, Terminal, Shield, Zap, ArrowRight, Activity } from "lucide-react";
+import { Lock, ShieldCheck, ShieldAlert, Eye, EyeOff, LogIn, Terminal, Shield, Zap, ArrowRight, Activity, Fingerprint } from "lucide-react";
 import API from "@/app/lib/api";
 
 function AdminLoginForm() {
@@ -45,130 +45,135 @@ function AdminLoginForm() {
 
   return (
     <div 
-      className="min-h-screen !bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-jetbrains selection:bg-blue-100 selection:text-blue-600 light"
-      style={{ backgroundColor: '#ffffff', colorScheme: 'light' }}
+      className="min-h-screen !bg-[#fbfbfe] flex flex-col items-center justify-center p-6 relative overflow-hidden font-jetbrains selection:bg-purple-100 selection:text-purple-600 light"
+      style={{ backgroundColor: '#fbfbfe', colorScheme: 'light' }}
     >
       <style jsx global>{`
-        body { background-color: white !important; }
+        body { background-color: #fbfbfe !important; }
       `}</style>
-      {/* Background Elements (Image 2 Style) */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:32px_32px]" />
-      <div className="absolute top-0 right-0 w-1/3 h-1 bg-gradient-to-l from-blue-600 via-indigo-600 to-purple-600" />
-      <div className="absolute -top-[15%] -left-[5%] w-[50%] h-[50%] bg-blue-50 rounded-full blur-[140px] opacity-30" />
 
-      <div className="relative z-10 w-full max-w-[460px] flex flex-col items-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      {/* Soft Mesh Gradients (Matching Image) */}
+      <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-100/40 rounded-full blur-[140px] opacity-60" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-100/40 rounded-full blur-[120px] opacity-60" />
+
+      <div className="relative z-10 w-full max-w-[480px] flex flex-col items-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
         
-        {/* Top Badge (Image 2 Style) */}
-        <div className="inline-flex items-center gap-3 px-5 py-1.5 bg-white border border-gray-100 shadow-sm rounded-full mb-6">
-          <Shield size={12} className="text-blue-600" />
-          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 italic">Governance Portal Restricted</span>
+        {/* Top Badge (Gradient Style from Image) */}
+        <div className="inline-flex items-center gap-3 px-8 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 shadow-sm rounded-full mb-8 border border-white/50">
+          <Shield size={14} className="text-purple-600" />
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-900 italic">Governance Portal Restricted</span>
         </div>
 
-        {/* Branding (Image 2 Style) */}
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 mb-2 leading-none">
+        {/* Branding (Image Style) */}
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 mb-4 leading-none">
             Quizaro
           </h1>
-          <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic leading-none">
+          <p className="text-[11px] font-black text-gray-900 uppercase tracking-[0.4em] italic leading-none">
             Admin Command Center // Node Access
           </p>
         </div>
 
-        {/* Form Container (Major White) */}
-        <div className="w-full bg-white rounded-[3.5rem] border border-gray-100 shadow-[0_32px_80px_-16px_rgba(0,0,0,0.06)] p-12 lg:p-16 transition-all duration-500 hover:shadow-[0_48px_100px_-16px_rgba(0,0,0,0.1)]">
+        {/* Form Container (Major White - Ultra High-End) */}
+        <div className="w-full bg-white rounded-[4rem] border border-gray-100/50 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.06)] p-12 lg:p-16 transition-all duration-700 hover:shadow-[0_60px_120px_-20px_rgba(0,0,0,0.1)] relative">
           
-          <div className="mb-12 flex items-center justify-between">
-            <div className="space-y-1.5">
-              <h2 className="text-2xl font-black text-gray-900 tracking-tighter italic leading-none">Access Control</h2>
-              <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest italic leading-none">Institutional Security protocol layer 1</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm border border-blue-100">
-               <ShieldCheck size={24} />
-            </div>
+          <div className="mb-14">
+            <h2 className="text-3xl font-black text-gray-900 tracking-tighter italic leading-none mb-3">Access Control</h2>
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest italic leading-none">Institutional Security protocol layer 1</p>
           </div>
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-100 text-red-600 px-6 py-4 rounded-2xl mb-10 text-[10px] font-black uppercase tracking-widest italic flex items-center gap-4 animate-in shake duration-500">
-              <ShieldAlert size={16} className="shrink-0" />
+            <div className="bg-red-50 border border-red-100 text-red-600 px-8 py-5 rounded-[2rem] mb-12 text-[11px] font-black uppercase tracking-widest italic flex items-center gap-5 animate-in shake duration-500">
+              <ShieldAlert size={20} className="shrink-0" />
               {error}
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-8">
-            <div className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-12">
+            <div className="space-y-8">
               {/* Email */}
-              <div className="space-y-3">
-                <label className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] ml-2 italic">Governance Identifier (Admin Email)</label>
+              <div className="space-y-4">
+                <label className="text-[10px] font-black text-gray-800 uppercase tracking-[0.3em] ml-2 italic">Governance Identifier (Admin Email)</label>
                 <div className="relative group">
-                  <Terminal size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                  <Terminal size={18} className="absolute left-8 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-600 transition-colors" />
                   <input
                     type="email"
                     placeholder="admin@quizaro.institutional"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-16 pr-6 py-5 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-600 focus:bg-white transition-all italic shadow-inner"
+                    className="w-full pl-20 pr-8 py-6 bg-[#f0f4ff]/50 border border-gray-100 rounded-[2rem] text-[16px] font-black text-gray-900 placeholder:text-gray-300 outline-none focus:border-blue-400 focus:bg-white transition-all italic shadow-inner"
                   />
                 </div>
               </div>
 
               {/* Password */}
-              <div className="space-y-3">
-                <label className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] ml-2 italic">Encryption Key (Password)</label>
+              <div className="space-y-4">
+                <label className="text-[10px] font-black text-gray-800 uppercase tracking-[0.3em] ml-2 italic">Encryption Key (Password)</label>
                 <div className="relative group">
-                  <Lock size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-600 transition-colors" />
+                  <Lock size={18} className="absolute left-8 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-purple-600 transition-colors" />
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-16 pr-16 py-5 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-purple-600 focus:bg-white transition-all italic shadow-inner"
+                    className="w-full pl-20 pr-20 py-6 bg-[#f0f4ff]/50 border border-gray-100 rounded-[2rem] text-[16px] font-black text-gray-900 placeholder:text-gray-300 outline-none focus:border-purple-400 focus:bg-white transition-all italic shadow-inner"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors"
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Submit (Image 2 Gradient Button) */}
+            {/* Submit (High-Contrast Gradient Button from Image) */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-5.5 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] italic transition-all shadow-xl shadow-blue-700/10 hover:shadow-blue-700/25 active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-4"
+              className="w-full py-7 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-[2rem] font-black text-[13px] uppercase tracking-[0.3em] italic transition-all shadow-[0_20px_40px_rgba(37,99,235,0.25)] hover:shadow-[0_30px_60px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-6"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <>Unlock Access Dashboard <ArrowRight size={16} /></>
+                <>Unlock Access Dashboard <ArrowRight size={22} /></>
               )}
             </button>
           </form>
 
-          {/* Warning Notice (Image 2 Style) */}
-          <div className="mt-12 p-6 bg-amber-50 border border-amber-100 rounded-[2rem] flex items-start gap-4">
-            <Activity size={16} className="text-amber-500 shrink-0 mt-0.5 animate-pulse" />
-            <p className="text-[10px] text-amber-800 font-black uppercase tracking-widest italic leading-relaxed opacity-80">
+          {/* Warning Notice (Image Style) */}
+          <div className="mt-16 p-8 bg-amber-50/30 border border-amber-100/50 rounded-[2.5rem] flex items-start gap-5">
+            <Activity size={20} className="text-amber-500 shrink-0 mt-1 animate-pulse" />
+            <p className="text-[11px] text-amber-900 font-black uppercase tracking-widest italic leading-relaxed opacity-80">
               High-security perimeter active. All access attempts are monitored and recorded via Neural Logs.
             </p>
           </div>
 
-          {/* Footer links (Image 2 Style) */}
-          <div className="flex items-center justify-center gap-8 mt-12 pt-8 border-t border-gray-50">
-            <Link href="/login" className="text-[10px] font-black text-gray-500 hover:text-blue-600 uppercase tracking-widest italic transition-colors">
-              Student Mode
-            </Link>
-            <Link href="/" className="text-[10px] font-black text-gray-500 hover:text-gray-900 uppercase tracking-widest italic transition-colors">
-              Back to Home
-            </Link>
+          {/* External Options (Matching Image Style) */}
+          <div className="mt-14 pt-10 border-t border-gray-50 text-center">
+             <button
+                className="inline-flex items-center gap-4 text-[10px] font-black text-gray-400 hover:text-blue-600 uppercase tracking-widest italic transition-colors"
+              >
+                <Fingerprint size={16} /> Authenticate via Biometric Token
+              </button>
           </div>
+        </div>
+
+        {/* Footer Navigation */}
+        <div className="flex items-center justify-center gap-12 mt-12">
+          <Link href="/login" className="text-[10px] font-black text-gray-400 hover:text-blue-600 uppercase tracking-widest italic transition-colors">
+            Student Node
+          </Link>
+          <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
+          <Link href="/" className="text-[10px] font-black text-gray-400 hover:text-gray-900 uppercase tracking-widest italic transition-colors flex items-center gap-3">
+             <Shield size={12} /> Return to Base
+          </Link>
         </div>
       </div>
     </div>
