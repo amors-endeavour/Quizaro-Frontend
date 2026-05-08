@@ -71,9 +71,9 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Test Papers", href: "/tests" },
-    { name: "Intel Mesh", href: "/resources" },
-    { name: "Contact", href: "/contact" },
+    { name: "Tests", href: "/tests" },
+    { name: "Knowledge", href: "/resources" },
+    { name: "Support", href: "/contact" },
   ];
 
   return (
@@ -101,7 +101,7 @@ export default function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-[10px] font-black text-gray-400 hover:text-blue-600 uppercase tracking-[0.2em] transition-all"
+              className="text-sm font-bold text-gray-900 hover:text-blue-600 transition-all"
             >
               {item.name}
             </Link>
@@ -163,7 +163,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] hover:text-blue-600 py-2"
+                className="text-sm font-bold text-gray-900 hover:text-blue-600 py-2 transition-all"
               >
                 {item.name}
               </Link>
