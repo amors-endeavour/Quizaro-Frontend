@@ -25,7 +25,7 @@ import {
   Search,
   Activity
 } from "lucide-react";
-import LeaderboardSidebar from "@/components/LeaderboardSidebar";
+
 
 interface Test {
   _id: string;
@@ -305,7 +305,7 @@ export default function UserDashboard() {
         </div>
       </main>
 
-      <LeaderboardSidebar />
+
     </div>
   );
 }
