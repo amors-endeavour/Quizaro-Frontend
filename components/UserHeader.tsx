@@ -149,7 +149,7 @@ export default function UserHeader({ title, breadcrumbs }: UserHeaderProps) {
                        {user ? getInitials(user.name) : "??"}
                     </div>
                     <div className="flex-1 min-w-0">
-                       <h4 className="text-sm font-black text-gray-900 uppercase truncate leading-none italic tracking-tighter">{user?.name}</h4>
+                       <h4 className="text-sm font-black text-gray-900 uppercase truncate leading-none italic tracking-tighter">SCHOLAR ENTITY</h4>
                        <div className="flex items-center gap-2 mt-2">
                           <Activity size={12} className="text-blue-600" />
                           <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em] truncate italic">Scholar Entity</p>

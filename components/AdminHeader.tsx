@@ -126,7 +126,7 @@ export default function AdminHeader({
                        {user ? getInitials(user.name) : <User size={24} />}
                     </div>
                     <div className="flex-1 min-w-0">
-                       <h4 className="text-sm font-black text-gray-900 truncate leading-none uppercase tracking-tighter italic">{user?.name}</h4>
+                       <h4 className="text-sm font-black text-gray-900 truncate leading-none uppercase tracking-tighter italic">GOVERNANCE ENTITY</h4>
                        <div className="flex items-center gap-2 mt-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
                           <p className="text-[10px] text-gray-400 font-black truncate uppercase tracking-[0.3em] italic">{user?.role} CLEARANCE</p>

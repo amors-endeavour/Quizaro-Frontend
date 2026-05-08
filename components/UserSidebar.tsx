@@ -90,7 +90,7 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
            <div className="flex items-center justify-center gap-4 mb-4 relative z-10">
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 italic">Scholar Info</span>
            </div>
-           <h2 className="text-2xl font-black text-gray-900 capitalize tracking-tighter leading-none mb-10 italic relative z-10">{userName}</h2>
+           <h2 className="text-2xl font-black text-gray-900 capitalize tracking-tighter leading-none mb-10 italic relative z-10">ENTITY ACCESSED</h2>
            
            {/* COGNITIVE GAMIFICATION STATS */}
            {gamification && (
