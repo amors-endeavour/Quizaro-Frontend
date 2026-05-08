@@ -151,8 +151,8 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
                   <LogOut size={40} />
                </div>
-               <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">Terminate Protocol</h3>
-               <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic">Confirm session termination</p>
+               <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">Are you logging out?</h3>
+               <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic">You can always log back in at any time.</p>
                <div className="flex flex-col gap-4">
                   <button 
                     onClick={() => {
@@ -161,13 +161,13 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                     }}
                     className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-xl shadow-red-900/20"
                   >
-                     EXPUNGE SESSION
+                     Log out
                   </button>
                   <button 
                     onClick={() => setShowLogoutModal(false)}
                     className="w-full py-5 bg-gray-50 text-gray-400 rounded-2xl font-black text-[12px] uppercase tracking-widest"
                   >
-                     MAINTAIN ACCESS
+                     Cancel
                   </button>
                </div>
             </div>

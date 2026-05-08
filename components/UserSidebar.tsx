@@ -177,9 +177,9 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
                   <LogOut size={48} />
                </div>
                <div className="space-y-6">
-                  <h3 className="text-4xl font-black text-gray-900 tracking-tighter uppercase italic leading-none">Terminate Protocol</h3>
+                  <h3 className="text-4xl font-black text-gray-900 tracking-tighter uppercase italic leading-none">Are you logging out?</h3>
                   <p className="text-[14px] font-black text-gray-400 leading-relaxed uppercase tracking-widest italic max-w-xs mx-auto">
-                     Confirm session termination. Your academic progress is safely banked in the institutional vault.
+                     You can always log back in at any time.
                   </p>
                </div>
                <div className="flex flex-col gap-6 w-full">
@@ -190,13 +190,13 @@ export default function UserSidebar({ isOpen, onClose, userName = "Scholar" }: {
                     }}
                     className="w-full py-8 bg-red-600 hover:bg-red-700 text-white rounded-[2rem] font-black text-[12px] uppercase tracking-[0.3em] transition-all duration-700 active:scale-95 shadow-2xl shadow-red-900/40 italic"
                   >
-                     Confirm Terminal Exit
+                     Log out
                   </button>
                   <button 
                     onClick={() => setShowLogoutModal(false)}
                     className="w-full py-7 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.3em] transition-all duration-700 italic active:scale-95 border-2 border-transparent hover:border-gray-100"
                   >
-                     Maintain Active Loop
+                     Cancel
                   </button>
                </div>
             </div>

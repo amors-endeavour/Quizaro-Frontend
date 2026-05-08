@@ -149,7 +149,7 @@ export default function AdminHeader({
                       className="w-full flex items-center justify-between px-6 py-5 text-[11px] font-black text-red-500 hover:bg-red-50 hover:text-red-600 rounded-2xl transition-all duration-500 uppercase tracking-widest italic group/item border-2 border-transparent hover:border-red-100"
                     >
                        <div className="flex items-center gap-4">
-                          <LogOut size={18} className="group-hover/item:-translate-x-1 transition-transform" /> Terminate Access
+                          <LogOut size={18} className="group-hover/item:-translate-x-1 transition-transform" /> Log out
                        </div>
                        <ChevronRight size={14} className="opacity-0 group-hover/item:opacity-100 transition-all translate-x-[-10px] group-hover/item:translate-x-0" />
                     </button>
