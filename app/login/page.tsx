@@ -6,8 +6,6 @@ import Link from "next/link";
 import { Mail, Lock, LogIn, Shield, Eye, EyeOff } from "lucide-react";
 import API from "@/app/lib/api";
 
-const Q_GRADIENT = "linear-gradient(135deg, #7C3AED 0%, #2563EB 100%)";
-
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -60,7 +58,7 @@ function LoginForm() {
 
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg" style={{ background: Q_GRADIENT }}>
+            <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-200">
               <Shield size={26} className="text-white" />
             </div>
             <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-1">Welcome back</h1>
@@ -126,8 +124,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3.5 text-white rounded-xl font-bold text-sm transition-all active:scale-[0.98] disabled:opacity-60 mt-2 hover:opacity-90"
-              style={{ background: Q_GRADIENT, boxShadow: "0 4px 14px rgba(124,58,237,0.35)" }}
+              className="w-full flex items-center justify-center gap-2 py-3.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60 transition-all shadow-md shadow-blue-200 mt-2"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -164,7 +161,7 @@ function LoginForm() {
           {/* Footer */}
           <p className="text-center text-sm text-gray-500 mt-6">
             Don&apos;t have an account?{" "}
-          <Link href="/register" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: "#7C3AED" }}>
+            <Link href="/register" className="text-blue-600 font-semibold hover:text-blue-700">
               Sign up free
             </Link>
           </p>

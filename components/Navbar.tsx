@@ -6,9 +6,6 @@ import { useRouter } from "next/navigation";
 import { LogOut, LayoutDashboard, UserPlus, LogIn, Menu, X } from "lucide-react";
 import API from "@/app/lib/api";
 
-const Q_GRADIENT = "linear-gradient(135deg, #7C3AED 0%, #2563EB 100%)";
-const Q_GRADIENT_SOFT = "linear-gradient(135deg, #EDE9FE 0%, #DBEAFE 100%)";
-
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -68,28 +65,19 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`w-full sticky top-0 z-[100] bg-white transition-all duration-300 ${
-        scrolled ? "border-b border-gray-200 shadow-sm" : "border-b border-gray-100"
+      className={`w-full sticky top-0 z-[100] bg-background border-b transition-all duration-300 ${
+        scrolled ? "border-border" : "border-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-base shadow-md group-hover:scale-105 transition-transform"
-            style={{ background: Q_GRADIENT }}
-          >
+          <div className="w-9 h-9 bg-foreground rounded-md flex items-center justify-center text-background font-bold text-base shadow-sm group-hover:opacity-80 transition-all">
             Q
           </div>
           <div className="flex flex-col leading-none">
-            <span className="text-base font-black text-gray-900 tracking-tight">QUIZARO</span>
-            <span
-              className="text-[9px] font-bold uppercase tracking-widest mt-0.5"
-              style={{ background: Q_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
-            >
-              Intelligence Core
-            </span>
+            <span className="text-sm font-bold text-foreground tracking-tight">QUIZARO</span>
           </div>
         </Link>
 
@@ -99,13 +87,10 @@ export default function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-xs font-semibold text-gray-500 hover:text-purple-700 uppercase tracking-widest transition-colors relative group"
+              className="text-xs font-medium text-gray hover:text-foreground uppercase tracking-widest transition-colors relative group"
             >
               {item.name}
-              <span
-                className="absolute -bottom-1 left-0 w-0 h-0.5 rounded-full transition-all group-hover:w-full"
-                style={{ background: Q_GRADIENT }}
-              />
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent rounded-full transition-all group-hover:w-full" />
             </Link>
           ))}
         </div>
@@ -113,13 +98,12 @@ export default function Navbar() {
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-3">
           {checkingAuth ? (
-            <div className="w-28 h-9 bg-gray-100 rounded-xl animate-pulse" />
+            <div className="w-20 h-9 bg-gray-800 rounded-md animate-pulse" />
           ) : isAuthenticated ? (
             <>
               <button
                 onClick={handleDashboardRedirect}
-                className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl text-xs font-bold uppercase tracking-wide transition-all active:scale-95 shadow-md hover:opacity-90"
-                style={{ background: Q_GRADIENT }}
+                className="flex items-center gap-2 px-5 py-2.5 bg-accent text-background rounded-md text-xs font-semibold uppercase tracking-wide hover:opacity-90 transition-all"
               >
                 <LayoutDashboard size={15} />
                 Dashboard
@@ -127,7 +111,7 @@ export default function Navbar() {
               <button
                 onClick={handleLogout}
                 title="Log out"
-                className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 hover:border-red-200 rounded-xl transition-all"
+                className="p-2.5 text-gray hover:text-error border border-gray-800 hover:border-error rounded-md transition-all"
               >
                 <LogOut size={16} />
               </button>
@@ -136,18 +120,17 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-600 hover:text-purple-700 uppercase tracking-wide transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 text-xs font-medium text-gray hover:text-foreground uppercase tracking-wide transition-colors"
               >
                 <LogIn size={15} />
                 Login
               </Link>
               <Link
                 href="/register"
-                className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl text-xs font-bold uppercase tracking-wide transition-all active:scale-95 shadow-md hover:opacity-90"
-                style={{ background: Q_GRADIENT }}
+                className="flex items-center gap-2 px-5 py-2.5 bg-accent text-background rounded-md text-xs font-semibold uppercase tracking-wide hover:opacity-90 transition-all"
               >
                 <UserPlus size={15} />
-                Enroll Now
+                Get Started
               </Link>
             </>
           )}
@@ -156,7 +139,7 @@ export default function Navbar() {
         {/* Mobile menu toggle */}
         <button
           onClick={() => setOpen(!open)}
-          className="lg:hidden p-2.5 text-gray-500 hover:text-purple-700 border border-gray-200 rounded-xl transition-all"
+          className="lg:hidden p-2.5 text-gray hover:text-foreground border border-gray-800 rounded-md transition-all"
         >
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -164,33 +147,32 @@ export default function Navbar() {
 
       {/* Mobile Dropdown */}
       {open && (
-        <div className="lg:hidden bg-white border-t border-gray-100 px-6 py-6 space-y-4 shadow-lg">
+        <div className="lg:hidden bg-background border-t border-gray-800 px-6 py-6 space-y-4">
           <div className="flex flex-col gap-1">
             {navLinks.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="px-4 py-3 text-sm font-semibold text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-xl transition-all uppercase tracking-wide"
+                className="px-4 py-3 text-sm font-medium text-gray hover:text-foreground hover:bg-gray-900 rounded-md transition-all uppercase tracking-wide"
               >
                 {item.name}
               </Link>
             ))}
           </div>
 
-          <div className="pt-4 border-t border-gray-100 flex flex-col gap-3">
+          <div className="pt-4 border-t border-gray-800 flex flex-col gap-3">
             {isAuthenticated ? (
               <>
                 <button
                   onClick={() => { handleDashboardRedirect(); setOpen(false); }}
-                  className="w-full py-3 text-white rounded-xl font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2 shadow-md"
-                  style={{ background: Q_GRADIENT }}
+                  className="w-full py-3 bg-accent text-background rounded-md font-semibold text-sm uppercase tracking-wide flex items-center justify-center gap-2"
                 >
                   <LayoutDashboard size={16} /> Dashboard
                 </button>
                 <button
                   onClick={() => { handleLogout(); setOpen(false); }}
-                  className="w-full py-3 text-red-500 border border-red-200 rounded-xl font-bold text-sm uppercase tracking-wide hover:bg-red-50 transition-all"
+                  className="w-full py-3 text-error border border-gray-800 rounded-md font-semibold text-sm uppercase tracking-wide hover:bg-error/10 transition-all"
                 >
                   Log Out
                 </button>
@@ -198,15 +180,14 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/login" onClick={() => setOpen(false)}
-                  className="w-full py-3 text-center text-gray-700 border border-gray-200 rounded-xl font-bold text-sm uppercase tracking-wide hover:border-purple-300 hover:text-purple-700 transition-all"
+                  className="w-full py-3 text-center text-gray border border-gray-800 rounded-md font-semibold text-sm uppercase tracking-wide hover:text-foreground transition-all"
                 >
                   Login
                 </Link>
                 <Link href="/register" onClick={() => setOpen(false)}
-                  className="w-full py-3 text-center text-white rounded-xl font-bold text-sm uppercase tracking-wide shadow-md"
-                  style={{ background: Q_GRADIENT }}
+                  className="w-full py-3 text-center bg-accent text-background rounded-md font-semibold text-sm uppercase tracking-wide hover:opacity-90 transition-all"
                 >
-                  Enroll Now
+                  Get Started
                 </Link>
               </>
             )}
