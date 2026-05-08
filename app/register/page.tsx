@@ -96,14 +96,14 @@ function RegisterForm() {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-100 text-red-600 px-8 py-5 rounded-[2rem] mb-12 text-[11px] font-black uppercase tracking-widest italic flex flex-col gap-3 animate-in shake duration-500">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-8 py-6 rounded-[2rem] mb-12 text-[11px] font-black uppercase tracking-[0.2em] italic flex flex-col gap-4 animate-in shake duration-500 shadow-lg shadow-red-900/5">
               <div className="flex items-center gap-5">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                {error}
+                <div className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_rgba(220,38,38,0.5)]" />
+                <span className="flex-1">{error}</span>
               </div>
               {error.toLowerCase().includes("exists") && (
-                <Link href="/login" className="ml-7 text-blue-600 underline underline-offset-4 hover:text-blue-700 transition-colors">
-                  Access Portal Instead →
+                <Link href="/login" className="ml-7 text-blue-600 underline underline-offset-8 hover:text-blue-700 transition-all font-black tracking-widest decoration-2">
+                  ACCESS ACTIVE PORTAL INSTEAD →
                 </Link>
               )}
             </div>
