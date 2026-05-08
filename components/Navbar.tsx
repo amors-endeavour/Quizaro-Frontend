@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { LogOut, LayoutDashboard, UserPlus, LogIn, Menu, X } from "lucide-react";
 import API from "@/app/lib/api";
 
+const Q_GRADIENT = "linear-gradient(135deg, #7C3AED 0%, #2563EB 100%)";
+const Q_GRADIENT_SOFT = "linear-gradient(135deg, #EDE9FE 0%, #DBEAFE 100%)";
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,27 +61,35 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Test Papers", href: "/tests" },
-    { name: "Intel Mesh", href: "/resources" },
+    { name: "Tests", href: "/tests" },
+    { name: "Resources", href: "/resources" },
     { name: "Contact", href: "/contact" },
   ];
 
   return (
     <nav
-      className={`w-full sticky top-0 z-[100] bg-white border-b transition-all duration-300 ${
-        scrolled ? "border-gray-200 shadow-sm" : "border-gray-100"
+      className={`w-full sticky top-0 z-[100] bg-white transition-all duration-300 ${
+        scrolled ? "border-b border-gray-200 shadow-sm" : "border-b border-gray-100"
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-base shadow-md group-hover:scale-105 transition-transform">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-base shadow-md group-hover:scale-105 transition-transform"
+            style={{ background: Q_GRADIENT }}
+          >
             Q
           </div>
           <div className="flex flex-col leading-none">
             <span className="text-base font-black text-gray-900 tracking-tight">QUIZARO</span>
-            <span className="text-[9px] text-blue-600 font-bold uppercase tracking-widest">Intelligence Core</span>
+            <span
+              className="text-[9px] font-bold uppercase tracking-widest mt-0.5"
+              style={{ background: Q_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+            >
+              Intelligence Core
+            </span>
           </div>
         </Link>
 
@@ -88,10 +99,13 @@ export default function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-xs font-semibold text-gray-500 hover:text-gray-900 uppercase tracking-widest transition-colors relative group"
+              className="text-xs font-semibold text-gray-500 hover:text-purple-700 uppercase tracking-widest transition-colors relative group"
             >
               {item.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 rounded-full transition-all group-hover:w-full" />
+              <span
+                className="absolute -bottom-1 left-0 w-0 h-0.5 rounded-full transition-all group-hover:w-full"
+                style={{ background: Q_GRADIENT }}
+              />
             </Link>
           ))}
         </div>
@@ -104,7 +118,8 @@ export default function Navbar() {
             <>
               <button
                 onClick={handleDashboardRedirect}
-                className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-blue-700 transition-all shadow-sm shadow-blue-200 active:scale-95"
+                className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl text-xs font-bold uppercase tracking-wide transition-all active:scale-95 shadow-md hover:opacity-90"
+                style={{ background: Q_GRADIENT }}
               >
                 <LayoutDashboard size={15} />
                 Dashboard
@@ -121,14 +136,15 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-600 hover:text-blue-700 uppercase tracking-wide transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-600 hover:text-purple-700 uppercase tracking-wide transition-colors"
               >
                 <LogIn size={15} />
                 Login
               </Link>
               <Link
                 href="/register"
-                className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-blue-600 transition-all active:scale-95 shadow-sm"
+                className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl text-xs font-bold uppercase tracking-wide transition-all active:scale-95 shadow-md hover:opacity-90"
+                style={{ background: Q_GRADIENT }}
               >
                 <UserPlus size={15} />
                 Enroll Now
@@ -140,7 +156,7 @@ export default function Navbar() {
         {/* Mobile menu toggle */}
         <button
           onClick={() => setOpen(!open)}
-          className="lg:hidden p-2.5 text-gray-500 hover:text-gray-900 border border-gray-200 rounded-xl transition-all"
+          className="lg:hidden p-2.5 text-gray-500 hover:text-purple-700 border border-gray-200 rounded-xl transition-all"
         >
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -155,7 +171,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="px-4 py-3 text-sm font-semibold text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-all uppercase tracking-wide"
+                className="px-4 py-3 text-sm font-semibold text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-xl transition-all uppercase tracking-wide"
               >
                 {item.name}
               </Link>
@@ -167,7 +183,8 @@ export default function Navbar() {
               <>
                 <button
                   onClick={() => { handleDashboardRedirect(); setOpen(false); }}
-                  className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2"
+                  className="w-full py-3 text-white rounded-xl font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2 shadow-md"
+                  style={{ background: Q_GRADIENT }}
                 >
                   <LayoutDashboard size={16} /> Dashboard
                 </button>
@@ -181,12 +198,13 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/login" onClick={() => setOpen(false)}
-                  className="w-full py-3 text-center text-gray-700 border border-gray-200 rounded-xl font-bold text-sm uppercase tracking-wide hover:border-blue-300 hover:text-blue-700 transition-all"
+                  className="w-full py-3 text-center text-gray-700 border border-gray-200 rounded-xl font-bold text-sm uppercase tracking-wide hover:border-purple-300 hover:text-purple-700 transition-all"
                 >
                   Login
                 </Link>
                 <Link href="/register" onClick={() => setOpen(false)}
-                  className="w-full py-3 text-center bg-gray-900 text-white rounded-xl font-bold text-sm uppercase tracking-wide hover:bg-blue-600 transition-all"
+                  className="w-full py-3 text-center text-white rounded-xl font-bold text-sm uppercase tracking-wide shadow-md"
+                  style={{ background: Q_GRADIENT }}
                 >
                   Enroll Now
                 </Link>

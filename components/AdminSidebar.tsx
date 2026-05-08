@@ -55,7 +55,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
         {/* GOVERNANCE IDENTITY */}
         <div className="p-12 border-b-2 border-gray-100 dark:border-gray-800 flex items-center justify-between relative overflow-hidden">
           <div className="flex items-center gap-6 relative z-10">
-            <div className="w-14 h-14 bg-blue-600 rounded-[1.5rem] flex items-center justify-center shadow-2xl shadow-blue-900/40 border-2 border-white dark:border-[#0a0f29] rotate-6">
+            <div className="w-14 h-14 rounded-[1.5rem] flex items-center justify-center shadow-2xl border-2 border-white rotate-6" style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>
                <Shield size={28} className="text-white" />
             </div>
             <div>
@@ -83,9 +83,10 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                     onClick={onClose}
                     className={`flex items-center justify-between px-8 py-6 rounded-[2rem] transition-all duration-700 group relative overflow-hidden border-2 ${
                       isActive
-                        ? "bg-blue-600 border-blue-600 text-white shadow-2xl shadow-blue-900/40 translate-x-2 -rotate-1"
-                        : "text-gray-400 dark:text-gray-800 border-transparent hover:bg-gray-50 dark:hover:bg-blue-900/10 hover:border-blue-100 dark:hover:border-blue-900/30 hover:text-gray-900 dark:hover:text-blue-500"
+                        ? "border-transparent text-purple-700 shadow-md translate-x-2"
+                        : "text-gray-400 dark:text-gray-800 border-transparent hover:bg-gray-50 hover:border-purple-100 hover:text-gray-900"
                     }`}
+                    style={isActive ? { background: "linear-gradient(135deg, #EDE9FE 0%, #DBEAFE 100%)" } : {}}
                   >
                     <div className="flex items-center gap-6">
                        <span className={`transition-all duration-700 ${isActive ? "text-white scale-125" : "text-gray-300 dark:text-gray-800 group-hover:text-blue-600 dark:group-hover:text-blue-500"}`}>{item.icon}</span>

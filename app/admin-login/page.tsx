@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Lock, ShieldCheck, ShieldAlert, Eye, EyeOff, LogIn, Terminal } from "lucide-react";
 import API from "@/app/lib/api";
 
+const Q_GRADIENT = "linear-gradient(135deg, #7C3AED 0%, #2563EB 100%)";
+
 function AdminLoginForm() {
   const router = useRouter();
 
@@ -53,7 +55,7 @@ function AdminLoginForm() {
 
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-red-100">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg" style={{ background: Q_GRADIENT }}>
               <ShieldCheck size={26} className="text-white" />
             </div>
             <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-1">Admin Sign In</h1>
@@ -115,11 +117,9 @@ function AdminLoginForm() {
             </div>
 
             {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3.5 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-red-600 active:scale-[0.98] disabled:opacity-60 transition-all shadow-md shadow-gray-200 mt-2"
-            >
+            <button type="submit" disabled={loading}
+              className="w-full flex items-center justify-center gap-2 py-3.5 text-white rounded-xl font-bold text-sm transition-all active:scale-[0.98] disabled:opacity-60 mt-2 hover:opacity-90"
+              style={{ background: Q_GRADIENT, boxShadow: "0 4px 14px rgba(124,58,237,0.35)" }}>
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
