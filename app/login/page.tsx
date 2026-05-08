@@ -141,18 +141,20 @@ function LoginForm() {
               </div>
             </div>
 
-            {/* Submit (High-Contrast Gradient Button from Image) */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-7 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-[2rem] font-black text-[13px] uppercase tracking-[0.3em] italic transition-all shadow-[0_20px_40px_rgba(37,99,235,0.25)] hover:shadow-[0_30px_60px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-6"
-            >
-              {loading ? (
-                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>Establish Identity Matrix <ArrowRight size={22} /></>
-              )}
-            </button>
+            {/* Submit Button (Centered & Adjustable) */}
+            <div className="flex justify-center pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="min-w-[280px] px-12 py-7 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-black text-[12px] uppercase tracking-[0.25em] italic transition-all shadow-[0_20px_40px_rgba(37,99,235,0.25)] hover:shadow-[0_30px_60px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-5"
+              >
+                {loading ? (
+                  <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>Establish Identity Matrix <ArrowRight size={22} /></>
+                )}
+              </button>
+            </div>
           </form>
 
           {/* OAuth Section (Image Style) */}
