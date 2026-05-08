@@ -35,7 +35,6 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
 
   return (
     <>
-    <>
       {/* GLOBAL ADMINISTRATIVE OVERLAY */}
       {isOpen && (
         <div 
