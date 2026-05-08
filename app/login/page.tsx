@@ -47,7 +47,13 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-jetbrains selection:bg-blue-100 selection:text-blue-600">
+    <div 
+      className="min-h-screen !bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-jetbrains selection:bg-blue-100 selection:text-blue-600 light"
+      style={{ backgroundColor: '#ffffff', colorScheme: 'light' }}
+    >
+      <style jsx global>{`
+        body { background-color: white !important; }
+      `}</style>
       {/* Ultra-Minimal Background */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" />
       <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[120px] opacity-40" />
@@ -66,7 +72,7 @@ function LoginForm() {
           <h1 className="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 mb-2">
             Quizaro
           </h1>
-          <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] italic leading-none">
+          <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic leading-none">
             Scholar Entity Creation Portal
           </p>
         </div>
@@ -76,7 +82,7 @@ function LoginForm() {
           
           <div className="mb-10 text-center">
             <h2 className="text-2xl font-black text-gray-900 tracking-tight italic mb-2 leading-none">Initialize Registry</h2>
-            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">Register your identity vector in the mesh</p>
+            <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest italic leading-none">Register your identity vector in the mesh</p>
           </div>
 
           {/* Error */}
@@ -92,37 +98,37 @@ function LoginForm() {
             <div className="space-y-6">
               {/* Email */}
               <div className="space-y-3">
-                <label className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em] ml-2 italic">Entity Label (Full Name)</label>
+                <label className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] ml-2 italic">Entity Label (Full Name)</label>
                 <div className="relative group">
-                  <Mail size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-blue-600 transition-colors" />
+                  <Mail size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
                   <input
                     type="email"
                     placeholder="Scholar Name"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-16 pr-6 py-5 bg-gray-50/50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-200 outline-none focus:border-blue-600 focus:bg-white transition-all italic shadow-inner"
+                    className="w-full pl-16 pr-6 py-5 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-600 focus:bg-white transition-all italic shadow-inner"
                   />
                 </div>
               </div>
 
               {/* Password */}
               <div className="space-y-3">
-                <label className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em] ml-2 italic">Access Cipher (Password)</label>
+                <label className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] ml-2 italic">Access Cipher (Password)</label>
                 <div className="relative group">
-                  <Lock size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-purple-600 transition-colors" />
+                  <Lock size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-600 transition-colors" />
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-16 pr-16 py-5 bg-gray-50/50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-200 outline-none focus:border-purple-600 focus:bg-white transition-all italic shadow-inner"
+                    className="w-full pl-16 pr-16 py-5 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-purple-600 focus:bg-white transition-all italic shadow-inner"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-200 hover:text-gray-600 transition-colors"
+                    className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -164,7 +170,7 @@ function LoginForm() {
 
           {/* Footer (Image 1 Style) */}
           <div className="text-center mt-10">
-             <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest italic mb-2">Existing Neural Entity?</p>
+             <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest italic mb-2">Existing Neural Entity?</p>
              <Link href="/login" className="text-[11px] font-black text-blue-600 uppercase tracking-[0.1em] italic hover:underline underline-offset-4">
                 Access Active Session
              </Link>
@@ -173,7 +179,7 @@ function LoginForm() {
 
         {/* Back Link */}
         <div className="mt-10">
-          <Link href="/" className="text-[10px] font-black text-gray-200 uppercase tracking-widest italic hover:text-gray-400 transition-colors">
+          <Link href="/" className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic hover:text-gray-600 transition-colors">
              Return to Base Node
           </Link>
         </div>

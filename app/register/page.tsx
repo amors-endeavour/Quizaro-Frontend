@@ -45,7 +45,13 @@ function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] flex items-center justify-center p-6 relative overflow-hidden transition-colors duration-500 font-jetbrains">
+    <div 
+      className="min-h-screen !bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-jetbrains selection:bg-blue-100 selection:text-blue-600 light"
+      style={{ backgroundColor: '#ffffff', colorScheme: 'light' }}
+    >
+      <style jsx global>{`
+        body { background-color: white !important; }
+      `}</style>
       {/* Dynamic Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/5 dark:bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/5 dark:bg-purple-600/10 rounded-full blur-[100px] animate-pulse duration-700" />

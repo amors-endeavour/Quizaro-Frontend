@@ -44,7 +44,13 @@ function AdminLoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-jetbrains selection:bg-blue-100 selection:text-blue-600">
+    <div 
+      className="min-h-screen !bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-jetbrains selection:bg-blue-100 selection:text-blue-600 light"
+      style={{ backgroundColor: '#ffffff', colorScheme: 'light' }}
+    >
+      <style jsx global>{`
+        body { background-color: white !important; }
+      `}</style>
       {/* Background Elements (Image 2 Style) */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:32px_32px]" />
       <div className="absolute top-0 right-0 w-1/3 h-1 bg-gradient-to-l from-blue-600 via-indigo-600 to-purple-600" />
@@ -63,7 +69,7 @@ function AdminLoginForm() {
           <h1 className="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 mb-2 leading-none">
             Quizaro
           </h1>
-          <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] italic leading-none">
+          <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic leading-none">
             Admin Command Center // Node Access
           </p>
         </div>
@@ -74,7 +80,7 @@ function AdminLoginForm() {
           <div className="mb-12 flex items-center justify-between">
             <div className="space-y-1.5">
               <h2 className="text-2xl font-black text-gray-900 tracking-tighter italic leading-none">Access Control</h2>
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic leading-none">Institutional Security protocol layer 1</p>
+              <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest italic leading-none">Institutional Security protocol layer 1</p>
             </div>
             <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm border border-blue-100">
                <ShieldCheck size={24} />
@@ -94,37 +100,37 @@ function AdminLoginForm() {
             <div className="space-y-6">
               {/* Email */}
               <div className="space-y-3">
-                <label className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em] ml-2 italic">Governance Identifier (Admin Email)</label>
+                <label className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] ml-2 italic">Governance Identifier (Admin Email)</label>
                 <div className="relative group">
-                  <Terminal size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-blue-600 transition-colors" />
+                  <Terminal size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
                   <input
                     type="email"
                     placeholder="admin@quizaro.institutional"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-16 pr-6 py-5 bg-gray-50/50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-200 outline-none focus:border-blue-600 focus:bg-white transition-all italic shadow-inner"
+                    className="w-full pl-16 pr-6 py-5 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-600 focus:bg-white transition-all italic shadow-inner"
                   />
                 </div>
               </div>
 
               {/* Password */}
               <div className="space-y-3">
-                <label className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em] ml-2 italic">Encryption Key (Password)</label>
+                <label className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] ml-2 italic">Encryption Key (Password)</label>
                 <div className="relative group">
-                  <Lock size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-purple-600 transition-colors" />
+                  <Lock size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-600 transition-colors" />
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-16 pr-16 py-5 bg-gray-50/50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-200 outline-none focus:border-purple-600 focus:bg-white transition-all italic shadow-inner"
+                    className="w-full pl-16 pr-16 py-5 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-purple-600 focus:bg-white transition-all italic shadow-inner"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-200 hover:text-gray-600 transition-colors"
+                    className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -156,10 +162,10 @@ function AdminLoginForm() {
 
           {/* Footer links (Image 2 Style) */}
           <div className="flex items-center justify-center gap-8 mt-12 pt-8 border-t border-gray-50">
-            <Link href="/login" className="text-[10px] font-black text-gray-300 hover:text-blue-600 uppercase tracking-widest italic transition-colors">
+            <Link href="/login" className="text-[10px] font-black text-gray-500 hover:text-blue-600 uppercase tracking-widest italic transition-colors">
               Student Mode
             </Link>
-            <Link href="/" className="text-[10px] font-black text-gray-300 hover:text-gray-900 uppercase tracking-widest italic transition-colors">
+            <Link href="/" className="text-[10px] font-black text-gray-500 hover:text-gray-900 uppercase tracking-widest italic transition-colors">
               Back to Home
             </Link>
           </div>
