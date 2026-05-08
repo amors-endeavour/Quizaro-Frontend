@@ -3,7 +3,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, LayoutDashboard, UserPlus, LogIn, Menu, X } from "lucide-react";
+import { 
+  LogOut, LayoutDashboard, UserPlus, LogIn, Menu, X, 
+  ArrowRight, ShieldCheck, Zap
+} from "lucide-react";
 import API from "@/app/lib/api";
 
 export default function Navbar() {
@@ -15,7 +18,7 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 8);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -24,16 +27,22 @@ export default function Navbar() {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("role");
-      if (token) { setIsAuthenticated(true); setUserRole(role); }
+      if (token) {
+        setIsAuthenticated(true);
+        setUserRole(role);
+      }
       setCheckingAuth(false);
     }
+    
     const verifyAuth = async () => {
       try {
         const { data } = await API.get("/user/profile");
         const role = (data?.role || data?.user?.role)?.toLowerCase();
         setIsAuthenticated(!!data);
         setUserRole(role);
-        if (typeof window !== "undefined") localStorage.setItem("role", role);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("role", role);
+        }
       } catch {
         setIsAuthenticated(false);
         if (typeof window !== "undefined") {
@@ -52,85 +61,85 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    if (typeof window !== "undefined") localStorage.clear();
-    setTimeout(() => { window.location.href = "/"; }, 200);
+    if (typeof window !== "undefined") {
+      localStorage.clear();
+    }
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 200);
   };
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Tests", href: "/tests" },
-    { name: "Resources", href: "/resources" },
+    { name: "Test Papers", href: "/tests" },
+    { name: "Intel Mesh", href: "/resources" },
     { name: "Contact", href: "/contact" },
   ];
 
   return (
     <nav
-      className={`w-full sticky top-0 z-[100] bg-background border-b transition-all duration-300 ${
-        scrolled ? "border-border" : "border-transparent"
+      className={`fixed top-0 w-full z-[100] transition-all duration-300 ${
+        scrolled ? "bg-white/90 backdrop-blur-md border-b border-gray-100 py-3 shadow-sm" : "bg-white/50 backdrop-blur-sm py-5"
       }`}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
-
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6">
+        
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-          <div className="w-9 h-9 bg-foreground rounded-md flex items-center justify-center text-background font-bold text-base shadow-sm group-hover:opacity-80 transition-all">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-600/20">
             Q
           </div>
           <div className="flex flex-col leading-none">
-            <span className="text-sm font-bold text-foreground tracking-tight">QUIZARO</span>
+            <span className="text-sm font-black text-gray-900 tracking-tighter uppercase">Quizaro</span>
+            <span className="text-[7px] font-black text-blue-600 uppercase tracking-widest mt-1">Intelligence Core</span>
           </div>
         </Link>
 
-        {/* Desktop Nav Links */}
-        <div className="hidden lg:flex items-center gap-8">
+        {/* Center Nav Links */}
+        <div className="hidden lg:flex items-center gap-10">
           {navLinks.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="text-xs font-medium text-gray hover:text-foreground uppercase tracking-widest transition-colors relative group"
+              className="text-[10px] font-black text-gray-400 hover:text-blue-600 uppercase tracking-[0.2em] transition-all"
             >
               {item.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent rounded-full transition-all group-hover:w-full" />
             </Link>
           ))}
         </div>
 
-        {/* Desktop Actions */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Right Actions */}
+        <div className="hidden md:flex items-center gap-6">
           {checkingAuth ? (
-            <div className="w-20 h-9 bg-gray-800 rounded-md animate-pulse" />
+            <div className="w-20 h-9 bg-gray-50 rounded-lg animate-pulse" />
           ) : isAuthenticated ? (
             <>
               <button
                 onClick={handleDashboardRedirect}
-                className="flex items-center gap-2 px-5 py-2.5 bg-accent text-background rounded-md text-xs font-semibold uppercase tracking-wide hover:opacity-90 transition-all"
+                className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em] hover:text-blue-600 transition-colors"
               >
-                <LayoutDashboard size={15} />
                 Dashboard
               </button>
               <button
                 onClick={handleLogout}
-                title="Log out"
-                className="p-2.5 text-gray hover:text-error border border-gray-800 hover:border-error rounded-md transition-all"
+                className="px-6 py-2.5 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl shadow-gray-200"
               >
-                <LogOut size={16} />
+                Sign Out
               </button>
             </>
           ) : (
             <>
               <Link
                 href="/login"
-                className="flex items-center gap-2 px-4 py-2.5 text-xs font-medium text-gray hover:text-foreground uppercase tracking-wide transition-colors"
+                className="flex items-center gap-2 text-[10px] font-black text-gray-900 hover:text-blue-600 uppercase tracking-[0.2em] transition-all"
               >
-                <LogIn size={15} />
-                Login
+                Login <ArrowRight size={14} className="text-blue-600" />
               </Link>
               <Link
                 href="/register"
-                className="flex items-center gap-2 px-5 py-2.5 bg-accent text-background rounded-md text-xs font-semibold uppercase tracking-wide hover:opacity-90 transition-all"
+                className="px-7 py-3 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl shadow-gray-200"
               >
-                <UserPlus size={15} />
-                Get Started
+                Enroll Now
               </Link>
             </>
           )}
@@ -139,40 +148,40 @@ export default function Navbar() {
         {/* Mobile menu toggle */}
         <button
           onClick={() => setOpen(!open)}
-          className="lg:hidden p-2.5 text-gray hover:text-foreground border border-gray-800 rounded-md transition-all"
+          className="lg:hidden p-2 text-gray-900 hover:text-blue-600"
         >
-          {open ? <X size={20} /> : <Menu size={20} />}
+          {open ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Mobile Dropdown */}
       {open && (
-        <div className="lg:hidden bg-background border-t border-gray-800 px-6 py-6 space-y-4">
-          <div className="flex flex-col gap-1">
+        <div className="lg:hidden bg-white border-t border-gray-50 px-6 py-8 space-y-6 shadow-2xl">
+          <div className="flex flex-col gap-4">
             {navLinks.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="px-4 py-3 text-sm font-medium text-gray hover:text-foreground hover:bg-gray-900 rounded-md transition-all uppercase tracking-wide"
+                className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] hover:text-blue-600 py-2"
               >
                 {item.name}
               </Link>
             ))}
           </div>
 
-          <div className="pt-4 border-t border-gray-800 flex flex-col gap-3">
+          <div className="pt-6 border-t border-gray-50 flex flex-col gap-4">
             {isAuthenticated ? (
               <>
                 <button
                   onClick={() => { handleDashboardRedirect(); setOpen(false); }}
-                  className="w-full py-3 bg-accent text-background rounded-md font-semibold text-sm uppercase tracking-wide flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em]"
                 >
-                  <LayoutDashboard size={16} /> Dashboard
+                  Dashboard
                 </button>
                 <button
                   onClick={() => { handleLogout(); setOpen(false); }}
-                  className="w-full py-3 text-error border border-gray-800 rounded-md font-semibold text-sm uppercase tracking-wide hover:bg-error/10 transition-all"
+                  className="w-full py-4 border-2 border-gray-100 text-gray-900 rounded-2xl font-black text-xs uppercase tracking-[0.2em]"
                 >
                   Log Out
                 </button>
@@ -180,14 +189,14 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/login" onClick={() => setOpen(false)}
-                  className="w-full py-3 text-center text-gray border border-gray-800 rounded-md font-semibold text-sm uppercase tracking-wide hover:text-foreground transition-all"
+                  className="w-full py-4 text-center text-gray-900 font-black text-xs uppercase tracking-[0.2em]"
                 >
                   Login
                 </Link>
                 <Link href="/register" onClick={() => setOpen(false)}
-                  className="w-full py-3 text-center bg-accent text-background rounded-md font-semibold text-sm uppercase tracking-wide hover:opacity-90 transition-all"
+                  className="w-full py-4 text-center bg-gray-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em]"
                 >
-                  Get Started
+                  Enroll Now
                 </Link>
               </>
             )}

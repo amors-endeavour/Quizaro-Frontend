@@ -1,159 +1,134 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
-import { Twitter, Linkedin, Youtube, Instagram, Activity, Globe } from "lucide-react";
+import { 
+  Twitter, Linkedin, Youtube, Instagram, Globe, 
+  ArrowUpRight, Heart, Cpu 
+} from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer
-      className="relative overflow-hidden px-8 md:px-16 pt-20 pb-10"
-      style={{
-        background: "linear-gradient(180deg, #2563EB 0%, #1E40AF 40%, #1E3A8A 100%)",
-      }}
-    >
-      {/* Subtle top blend overlay so it merges with the CTA blue above */}
-      <div
-        className="absolute inset-x-0 top-0 h-24 pointer-events-none"
-        style={{
-          background: "linear-gradient(180deg, #2563EB 0%, transparent 100%)",
-        }}
-      />
-
-      {/* Decorative blobs */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-300/10 rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="relative z-10 max-w-7xl mx-auto">
-
-        {/* Main grid */}
-        <div className="grid md:grid-cols-6 gap-12 pb-16 border-b border-white/20">
-
-          {/* Brand column */}
-          <div className="md:col-span-2 space-y-8">
-            <Link href="/" className="flex items-center gap-4 group w-fit">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-700 font-black text-xl shadow-lg group-hover:scale-105 transition-transform">
+    <footer className="bg-[#050810] pt-24 pb-12 px-6 border-t border-white/5">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-24">
+          
+          {/* Brand Column */}
+          <div className="lg:col-span-1">
+            <Link href="/" className="flex items-center gap-3 mb-8 group">
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-900/20">
                 Q
               </div>
               <div className="flex flex-col leading-none">
-                <span className="text-xl font-black text-white tracking-tight">QUIZARO</span>
-                <span className="text-[10px] text-blue-200 font-bold uppercase tracking-widest mt-1">Intelligence Core</span>
+                <span className="text-sm font-black text-white tracking-tighter uppercase">Quizaro</span>
+                <span className="text-[8px] font-bold text-blue-500 uppercase tracking-widest mt-1">Intelligence Core</span>
               </div>
             </Link>
-
-            <p className="text-sm text-blue-100 leading-relaxed max-w-xs font-medium">
-              India&apos;s most sophisticated adaptive assessment platform — transforming aspirants into top achievers through personalized practice and deep analytics.
+            <p className="text-[9px] text-gray-600 font-black leading-relaxed mb-10 uppercase tracking-[0.15em]">
+              INDIA&apos;S MOST SOPHISTICATED ADAPTIVE ASSESSMENT PLATFORM — SYNTHESIZED TO TRANSFORM 
+              ASPIRANTS INTO INSTITUTIONAL ACHIEVERS THROUGH NEURAL PRACTICE AND DEEP CLINICAL ANALYTICS.
             </p>
-
-            {/* Social icons */}
             <div className="flex gap-3">
-              {[
-                { icon: <Twitter size={16} />, href: "#" },
-                { icon: <Linkedin size={16} />, href: "#" },
-                { icon: <Youtube size={16} />, href: "#" },
-                { icon: <Instagram size={16} />, href: "#" },
-              ].map((node, i) => (
-                <Link
-                  key={i}
-                  href={node.href}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 border border-white/20 text-blue-100 hover:bg-white hover:text-blue-700 transition-all"
-                >
-                  {node.icon}
+              {[Twitter, Linkedin, Youtube, Instagram].map((Icon, i) => (
+                <Link key={i} href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-500 hover:bg-blue-600 hover:text-white transition-all border border-white/5">
+                  <Icon size={14} />
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Link columns */}
-          <FooterColumn
-            title="Platform"
-            links={[
-              { name: "Mock Tests", href: "/tests" },
-              { name: "Leaderboard", href: "/leaderboard" },
-              { name: "Analytics", href: "/result" },
-              { name: "Resources", href: "/resources" },
-              { name: "Support", href: "/contact" },
-            ]}
-          />
+          {/* Matrix Column */}
+          <div>
+            <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-8 italic">Platform Matrix</h4>
+            <ul className="space-y-4">
+              {[
+                { name: "Mock Test Registry", href: "/tests" },
+                { name: "Leaderboard Cluster", href: "/leaderboard" },
+                { name: "Clinical Analytics", href: "/analytics" },
+                { name: "Knowledge Mesh", href: "/resources" },
+                { name: "Support Protocol", href: "/contact" },
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link href={link.href} className="text-[9px] font-black text-gray-600 hover:text-blue-500 uppercase tracking-widest transition-colors">
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <FooterColumn
-            title="Exam Sectors"
-            links={[
-              { name: "JEE / NEET", href: "/tests" },
-              { name: "UPSC / Civil", href: "/tests" },
-              { name: "Banking PO", href: "/tests" },
-              { name: "SSC / Railway", href: "/tests" },
-              { name: "CAT / MBA", href: "/tests" },
-            ]}
-          />
+          {/* Sectors Column */}
+          <div>
+            <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-8 italic">Domain Sectors</h4>
+            <ul className="space-y-4">
+              {[
+                "JEE / NEET Cluster", "UPSC / Civil Nodes", "Banking Sector PO", 
+                "SSC / Railway Matrix", "CAT / MBA Elite"
+              ].map((name) => (
+                <li key={name}>
+                  <Link href="/tests" className="text-[9px] font-black text-gray-600 hover:text-blue-500 uppercase tracking-widest transition-colors">
+                    {name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <FooterColumn
-            title="Company"
-            links={[
-              { name: "About Us", href: "/about" },
-              { name: "Blog", href: "/blog" },
-              { name: "Careers", href: "/careers" },
-              { name: "Privacy Policy", href: "/privacy" },
-              { name: "Terms of Service", href: "/terms" },
-            ]}
-          />
+          {/* Institutional Column */}
+          <div>
+            <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-8 italic">Institutional</h4>
+            <ul className="space-y-4">
+              {[
+                "Mission About", "Insight Blog", "Career Registry", 
+                "Privacy Protocol", "Terms of Engagement"
+              ].map((name) => (
+                <li key={name}>
+                  <Link href="#" className="text-[9px] font-black text-gray-600 hover:text-blue-500 uppercase tracking-widest transition-colors">
+                    {name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <FooterColumn
-            title="More"
-            links={[
-              { name: "System Status", href: "#" },
-              { name: "Security", href: "#" },
-              { name: "API Docs", href: "#" },
-              { name: "Register", href: "/register" },
-              { name: "Admin Login", href: "/admin-login" },
-            ]}
-          />
+          {/* Operational Column */}
+          <div>
+            <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-8 italic">Operational</h4>
+            <ul className="space-y-4">
+              {[
+                "System Health", "Security Audit", "API Documentation", 
+                "Scholar Registry", "Admin Governance"
+              ].map((name) => (
+                <li key={name}>
+                  <Link href="#" className="text-[9px] font-black text-gray-600 hover:text-blue-500 uppercase tracking-widest transition-colors">
+                    {name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
         </div>
 
-        {/* Bottom bar */}
-        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-blue-200 font-medium">
+        {/* Bottom Bar */}
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
-            <Activity size={14} className="text-blue-300" />
-            <span>© 2026 Quizaro Intelligence Core Pvt. Ltd. All rights reserved.</span>
+            <Cpu size={14} className="text-blue-600" />
+            <p className="text-[9px] font-black text-gray-700 uppercase tracking-[0.2em]">
+              © 2026 Quizaro Intelligence Core Pvt. Ltd. • All Nodes Synchronized
+            </p>
           </div>
-          <div className="flex items-center gap-6">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <div className="w-1 h-1 rounded-full bg-blue-300/50" />
-            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-            <div className="w-1 h-1 rounded-full bg-blue-300/50" />
-            <div className="flex items-center gap-2">
-              <Globe size={13} />
-              <span>Asia / South</span>
+          
+          <div className="flex items-center gap-8">
+            <Link href="#" className="text-[9px] font-black text-gray-700 hover:text-white uppercase tracking-widest">Privacy Protocol</Link>
+            <Link href="#" className="text-[9px] font-black text-gray-700 hover:text-white uppercase tracking-widest">Terms of Service</Link>
+            <div className="flex items-center gap-2 text-[9px] font-black text-gray-700 uppercase tracking-widest">
+              <Globe size={12} className="text-gray-800" />
+              Regional: Asia/South
             </div>
           </div>
         </div>
-
       </div>
     </footer>
-  );
-}
-
-function FooterColumn({
-  title,
-  links,
-}: {
-  title: string;
-  links: { name: string; href: string }[];
-}) {
-  return (
-    <div className="space-y-5">
-      <h5 className="text-xs font-black text-white uppercase tracking-widest">{title}</h5>
-      <ul className="space-y-3">
-        {links.map((link, i) => (
-          <li key={i}>
-            <Link
-              href={link.href}
-              className="text-sm text-blue-200 hover:text-white transition-colors font-medium"
-            >
-              {link.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }
