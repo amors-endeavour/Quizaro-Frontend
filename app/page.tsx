@@ -355,17 +355,22 @@ function FaqSection() {
 /* ── CTA ──────────────────────────────────────────── */
 function CtaSection() {
   return (
-    <section className="py-32 px-6 relative overflow-hidden bg-blue-600">
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <h2 className="text-4xl md:text-7xl font-black text-white mb-8 tracking-tighter leading-none">
+    <section className="py-40 px-6 relative overflow-hidden bg-gradient-to-br from-blue-400 via-blue-600 to-indigo-700">
+      {/* Abstract mesh for premium feel */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.15),transparent)] pointer-events-none" />
+      
+      <div className="max-w-4xl mx-auto text-center relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+        <h2 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tighter leading-none italic">
           Your Success Story<br />Starts Today
         </h2>
-        <p className="text-blue-100 text-sm md:text-base mb-12 max-w-xl mx-auto font-medium">
+        <p className="text-blue-50 text-sm md:text-lg mb-14 max-w-xl mx-auto font-black uppercase tracking-[0.3em] italic opacity-80 leading-relaxed">
           Free plan. No credit card. Start in 30 seconds.
         </p>
-        <Link href="/register" className="inline-flex items-center gap-3 px-10 py-4 bg-white text-blue-600 rounded-xl font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all active:scale-95">
-          Create Free Account <ArrowRight size={18} />
-        </Link>
+        <div className="flex justify-center">
+          <Link href="/register" className="px-14 py-6 bg-white text-blue-700 rounded-full font-black text-xs uppercase tracking-[0.3em] italic shadow-[0_25px_60px_rgba(255,255,255,0.3)] hover:shadow-[0_35px_80px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-6 group">
+            Create Free Account <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+          </Link>
+        </div>
       </div>
     </section>
   );
