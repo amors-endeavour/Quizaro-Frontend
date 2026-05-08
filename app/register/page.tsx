@@ -96,9 +96,16 @@ function RegisterForm() {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-100 text-red-600 px-8 py-5 rounded-[2rem] mb-12 text-[11px] font-black uppercase tracking-widest italic flex items-center gap-5 animate-in shake duration-500">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              {error}
+            <div className="bg-red-50 border border-red-100 text-red-600 px-8 py-5 rounded-[2rem] mb-12 text-[11px] font-black uppercase tracking-widest italic flex flex-col gap-3 animate-in shake duration-500">
+              <div className="flex items-center gap-5">
+                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                {error}
+              </div>
+              {error.toLowerCase().includes("exists") && (
+                <Link href="/login" className="ml-7 text-blue-600 underline underline-offset-4 hover:text-blue-700 transition-colors">
+                  Access Portal Instead →
+                </Link>
+              )}
             </div>
           )}
 
