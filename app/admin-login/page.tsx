@@ -166,12 +166,11 @@ function AdminLoginForm() {
         </div>
 
         {/* Footer Navigation */}
-        <div className="flex items-center justify-center gap-12 mt-12">
-          <Link href="/login" className="text-[10px] font-black text-gray-400 hover:text-blue-600 uppercase tracking-widest italic transition-colors">
+        <div className="flex items-center justify-center gap-6 mt-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+          <Link href="/login" className="px-8 py-3 bg-white border border-gray-100 rounded-full shadow-sm hover:shadow-md hover:border-blue-200 transition-all text-[10px] font-black uppercase tracking-widest italic text-gray-400 hover:text-blue-600 active:scale-95">
             Student Node
           </Link>
-          <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
-          <Link href="/" className="text-[10px] font-black text-gray-400 hover:text-gray-900 uppercase tracking-widest italic transition-colors flex items-center gap-3">
+          <Link href="/" className="px-8 py-3 bg-white border border-gray-100 rounded-full shadow-sm hover:shadow-md hover:border-gray-300 transition-all text-[10px] font-black uppercase tracking-widest italic text-gray-400 hover:text-gray-900 active:scale-95 flex items-center gap-3">
              <Shield size={12} /> Return to Base
           </Link>
         </div>

@@ -169,10 +169,13 @@ function RegisterForm() {
           </div>
         </div>
 
-        {/* Back Link */}
-        <div className="mt-12">
-          <Link href="/" className="inline-flex items-center gap-3 text-[10px] font-black text-gray-400 hover:text-blue-600 uppercase tracking-widest italic transition-colors group">
-             <Shield size={14} className="group-hover:rotate-12 transition-transform" /> Return to Base Node
+        {/* Navigation Buttons */}
+        <div className="mt-14 flex items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+          <Link href="/login" className="px-8 py-3 bg-white border border-gray-100 rounded-full shadow-sm hover:shadow-md hover:border-blue-200 transition-all text-[10px] font-black uppercase tracking-widest italic text-gray-500 hover:text-blue-600 active:scale-95">
+            Access Portal
+          </Link>
+          <Link href="/" className="px-8 py-3 bg-white border border-gray-100 rounded-full shadow-sm hover:shadow-md hover:border-gray-200 transition-all text-[10px] font-black uppercase tracking-widest italic text-gray-500 hover:text-gray-900 active:scale-95 flex items-center gap-3">
+             <Shield size={12} className="text-blue-600" /> Return to Base Node
           </Link>
         </div>
       </div>
