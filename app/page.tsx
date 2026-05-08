@@ -1,17 +1,179 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight, CheckCircle, Play, Shield, Users, Activity, 
   Sparkles, BookOpen, Target, Globe, Star, Trophy, Clock, 
-  Zap, Flame, Award, HelpCircle
+  Zap, Flame, Award, HelpCircle, Mail, Lock, Eye, EyeOff,
+  X, UserPlus, LogIn, AlertCircle
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useRouter } from "next/navigation";
+import API from "@/app/lib/api";
+
+/* ── STUDENT PORTAL MODAL ───────────────────────────── */
+function StudentPortalModal({ onClose }: { onClose: () => void }) {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showRegister, setShowRegister] = useState(false);
+
+  // Register fields
+  const [regName, setRegName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regLoading, setRegLoading] = useState(false);
+  const [regError, setRegError] = useState("");
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const { data } = await API.post("/user/login", { email, password });
+      const role = (data?.role || data?.user?.role || "student").toString().toLowerCase();
+      localStorage.setItem("token", data.token || "");
+      localStorage.setItem("role", role);
+      localStorage.setItem("user", JSON.stringify(data.user || {}));
+      router.replace(role === "admin" ? "/admin-dashboard" : "/user-dashboard");
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || "Credentials not found.";
+      setError(msg);
+      // If credentials don't match, reveal register panel
+      setShowRegister(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegLoading(true);
+    setRegError("");
+    try {
+      const { data } = await API.post("/user/register", { name: regName, email: regEmail, password: regPassword });
+      const role = (data?.role || data?.user?.role || "student").toString().toLowerCase();
+      localStorage.setItem("token", data.token || "");
+      localStorage.setItem("role", role);
+      localStorage.setItem("user", JSON.stringify(data.user || {}));
+      router.replace("/user-dashboard");
+    } catch (err: any) {
+      setRegError(err?.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setRegLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 animate-in fade-in duration-300">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-md" onClick={onClose} />
+
+      <div className="relative bg-white rounded-[3rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-500">
+        {/* Top accent */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 to-indigo-600" />
+
+        {/* Close */}
+        <button onClick={onClose} className="absolute top-6 right-6 w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-200 transition-all active:scale-90">
+          <X size={18} />
+        </button>
+
+        <div className="p-10">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="w-14 h-14 bg-blue-50 border-2 border-blue-100 rounded-2xl flex items-center justify-center mb-6">
+              <LogIn size={28} className="text-blue-600" />
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 tracking-tighter italic uppercase leading-none">Student Login</h3>
+            <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic mt-2 leading-none">Enter your credentials to access your dashboard</p>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="bg-red-50 border border-red-100 text-red-600 px-5 py-4 rounded-2xl mb-6 text-[11px] font-black uppercase tracking-widest italic flex items-center gap-4">
+              <AlertCircle size={16} className="shrink-0" />
+              {error}
+            </div>
+          )}
+
+          {/* Login Form */}
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="relative group">
+              <Mail size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
+              <input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} required
+                className="w-full pl-12 pr-5 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl text-[14px] font-black text-gray-900 placeholder:text-gray-300 outline-none focus:border-blue-400 focus:bg-white transition-all italic" />
+            </div>
+            <div className="relative group">
+              <Lock size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
+              <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required
+                className="w-full pl-12 pr-12 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl text-[14px] font-black text-gray-900 placeholder:text-gray-300 outline-none focus:border-blue-400 focus:bg-white transition-all italic" />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors">
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            <button type="submit" disabled={loading}
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest italic transition-all shadow-lg shadow-blue-200 active:scale-98 disabled:opacity-50 flex items-center justify-center gap-3">
+              {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><LogIn size={16} /> Login to Dashboard</>}
+            </button>
+          </form>
+
+          {/* Register Panel — slides in on failed login */}
+          <div className={`overflow-hidden transition-all duration-700 ease-in-out ${showRegister ? "max-h-[600px] opacity-100 mt-8" : "max-h-0 opacity-0"}`}>
+            <div className="border-t-2 border-dashed border-blue-100 pt-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-10 h-10 bg-indigo-50 border-2 border-indigo-100 rounded-xl flex items-center justify-center">
+                  <UserPlus size={20} className="text-indigo-600" />
+                </div>
+                <div>
+                  <p className="text-[12px] font-black text-gray-900 uppercase tracking-widest italic leading-none">New to Quizaro?</p>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic leading-none mt-1">Create your student account below</p>
+                </div>
+              </div>
+
+              {regError && (
+                <div className="bg-red-50 border border-red-100 text-red-600 px-5 py-3 rounded-xl mb-5 text-[10px] font-black uppercase tracking-widest italic flex items-center gap-3">
+                  <AlertCircle size={14} className="shrink-0" /> {regError}
+                </div>
+              )}
+
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div className="relative group">
+                  <Users size={15} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-indigo-500 transition-colors" />
+                  <input type="text" placeholder="Full name" value={regName} onChange={e => setRegName(e.target.value)} required
+                    className="w-full pl-12 pr-5 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl text-[14px] font-black text-gray-900 placeholder:text-gray-300 outline-none focus:border-indigo-400 focus:bg-white transition-all italic" />
+                </div>
+                <div className="relative group">
+                  <Mail size={15} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-indigo-500 transition-colors" />
+                  <input type="email" placeholder="Email address" value={regEmail} onChange={e => setRegEmail(e.target.value)} required
+                    className="w-full pl-12 pr-5 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl text-[14px] font-black text-gray-900 placeholder:text-gray-300 outline-none focus:border-indigo-400 focus:bg-white transition-all italic" />
+                </div>
+                <div className="relative group">
+                  <Lock size={15} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-indigo-500 transition-colors" />
+                  <input type="password" placeholder="Create password (min 6 chars)" value={regPassword} onChange={e => setRegPassword(e.target.value)} required minLength={6}
+                    className="w-full pl-12 pr-5 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl text-[14px] font-black text-gray-900 placeholder:text-gray-300 outline-none focus:border-indigo-400 focus:bg-white transition-all italic" />
+                </div>
+                <button type="submit" disabled={regLoading}
+                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest italic transition-all shadow-lg shadow-indigo-200 active:scale-98 disabled:opacity-50 flex items-center justify-center gap-3">
+                  {regLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><UserPlus size={16} /> Create My Account</>}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function HomePage() {
   const [authState, setAuthState] = React.useState<{token: string | null, role: string | null}>({token: null, role: null});
+  const [showStudentModal, setShowStudentModal] = useState(false);
+  const router = useRouter();
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -22,11 +184,20 @@ export default function HomePage() {
     }
   }, []);
 
+  const handleStudentClick = () => {
+    if (authState.token) {
+      router.replace(authState.role === "admin" ? "/admin-dashboard" : "/user-dashboard");
+    } else {
+      setShowStudentModal(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white selection:bg-blue-100 selection:text-blue-600">
+      {showStudentModal && <StudentPortalModal onClose={() => setShowStudentModal(false)} />}
       <Navbar />
       <main>
-        <HeroSection auth={authState} />
+        <HeroSection auth={authState} onStudentClick={handleStudentClick} />
         <TrustedBySection />
         <StatsSection />
         <FeaturesSection />
@@ -34,7 +205,7 @@ export default function HomePage() {
         <HowItWorksSection />
         <TestimonialsSection />
         <FaqSection />
-        <CtaSection auth={authState} />
+        <CtaSection auth={authState} onStudentClick={handleStudentClick} />
       </main>
       <Footer />
     </div>
@@ -42,7 +213,7 @@ export default function HomePage() {
 }
 
 /* ── HERO ─────────────────────────────────────────── */
-function HeroSection({ auth }: { auth: { token: string | null, role: string | null } }) {
+function HeroSection({ auth, onStudentClick }: { auth: { token: string | null, role: string | null }, onStudentClick: () => void }) {
   return (
     <section className="relative pt-32 pb-24 px-6 overflow-hidden">
       {/* Background blobs */}
@@ -64,23 +235,15 @@ function HeroSection({ auth }: { auth: { token: string | null, role: string | nu
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          {auth.token ? (
-            <Link 
-              href={auth.role === "admin" ? "/admin-dashboard" : "/user-dashboard"} 
-              className="w-full sm:w-auto px-12 py-5 bg-blue-600 text-white rounded-2xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 active:scale-95 animate-in zoom-in duration-500"
-            >
-              <Zap size={18} /> Access Your Dashboard
-            </Link>
-          ) : (
-            <>
-              <Link href="/register" className="w-full sm:w-auto px-10 py-5 bg-blue-600 text-white rounded-2xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 active:scale-95">
-                <Users size={18} /> I am a Student
-              </Link>
-              <Link href="/admin-login" className="w-full sm:w-auto px-10 py-5 bg-white border-2 border-gray-100 text-gray-600 rounded-2xl font-bold text-sm uppercase tracking-widest hover:border-blue-600 hover:text-blue-600 transition-all flex items-center justify-center gap-3 active:scale-95">
-                <Shield size={18} /> I am an Admin
-              </Link>
-            </>
-          )}
+          <button
+            onClick={onStudentClick}
+            className="w-full sm:w-auto px-10 py-5 bg-blue-600 text-white rounded-2xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 active:scale-95"
+          >
+            <Users size={18} /> I am a Student
+          </button>
+          <Link href="/admin-login" className="w-full sm:w-auto px-10 py-5 bg-white border-2 border-gray-100 text-gray-600 rounded-2xl font-bold text-sm uppercase tracking-widest hover:border-blue-600 hover:text-blue-600 transition-all flex items-center justify-center gap-3 active:scale-95">
+            <Shield size={18} /> I am an Admin
+          </Link>
         </div>
 
         {/* Social Proof */}
@@ -375,10 +538,9 @@ function FaqSection() {
 }
 
 /* ── CTA ──────────────────────────────────────────── */
-function CtaSection({ auth }: { auth: { token: string | null, role: string | null } }) {
+function CtaSection({ auth, onStudentClick }: { auth: { token: string | null, role: string | null }, onStudentClick: () => void }) {
   return (
     <section className="py-48 px-6 relative overflow-hidden bg-[#fbfbfe]">
-      {/* Ultra-Premium Mesh Gradient */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(245,245,2 beige,0.4),transparent_70%)] pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(37,99,235,0.03),transparent)] pointer-events-none" />
       
@@ -398,9 +560,9 @@ function CtaSection({ auth }: { auth: { token: string | null, role: string | nul
               Return to Command Center <Zap size={20} className="group-hover:translate-x-2 transition-transform" />
             </Link>
           ) : (
-            <Link href="/register" className="px-16 py-6 bg-white text-gray-900 border border-gray-100 rounded-full font-black text-xs uppercase tracking-[0.3em] italic shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_70px_rgba(0,0,0,0.1)] hover:scale-105 active:scale-95 transition-all flex items-center gap-6 group">
-              Create Free Account <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-            </Link>
+            <button onClick={onStudentClick} className="px-16 py-6 bg-white text-gray-900 border border-gray-100 rounded-full font-black text-xs uppercase tracking-[0.3em] italic shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_70px_rgba(0,0,0,0.1)] hover:scale-105 active:scale-95 transition-all flex items-center gap-6 group">
+              Get Started Free <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+            </button>
           )}
         </div>
       </div>
