@@ -336,16 +336,16 @@ export default function TestsPage() {
   };
 
   if (loading && tests.length === 0) return (
-    <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#050816] flex flex-col items-center justify-center space-y-6 transition-colors duration-300">
-      <div className="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 border-t-blue-600 rounded-full animate-spin" />
-      <p className="font-black animate-pulse text-blue-600 dark:text-blue-400 uppercase tracking-widest text-[10px] italic leading-none">
+    <div className="min-h-screen bg-[#fbfbfe] flex flex-col items-center justify-center space-y-8 transition-colors duration-300">
+      <div className="w-20 h-20 border-4 border-blue-50 border-t-blue-600 rounded-[1.8rem] animate-spin shadow-xl shadow-blue-600/5" />
+      <p className="font-black animate-pulse text-blue-600 uppercase tracking-[0.5em] text-[11px] italic leading-none">
         Synchronizing Intelligence Registry...
       </p>
     </div>
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f8f9fc] dark:bg-[#050816] text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div className="flex flex-col min-h-screen bg-[#fbfbfe] text-gray-900 transition-colors duration-300">
       <AdminHeader 
         title={currentSeriesId ? series.find(s => s._id === currentSeriesId)?.title || "Assessment Registry" : "Institutional Intelligence Library"}
         path={[
@@ -466,16 +466,16 @@ export default function TestsPage() {
              </div>
           ) : !currentSeriesId ? (
             /* GLOBAL UNIFIED VIEW 🏛️ */
-            <div className="space-y-32 transition-all duration-700">
+            <div className="space-y-40 transition-all duration-700">
                {/* PAID SECTION */}
-               <div className="space-y-16">
-                  <div className="flex items-center gap-6">
-                     <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl rotate-3"><BookOpen size={24} /></div>
-                     <div className="space-y-1">
-                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em] italic leading-none">New Papers Folder</h3>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Manage premium series and standalone papers</p>
+               <div className="space-y-20">
+                  <div className="flex items-center gap-8">
+                     <div className="w-14 h-14 bg-blue-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-2xl rotate-3"><BookOpen size={28} /></div>
+                     <div className="space-y-2">
+                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.4em] italic leading-none">Institutional Series Library</h3>
+                        <p className="text-[11px] text-gray-400 font-black uppercase tracking-widest italic leading-none">Manage premium assessment series and standalone papers</p>
                      </div>
-                     <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800/50" />
+                     <div className="flex-1 h-0.5 bg-gray-50" />
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-12">
@@ -528,14 +528,14 @@ export default function TestsPage() {
                </div>
 
                {/* FREE SECTION */}
-               <div className="space-y-16">
-                  <div className="flex items-center gap-6">
-                     <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-xl -rotate-3"><Monitor size={24} /></div>
-                     <div className="space-y-1">
-                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em] italic leading-none">Free New Papers Folder</h3>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-widest italic leading-none">Open access papers and free trial series</p>
+               <div className="space-y-20">
+                  <div className="flex items-center gap-8">
+                     <div className="w-14 h-14 bg-green-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-2xl -rotate-3"><Monitor size={28} /></div>
+                     <div className="space-y-2">
+                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-[0.4em] italic leading-none">Public Assessment Node</h3>
+                        <p className="text-[11px] text-gray-400 font-black uppercase tracking-widest italic leading-none">Open access papers and free trial series</p>
                      </div>
-                     <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800/50" />
+                     <div className="flex-1 h-0.5 bg-gray-50" />
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-12">
@@ -589,7 +589,7 @@ export default function TestsPage() {
             </div>
           ) : (
             /* SERIES VIEW 📄 */
-            <div className="grid grid-cols-1 gap-8 animate-in slide-in-from-right-10 duration-700">
+            <div className="grid grid-cols-1 gap-10 animate-in slide-in-from-right-10 duration-700">
                <button 
                   onClick={() => {
                     const parentTest = tests.find(t => t.seriesId === currentSeriesId);
@@ -606,24 +606,24 @@ export default function TestsPage() {
                     });
                     setShowModal(true);
                   }}
-                  className="w-full py-24 border-4 border-dashed border-gray-100 dark:border-gray-800 rounded-[5rem] flex flex-col items-center justify-center gap-8 text-gray-300 dark:text-gray-800 hover:text-blue-600 dark:hover:text-blue-500 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-700 bg-white dark:bg-[#0a0f29] shadow-sm group active:scale-[0.99] relative overflow-hidden"
+                  className="w-full py-32 border-4 border-dashed border-gray-100 rounded-[5rem] flex flex-col items-center justify-center gap-10 text-gray-300 hover:text-blue-600 hover:border-blue-200 transition-all duration-700 bg-white shadow-sm group active:scale-[0.99] relative overflow-hidden"
                >
                   <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                  <div className="w-24 h-24 rounded-[2.5rem] bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white group-hover:rotate-12 transition-all duration-700 shadow-2xl relative z-10">
-                     <Plus size={40} />
+                  <div className="w-28 h-28 rounded-[3rem] bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-blue-600 group-hover:text-white group-hover:rotate-12 transition-all duration-700 shadow-xl relative z-10">
+                     <Plus size={48} />
                   </div>
-                  <div className="space-y-3 text-center relative z-10">
-                     <span className="text-xl font-black uppercase tracking-widest italic block text-gray-900 dark:text-white transition-colors duration-500">Initialize Intelligence Node</span>
-                     <p className="text-[10px] font-black text-gray-400 dark:text-gray-700 uppercase tracking-[0.3em] italic leading-none">Provisioning assessment sequence metadata in cluster</p>
+                  <div className="space-y-4 text-center relative z-10">
+                     <span className="text-2xl font-black uppercase tracking-[0.3em] italic block text-gray-900 transition-colors duration-500">Initialize Intelligence Node</span>
+                     <p className="text-[12px] font-black text-gray-400 uppercase tracking-[0.4em] italic leading-none">Provisioning assessment sequence metadata in cluster</p>
                   </div>
                </button>
 
                {filteredTests.length === 0 ? (
-                 <div className="py-48 text-center bg-white dark:bg-[#0a0f29] border-4 border-dashed border-gray-100 dark:border-gray-800 rounded-[5rem] shadow-sm flex flex-col items-center gap-10 transition-all duration-700">
-                   <div className="w-24 h-24 bg-gray-50 dark:bg-[#050816] rounded-[2.5rem] flex items-center justify-center text-gray-100 dark:text-gray-900 shadow-inner"><Info size={56} /></div>
-                   <div className="space-y-4">
-                      <p className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic leading-none">Registry Void Detected</p>
-                      <p className="text-[11px] text-gray-400 dark:text-gray-700 font-black uppercase tracking-[0.4em] italic leading-none">No Intellectual Nodes Provisioned In This Matrix Cluster</p>
+                 <div className="py-64 text-center bg-white border-4 border-dashed border-gray-100 rounded-[6rem] shadow-sm flex flex-col items-center gap-12 transition-all duration-700">
+                   <div className="w-32 h-32 bg-gray-50 rounded-[3.5rem] flex items-center justify-center text-gray-100 shadow-inner"><Info size={64} /></div>
+                   <div className="space-y-6">
+                      <p className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Registry Void Detected</p>
+                      <p className="text-[12px] text-gray-400 font-black uppercase tracking-[0.5em] italic leading-none">No Intellectual Nodes Provisioned In This Matrix Cluster</p>
                    </div>
                  </div>
                ) : (

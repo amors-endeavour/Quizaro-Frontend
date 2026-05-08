@@ -84,7 +84,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                     className={`flex items-center justify-between px-10 py-7 rounded-[2.5rem] transition-all duration-700 group relative overflow-hidden border-2 ${
                       isActive
                         ? "bg-gray-900 border-gray-900 text-white shadow-2xl shadow-gray-900/20 translate-x-3 -rotate-1"
-                        : "text-gray-400 border-transparent hover:bg-gray-50 hover:border-gray-100 hover:text-gray-900"
+                        : "text-gray-600 border-transparent hover:bg-gray-50 hover:border-gray-100 hover:text-gray-900"
                     }`}
                   >
                     <div className="flex items-center gap-8">
@@ -124,9 +124,9 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
         <div className="p-12 border-t-2 border-gray-50 space-y-4 relative z-10">
           <Link 
             href="/admin-dashboard/help"
-            className="w-full flex items-center gap-8 px-10 py-6 text-gray-400 hover:bg-gray-50 hover:text-gray-900 rounded-[2.5rem] transition-all duration-700 text-[13px] font-black uppercase tracking-[0.3em] italic border-2 border-transparent hover:border-gray-100"
+            className="w-full flex items-center gap-8 px-10 py-6 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-[2.5rem] transition-all duration-700 text-[13px] font-black uppercase tracking-[0.3em] italic border-2 border-transparent hover:border-gray-100"
           >
-            <HelpCircle size={24} className="text-gray-300 group-hover:text-gray-900" />
+            <HelpCircle size={24} className="text-gray-400 group-hover:text-gray-900" />
             Support Hub
           </Link>
           <button

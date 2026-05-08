@@ -171,7 +171,7 @@ export default function AdminHeader({
               className={`flex items-center gap-4 py-6 text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-500 border-b-4 whitespace-nowrap italic relative group ${
                 activeTab === tab.id 
                   ? "border-blue-600 text-blue-600" 
-                  : "border-transparent text-gray-300 hover:text-gray-900"
+                  : "border-transparent text-gray-400 hover:text-gray-900"
               }`}
             >
               <span className={`transition-all duration-500 ${activeTab === tab.id ? "scale-110 rotate-3" : "group-hover:scale-110"}`}>
