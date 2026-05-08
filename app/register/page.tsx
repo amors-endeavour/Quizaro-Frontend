@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
-import { User, Mail, Lock, UserPlus, LogIn, ArrowRight, Activity, Shield, Rocket, Zap, Globe } from "lucide-react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
+import { User, Mail, Lock, Shield, Rocket, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import API from "@/app/lib/api";
@@ -12,10 +12,12 @@ function RegisterForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
-  // Auto-Login Redirection
-  React.useEffect(() => {
+  // Auto-Login Redirection (if already logged in)
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("role");
@@ -24,6 +26,23 @@ function RegisterForm() {
       }
     }
   }, [router]);
+
+  // Auto-redirect countdown when user already exists
+  useEffect(() => {
+    if (error.toLowerCase().includes("exists") && countdown === null) {
+      setCountdown(3);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (countdown === null) return;
+    if (countdown === 0) {
+      router.replace("/login");
+      return;
+    }
+    countdownRef.current = setTimeout(() => setCountdown((c) => (c !== null ? c - 1 : null)), 1000);
+    return () => { if (countdownRef.current) clearTimeout(countdownRef.current); };
+  }, [countdown, router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,6 +69,7 @@ function RegisterForm() {
     } catch (err: any) {
       const msg = err?.response?.data?.message || err.message || "Institutional registration failed.";
       setError(msg);
+      setCountdown(null); // reset so useEffect triggers fresh
     } finally {
       setLoading(false);
     }
@@ -101,9 +121,16 @@ function RegisterForm() {
                 <span className="flex-1">{error}</span>
               </div>
               {error.toLowerCase().includes("exists") && (
-                <Link href="/login" className="ml-7 text-blue-600 underline underline-offset-8 hover:text-blue-700 transition-all font-black tracking-widest decoration-2">
-                  ACCESS ACTIVE PORTAL INSTEAD →
-                </Link>
+                <div className="ml-7 flex flex-col gap-3">
+                  <Link href="/login" className="text-blue-600 underline underline-offset-8 hover:text-blue-700 transition-all font-black tracking-widest decoration-2">
+                    ACCESS ACTIVE PORTAL INSTEAD →
+                  </Link>
+                  {countdown !== null && (
+                    <span className="text-gray-400 text-[10px] font-black uppercase tracking-widest italic">
+                      Redirecting to login in <span className="text-blue-600">{countdown}s</span>...
+                    </span>
+                  )}
+                </div>
               )}
             </div>
           )}
