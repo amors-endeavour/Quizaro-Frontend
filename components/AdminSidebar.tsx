@@ -70,7 +70,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
               key={item.href}
               href={item.href}
               className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-[13px] font-bold uppercase tracking-widest ${
-                pathname === item.href ? "bg-blue-50 text-blue-600" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
+                pathname === item.href ? "bg-purple-50 text-purple-600" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
               {item.icon}
@@ -83,7 +83,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
             <button
               onClick={() => setQuizzesOpen(!quizzesOpen)}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-[13px] font-bold uppercase tracking-widest ${
-                pathname.includes("/quizzes") ? "bg-blue-50 text-blue-600" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
+                pathname.includes("/quizzes") ? "bg-purple-50 text-purple-600" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
               <div className="flex items-center gap-4">
@@ -100,7 +100,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                     key={sub.href}
                     href={sub.href}
                     className={`block px-4 py-2 rounded-lg text-[12px] font-bold uppercase tracking-widest transition-all ${
-                      pathname === sub.href ? "text-blue-600" : "text-gray-400 hover:text-gray-900"
+                      pathname === sub.href ? "text-purple-600 bg-purple-50/50" : "text-gray-400 hover:text-gray-900"
                     }`}
                   >
                     {sub.label}
