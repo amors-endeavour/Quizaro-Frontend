@@ -39,10 +39,11 @@ export default function TestsPage() {
   
   const [tests, setTests] = useState<Test[]>([]);
   const [seriesTitle, setSeriesTitle] = useState("");
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success' | 'alert' | 'error'} | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [statusMsg, setStatusMsg] = useState<{ text: string, type: 'error' | 'success' | 'alert' } | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -74,7 +75,8 @@ export default function TestsPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await API.get("/user/profile");
+        const { data } = await API.get("/user/profile");
+        setUser(data);
         setIsAuthenticated(true);
       } catch {
         setIsAuthenticated(false);
@@ -82,6 +84,55 @@ export default function TestsPage() {
     };
     checkAuth();
   }, []);
+
+  const handlePayment = async (test: Test) => {
+    try {
+      setLoading(true);
+      // 1. Create Order on Backend
+      const { data: order } = await API.post("/payment/order", { testId: test._id });
+
+      // 2. Open Razorpay Popup
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_placeholder", 
+        amount: order.amount,
+        currency: order.currency,
+        name: "Quizaro Intelligence",
+        description: `Unlock ${test.title}`,
+        order_id: order.orderId,
+        handler: async (response: any) => {
+          try {
+            // 3. Verify Payment on Backend
+            await API.post("/payment/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+            setStatusMsg({ text: "Access Sequence Granted. Synchronizing...", type: 'success' });
+            setTimeout(() => {
+              router.push(`/quiz/${test._id}`);
+            }, 1500);
+          } catch (err) {
+            setStatusMsg({ text: "Verification Failure. Registry Access Denied.", type: 'error' });
+            setTimeout(() => setStatusMsg(null), 3000);
+          }
+        },
+        prefill: {
+          name: user?.name || "Candidate",
+          email: user?.email || "",
+        },
+        theme: { color: "#2563eb" },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Order Matrix Failure:", err);
+      setStatusMsg({ text: "Critical Payment Error. Node Unreachable.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLaunchPaper = async (testId: string) => {
     if (!isAuthenticated) {
@@ -94,8 +145,14 @@ export default function TestsPage() {
       router.push(`/quiz/${testId}`);
     } catch (err: any) {
       if (err.response?.status === 402) {
-         setStatusMsg({ text: "Premium Paper Cluster: Institutional access required.", type: 'alert' });
-         setTimeout(() => setStatusMsg(null), 5000);
+         // Premium Paper - Trigger Payment Flow
+         const targetTest = tests.find(t => t._id === testId);
+         if (targetTest) {
+            handlePayment(targetTest);
+         } else {
+            setStatusMsg({ text: "Premium Paper Cluster: Institutional access required.", type: 'alert' });
+            setTimeout(() => setStatusMsg(null), 5000);
+         }
       } else if (err.response?.status === 400) {
          router.push(`/quiz/${testId}`);
          return;

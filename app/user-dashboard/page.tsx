@@ -146,6 +146,56 @@ export default function UserDashboard() {
     initDashboard();
   }, [router]);
 
+  const handlePayment = async (test: Test) => {
+    try {
+      setLoading(true);
+      // 1. Create Order on Backend
+      const { data: order } = await API.post("/payment/order", { testId: test._id });
+
+      // 2. Open Razorpay Popup
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_placeholder", 
+        amount: order.amount,
+        currency: order.currency,
+        name: "Quizaro Intelligence",
+        description: `Unlock ${test.title}`,
+        order_id: order.orderId,
+        handler: async (response: any) => {
+          try {
+            // 3. Verify Payment on Backend
+            await API.post("/payment/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+            setStatusMsg({ text: "Access Sequence Granted. Synchronizing...", type: 'success' });
+            setTimeout(() => {
+              window.open(`/quiz/${test._id}`, '_blank');
+              window.location.reload();
+            }, 1500);
+          } catch (err) {
+            setStatusMsg({ text: "Verification Failure. Registry Access Denied.", type: 'error' });
+            setTimeout(() => setStatusMsg(null), 3000);
+          }
+        },
+        prefill: {
+          name: user?.name || "Candidate",
+          email: user?.email || "",
+        },
+        theme: { color: "#2563eb" },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Order Matrix Failure:", err);
+      setStatusMsg({ text: "Critical Payment Error. Node Unreachable.", type: 'error' });
+      setTimeout(() => setStatusMsg(null), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleJoinSession = async (testId: string) => {
     try {
       setLoading(true);
@@ -154,8 +204,14 @@ export default function UserDashboard() {
       window.location.reload(); // Refresh to show as purchased
     } catch (err: any) {
       if (err.response?.status === 402) {
-         setStatusMsg({ text: "Premium Paper: Institutional access required.", type: 'alert' });
-         setTimeout(() => setStatusMsg(null), 5000);
+         // Premium Paper - Trigger Payment Flow
+         const targetTest = availableTests.find(t => t._id === testId);
+         if (targetTest) {
+            handlePayment(targetTest);
+         } else {
+            setStatusMsg({ text: "Premium Paper: Institutional access required.", type: 'alert' });
+            setTimeout(() => setStatusMsg(null), 5000);
+         }
       } else {
          setStatusMsg({ text: "Session Activation Failed.", type: 'error' });
          setTimeout(() => setStatusMsg(null), 3000);

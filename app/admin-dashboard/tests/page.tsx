@@ -779,7 +779,7 @@ export default function TestsPage() {
               {!editingTest && (
                 <div className="space-y-3">
                   <label className="text-[11px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.25em] flex items-center gap-2">
-                    <Folder size={14} className="text-blue-600" /> Destination Folder (Series)
+                    <FolderPlus size={14} className="text-blue-600" /> Destination Folder (Series)
                   </label>
 
                   {!createInlineSeries ? (
