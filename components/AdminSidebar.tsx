@@ -36,7 +36,11 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
   const otherItems = [
     { href: "/admin-dashboard/payments", label: "Payments", icon: <CreditCard size={18} /> },
     { href: "/admin-dashboard/analytics", label: "Analytics", icon: <BarChart3 size={18} /> },
-    { href: "/admin-dashboard/settings", label: "Settings", icon: <Settings size={18} /> },
+  ];
+
+  const bottomItems = [
+    { href: "/admin-dashboard/settings", label: "SETTINGS", icon: <Settings size={18} /> },
+    { href: "/admin-dashboard/help", label: "SUPPORT", icon: <HelpCircle size={18} /> },
   ];
 
   return (
@@ -136,15 +140,20 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
           ))}
         </nav>
 
-        {/* BOTTOM SECTION */}
-        <div className="p-6 border-t border-gray-50 space-y-1">
-           <Link
-             href="/admin-dashboard/help"
-             className="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-50 hover:text-gray-900 transition-all text-[11px] font-black uppercase tracking-widest italic"
-           >
-             <HelpCircle size={18} />
-             SUPPORT
-           </Link>
+        {/* BOTTOM UTILITY GROUP */}
+        <div className="p-4 border-t border-gray-100 space-y-1 mt-auto">
+           {bottomItems.map((item) => (
+             <Link
+               key={item.href}
+               href={item.href}
+               className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest italic ${
+                 pathname === item.href ? "bg-purple-50 text-purple-600 shadow-sm shadow-purple-600/5" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
+               }`}
+             >
+               <span className={pathname === item.href ? "scale-110" : ""}>{item.icon}</span>
+               {item.label}
+             </Link>
+           ))}
            
            <button
              onClick={() => setShowLogoutModal(true)}
