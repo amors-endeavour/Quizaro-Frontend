@@ -18,7 +18,8 @@ import {
   AlertCircle, 
   Loader2, 
   X, 
-  Upload 
+  Upload,
+  FileText
 } from "lucide-react";
 
 export default function UnpaidQuizzes() {
@@ -285,9 +286,16 @@ export default function UnpaidQuizzes() {
                       <div className="flex items-center justify-end gap-3 relative">
                         <button 
                           onClick={() => handleEdit(quiz)}
-                          className="px-6 py-2.5 bg-white text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-purple-100 shadow-sm hover:shadow-purple-900/10 flex items-center gap-2"
+                          className="px-4 py-2 bg-white text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-purple-100 shadow-sm hover:shadow-purple-900/10 flex items-center gap-2"
                         >
                           <Edit2 size={12} /> Edit
+                        </button>
+
+                        <button 
+                          onClick={() => window.location.href = `/admin-dashboard/quizzes/create-paper?id=${quiz.id}`}
+                          className="px-4 py-2 bg-white text-gray-500 hover:bg-gray-900 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-gray-100 shadow-sm flex items-center gap-2 whitespace-nowrap"
+                        >
+                          <FileText size={12} /> Manage Papers
                         </button>
                         
                         <div className="relative">
