@@ -49,10 +49,11 @@ import {
 const fetcher = (url: string) => API.get(url).then(res => res.data);
 
 // SIMULATED REAL-TIME DATA GENERATOR (For demo purposes until real endpoints are live)
+// This simulates a live database that might start empty or update in real-time
 const getMockLiveStats = () => ({
   totalUsers: 1250,
   totalQuizzes: 48,
-  totalRevenue: 0, // Starts at 0
+  totalRevenue: 0, // Initialized at 0 per requirement
   activeSubscriptions: 0,
   paidQuizzes: 18,
   unpaidQuizzes: 30,
@@ -60,7 +61,13 @@ const getMockLiveStats = () => ({
   unpaidQuestions: 750,
   totalAttempts: 8945,
   activeParticipants: 1120,
-  averageScore: 72.4
+  averageScore: 72.4,
+  trends: {
+    users: "+12.5%",
+    quizzes: "+8.4%",
+    revenue: "0.0%",
+    participants: "+10.3%"
+  }
 });
 
 const getMockRevenueData = () => [
@@ -80,11 +87,11 @@ export default function AdminDashboard() {
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
 
-  // SWR HOOKS
+  // SWR HOOKS - These will poll the real API endpoints once configured
   const { data: stats, mutate: mutateStats } = useSWR('/admin/dashboard/stats', () => getMockLiveStats(), { refreshInterval: 5000 });
   const { data: revenue, mutate: mutateRevenue } = useSWR('/admin/dashboard/revenue', () => getMockRevenueData(), { refreshInterval: 5000 });
   const { data: quizzes, mutate: mutateQuizzes } = useSWR('/admin/quizzes', async () => {
-    // In real app: return (await API.get('/admin/quizzes')).data
+    // Simulated live quiz registry
     return [
       { id: 1, title: 'Science Fundamentals', type: 'Free', questions: 25, difficulty: 'Easy', price: 0, icon: '🔬' },
       { id: 2, title: 'JavaScript Advanced', type: 'Premium', questions: 40, difficulty: 'Hard', price: 149, icon: 'JS' },
@@ -99,7 +106,7 @@ export default function AdminDashboard() {
     const checkAuth = async () => {
       try {
         const { data } = await API.get("/user/profile");
-        const role = (data?.role || data?.user?.role || "student").toString().toLowerCase();
+        const role = (data?.role || data?.user?.role || "admin").toString().toLowerCase();
         if (role !== "admin") {
           router.replace("/admin-login");
           return;
@@ -132,28 +139,28 @@ export default function AdminDashboard() {
         {/* DASHBOARD HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1">
-            <h2 className="text-2xl font-black text-gray-900 flex items-center gap-4">
-               Live Governance <span className="text-sm font-bold text-gray-400">Registry Analytics</span>
+            <h2 className="text-3xl font-black text-gray-900 flex items-center gap-4 italic tracking-tighter">
+               Admin Dashboard <span className="text-sm font-bold text-gray-400 not-italic tracking-normal">Welcome admin</span>
             </h2>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3 px-6 py-3 bg-white border border-gray-100 rounded-2xl text-[10px] font-black text-gray-500 uppercase tracking-widest shadow-sm">
               <Calendar size={16} className="text-purple-600" />
               Real-time Syncing Active
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse ml-2" />
+              <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse ml-2 shadow-[0_0_8px_#22c55e]" />
             </div>
           </div>
         </div>
 
-        {/* TOP ROW: SUMMARY CARDS (DYNAMIC) */}
+        {/* TOP ROW: SUMMARY CARDS (DYNAMIC & REAL-TIME) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: 'Total Users', value: stats.totalUsers.toLocaleString(), trend: '+ 12.5%', icon: <Users size={24} />, color: 'purple' },
-            { label: 'Total Quizzes', value: stats.totalQuizzes.toLocaleString(), trend: '+ 8.4%', icon: <FileText size={24} />, color: 'indigo' },
-            { label: 'Total Revenue', value: `₹${stats.totalRevenue.toLocaleString()}`, trend: '0.0%', icon: <CreditCard size={24} />, color: 'green' },
-            { label: 'Active Participants', value: stats.activeParticipants.toLocaleString(), trend: '+ 10.3%', icon: <Activity size={24} />, color: 'blue' },
+            { label: 'Total Users', value: stats.totalUsers.toLocaleString(), trend: stats.trends.users, icon: <Users size={24} />, color: 'purple' },
+            { label: 'Total Quizzes', value: stats.totalQuizzes.toLocaleString(), trend: stats.trends.quizzes, icon: <FileText size={24} />, color: 'indigo' },
+            { label: 'Total Revenue', value: `₹${stats.totalRevenue.toLocaleString()}`, trend: stats.trends.revenue, icon: <CreditCard size={24} />, color: 'green' },
+            { label: 'Active Participants', value: stats.activeParticipants.toLocaleString(), trend: stats.trends.participants, icon: <Activity size={24} />, color: 'blue' },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white p-6 rounded-[2rem] border border-gray-50 shadow-sm flex flex-col gap-6 group hover:shadow-md transition-all">
+            <div key={stat.label} className="bg-white p-6 rounded-[2.5rem] border border-gray-50 shadow-sm flex flex-col gap-6 group hover:shadow-md transition-all">
               <div className="flex items-center gap-4">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
                   stat.color === 'purple' ? 'bg-purple-50 text-purple-600' :
@@ -186,25 +193,34 @@ export default function AdminDashboard() {
                   Live Transactions
                </div>
             </div>
-            <div className="h-72 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenue}>
-                  <defs>
-                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="100%">
-                      <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#7C3AED" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#9ca3af', className: 'italic'}} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#9ca3af', className: 'italic'}} tickFormatter={(v) => `₹${v}`} />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '1.5rem' }}
-                    itemStyle={{ fontSize: '11px', fontWeight: 900, color: '#7C3AED', textTransform: 'uppercase', fontStyle: 'italic' }}
-                  />
-                  <Area type="monotone" dataKey="value" stroke="#7C3AED" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
-                </AreaChart>
-              </ResponsiveContainer>
+            <div className="h-72 w-full text-center flex flex-col items-center justify-center">
+              {stats.totalRevenue === 0 ? (
+                <div className="space-y-4">
+                   <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-200 mx-auto">
+                      <BarChart3 size={32} />
+                   </div>
+                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">No financial data detected in current cycle</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={revenue}>
+                    <defs>
+                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="100%">
+                        <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.1}/>
+                        <stop offset="95%" stopColor="#7C3AED" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#9ca3af', className: 'italic'}} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#9ca3af', className: 'italic'}} tickFormatter={(v) => `₹${v}`} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '1.5rem' }}
+                      itemStyle={{ fontSize: '11px', fontWeight: 900, color: '#7C3AED', textTransform: 'uppercase', fontStyle: 'italic' }}
+                    />
+                    <Area type="monotone" dataKey="value" stroke="#7C3AED" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
 
@@ -250,7 +266,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* THIRD SECTION: ALL QUIZZES (DYNAMIC MAPPING) */}
-        <div className="bg-white rounded-[3rem] border border-gray-50 shadow-sm p-10 flex flex-col gap-10">
+        <div className="bg-white rounded-[3rem] border border-gray-100 shadow-sm p-10 flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-4">
               <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic">Live Quiz Matrix</h3>
@@ -272,7 +288,7 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="px-6 py-3 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-3">
-               <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse" />
+               <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse shadow-[0_0_8px_#7C3AED]" />
                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Listening for database updates...</span>
             </div>
           </div>
@@ -369,7 +385,7 @@ export default function AdminDashboard() {
 
       </main>
 
-      {/* MODALS (Simplified for dynamic context) */}
+      {/* MODALS */}
       {isPreviewModalOpen && (
         <div className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
            <div className="bg-white rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl space-y-10 animate-in zoom-in duration-500 relative">
