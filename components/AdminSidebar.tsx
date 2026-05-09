@@ -13,7 +13,8 @@ import {
   HelpCircle, 
   LogOut,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  X
 } from "lucide-react";
 
 export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () => void }) {
@@ -40,40 +41,51 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
 
   return (
     <>
-      {/* OVERLAY */}
+      {/* MOBILE OVERLAY */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[150]"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[250] md:hidden transition-all duration-500"
           onClick={onClose}
         />
       )}
 
-      {/* SIDEBAR */}
-      <div className={`
-        fixed top-0 left-0 z-[200]
-        w-[280px] min-h-screen bg-white border-r border-gray-100
-        flex flex-col transition-transform duration-500
-        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+      {/* SIDEBAR CONTAINER */}
+      <aside className={`
+        fixed md:sticky top-0 left-0 h-screen z-[300]
+        w-64 bg-white border-r border-gray-100
+        flex flex-col transition-transform duration-500 shadow-xl md:shadow-none
+        ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
       `}>
         
         {/* LOGO SECTION */}
-        <div className="p-8 mb-4">
-          <Link href="/admin-dashboard" className="flex items-center gap-3 group">
-            <img src="/quizaro-logo.png" alt="Quizaro" className="h-12 w-auto object-contain" />
+        <div className="p-8 mb-4 flex items-center justify-between">
+          <Link href="/admin-dashboard" className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#7C3AED] rounded-xl flex items-center justify-center shadow-lg shadow-purple-600/20">
+               <span className="text-white font-black text-xl italic leading-none">Q</span>
+            </div>
+            <span className="text-lg font-black text-gray-900 tracking-tighter italic">Quizaro</span>
           </Link>
+          
+          {/* MOBILE CLOSE BUTTON */}
+          <button 
+            onClick={onClose}
+            className="md:hidden p-2 text-gray-400 hover:text-gray-900 transition-all"
+          >
+             <X size={20} />
+          </button>
         </div>
 
         {/* NAVIGATION */}
-        <nav className="flex-1 px-6 space-y-1 overflow-y-auto no-scrollbar">
+        <nav className="flex-1 px-4 space-y-1 overflow-y-auto no-scrollbar">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-[13px] font-bold uppercase tracking-widest ${
-                pathname === item.href ? "bg-purple-50 text-purple-600" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest italic ${
+                pathname === item.href ? "bg-purple-50 text-purple-600 shadow-sm shadow-purple-600/5" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
-              {item.icon}
+              <span className={pathname === item.href ? "scale-110" : ""}>{item.icon}</span>
               {item.label}
             </Link>
           ))}
@@ -82,7 +94,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
           <div className="space-y-1">
             <button
               onClick={() => setQuizzesOpen(!quizzesOpen)}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-[13px] font-bold uppercase tracking-widest ${
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest italic ${
                 pathname.includes("/quizzes") ? "bg-purple-50 text-purple-600" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
@@ -90,16 +102,16 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                 <BookOpen size={18} />
                 QUIZZES
               </div>
-              {quizzesOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+              {quizzesOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </button>
             
             {quizzesOpen && (
-              <div className="ml-12 space-y-1">
+              <div className="ml-8 space-y-1 animate-in slide-in-from-top-2 duration-300">
                 {quizSubItems.map((sub) => (
                   <Link
                     key={sub.href}
                     href={sub.href}
-                    className={`block px-4 py-2 rounded-lg text-[12px] font-bold uppercase tracking-widest transition-all ${
+                    className={`block px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest italic transition-all ${
                       pathname === sub.href ? "text-purple-600 bg-purple-50/50" : "text-gray-400 hover:text-gray-900"
                     }`}
                   >
@@ -114,11 +126,11 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-[13px] font-bold uppercase tracking-widest ${
-                pathname === item.href ? "bg-purple-50 text-purple-600" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest italic ${
+                pathname === item.href ? "bg-purple-50 text-purple-600 shadow-sm shadow-purple-600/5" : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
-              {item.icon}
+              <span className={pathname === item.href ? "scale-110" : ""}>{item.icon}</span>
               {item.label}
             </Link>
           ))}
@@ -128,7 +140,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
         <div className="p-6 border-t border-gray-50 space-y-1">
            <Link
              href="/admin-dashboard/help"
-             className="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-50 hover:text-gray-900 transition-all text-[13px] font-bold uppercase tracking-widest"
+             className="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-50 hover:text-gray-900 transition-all text-[11px] font-black uppercase tracking-widest italic"
            >
              <HelpCircle size={18} />
              SUPPORT
@@ -136,19 +148,19 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
            
            <button
              onClick={() => setShowLogoutModal(true)}
-             className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all text-[13px] font-bold uppercase tracking-widest"
+             className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all text-[11px] font-black uppercase tracking-widest italic"
            >
              <LogOut size={18} />
              LOGOUT
            </button>
         </div>
-      </div>
+      </aside>
 
       {/* LOGOUT MODAL */}
       {showLogoutModal && (
-         <div className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-md flex items-center justify-center p-8">
-            <div className="bg-white border border-gray-100 rounded-[3rem] p-16 max-w-md w-full shadow-2xl text-center space-y-10">
-               <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
+         <div className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-md flex items-center justify-center p-8 animate-in fade-in duration-500">
+            <div className="bg-white border border-gray-100 rounded-[3rem] p-16 max-w-md w-full shadow-2xl text-center space-y-10 animate-in zoom-in duration-500">
+               <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-red-900/10">
                   <LogOut size={40} />
                </div>
                <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">Are you logging out?</h3>
@@ -159,13 +171,13 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
                         localStorage.clear();
                         window.location.href = "/";
                     }}
-                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-xl shadow-red-900/20"
+                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-xl shadow-red-900/20 active:scale-95 transition-all"
                   >
                      Log out
                   </button>
                   <button 
                     onClick={() => setShowLogoutModal(false)}
-                    className="w-full py-5 bg-gray-50 text-gray-400 rounded-2xl font-black text-[12px] uppercase tracking-widest"
+                    className="w-full py-5 bg-gray-50 text-gray-400 rounded-2xl font-black text-[12px] uppercase tracking-widest active:scale-95 transition-all"
                   >
                      Cancel
                   </button>

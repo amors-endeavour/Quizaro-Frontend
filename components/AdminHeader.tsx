@@ -1,10 +1,11 @@
 "use client";
 
-import { Search, Settings, Filter, Plus, Bell, ChevronRight, LayoutGrid, List, BarChart3, LogOut, Home, User, Sun, Moon, Monitor, ArrowLeft, Terminal, Shield } from "lucide-react";
+import { Search, Settings, Filter, Plus, Bell, ChevronRight, LayoutGrid, List, BarChart3, LogOut, Home, User, Sun, Moon, Monitor, ArrowLeft, Terminal, Shield, Menu } from "lucide-react";
 import { getInitials } from "@/app/lib/utils";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import API from "@/app/lib/api";
+import { useSidebar } from "@/app/context/SidebarContext";
 
 interface AdminHeaderProps {
   title: string;
@@ -29,8 +30,9 @@ export default function AdminHeader({
   onNewBtnLabel,
   onSettings, 
   onFilter, 
-  onSearchChange 
+  onSearchChange
 }: AdminHeaderProps) {
+  const { open: openSidebar } = useSidebar();
   const router = useRouter();
   const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -124,6 +126,14 @@ export default function AdminHeader({
     <div className="bg-white border-b border-gray-100 flex flex-col sticky top-0 z-[110] transition-all duration-500 shadow-sm">
       <div className="px-8 h-20 flex items-center justify-between gap-12">
         
+        {/* MOBILE MENU TRIGGER */}
+        <button 
+          onClick={openSidebar}
+          className="md:hidden p-3 text-gray-500 hover:bg-gray-50 rounded-xl transition-all"
+        >
+           <Menu size={20} />
+        </button>
+
         {/* SEARCH BAR (Matching Image 1) */}
         <div className="relative flex-1 max-w-xl group">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={18} />
