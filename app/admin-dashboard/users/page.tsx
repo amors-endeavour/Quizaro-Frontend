@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import AdminHeader from "@/components/AdminHeader";
 import { 
   Users, 
@@ -8,7 +8,7 @@ import {
   UserMinus, 
   UserPlus, 
   Search, 
-  Filter, 
+  Filter as FilterIcon, 
   Plus, 
   Download, 
   Eye, 
@@ -21,7 +21,15 @@ import {
   Mail,
   Calendar,
   Clock,
-  ExternalLink
+  ExternalLink,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  ShieldCheck,
+  User,
+  X,
+  FileText,
+  ChevronDown
 } from "lucide-react";
 
 // MOCK DATA GENERATOR
@@ -53,6 +61,7 @@ const generateMockUsers = () => {
       email: `${userSeed.name.toLowerCase().replace(" ", ".")}@example.com`,
       status: status,
       joinedOn: joinedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      joinedTimestamp: joinedDate.getTime(),
       lastActive: `${Math.floor(Math.random() * 23) + 1} hours ago`,
       avatar: userSeed.avatar,
       color: ["bg-purple-100 text-purple-600", "bg-blue-100 text-blue-600", "bg-green-100 text-green-600", "bg-orange-100 text-orange-600"][Math.floor(Math.random() * 4)]
@@ -69,14 +78,71 @@ export default function UsersManagementPage() {
   const [isBulkLoading, setIsBulkLoading] = useState(false);
   const itemsPerPage = 10;
 
+  // VISIBILITY STATES
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [showExportDropdown, setShowExportDropdown] = useState(false);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  // FORM & FILTER STATES
+  const [filters, setFilters] = useState({
+    status: "All",
+    joinDate: "All Time",
+    activity: "All"
+  });
+  const [isExporting, setIsExporting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: "",
+    handle: "",
+    email: "",
+    role: "student"
+  });
+
+  const filterRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  // Outside Click Handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setShowFilterDropdown(false);
+      }
+      if (exportRef.current && !exportRef.current.contains(event.target as Node)) {
+        setShowExportDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
   // FILTERED DATA
   const filteredUsers = useMemo(() => {
-    return allUsers.filter(user => 
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.handle.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+    return allUsers.filter(user => {
+      const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           user.handle.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesStatus = filters.status === "All" || user.status === filters.status;
+      
+      let matchesDate = true;
+      const now = Date.now();
+      if (filters.joinDate === "Last 7 Days") {
+        matchesDate = (now - user.joinedTimestamp) <= 7 * 24 * 60 * 60 * 1000;
+      } else if (filters.joinDate === "Last 30 Days") {
+        matchesDate = (now - user.joinedTimestamp) <= 30 * 24 * 60 * 60 * 1000;
+      }
+
+      return matchesSearch && matchesStatus && matchesDate;
+    });
+  }, [searchQuery, filters]);
 
   const paginatedUsers = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
@@ -100,10 +166,45 @@ export default function UsersManagementPage() {
   const handleBulkAction = async (action: 'delete' | 'deactivate') => {
     setIsBulkLoading(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log(`${action} users:`, selectedUsers);
+    setToast({ message: `${selectedUsers.length} users ${action === 'delete' ? 'deleted' : 'deactivated'} successfully`, type: 'success' });
     setSelectedUsers([]);
     setIsBulkLoading(false);
   };
+
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setToast({ message: "New user provisioned successfully", type: "success" });
+    setShowAddUserModal(false);
+    setIsSubmitting(false);
+    setNewUser({ name: "", handle: "", email: "", role: "student" });
+  };
+
+  const handleExport = async (type: 'csv' | 'pdf') => {
+    setIsExporting(true);
+    setShowExportDropdown(false);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    if (type === 'csv') {
+      const headers = ["ID", "Name", "Email", "Status", "Joined On"];
+      const rows = filteredUsers.map(u => [u.id, u.name, u.email, u.status, u.joinedOn]);
+      const csvContent = [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Quizaro_Users_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    setToast({ message: `Users list exported as ${type.toUpperCase()}`, type: 'success' });
+    setIsExporting(false);
+  };
+
+  const activeFiltersCount = Object.values(filters).filter(v => v !== "All" && v !== "All Time").length;
 
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
@@ -153,20 +254,127 @@ export default function UsersManagementPage() {
                    className="w-full bg-white border border-gray-100 rounded-2xl pl-16 pr-8 py-4 text-sm focus:border-purple-600 outline-none transition-all placeholder:text-gray-300 font-bold italic"
                  />
               </div>
-              <button className="flex items-center gap-4 px-8 py-4 bg-white border border-gray-100 rounded-2xl text-[11px] font-black text-gray-500 uppercase tracking-widest italic shadow-sm hover:border-purple-200 transition-all">
-                 <Filter size={18} className="text-gray-400" /> Filter <ChevronRight size={14} className="rotate-90" />
-              </button>
-              <button className="flex items-center gap-4 px-8 py-4 bg-[#7C3AED] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest italic shadow-lg shadow-purple-900/20 active:scale-95 transition-all">
+              
+              {/* FILTER DROPDOWN */}
+              <div className="relative" ref={filterRef}>
+                 <button 
+                   onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                   className={`flex items-center gap-4 px-8 py-4 bg-white border border-gray-100 rounded-2xl text-[11px] font-black uppercase tracking-widest italic shadow-sm hover:border-purple-200 transition-all ${activeFiltersCount > 0 ? "text-purple-600 border-purple-100" : "text-gray-500"}`}
+                 >
+                    <FilterIcon size={18} className={activeFiltersCount > 0 ? "text-purple-600" : "text-gray-400"} /> 
+                    Filter 
+                    {activeFiltersCount > 0 && <span className="bg-purple-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[9px]">{activeFiltersCount}</span>}
+                    <ChevronDown size={14} className={`transition-transform duration-300 ${showFilterDropdown ? "rotate-180" : ""}`} />
+                 </button>
+
+                 {showFilterDropdown && (
+                   <div className="absolute top-[120%] left-0 w-80 bg-white border border-gray-100 rounded-[2.5rem] shadow-2xl p-8 z-[200] animate-in slide-in-from-top-4 duration-500">
+                      <div className="space-y-8">
+                         <div className="space-y-4">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">User Status</p>
+                            <div className="flex flex-wrap gap-3">
+                               {["All", "Active", "Inactive"].map(s => (
+                                 <button 
+                                   key={s}
+                                   onClick={() => setFilters({ ...filters, status: s })}
+                                   className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest italic transition-all ${filters.status === s ? "bg-purple-600 text-white" : "bg-gray-50 text-gray-400 hover:bg-gray-100"}`}
+                                 >
+                                    {s}
+                                 </button>
+                               ))}
+                            </div>
+                         </div>
+                         <div className="space-y-4">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Joined Date</p>
+                            <div className="flex flex-wrap gap-3">
+                               {["All Time", "Last 7 Days", "Last 30 Days"].map(d => (
+                                 <button 
+                                   key={d}
+                                   onClick={() => setFilters({ ...filters, joinDate: d })}
+                                   className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest italic transition-all ${filters.joinDate === d ? "bg-purple-600 text-white" : "bg-gray-50 text-gray-400 hover:bg-gray-100"}`}
+                                 >
+                                    {d}
+                                 </button>
+                               ))}
+                            </div>
+                         </div>
+                         <div className="pt-4 border-t border-gray-50 flex items-center justify-between">
+                            <button 
+                              onClick={() => setFilters({ status: "All", joinDate: "All Time", activity: "All" })}
+                              className="text-[10px] font-black text-red-500 uppercase tracking-widest italic"
+                            >
+                               Reset
+                            </button>
+                            <button 
+                              onClick={() => setShowFilterDropdown(false)}
+                              className="px-6 py-2 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest italic"
+                            >
+                               Apply
+                            </button>
+                         </div>
+                      </div>
+                   </div>
+                 )}
+              </div>
+
+              <button 
+                onClick={() => setShowAddUserModal(true)}
+                className="flex items-center gap-4 px-8 py-4 bg-[#7C3AED] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest italic shadow-lg shadow-purple-900/20 active:scale-95 transition-all whitespace-nowrap"
+              >
                  <Plus size={18} /> Add User
               </button>
            </div>
            
-           <div className="flex items-center gap-4 self-end lg:self-auto">
-              <button className="flex items-center gap-4 px-8 py-4 bg-white border border-gray-100 rounded-2xl text-[11px] font-black text-gray-500 uppercase tracking-widest italic shadow-sm hover:border-purple-200 transition-all">
-                 <Download size={18} /> Export <ChevronRight size={14} className="rotate-90" />
+           {/* EXPORT DROPDOWN */}
+           <div className="relative" ref={exportRef}>
+              <button 
+                onClick={() => setShowExportDropdown(!showExportDropdown)}
+                disabled={isExporting}
+                className="flex items-center gap-4 px-8 py-4 bg-white border border-gray-100 rounded-2xl text-[11px] font-black text-gray-500 uppercase tracking-widest italic shadow-sm hover:border-purple-200 transition-all border-purple-100/50"
+              >
+                 {isExporting ? <Loader2 size={18} className="animate-spin text-purple-600" /> : <Download size={18} className="text-purple-600" />}
+                 Export <ChevronDown size={14} className={`transition-transform duration-300 ${showExportDropdown ? "rotate-180" : ""}`} />
               </button>
+
+              {showExportDropdown && (
+                <div className="absolute top-[120%] right-0 w-56 bg-white border border-gray-100 rounded-2xl shadow-2xl p-4 z-[200] animate-in slide-in-from-top-4 duration-500">
+                   <div className="space-y-1">
+                      <button 
+                        onClick={() => handleExport('csv')}
+                        className="w-full flex items-center gap-4 px-4 py-3 text-[11px] font-black text-gray-500 hover:bg-purple-50 hover:text-purple-600 rounded-xl transition-all uppercase tracking-widest italic"
+                      >
+                         <FileText size={16} /> Export as CSV
+                      </button>
+                      <button 
+                        onClick={() => handleExport('pdf')}
+                        className="w-full flex items-center gap-4 px-4 py-3 text-[11px] font-black text-gray-500 hover:bg-purple-50 hover:text-purple-600 rounded-xl transition-all uppercase tracking-widest italic"
+                      >
+                         <ShieldCheck size={16} /> Export as PDF
+                      </button>
+                   </div>
+                </div>
+              )}
            </div>
         </div>
+
+        {/* ACTIVE FILTERS BADGES */}
+        {activeFiltersCount > 0 && (
+           <div className="flex items-center gap-4 flex-wrap animate-in fade-in slide-in-from-left-4 duration-500">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic mr-2">Active Filters:</p>
+              {filters.status !== "All" && (
+                <div className="bg-purple-50 text-purple-600 px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest italic flex items-center gap-3 border border-purple-100">
+                   Status: {filters.status}
+                   <button onClick={() => setFilters({ ...filters, status: "All" })}><X size={12} /></button>
+                </div>
+              )}
+              {filters.joinDate !== "All Time" && (
+                <div className="bg-purple-50 text-purple-600 px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest italic flex items-center gap-3 border border-purple-100">
+                   Joined: {filters.joinDate}
+                   <button onClick={() => setFilters({ ...filters, joinDate: "All Time" })}><X size={12} /></button>
+                </div>
+              )}
+           </div>
+        )}
 
         {/* DATA TABLE SECTION */}
         <div className="bg-white rounded-[4rem] border border-gray-100 shadow-sm overflow-hidden relative min-h-[600px] flex flex-col">
@@ -226,51 +434,59 @@ export default function UsersManagementPage() {
                     </tr>
                  </thead>
                  <tbody className="divide-y divide-gray-50">
-                    {paginatedUsers.map((user) => (
-                      <tr key={user.id} className={`group hover:bg-gray-50 transition-all duration-500 cursor-pointer ${selectedUsers.includes(user.id) ? "bg-purple-50/50" : ""}`}>
-                         <td className="px-12 py-8">
-                            <input 
-                              type="checkbox" 
-                              checked={selectedUsers.includes(user.id)}
-                              onChange={() => toggleSelectUser(user.id)}
-                              className="w-5 h-5 rounded-md border-gray-300 text-purple-600 focus:ring-purple-600 transition-all cursor-pointer"
-                            />
-                         </td>
-                         <td className="px-12 py-8">
-                            <div className="flex items-center gap-5">
-                               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm italic shadow-sm border border-black/5 ${user.color}`}>
-                                  {user.avatar}
-                               </div>
-                               <div className="space-y-1">
-                                  <p className="text-[15px] font-black text-gray-900 uppercase tracking-tighter italic leading-none">{user.name}</p>
-                                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{user.handle}</p>
-                               </div>
-                            </div>
-                         </td>
-                         <td className="px-12 py-8">
-                            <p className="text-[13px] font-bold text-gray-500 lowercase italic">{user.email}</p>
-                         </td>
-                         <td className="px-12 py-8">
-                            <span className={`px-5 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
-                              user.status === 'Active' ? "bg-green-50 text-green-600 border-green-100" : "bg-red-50 text-red-500 border-red-100"
-                            }`}>
-                               {user.status}
-                            </span>
-                         </td>
-                         <td className="px-12 py-8">
-                            <p className="text-[13px] font-black text-gray-500 uppercase italic leading-none">{user.joinedOn}</p>
-                         </td>
-                         <td className="px-12 py-8">
-                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest italic leading-none">{user.lastActive}</p>
-                         </td>
-                         <td className="px-12 py-8 text-right">
-                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                               <button className="p-3 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"><Eye size={18} /></button>
-                               <button className="p-3 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all"><MoreVertical size={18} /></button>
-                            </div>
+                    {filteredUsers.length === 0 ? (
+                      <tr>
+                         <td colSpan={7} className="px-12 py-32 text-center text-gray-400 font-black uppercase tracking-widest italic">
+                            No users found matching your criteria.
                          </td>
                       </tr>
-                    ))}
+                    ) : (
+                      paginatedUsers.map((user) => (
+                        <tr key={user.id} className={`group hover:bg-gray-50 transition-all duration-500 cursor-pointer ${selectedUsers.includes(user.id) ? "bg-purple-50/50" : ""}`}>
+                           <td className="px-12 py-8">
+                              <input 
+                                type="checkbox" 
+                                checked={selectedUsers.includes(user.id)}
+                                onChange={() => toggleSelectUser(user.id)}
+                                className="w-5 h-5 rounded-md border-gray-300 text-purple-600 focus:ring-purple-600 transition-all cursor-pointer"
+                              />
+                           </td>
+                           <td className="px-12 py-8">
+                              <div className="flex items-center gap-5">
+                                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm italic shadow-sm border border-black/5 ${user.color}`}>
+                                    {user.avatar}
+                                 </div>
+                                 <div className="space-y-1">
+                                    <p className="text-[15px] font-black text-gray-900 uppercase tracking-tighter italic leading-none">{user.name}</p>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{user.handle}</p>
+                                 </div>
+                              </div>
+                           </td>
+                           <td className="px-12 py-8">
+                              <p className="text-[13px] font-bold text-gray-500 lowercase italic">{user.email}</p>
+                           </td>
+                           <td className="px-12 py-8">
+                              <span className={`px-5 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                                user.status === 'Active' ? "bg-green-50 text-green-600 border-green-100" : "bg-red-50 text-red-500 border-red-100"
+                              }`}>
+                                 {user.status}
+                              </span>
+                           </td>
+                           <td className="px-12 py-8">
+                              <p className="text-[13px] font-black text-gray-500 uppercase italic leading-none">{user.joinedOn}</p>
+                           </td>
+                           <td className="px-12 py-8">
+                              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest italic leading-none">{user.lastActive}</p>
+                           </td>
+                           <td className="px-12 py-8 text-right">
+                              <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                 <button className="p-3 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"><Eye size={18} /></button>
+                                 <button className="p-3 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all"><MoreVertical size={18} /></button>
+                              </div>
+                           </td>
+                        </tr>
+                      ))
+                    )}
                  </tbody>
               </table>
            </div>
@@ -278,7 +494,7 @@ export default function UsersManagementPage() {
            {/* PAGINATION FOOTER */}
            <div className="p-12 border-t border-gray-50 flex items-center justify-between bg-gray-50/20">
               <p className="text-[11px] text-gray-400 font-black uppercase tracking-widest italic">
-                 Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users
+                 Showing {filteredUsers.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users
               </p>
               <div className="flex items-center gap-3">
                  <button 
@@ -289,7 +505,7 @@ export default function UsersManagementPage() {
                     <ChevronRight size={18} className="rotate-180" />
                  </button>
                  
-                 {[1, 2, 3, "...", 125].map((p, i) => (
+                 {[1, 2, 3, "...", Math.ceil(filteredUsers.length / itemsPerPage) || 1].map((p, i) => (
                    <button 
                      key={i}
                      onClick={() => typeof p === 'number' && setCurrentPage(p)}
@@ -302,7 +518,7 @@ export default function UsersManagementPage() {
                  ))}
 
                  <button 
-                   disabled={currentPage === 125}
+                   disabled={currentPage === Math.ceil(filteredUsers.length / itemsPerPage) || filteredUsers.length === 0}
                    onClick={() => setCurrentPage(p => p + 1)}
                    className="p-3 bg-white border border-gray-100 text-gray-400 hover:text-gray-900 rounded-xl transition-all disabled:opacity-30 shadow-sm"
                  >
@@ -313,6 +529,117 @@ export default function UsersManagementPage() {
         </div>
 
       </main>
+
+      {/* ADD USER MODAL */}
+      {showAddUserModal && (
+        <div className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-md flex items-center justify-center p-8 animate-in fade-in duration-500">
+           <div className="bg-white border border-gray-100 rounded-[3.5rem] p-16 max-w-2xl w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-500">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-[80px]" />
+              
+              <button 
+                onClick={() => setShowAddUserModal(false)}
+                className="absolute top-10 right-10 text-gray-300 hover:text-gray-900 transition-colors"
+              >
+                 <X size={24} />
+              </button>
+
+              <div className="space-y-12 relative z-10">
+                 <div className="flex items-center gap-8">
+                    <div className="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center shadow-sm">
+                       <UserPlus size={32} />
+                    </div>
+                    <div className="space-y-1">
+                       <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Provision New User</h3>
+                       <p className="text-[11px] text-gray-400 font-black uppercase tracking-[0.3em] italic">Add a new entity to the institutional registry</p>
+                    </div>
+                 </div>
+
+                 <form onSubmit={handleAddUser} className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-2">Full Name</label>
+                       <div className="relative">
+                          <User className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="Aarav Sharma"
+                            value={newUser.name}
+                            onChange={(e) => setNewUser({...newUser, name: e.target.value})}
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
+                          />
+                       </div>
+                    </div>
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-2">Username Handle</label>
+                       <div className="relative">
+                          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 font-bold italic">@</span>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="aarav.sharma"
+                            value={newUser.handle}
+                            onChange={(e) => setNewUser({...newUser, handle: e.target.value})}
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
+                          />
+                       </div>
+                    </div>
+                    <div className="md:col-span-2 space-y-4">
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-2">Email Address</label>
+                       <div className="relative">
+                          <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                          <input 
+                            type="email" 
+                            required
+                            placeholder="aarav@quizaro.com"
+                            value={newUser.email}
+                            onChange={(e) => setNewUser({...newUser, email: e.target.value})}
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
+                          />
+                       </div>
+                    </div>
+                    <div className="md:col-span-2 space-y-4">
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-2">Initial Institutional Role</label>
+                       <select 
+                         value={newUser.role}
+                         onChange={(e) => setNewUser({...newUser, role: e.target.value})}
+                         className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-8 py-4 text-sm font-black uppercase italic outline-none focus:border-purple-600 transition-all appearance-none cursor-pointer"
+                       >
+                          <option value="student">Student Registry</option>
+                          <option value="admin">Institutional Authority</option>
+                       </select>
+                    </div>
+
+                    <div className="md:col-span-2 pt-8 flex items-center gap-6">
+                       <button 
+                         type="button" 
+                         onClick={() => setShowAddUserModal(false)}
+                         className="flex-1 py-5 bg-gray-50 text-gray-400 rounded-2xl font-black text-[12px] uppercase tracking-widest italic hover:bg-gray-100 transition-all"
+                       >
+                          Cancel
+                       </button>
+                       <button 
+                         type="submit"
+                         disabled={isSubmitting || !newUser.name || !newUser.email.includes('@')}
+                         className="flex-[2] py-5 bg-purple-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest italic shadow-xl shadow-purple-900/20 hover:bg-purple-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4"
+                       >
+                          {isSubmitting ? <><Loader2 size={18} className="animate-spin" /> Provisioning...</> : <><ShieldCheck size={18} /> Authorize & Add User</>}
+                       </button>
+                    </div>
+                 </form>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* CUSTOM TOAST */}
+      {toast && (
+        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[2000] animate-in slide-in-from-bottom-8 duration-500">
+           <div className={`px-8 py-4 bg-white rounded-2xl shadow-2xl border flex items-center gap-4 ${toast.type === 'success' ? 'text-green-600 border-green-100' : 'text-red-500 border-red-100'}`}>
+              {toast.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+              <span className="text-[11px] font-black uppercase tracking-widest italic">{toast.message}</span>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
