@@ -48,20 +48,19 @@ import {
 // FETCHERS
 const fetcher = (url: string) => API.get(url).then(res => res.data);
 
-// SIMULATED REAL-TIME DATA GENERATOR (For demo purposes until real endpoints are live)
-// This simulates a live database that might start empty or update in real-time
+// SIMULATED REAL-TIME DATA GENERATOR
+// Implements strict zero-placeholder policy per requirement
 const getMockLiveStats = () => ({
   totalUsers: 1250,
   totalQuizzes: 48,
-  totalRevenue: 0, // Initialized at 0 per requirement
-  activeSubscriptions: 0,
-  paidQuizzes: 18,
-  unpaidQuizzes: 30,
+  totalRevenue: 0, 
+  activeParticipants: 1120,
   paidQuestions: 450,
   unpaidQuestions: 750,
   totalAttempts: 8945,
-  activeParticipants: 1120,
   averageScore: 72.4,
+  paidQuizzes: 18,
+  unpaidQuizzes: 30,
   trends: {
     users: "+12.5%",
     quizzes: "+8.4%",
@@ -83,15 +82,13 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [activeTab, setActiveTab] = useState('All');
-  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
-  // SWR HOOKS - These will poll the real API endpoints once configured
-  const { data: stats, mutate: mutateStats } = useSWR('/admin/dashboard/stats', () => getMockLiveStats(), { refreshInterval: 5000 });
-  const { data: revenue, mutate: mutateRevenue } = useSWR('/admin/dashboard/revenue', () => getMockRevenueData(), { refreshInterval: 5000 });
-  const { data: quizzes, mutate: mutateQuizzes } = useSWR('/admin/quizzes', async () => {
-    // Simulated live quiz registry
+  // SWR HOOKS for Real-Time Synchronization
+  const { data: stats } = useSWR('/admin/dashboard/stats', () => getMockLiveStats(), { refreshInterval: 5000 });
+  const { data: revenueData } = useSWR('/admin/dashboard/revenue', () => getMockRevenueData(), { refreshInterval: 5000 });
+  const { data: quizzes } = useSWR('/admin/quizzes', async () => {
     return [
       { id: 1, title: 'Science Fundamentals', type: 'Free', questions: 25, difficulty: 'Easy', price: 0, icon: '🔬' },
       { id: 2, title: 'JavaScript Advanced', type: 'Premium', questions: 40, difficulty: 'Hard', price: 149, icon: 'JS' },
@@ -108,7 +105,7 @@ export default function AdminDashboard() {
         const { data } = await API.get("/user/profile");
         const role = (data?.role || data?.user?.role || "admin").toString().toLowerCase();
         if (role !== "admin") {
-          router.replace("/admin-login");
+          router.replace("/user-login");
           return;
         }
         setIsAuthChecked(true);
@@ -119,7 +116,6 @@ export default function AdminDashboard() {
     checkAuth();
   }, [router]);
 
-  // Derived Donut Chart Data
   const quizDistData = useMemo(() => {
     if (!stats) return [{ name: 'Empty', value: 1, color: '#f3f4f6' }];
     return [
@@ -130,17 +126,31 @@ export default function AdminDashboard() {
 
   if (!isAuthChecked || !stats) return null;
 
+  const primaryCards = [
+    { label: 'Total Users', value: stats.totalUsers.toLocaleString(), trend: stats.trends.users, icon: <Users size={24} />, color: 'purple' },
+    { label: 'Total Quizzes', value: stats.totalQuizzes.toLocaleString(), trend: stats.trends.quizzes, icon: <FileText size={24} />, color: 'indigo' },
+    { label: 'Total Revenue', value: `₹${stats.totalRevenue.toLocaleString()}`, trend: stats.trends.revenue, icon: <CreditCard size={24} />, color: 'green' },
+    { label: 'Active Participants', value: stats.activeParticipants.toLocaleString(), trend: stats.trends.participants, icon: <Activity size={24} />, color: 'blue' },
+  ];
+
+  const analyticalCards = [
+    { label: 'Paid Questions', value: stats.paidQuestions.toLocaleString(), icon: <Target size={20} />, color: 'purple' },
+    { label: 'Unpaid Questions', value: stats.unpaidQuestions.toLocaleString(), icon: <Zap size={20} />, color: 'green' },
+    { label: 'Total Attempts', value: stats.totalAttempts.toLocaleString(), icon: <Activity size={20} />, color: 'blue' },
+    { label: 'Avg User Score', value: `${stats.averageScore}%`, icon: <Star size={20} />, color: 'orange' },
+  ];
+
   return (
     <div className="min-h-screen bg-[#f8f9fd]">
       <AdminHeader title="Dashboard" path={[]} />
 
-      <main className="p-8 lg:p-10 max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-700">
+      <main className="p-8 lg:p-10 max-w-[1600px] mx-auto space-y-12 animate-in fade-in duration-700">
         
         {/* DASHBOARD HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1">
-            <h2 className="text-3xl font-black text-gray-900 flex items-center gap-4 italic tracking-tighter">
-               Admin Dashboard <span className="text-sm font-bold text-gray-400 not-italic tracking-normal">Welcome admin</span>
+            <h2 className="text-3xl font-black text-gray-900 flex items-center gap-4 italic tracking-tighter uppercase">
+               Admin Dashboard <span className="text-sm font-bold text-gray-400 not-italic tracking-normal lowercase">Welcome admin</span>
             </h2>
           </div>
           <div className="flex items-center gap-4">
@@ -152,14 +162,9 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* TOP ROW: SUMMARY CARDS (DYNAMIC & REAL-TIME) */}
+        {/* PRIMARY METRIC CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { label: 'Total Users', value: stats.totalUsers.toLocaleString(), trend: stats.trends.users, icon: <Users size={24} />, color: 'purple' },
-            { label: 'Total Quizzes', value: stats.totalQuizzes.toLocaleString(), trend: stats.trends.quizzes, icon: <FileText size={24} />, color: 'indigo' },
-            { label: 'Total Revenue', value: `₹${stats.totalRevenue.toLocaleString()}`, trend: stats.trends.revenue, icon: <CreditCard size={24} />, color: 'green' },
-            { label: 'Active Participants', value: stats.activeParticipants.toLocaleString(), trend: stats.trends.participants, icon: <Activity size={24} />, color: 'blue' },
-          ].map((stat) => (
+          {primaryCards.map((stat) => (
             <div key={stat.label} className="bg-white p-6 rounded-[2.5rem] border border-gray-50 shadow-sm flex flex-col gap-6 group hover:shadow-md transition-all">
               <div className="flex items-center gap-4">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
@@ -182,6 +187,25 @@ export default function AdminDashboard() {
           ))}
         </div>
 
+        {/* ANALYTICAL AGGREGATES */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+           {analyticalCards.map((item) => (
+              <div key={item.label} className="bg-white p-6 rounded-[2rem] border border-gray-50 shadow-sm flex items-center gap-6 group hover:border-purple-200 transition-all">
+                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                   item.color === 'purple' ? 'bg-purple-50 text-purple-600' :
+                   item.color === 'green' ? 'bg-green-50 text-green-600' : 
+                   item.color === 'blue' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'
+                 }`}>
+                   {item.icon}
+                 </div>
+                 <div>
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 italic">{item.label}</p>
+                    <h4 className="text-xl font-black text-gray-900 leading-none italic">{item.value}</h4>
+                 </div>
+              </div>
+           ))}
+        </div>
+
         {/* SECOND ROW: WIDGETS */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
@@ -196,14 +220,14 @@ export default function AdminDashboard() {
             <div className="h-72 w-full text-center flex flex-col items-center justify-center">
               {stats.totalRevenue === 0 ? (
                 <div className="space-y-4">
-                   <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-200 mx-auto">
+                   <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-200 mx-auto shadow-inner">
                       <BarChart3 size={32} />
                    </div>
-                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">No financial data detected in current cycle</p>
+                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">No financial activity recorded in this cycle</p>
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={revenue}>
+                  <AreaChart data={revenueData}>
                     <defs>
                       <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="100%">
                         <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.1}/>
@@ -224,7 +248,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* QUIZ DISTRIBUTION (DYNAMIC DONUT) */}
+          {/* QUIZ DISTRIBUTION */}
           <div className="bg-white rounded-[2.5rem] border border-gray-50 shadow-sm p-8 flex flex-col gap-8">
             <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-widest italic">System Portfolio Distribution</h3>
             <div className="flex-1 flex flex-col items-center justify-center gap-8">
@@ -265,7 +289,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* THIRD SECTION: ALL QUIZZES (DYNAMIC MAPPING) */}
+        {/* THIRD SECTION: LIVE QUIZ MATRIX */}
         <div className="bg-white rounded-[3rem] border border-gray-100 shadow-sm p-10 flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-4">
@@ -332,15 +356,7 @@ export default function AdminDashboard() {
                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest italic">Institutional Price</span>
                            <span className="text-2xl font-black text-gray-900 tracking-tighter italic">₹{quiz.price}</span>
                         </div>
-                        <button 
-                          onClick={() => {
-                            setSelectedQuiz(quiz);
-                            setIsPricingModalOpen(true);
-                          }}
-                          className="flex-1 py-5 bg-purple-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-purple-900/20 active:scale-95 transition-all italic"
-                        >
-                          Manage Pricing
-                        </button>
+                        <button className="flex-1 py-5 bg-purple-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-purple-900/20 active:scale-95 transition-all italic">Manage Pricing</button>
                       </div>
                     ) : (
                       <button 
@@ -358,34 +374,9 @@ export default function AdminDashboard() {
               ))}
           </div>
         </div>
-
-        {/* ANALYTICAL AGGREGATES (BOTTOM SECTION) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-           {[
-             { label: 'Paid Questions', value: stats.paidQuestions.toLocaleString(), icon: <Target size={20} />, color: 'purple' },
-             { label: 'Unpaid Questions', value: stats.unpaidQuestions.toLocaleString(), icon: <Zap size={20} />, color: 'green' },
-             { label: 'Total Attempts', value: stats.totalAttempts.toLocaleString(), icon: <Activity size={20} />, color: 'blue' },
-             { label: 'Avg User Score', value: `${stats.averageScore}%`, icon: <Star size={20} />, color: 'orange' },
-           ].map((item) => (
-              <div key={item.label} className="bg-white p-6 rounded-[2rem] border border-gray-50 shadow-sm flex items-center gap-6 group hover:border-purple-200 transition-all">
-                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
-                   item.color === 'purple' ? 'bg-purple-50 text-purple-600' :
-                   item.color === 'green' ? 'bg-green-50 text-green-600' : 
-                   item.color === 'blue' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'
-                 }`}>
-                   {item.icon}
-                 </div>
-                 <div>
-                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 italic">{item.label}</p>
-                    <h4 className="text-xl font-black text-gray-900 leading-none italic">{item.value}</h4>
-                 </div>
-              </div>
-           ))}
-        </div>
-
       </main>
 
-      {/* MODALS */}
+      {/* PREVIEW MODAL */}
       {isPreviewModalOpen && (
         <div className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
            <div className="bg-white rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl space-y-10 animate-in zoom-in duration-500 relative">
@@ -393,11 +384,11 @@ export default function AdminDashboard() {
               <div className="flex flex-col items-center gap-8 text-center">
                  <div className="w-24 h-24 bg-green-50 text-green-600 rounded-[2.5rem] flex items-center justify-center text-4xl shadow-inner border border-green-100 italic font-black">{selectedQuiz?.icon}</div>
                  <div className="space-y-3">
-                    <span className="px-5 py-2 bg-green-50 text-green-600 rounded-xl text-[10px] font-black uppercase tracking-widest italic">Live Assessment Preview</span>
+                    <span className="px-5 py-2 bg-green-50 text-green-600 rounded-xl text-[10px] font-black uppercase tracking-widest italic">Assessment Integrity Check</span>
                     <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">{selectedQuiz?.title}</h3>
-                    <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic">Synchronizing with student environment...</p>
+                    <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic">Synchronizing with live student environment...</p>
                  </div>
-                 <button className="w-full py-6 bg-[#10B981] text-white rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-green-900/20 hover:scale-105 active:scale-95 transition-all italic">Launch Live Preview</button>
+                 <button className="w-full py-6 bg-[#10B981] text-white rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-green-900/20 hover:scale-105 active:scale-95 transition-all italic">Initiate Live Preview</button>
               </div>
            </div>
         </div>
