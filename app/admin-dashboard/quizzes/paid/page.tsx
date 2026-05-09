@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
 import { 
   Plus, 
@@ -15,10 +16,15 @@ import {
   X, 
   Upload, 
   CheckCircle2, 
-  AlertCircle 
+  AlertCircle,
+  Pencil,
+  BarChart,
+  FilePlus,
+  ArrowRight
 } from "lucide-react";
 
 export default function PaidQuizzes() {
+  const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isAutoModalOpen, setIsAutoModalOpen] = useState(false);
   const [isIngesting, setIsIngesting] = useState(false);
@@ -26,13 +32,31 @@ export default function PaidQuizzes() {
   const [seriesDescription, setSeriesDescription] = useState("");
   const [papers, setPapers] = useState([{ id: 1, name: "", price: "" }]);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedSeries, setSelectedSeries] = useState<any>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
   const formRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [seriesList, setSeriesList] = useState([
     { id: 1, name: "JEE Main 2025", description: "Engineering entrance exam series", papers: ["Paper 1", "Paper 2", "Paper 3"], created: "15 Jan 2025", total: 5 },
     { id: 2, name: "NEET UG 2025", description: "Medical entrance exam series", papers: ["Paper 1", "Paper 2"], created: "10 Jan 2025", total: 4 },
     { id: 3, name: "UPSC Prelims 2025", description: "Civil Services preliminary exam", papers: ["Paper 1", "Paper 2"], created: "05 Jan 2025", total: 3 },
   ]);
+
+  // Handle outside click for dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (toast) {
@@ -70,7 +94,6 @@ export default function PaidQuizzes() {
 
   const handleStartIngestion = async () => {
     setIsIngesting(true);
-    // Simulate AI generation pipeline
     await new Promise(resolve => setTimeout(resolve, 3000));
     setIsIngesting(false);
     setIsAutoModalOpen(false);
@@ -78,12 +101,10 @@ export default function PaidQuizzes() {
   };
 
   const handleCreateSeriesSubmit = async () => {
-    // Validation
     if (!seriesName.trim()) {
       showToast("Please enter a Series Name.", 'error');
       return;
     }
-    
     const validPapers = papers.filter(p => p.name.trim() !== "");
     if (validPapers.length === 0) {
       showToast("At least one paper with a name is required.", 'error');
@@ -91,9 +112,7 @@ export default function PaidQuizzes() {
     }
 
     try {
-      // Simulate POST request
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
       const newSeries = {
         id: Date.now(),
         name: seriesName,
@@ -114,6 +133,37 @@ export default function PaidQuizzes() {
       showToast("Failed to create series. Please try again.", 'error');
     }
   };
+
+  const handleDeleteSeries = async () => {
+    if (!selectedSeries) return;
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setSeriesList(prev => prev.filter(s => s.id !== selectedSeries.id));
+      setIsDeleteModalOpen(false);
+      setSelectedSeries(null);
+      showToast("Series deleted successfully.", 'success');
+    } catch (error) {
+      showToast("Failed to delete series.", 'error');
+    }
+  };
+
+  const handleUpdateSeries = async () => {
+    if (!selectedSeries) return;
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setSeriesList(prev => prev.map(s => s.id === selectedSeries.id ? selectedSeries : s));
+      setIsEditModalOpen(false);
+      setSelectedSeries(null);
+      showToast("Series updated successfully.", 'success');
+    } catch (error) {
+      showToast("Failed to update series.", 'error');
+    }
+  };
+
+  const filteredSeries = seriesList.filter(s => 
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
@@ -146,7 +196,7 @@ export default function PaidQuizzes() {
            </div>
         </div>
 
-        {/* CREATE SERIES FORM (Toggle View) */}
+        {/* CREATE SERIES FORM */}
         {isFormOpen && (
           <section ref={formRef} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-10 space-y-10 animate-in slide-in-from-top-4 duration-500">
             <div className="flex items-center justify-between">
@@ -180,7 +230,6 @@ export default function PaidQuizzes() {
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight italic">Add Papers to Series</h4>
                 </div>
-
                 <div className="space-y-4">
                   {papers.map((paper, index) => (
                     <div key={paper.id} className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
@@ -211,7 +260,6 @@ export default function PaidQuizzes() {
                       </button>
                     </div>
                   ))}
-                  
                   <button 
                     onClick={addPaper}
                     className="px-6 py-4 border-2 border-dashed border-gray-200 rounded-2xl text-[11px] font-black text-purple-600 uppercase tracking-widest hover:border-purple-200 hover:bg-purple-50/30 transition-all flex items-center gap-3 italic"
@@ -243,12 +291,14 @@ export default function PaidQuizzes() {
         <section className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-10 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic">Your Paid Quiz Series</h3>
-            <div className="relative w-72">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            <div className="relative w-72 group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-600 transition-colors" size={16} />
               <input 
                 type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search series..." 
-                className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-12 pr-4 py-3 text-[12px] focus:border-purple-600 outline-none transition-all"
+                className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-12 pr-4 py-3 text-[12px] focus:border-purple-600 focus:bg-white outline-none transition-all placeholder:text-gray-300 font-bold"
               />
             </div>
           </div>
@@ -265,11 +315,11 @@ export default function PaidQuizzes() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {seriesList.map((series) => (
+                {filteredSeries.length > 0 ? filteredSeries.map((series) => (
                   <tr key={series.id} className="group hover:bg-gray-50 transition-all duration-500">
                     <td className="px-10 py-8">
                       <div className="flex items-center gap-6">
-                        <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center border border-purple-100 shadow-sm">
+                        <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center border border-purple-100 shadow-sm group-hover:bg-white transition-all">
                           <BookOpen size={20} />
                         </div>
                         <div className="space-y-1">
@@ -281,25 +331,158 @@ export default function PaidQuizzes() {
                     <td className="px-10 py-8">
                       <div className="flex items-center gap-2 flex-wrap max-w-md">
                         {series.papers.map((p, i) => (
-                          <span key={i} className="px-3 py-1 bg-purple-50 text-purple-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-purple-100">{p}</span>
+                          <span key={i} className="px-3 py-1 bg-purple-50 text-purple-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-purple-100 shadow-sm">
+                            {p}
+                          </span>
                         ))}
                       </div>
                     </td>
                     <td className="px-10 py-8 text-center font-black text-gray-900 italic text-sm">{series.total}</td>
                     <td className="px-10 py-8 text-[11px] font-black text-gray-500 uppercase tracking-widest italic">{series.created}</td>
-                    <td className="px-10 py-8 text-right">
+                    <td className="px-10 py-8 text-right relative">
                       <div className="flex items-center justify-end gap-3">
-                        <button className="px-6 py-2.5 bg-gray-50 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-purple-100">View</button>
-                        <button className="p-2.5 text-gray-300 hover:text-gray-900"><MoreVertical size={18} /></button>
+                        <button 
+                          onClick={() => router.push(`/admin-dashboard/quizzes/paid/details?id=${series.id}`)}
+                          className="px-6 py-2.5 bg-gray-50 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-purple-100 italic"
+                        >
+                          View
+                        </button>
+                        <div className="relative">
+                          <button 
+                            onClick={() => setActiveDropdown(activeDropdown === series.id ? null : series.id)}
+                            className={`p-2.5 rounded-xl transition-all ${activeDropdown === series.id ? "bg-gray-900 text-white" : "text-gray-300 hover:text-gray-900 hover:bg-gray-100"}`}
+                          >
+                            <MoreVertical size={18} />
+                          </button>
+                          
+                          {activeDropdown === series.id && (
+                            <div 
+                              ref={dropdownRef}
+                              className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-100 rounded-2xl shadow-2xl z-[100] p-3 animate-in fade-in slide-in-from-top-2 duration-300"
+                            >
+                               <button 
+                                 onClick={() => {
+                                   setSelectedSeries(series);
+                                   setIsEditModalOpen(true);
+                                   setActiveDropdown(null);
+                                 }}
+                                 className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-purple-50 hover:text-purple-600 rounded-xl transition-all italic"
+                               >
+                                  <Pencil size={14} /> Edit Series
+                               </button>
+                               <button 
+                                 onClick={() => router.push(`/admin-dashboard/quizzes/create-paper?seriesId=${series.id}`)}
+                                 className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-purple-50 hover:text-purple-600 rounded-xl transition-all italic"
+                               >
+                                  <FilePlus size={14} /> Manage Papers
+                               </button>
+                               <button 
+                                 onClick={() => router.push(`/admin-dashboard/analytics?seriesId=${series.id}`)}
+                                 className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-purple-50 hover:text-purple-600 rounded-xl transition-all italic"
+                               >
+                                  <BarChart size={14} /> Analytics
+                               </button>
+                               <div className="my-2 h-px bg-gray-50" />
+                               <button 
+                                 onClick={() => {
+                                   setSelectedSeries(series);
+                                   setIsDeleteModalOpen(true);
+                                   setActiveDropdown(null);
+                                 }}
+                                 className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-red-400 uppercase tracking-widest hover:bg-red-50 hover:text-red-600 rounded-xl transition-all italic"
+                               >
+                                  <Trash2 size={14} /> Delete Series
+                               </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td colSpan={5} className="px-10 py-20 text-center">
+                       <div className="flex flex-col items-center gap-4">
+                          <div className="w-16 h-16 bg-gray-50 rounded-3xl flex items-center justify-center text-gray-300">
+                             <Search size={32} />
+                          </div>
+                          <p className="text-sm font-black text-gray-900 uppercase tracking-widest italic">No series found matching "{searchQuery}"</p>
+                       </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </section>
       </main>
+
+      {/* EDIT MODAL */}
+      {isEditModalOpen && selectedSeries && (
+        <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
+           <div className="bg-white rounded-[3rem] p-12 max-w-lg w-full shadow-2xl space-y-10 animate-in zoom-in duration-500 relative">
+              <button onClick={() => setIsEditModalOpen(false)} className="absolute top-8 right-8 p-2 text-gray-300 hover:text-gray-900 transition-all"><X size={24} /></button>
+              <div className="space-y-2">
+                 <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Edit Quiz Series</h3>
+                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Update your assessment details</p>
+              </div>
+              <div className="space-y-6">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Series Name</label>
+                    <input 
+                      type="text" 
+                      value={selectedSeries.name} 
+                      onChange={(e) => setSelectedSeries({...selectedSeries, name: e.target.value})}
+                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all"
+                    />
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Description</label>
+                    <textarea 
+                      value={selectedSeries.description} 
+                      onChange={(e) => setSelectedSeries({...selectedSeries, description: e.target.value})}
+                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all min-h-[120px]"
+                    />
+                 </div>
+                 <button 
+                   onClick={handleUpdateSeries}
+                   className="w-full py-5 bg-[#7C3AED] text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all italic"
+                 >
+                    Save Changes
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {isDeleteModalOpen && selectedSeries && (
+        <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
+           <div className="bg-white rounded-[3.5rem] p-16 max-w-md w-full shadow-2xl text-center space-y-10 animate-in zoom-in duration-500">
+              <div className="w-24 h-24 bg-red-50 text-red-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-inner">
+                 <Trash2 size={44} />
+              </div>
+              <div className="space-y-3">
+                 <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Delete Series?</h3>
+                 <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic leading-relaxed">This will permanently remove <span className="text-gray-900 font-black">"{selectedSeries.name}"</span> and all its associated papers.</p>
+              </div>
+              <div className="flex flex-col gap-4">
+                 <button 
+                   onClick={handleDeleteSeries}
+                   className="w-full py-6 bg-red-600 text-white rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-2xl shadow-red-900/20 hover:scale-[1.02] active:scale-95 transition-all italic"
+                 >
+                    Confirm Delete
+                 </button>
+                 <button 
+                   onClick={() => setIsDeleteModalOpen(false)}
+                   className="w-full py-6 bg-gray-50 text-gray-400 rounded-3xl font-black text-[12px] uppercase tracking-widest hover:bg-gray-100 transition-all italic"
+                 >
+                    Cancel
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
 
       {/* AUTO-GENERATE MODAL */}
       {isAutoModalOpen && (
