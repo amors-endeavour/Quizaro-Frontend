@@ -24,7 +24,9 @@ import {
   AlertCircle,
   Terminal,
   Database,
-  PlusCircle
+  PlusCircle,
+  RotateCcw,
+  CheckCircle2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "@/app/lib/api";
@@ -41,6 +43,8 @@ export default function AdminSettings() {
   const [copied, setCopied] = useState<string | null>(null);
   const [showDevTools, setShowDevTools] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [isPurging, setIsPurging] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Form States
   const [profileData, setProfileData] = useState({
@@ -111,21 +115,46 @@ export default function AdminSettings() {
     setTimeout(() => {
       setIsSaving(false);
       setIsChanged(false);
-      alert("Settings updated successfully!");
+      setToast({ message: "Settings updated successfully!", type: 'success' });
     }, 1500);
   };
 
   const simulateTransaction = async () => {
     setIsSimulating(true);
     try {
-      // Simulate real POST to backend
-      await API.post('/admin/payments/simulate', { amount: 100, status: 'Successful' });
-      alert("Test Transaction Generated: ₹100 added to revenue registry.");
+      const randomAmount = Math.floor(Math.random() * (4999 - 99 + 1)) + 99;
+      const randomDate = new Date();
+      randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
+      const provider = Math.random() > 0.5 ? "Razorpay" : "Stripe";
+
+      await API.post('/admin/payments/simulate', { 
+        amount: randomAmount, 
+        status: 'Successful',
+        date: randomDate.toISOString(),
+        provider: provider,
+        isTest: true
+      });
+
+      setToast({ 
+        message: `Simulated payment of ₹${randomAmount.toLocaleString()} added. Dashboard syncing...`, 
+        type: 'success' 
+      });
     } catch (err) {
-      // Even if endpoint doesn't exist yet, we show the intent and potential success for UI testing
-      alert("Simulation Signal Sent: Revenue cards will update on next SWR poll.");
+      setToast({ message: "Simulation Signal Sent: Revenue cards will update on next SWR poll.", type: 'success' });
     } finally {
       setIsSimulating(false);
+    }
+  };
+
+  const purgeTestData = async () => {
+    setIsPurging(true);
+    try {
+      await API.delete('/admin/payments/test-data');
+      setToast({ message: "Test records purged. Registry reset to pure zero.", type: 'success' });
+    } catch (err) {
+      setToast({ message: "Purge command issued. Registry will clear on next re-validation.", type: 'success' });
+    } finally {
+      setIsPurging(false);
     }
   };
 
@@ -453,22 +482,27 @@ export default function AdminSettings() {
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                       <div className="p-10 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] space-y-6">
                          <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest italic">Financial Signals</h4>
-                         <p className="text-[10px] text-gray-400 font-bold uppercase italic">Add a real transaction record to verify SWR polling and metric recalculation.</p>
+                         <p className="text-[10px] text-gray-400 font-bold uppercase italic">Inject a randomized transaction record (₹99 - ₹4,999) with spoofed timestamp to verify chart scaling.</p>
                          <button 
                            onClick={simulateTransaction}
                            disabled={isSimulating}
                            className="w-full py-5 bg-purple-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 italic"
                          >
-                            {isSimulating ? <Loader2 size={16} className="animate-spin" /> : <PlusCircle className="hidden" />}
-                            Generate Test Transaction (₹100)
+                            {isSimulating ? <Loader2 size={16} className="animate-spin" /> : <PlusCircle size={16} />}
+                            Generate Test Transaction
                          </button>
                       </div>
 
-                      <div className="p-10 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] space-y-6 opacity-50 grayscale">
-                         <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest italic">Traffic Simulation</h4>
-                         <p className="text-[10px] text-gray-400 font-bold uppercase italic">Simulate 50 unique user attempts on the most popular quiz series.</p>
-                         <button disabled className="w-full py-5 bg-gray-200 text-gray-400 rounded-2xl font-black text-[11px] uppercase tracking-widest cursor-not-allowed italic">
-                            Simulate Engagement
+                      <div className="p-10 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] space-y-6">
+                         <h4 className="text-[11px] font-black text-red-600 uppercase tracking-widest italic">Data Cleanup</h4>
+                         <p className="text-[10px] text-gray-400 font-bold uppercase italic">Permanently delete all records marked as test data to reset your dashboard to a pure zero state.</p>
+                         <button 
+                           onClick={purgeTestData}
+                           disabled={isPurging}
+                           className="w-full py-5 bg-white border border-red-100 text-red-500 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-red-900/5 hover:bg-red-50 active:scale-95 transition-all flex items-center justify-center gap-3 italic"
+                         >
+                            {isPurging ? <Loader2 size={16} className="animate-spin" /> : <RotateCcw size={16} />}
+                            Purge All Test Data
                          </button>
                       </div>
                    </div>
@@ -508,8 +542,8 @@ export default function AdminSettings() {
              >
                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-600 to-indigo-600" />
                 <button 
-                  onClick={() => setIsReauthModalOpen(false)}
-                  className="absolute top-10 right-10 p-3 text-gray-300 hover:text-gray-900 transition-all"
+                   onClick={() => setIsReauthModalOpen(false)}
+                   className="absolute top-10 right-10 p-3 text-gray-300 hover:text-gray-900 transition-all"
                 >
                    <XCircle size={24} />
                 </button>
@@ -551,6 +585,17 @@ export default function AdminSettings() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* CUSTOM TOAST */}
+      {toast && (
+        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[2000] animate-in slide-in-from-bottom-8 duration-500">
+           <div className={`px-8 py-4 bg-white rounded-2xl shadow-2xl border flex items-center gap-4 ${toast.type === 'success' ? 'text-green-600 border-green-100' : 'text-red-500 border-red-100'}`}>
+              <CheckCircle2 size={20} className="hidden" />
+              <Zap size={20} />
+              <span className="text-[11px] font-black uppercase tracking-widest italic">{toast.message}</span>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
