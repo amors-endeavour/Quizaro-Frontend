@@ -83,14 +83,10 @@ export default function UsersManagementPage() {
   const exportRef = useRef<HTMLDivElement>(null);
 
   // REAL-TIME DATABASE SYNCHRONIZATION
-  const { data: usersData, error, mutate } = useSWR<UserRegistry[]>('/admin/users', async () => {
-    try {
-      return []; 
-    } catch (err) {
-      console.error("Failed to fetch users:", err);
-      return [];
-    }
-  }, { refreshInterval: 5000 });
+  const { data: usersData, error, mutate } = useSWR<UserRegistry[]>('/admin/users', fetcher, { 
+    refreshInterval: 5000,
+    fallbackData: [] // Zero-baseline policy
+  });
 
   const allUsers: UserRegistry[] = usersData || [];
 
@@ -129,13 +125,23 @@ export default function UsersManagementPage() {
     return {
       total: total.toLocaleString(),
       active: active.toLocaleString(),
-      inactive: inactive.toLocaleString(),
       newThisMonth: newThisMonth.toLocaleString(),
       activePercent: total > 0 ? Math.round((active / total) * 100) : 0,
-      inactivePercent: total > 0 ? Math.round((inactive / total) * 100) : 0,
       newPercent: total > 0 ? Math.round((newThisMonth / total) * 100) : 0
     };
   }, [allUsers]);
+
+  const handleDeleteUser = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+    
+    try {
+      await API.delete(`/admin/users/${id}`);
+      setToast({ message: "User record purged from registry.", type: 'success' });
+      mutate();
+    } catch (err) {
+      setToast({ message: "Failed to delete user.", type: "error" });
+    }
+  };
 
   // FILTERED DATA
   const filteredUsers = useMemo(() => {
@@ -197,8 +203,7 @@ export default function UsersManagementPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      // In real app: await API.post('/admin/users/add', newUser);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await API.post('/admin/users', newUser);
       setToast({ message: "New user provisioned successfully", type: "success" });
       setShowAddUserModal(false);
       setNewUser({ name: "", handle: "", email: "", role: "student" });
@@ -247,19 +252,17 @@ export default function UsersManagementPage() {
       <main className="p-10 lg:p-14 max-w-[1700px] mx-auto space-y-12 animate-in fade-in duration-700">
         
         {/* STATISTICS ROW (DYNAMIC) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
            {[
              { label: "Total Users", value: stats.total, sub: "All registered users", icon: <Users size={24} />, color: "purple" },
              { label: "Active Users", value: stats.active, sub: `${stats.activePercent}% of total users`, icon: <UserCheck size={24} />, color: "green", health: "text-green-600" },
-             { label: "Inactive Users", value: stats.inactive, sub: `${stats.inactivePercent}% of total users`, icon: <UserMinus size={24} />, color: "orange", health: "text-orange-500" },
              { label: "New Users (This Month)", value: stats.newThisMonth, sub: `${stats.newPercent}% of total users`, icon: <UserPlus size={24} />, color: "blue", health: "text-blue-600" },
            ].map((stat, idx) => (
              <div key={idx} className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm flex flex-col gap-8 group hover:shadow-md transition-all">
                 <div className="flex items-center justify-between">
                    <div className={`w-16 h-16 rounded-3xl flex items-center justify-center ${
                      stat.color === 'purple' ? 'bg-purple-50 text-purple-600' :
-                     stat.color === 'green' ? 'bg-green-50 text-green-600' :
-                     stat.color === 'orange' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'
+                     stat.color === 'green' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'
                    }`}>
                       {stat.icon}
                    </div>
@@ -461,14 +464,13 @@ export default function UsersManagementPage() {
                        <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Email</th>
                        <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Status</th>
                        <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Joined On</th>
-                       <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Last Active</th>
                        <th className="px-12 py-8 text-right text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Actions</th>
                     </tr>
                  </thead>
                  <tbody className="divide-y divide-gray-50">
                     {allUsers.length === 0 ? (
                        <tr>
-                          <td colSpan={7} className="px-12 py-32 text-center space-y-4">
+                          <td colSpan={6} className="px-12 py-32 text-center space-y-4">
                              <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
                                 <Users size={40} className="text-gray-200" />
                              </div>
@@ -478,7 +480,7 @@ export default function UsersManagementPage() {
                        </tr>
                     ) : filteredUsers.length === 0 ? (
                       <tr>
-                         <td colSpan={7} className="px-12 py-32 text-center text-gray-400 font-black uppercase tracking-widest italic">
+                         <td colSpan={6} className="px-12 py-32 text-center text-gray-400 font-black uppercase tracking-widest italic">
                             No users found matching your criteria.
                          </td>
                       </tr>
@@ -517,12 +519,14 @@ export default function UsersManagementPage() {
                            <td className="px-12 py-8">
                               <p className="text-[13px] font-black text-gray-500 uppercase italic leading-none">{user.joinedOn || new Date(user.createdAt).toLocaleDateString()}</p>
                            </td>
-                           <td className="px-12 py-8">
-                              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest italic leading-none">{user.lastActive || "Recently"}</p>
-                           </td>
                            <td className="px-12 py-8 text-right">
                               <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                 <button className="p-3 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"><Eye size={18} /></button>
+                                 <button 
+                                   onClick={() => handleDeleteUser(user.id)}
+                                   className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                 >
+                                    <Trash2 size={18} />
+                                 </button>
                                  <button className="p-3 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all"><MoreVertical size={18} /></button>
                               </div>
                            </td>
