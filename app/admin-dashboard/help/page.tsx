@@ -164,58 +164,127 @@ export default function AdminHelpPage() {
                  )}
               </div>
 
-              {/* REPORT A BUG SECTION */}
-              <div id="report-bug" className="bg-gray-900 rounded-[5rem] p-16 lg:p-24 relative overflow-hidden group shadow-2xl shadow-purple-900/20">
-                 <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-[#7C3AED]/10 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2" />
-                 
-                 <div className="flex flex-col lg:flex-row gap-20 relative z-10">
-                    <div className="flex-1 space-y-8">
-                       <div className="flex items-center gap-6">
-                          <div className="w-16 h-16 bg-white/5 border border-white/10 text-purple-400 rounded-3xl flex items-center justify-center"><Bug size={32} /></div>
-                          <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">Technical Feedback</h2>
-                       </div>
-                       <p className="text-gray-400 font-bold uppercase tracking-widest italic leading-relaxed text-sm">
-                          Detected a protocol anomaly or system instability? Report it directly to the technical team. Every submission is logged with a {"{Trace_ID}"} for registry integrity.
-                       </p>
-                       <div className="flex items-center gap-10 pt-8 border-t border-white/5">
-                          <div className="flex items-center gap-4">
-                             <Mail size={20} className="text-purple-400" />
-                             <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">sys-ops@quizaro.io</p>
-                          </div>
-                          <div className="flex items-center gap-4">
-                             <MessageSquare size={20} className="text-blue-400" />
-                             <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">#support-uplink</p>
-                          </div>
-                       </div>
-                    </div>
+              {/* HIDDEN REPORT A BUG SECTION (CONCEALED) */}
+              {typeof window !== 'undefined' && localStorage.getItem("advanced_debugging") === "true" && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  id="report-bug" 
+                  className="bg-gray-900 rounded-[5rem] p-16 lg:p-24 relative overflow-hidden group shadow-2xl shadow-purple-900/20"
+                >
+                   <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-[#7C3AED]/10 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2" />
+                   
+                   <div className="flex flex-col lg:flex-row gap-20 relative z-10">
+                      <div className="flex-1 space-y-8">
+                         <div className="flex items-center gap-6">
+                            <div className="w-16 h-16 bg-white/5 border border-white/10 text-purple-400 rounded-3xl flex items-center justify-center"><Bug size={32} /></div>
+                            <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">Technical Feedback</h2>
+                         </div>
+                         <p className="text-gray-400 font-bold uppercase tracking-widest italic leading-relaxed text-sm">
+                            Detected a protocol anomaly? Every submission is logged with a {"{Trace_ID}"} for registry integrity. Metadata (Admin, Browser, URL) is attached silently.
+                         </p>
+                         <div className="flex items-center gap-10 pt-8 border-t border-white/5">
+                            <div className="flex items-center gap-4 text-purple-400">
+                               <Info size={20} />
+                               <p className="text-[10px] font-black uppercase tracking-widest italic">Concealed Interface Active</p>
+                            </div>
+                         </div>
+                      </div>
 
-                    <div className="w-full lg:w-[500px] space-y-8 bg-white/5 p-12 rounded-[3.5rem] border border-white/10 backdrop-blur-3xl shadow-2xl">
-                       <div className="space-y-4">
-                          <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Issue Subject</label>
-                          <input 
-                            type="text" 
-                            placeholder="Brief protocol description..."
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:border-purple-500 transition-all text-sm italic"
-                            value={bugForm.subject}
-                            onChange={(e) => setBugForm({...bugForm, subject: e.target.value})}
-                          />
-                       </div>
-                       <div className="space-y-4">
-                          <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Detailed Logs</label>
-                          <textarea 
-                            rows={4}
-                            placeholder="Define the anomaly sequence..."
-                            className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-6 text-white font-bold outline-none focus:border-purple-500 transition-all text-sm italic resize-none"
-                            value={bugForm.description}
-                            onChange={(e) => setBugForm({...bugForm, description: e.target.value})}
-                          />
-                       </div>
-                       <button className="w-full py-6 bg-[#7C3AED] text-white rounded-2xl font-black text-[12px] uppercase tracking-widest italic shadow-xl shadow-purple-900/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4">
-                          Submit Protocol Report <Send size={18} />
-                       </button>
-                    </div>
-                 </div>
-              </div>
+                      <form 
+                        onSubmit={async (e) => {
+                           e.preventDefault();
+                           const lastReports = JSON.parse(localStorage.getItem('bug_reports_ts') || '[]');
+                           const now = Date.now();
+                           const hourAgo = now - 3600000;
+                           const validReports = lastReports.filter((ts: number) => ts > hourAgo);
+                           
+                           if (validReports.length >= 3) {
+                              alert("Rate Limit Exceeded: Max 3 reports per hour per session.");
+                              return;
+                           }
+
+                           try {
+                              const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/admin/report-bug`, {
+                                 method: 'POST',
+                                 headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                 },
+                                 body: JSON.stringify({
+                                    subject: bugForm.subject || "UI Glitch",
+                                    description: bugForm.description,
+                                    urgency: (e.target as any).urgency.value || "Medium",
+                                    metadata: {
+                                       browser: navigator.userAgent,
+                                       url: window.location.href,
+                                       admin: localStorage.getItem('userName') || "Unknown"
+                                    }
+                                 })
+                              });
+                              const data = await res.json();
+                              if (data.success) {
+                                 localStorage.setItem('bug_reports_ts', JSON.stringify([...validReports, now]));
+                                 alert(data.message);
+                                 setBugForm({ subject: "", description: "" });
+                                 localStorage.setItem('advanced_debugging', 'false'); // Auto-hide
+                                 window.location.reload();
+                              }
+                           } catch (err) {
+                              console.error(err);
+                           }
+                        }}
+                        className="w-full lg:w-[500px] space-y-8 bg-white/5 p-12 rounded-[3.5rem] border border-white/10 backdrop-blur-3xl shadow-2xl"
+                      >
+                         <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                               <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Subject</label>
+                               <select 
+                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:border-purple-500 transition-all text-sm italic appearance-none"
+                                 value={bugForm.subject}
+                                 onChange={(e) => setBugForm({...bugForm, subject: e.target.value})}
+                               >
+                                  <option value="Database Sync" className="bg-gray-900">Database Sync</option>
+                                  <option value="UI Glitch" className="bg-gray-900">UI Glitch</option>
+                                  <option value="User Deletion" className="bg-gray-900">User Deletion</option>
+                                  <option value="Payment Error" className="bg-gray-900">Payment Error</option>
+                               </select>
+                            </div>
+                            <div className="space-y-4">
+                               <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Urgency</label>
+                               <select 
+                                 name="urgency"
+                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:border-purple-500 transition-all text-sm italic appearance-none"
+                               >
+                                  <option value="Low" className="bg-gray-900">Low</option>
+                                  <option value="Medium" className="bg-gray-900" selected>Medium</option>
+                                  <option value="Critical" className="bg-gray-900">Critical</option>
+                               </select>
+                            </div>
+                         </div>
+                         <div className="space-y-4">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Detailed Logs</label>
+                            <textarea 
+                              rows={4}
+                              required
+                              placeholder="Define the anomaly sequence..."
+                              className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-6 text-white font-bold outline-none focus:border-purple-500 transition-all text-sm italic resize-none"
+                              value={bugForm.description}
+                              onChange={(e) => setBugForm({...bugForm, description: e.target.value})}
+                            />
+                         </div>
+                         <button 
+                           type="submit"
+                           disabled={!bugForm.description}
+                           className="w-full py-6 bg-[#7C3AED] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-black text-[12px] uppercase tracking-widest italic shadow-xl shadow-purple-900/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4"
+                         >
+                            Submit Protocol Report <Send size={18} />
+                         </button>
+                      </form>
+                   </div>
+                </motion.div>
+              )}
 
               {/* FOOTER ACTIONS */}
               <div className="flex flex-col md:flex-row items-center justify-between gap-12 pt-16 border-t border-gray-200">
