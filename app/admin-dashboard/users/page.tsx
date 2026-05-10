@@ -552,7 +552,7 @@ export default function UsersManagementPage() {
                      key={i}
                      onClick={() => typeof p === 'number' && setCurrentPage(p)}
                      className={`w-11 h-11 rounded-xl text-[11px] font-black transition-all ${
-                       currentPage === p ? "bg-purple-600 text-white shadow-xl shadow-purple-900/20" : "bg-white border border-gray-100 text-gray-400 hover:border-purple-200"
+                       (typeof p === 'number' && currentPage === p) ? "bg-purple-600 text-white shadow-xl shadow-purple-900/20" : "bg-white border border-gray-100 text-gray-400 hover:border-purple-200"
                      } ${typeof p !== 'number' ? 'cursor-default' : ''} shadow-sm`}
                    >
                       {p}

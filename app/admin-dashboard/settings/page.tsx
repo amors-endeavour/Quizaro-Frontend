@@ -29,6 +29,7 @@ export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState("Profile");
   const [isReauthenticated, setIsReauthenticated] = useState(false);
   const [isReauthModalOpen, setIsReauthModalOpen] = useState(false);
+  const [intendedTab, setIntendedTab] = useState<string | null>(null);
   const [reauthPassword, setReauthPassword] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
@@ -66,6 +67,7 @@ export default function AdminSettings() {
 
   const handleTabChange = (tab: string) => {
     if ((tab === "API Keys" || tab === "Payment Gateway") && !isReauthenticated) {
+      setIntendedTab(tab);
       setIsReauthModalOpen(true);
       return;
     }
@@ -79,8 +81,9 @@ export default function AdminSettings() {
       setIsReauthModalOpen(false);
       setReauthPassword("");
       // Proceed to the tab that was requested
-      if (activeTab === "Profile") {
-         // Logic to determine which tab was clicked before modal
+      if (intendedTab) {
+        setActiveTab(intendedTab);
+        setIntendedTab(null);
       }
     } else {
       alert("Invalid admin password");
