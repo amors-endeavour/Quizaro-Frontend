@@ -23,7 +23,8 @@ import {
   XCircle,
   AlertCircle,
   Terminal,
-  Database
+  Database,
+  PlusCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "@/app/lib/api";
