@@ -27,37 +27,29 @@ import {
   Pie
 } from "recharts";
 
-// MOCK DATA GENERATION FOR LAST 30 DAYS
-const generateMockData = () => {
-  const data = [];
-  const startDay = 1;
-  const days = ["May 1", "May 8", "May 15", "May 22", "May 29"];
-  
-  for (let i = 1; i <= 31; i++) {
-    data.push({
-      name: i % 7 === 1 ? `May ${i}` : "",
-      date: `May ${i}`,
-      users: 500 + (i * 25) + Math.floor(Math.random() * 100),
-      completions: 40 + Math.floor(Math.random() * 140),
-    });
-  }
-  return data;
-};
+import useSWR from "swr";
+import API from "@/app/lib/api";
 
-const categoryData = [
-  { name: "Personality", value: 42, color: "#7C3AED" },
-  { name: "Career", value: 25, color: "#60A5FA" },
-  { name: "Relationship", value: 18, color: "#C084FC" },
-  { name: "Health", value: 15, color: "#F472B6" },
-];
-
-const userBreakdownData = [
-  { name: "Free Users", value: 68, color: "#7C3AED" },
-  { name: "Paid Users", value: 32, color: "#60A5FA" },
-];
+const fetcher = (url: string) => API.get(url).then(res => res.data);
 
 export default function AnalyticsPage() {
-  const chartData = useMemo(() => generateMockData(), []);
+  // REAL-TIME DATABASE SYNCHRONIZATION
+  const { data: stats } = useSWR('/admin/dashboard/stats', fetcher, { refreshInterval: 5000 });
+  const { data: chartData = [] } = useSWR('/admin/analytics/growth', fetcher, { 
+    refreshInterval: 5000,
+    fallbackData: [] // Zero-baseline policy
+  });
+  const { data: distribution } = useSWR('/admin/analytics/distribution', fetcher, { refreshInterval: 5000 });
+
+  const summaryStats = useMemo(() => [
+    { label: "Total Users", value: stats?.totalUsers?.toLocaleString() || "0", color: "purple" },
+    { label: "Total Quizzes", value: stats?.totalQuizzes?.toLocaleString() || "0", color: "blue" },
+    { label: "Total Revenue", value: `₹${stats?.totalRevenue?.toLocaleString() || "0"}`, color: "green" },
+    { label: "Active Participants", value: stats?.activeParticipants?.toLocaleString() || "0", color: "orange" },
+  ], [stats]);
+
+  const categoryData = useMemo(() => distribution?.categories || [], [distribution]);
+  const userBreakdownData = useMemo(() => distribution?.userBreakdown || [], [distribution]);
 
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
@@ -73,21 +65,13 @@ export default function AnalyticsPage() {
 
         {/* TOP ROW: SUMMARY CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {[
-            { label: "Total Users", value: "1,248", trend: "12.5%", isUp: true },
-            { label: "Total Quizzes", value: "342", trend: "8.7%", isUp: true },
-            { label: "Total Revenue", value: "$8,945", trend: "15.3%", isUp: true },
-            { label: "Conversion Rate", value: "4.68%", trend: "2.1%", isUp: true },
-          ].map((stat) => (
-            <div key={stat.label} className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+          {summaryStats.map((stat) => (
+            <div key={stat.label} className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6 group hover:border-purple-200 transition-all">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none italic">{stat.label}</p>
-              <h3 className="text-3xl font-black text-gray-900 leading-none">{stat.value}</h3>
-              <div className="flex items-center gap-2">
-                <div className={`flex items-center gap-1 text-[11px] font-black ${stat.isUp ? "text-green-500" : "text-red-500"}`}>
-                   {stat.isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-                   {stat.isUp ? "↑" : "↓"} {stat.trend}
-                </div>
-                <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest italic">from last month</span>
+              <h3 className="text-3xl font-black text-gray-900 leading-none italic">{stat.value}</h3>
+              <div className="flex items-center gap-2 pt-2 border-t border-gray-50">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" />
+                <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest italic">Live Syncing</span>
               </div>
             </div>
           ))}
@@ -178,81 +162,99 @@ export default function AnalyticsPage() {
            {/* TOP QUIZ CATEGORIES */}
            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-10 space-y-10">
               <h4 className="text-lg font-black text-gray-900 uppercase tracking-tighter italic">Top Quiz Categories</h4>
-              <div className="flex flex-col md:flex-row items-center justify-center gap-12">
-                 <div className="relative w-48 h-48">
-                    <ResponsiveContainer width="100%" height="100%">
-                       <PieChart>
-                          <Pie
-                            data={categoryData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
-                            paddingAngle={8}
-                            dataKey="value"
-                          >
-                            {categoryData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                       </PieChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                       <PieChartIcon className="text-gray-200" size={32} />
-                    </div>
-                 </div>
-                 <div className="flex-1 space-y-5 w-full">
-                    {categoryData.map((item) => (
-                       <div key={item.name} className="flex items-center justify-between group">
-                          <div className="flex items-center gap-3">
-                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                             <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest italic">{item.name}</span>
-                          </div>
-                          <span className="text-[11px] font-black text-gray-900 italic">{item.value}%</span>
-                       </div>
-                    ))}
-                 </div>
-              </div>
+              {categoryData.length === 0 ? (
+                <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
+                   <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-200 mx-auto shadow-inner">
+                      <PieChartIcon size={32} />
+                   </div>
+                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">No category data identified</p>
+                </div>
+              ) : (
+                <div className="flex flex-col md:flex-row items-center justify-center gap-12">
+                   <div className="relative w-48 h-48">
+                      <ResponsiveContainer width="100%" height="100%">
+                         <PieChart>
+                            <Pie
+                              data={categoryData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={60}
+                              outerRadius={80}
+                              paddingAngle={8}
+                              dataKey="value"
+                            >
+                              {categoryData.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                         </PieChart>
+                      </ResponsiveContainer>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                         <PieChartIcon className="text-gray-200" size={32} />
+                      </div>
+                   </div>
+                   <div className="flex-1 space-y-5 w-full">
+                      {categoryData.map((item: any) => (
+                         <div key={item.name} className="flex items-center justify-between group">
+                            <div className="flex items-center gap-3">
+                               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                               <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest italic">{item.name}</span>
+                            </div>
+                            <span className="text-[11px] font-black text-gray-900 italic">{item.value}%</span>
+                         </div>
+                      ))}
+                   </div>
+                </div>
+              )}
            </div>
 
            {/* USER BREAKDOWN */}
            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-10 space-y-10">
               <h4 className="text-lg font-black text-gray-900 uppercase tracking-tighter italic">User Breakdown</h4>
-              <div className="flex flex-col md:flex-row items-center justify-center gap-12">
-                 <div className="relative w-48 h-48">
-                    <ResponsiveContainer width="100%" height="100%">
-                       <PieChart>
-                          <Pie
-                            data={userBreakdownData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
-                            paddingAngle={8}
-                            dataKey="value"
-                          >
-                            {userBreakdownData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                       </PieChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                       <Users className="text-gray-200" size={32} />
-                    </div>
-                 </div>
-                 <div className="flex-1 space-y-5 w-full">
-                    {userBreakdownData.map((item) => (
-                       <div key={item.name} className="flex items-center justify-between group">
-                          <div className="flex items-center gap-3">
-                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                             <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest italic">{item.name}</span>
-                          </div>
-                          <span className="text-[11px] font-black text-gray-900 italic">{item.value}%</span>
-                       </div>
-                    ))}
-                 </div>
-              </div>
+              {userBreakdownData.length === 0 ? (
+                <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
+                   <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-200 mx-auto shadow-inner">
+                      <Users size={32} />
+                   </div>
+                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">No user data identified</p>
+                </div>
+              ) : (
+                <div className="flex flex-col md:flex-row items-center justify-center gap-12">
+                   <div className="relative w-48 h-48">
+                      <ResponsiveContainer width="100%" height="100%">
+                         <PieChart>
+                            <Pie
+                              data={userBreakdownData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={60}
+                              outerRadius={80}
+                              paddingAngle={8}
+                              dataKey="value"
+                            >
+                              {userBreakdownData.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                         </PieChart>
+                      </ResponsiveContainer>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                         <Users className="text-gray-200" size={32} />
+                      </div>
+                   </div>
+                   <div className="flex-1 space-y-5 w-full">
+                      {userBreakdownData.map((item: any) => (
+                         <div key={item.name} className="flex items-center justify-between group">
+                            <div className="flex items-center gap-3">
+                               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                               <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest italic">{item.name}</span>
+                            </div>
+                            <span className="text-[11px] font-black text-gray-900 italic">{item.value}%</span>
+                         </div>
+                      ))}
+                   </div>
+                </div>
+              )}
            </div>
 
         </div>

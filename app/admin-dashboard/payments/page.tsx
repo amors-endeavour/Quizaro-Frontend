@@ -20,48 +20,25 @@ import {
   Inbox
 } from "lucide-react";
 
-// MOCK DATA GENERATOR FOR LAST 30 DAYS
-const generateMockTransactions = () => {
-  const statuses = ["Successful", "Pending", "Failed", "Refunded"];
-  const plans = ["Premium Plan", "Basic Plan", "Enterprise Plan"];
-  const users = [
-    { name: "Aarav Mehta", email: "aarav@gmail.com", avatar: "AM" },
-    { name: "Priya Sharma", email: "priya@gmail.com", avatar: "PS" },
-    { name: "Rohan Verma", email: "rohan@gmail.com", avatar: "RV" },
-    { name: "Sneha Iyer", email: "sneha@gmail.com", avatar: "SI" },
-    { name: "Vikram Singh", email: "vikram@gmail.com", avatar: "VS" },
-    { name: "Neha Kapoor", email: "neha@gmail.com", avatar: "NK" },
-    { name: "Dev Patel", email: "dev@gmail.com", avatar: "DP" },
-    { name: "Karan Johar", email: "karan@gmail.com", avatar: "KJ" },
-    { name: "Ananya Panday", email: "ananya@gmail.com", avatar: "AP" },
-    { name: "Ishaan Khatter", email: "ishaan@gmail.com", avatar: "IK" },
-  ];
+interface Transaction {
+  id: string;
+  hash: string;
+  user: string;
+  email: string;
+  plan: string;
+  period: string;
+  amount: number; // Stored as number for calculations
+  status: 'Successful' | 'Pending' | 'Failed' | 'Refunded';
+  date: string;
+  time: string;
+  avatar: string;
+  timestamp: number;
+}
 
-  return Array.from({ length: 60 }, (_, i) => {
-    const user = users[i % users.length];
-    const status = i === 0 ? "Successful" : statuses[Math.floor(Math.random() * statuses.length)];
-    const plan = plans[Math.floor(Math.random() * plans.length)];
-    const date = new Date();
-    date.setDate(date.getDate() - Math.floor(Math.random() * 30));
-    
-    return {
-      id: `#TXN-${(1000 + i).toString()}`,
-      hash: `ch_${Math.random().toString(36).substring(7)}`,
-      user: user.name,
-      email: user.email,
-      plan: plan,
-      period: Math.random() > 0.5 ? "Monthly" : "Yearly",
-      amount: plan === "Premium Plan" ? "$49.00" : plan === "Enterprise Plan" ? "$99.00" : "$29.00",
-      status: status,
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
-      avatar: user.avatar,
-      timestamp: date.getTime()
-    };
-  }).sort((a, b) => b.timestamp - a.timestamp);
-};
+const fetcher = (url: string) => API.get(url).then(res => res.data);
 
-const transactions = generateMockTransactions();
+import useSWR from "swr";
+import API from "@/app/lib/api";
 
 export default function PaymentsPage() {
   const [paymentStatus, setPaymentStatus] = useState("ALL_TRANSACTIONS");
@@ -69,6 +46,27 @@ export default function PaymentsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+
+  // REAL-TIME DATABASE SYNCHRONIZATION
+  const { data: transactions = [], error } = useSWR<Transaction[]>('/admin/payments', fetcher, { 
+    refreshInterval: 5000,
+    fallbackData: [] // Zero-baseline policy
+  });
+
+  // Institutional Metrics Aggregation (Strict Zero-Baseline)
+  const stats = useMemo(() => {
+    const successful = transactions.filter(t => t.status === 'Successful');
+    const totalRevenue = successful.reduce((acc, t) => acc + t.amount, 0);
+    const pending = transactions.filter(t => t.status === 'Pending').length;
+    const refunded = transactions.filter(t => t.status === 'Refunded').reduce((acc, t) => acc + t.amount, 0);
+
+    return {
+      totalRevenue: `₹${totalRevenue.toLocaleString()}`,
+      successfulCount: successful.length.toString(),
+      pendingCount: pending.toString(),
+      refundedAmount: `₹${refunded.toLocaleString()}`
+    };
+  }, [transactions]);
 
   const itemsPerPage = 8;
 
@@ -108,7 +106,7 @@ export default function PaymentsPage() {
       const headers = ["Transaction ID", "User Name", "User Email", "Plan/Item", "Amount", "Status", "Date/Time"];
       const rows = filteredTransactions.map(txn => [
         txn.id, txn.user, txn.email, `${txn.plan} (${txn.period})`,
-        txn.amount.replace('$', ''), txn.status, `${txn.date} ${txn.time}`
+        txn.amount.toString(), txn.status, `${txn.date} ${txn.time}`
       ]);
       const csvContent = [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -153,10 +151,10 @@ export default function PaymentsPage() {
         {/* SUMMARY STATISTICS ROW */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
-            { label: "Total Revenue", value: "$12,540.00", trend: "+ 12.5%", icon: <DollarSign size={24} />, color: "purple" },
-            { label: "Successful Payments", value: "128", trend: "+ 8.2%", icon: <CheckCircle size={24} />, color: "green" },
-            { label: "Pending Payments", value: "7", trend: "- 2.1%", icon: <Clock size={24} />, color: "orange" },
-            { label: "Refunded Amount", value: "$320.00", trend: "- 15.3%", icon: <RotateCcw size={24} />, color: "red" },
+            { label: "Total Revenue", value: stats.totalRevenue, icon: <DollarSign size={24} />, color: "purple" },
+            { label: "Successful Payments", value: stats.successfulCount, icon: <CheckCircle size={24} />, color: "green" },
+            { label: "Pending Payments", value: stats.pendingCount, icon: <Clock size={24} />, color: "orange" },
+            { label: "Refunded Amount", value: stats.refundedAmount, icon: <RotateCcw size={24} />, color: "red" },
           ].map((stat) => (
             <div key={stat.label} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col gap-6 group hover:shadow-md transition-all">
               <div className="flex items-center justify-between">
@@ -169,16 +167,12 @@ export default function PaymentsPage() {
                 </div>
                 <div className="text-right">
                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">{stat.label}</p>
-                   <h3 className="text-2xl font-black text-gray-900 leading-none">{stat.value}</h3>
+                   <h3 className="text-2xl font-black text-gray-900 leading-none italic">{stat.value}</h3>
                 </div>
               </div>
-              <div className="flex items-center gap-2 pt-2">
-                <span className={`text-[10px] font-black px-3 py-1 rounded-lg ${
-                  stat.trend.startsWith('+') ? "text-green-600 bg-green-50" : "text-red-500 bg-red-50"
-                }`}>
-                   {stat.trend}
-                </span>
-                <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest italic">from last month</span>
+              <div className="flex items-center gap-2 pt-2 border-t border-gray-50">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" />
+                <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest italic">Live Database Stream</span>
               </div>
             </div>
           ))}
@@ -274,7 +268,7 @@ export default function PaymentsPage() {
                            </div>
                         </td>
                         <td className="px-10 py-8">
-                           <span className="text-sm font-black text-gray-900 italic">{txn.amount}</span>
+                           <span className="text-sm font-black text-gray-900 italic">₹{txn.amount.toLocaleString()}</span>
                         </td>
                         <td className="px-10 py-8">
                            <span className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
