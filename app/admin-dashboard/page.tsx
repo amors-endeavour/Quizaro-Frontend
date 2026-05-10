@@ -73,7 +73,24 @@ const getRealTimeStats = async () => {
       }
     };
   } catch (err) {
-    return null;
+    return {
+      totalUsers: 0,
+      totalQuizzes: 0,
+      totalRevenue: 0,
+      activeParticipants: 0,
+      paidQuestions: 0,
+      unpaidQuestions: 0,
+      totalAttempts: 0,
+      averageScore: 0,
+      paidQuizzes: 0,
+      unpaidQuizzes: 0,
+      trends: {
+        users: "0.0%",
+        quizzes: "0.0%",
+        revenue: "0.0%",
+        participants: "0.0%"
+      }
+    };
   }
 };
 
