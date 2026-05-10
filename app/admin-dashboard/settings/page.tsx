@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
 import { 
   User, 
@@ -26,12 +27,18 @@ import {
   Database,
   PlusCircle,
   RotateCcw,
-  CheckCircle2
+  CheckCircle2,
+  ChevronDown,
+  ExternalLink,
+  BookOpen,
+  Search as SearchIcon,
+  Download as DownloadIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "@/app/lib/api";
 
 export default function AdminSettings() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("Profile");
   const [isReauthenticated, setIsReauthenticated] = useState(false);
   const [isReauthModalOpen, setIsReauthModalOpen] = useState(false);
@@ -45,6 +52,7 @@ export default function AdminSettings() {
   const [isSimulating, setIsSimulating] = useState(false);
   const [isPurging, setIsPurging] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [helpSearch, setHelpSearch] = useState("");
 
   // Form States
   const [profileData, setProfileData] = useState({
@@ -166,7 +174,7 @@ export default function AdminSettings() {
         
         {/* TAB NAVIGATION */}
         <div className="bg-white p-2 rounded-[2rem] border border-gray-100 shadow-sm flex items-center gap-2 max-w-fit mx-auto">
-          {["Profile", "API Keys", "Payment Gateway", "Dev Tools"].map((tab) => (
+          {["Profile", "API Keys", "Payment Gateway", "Support", "Dev Tools"].map((tab) => (
             <button
               key={tab}
               onClick={() => handleTabChange(tab)}
@@ -185,6 +193,7 @@ export default function AdminSettings() {
               {tab === "Profile" && <User size={16} />}
               {tab === "API Keys" && <Key size={16} />}
               {tab === "Payment Gateway" && <CreditCard size={16} />}
+              {tab === "Support" && <Shield size={16} />}
               {tab === "Dev Tools" && <Terminal size={16} />}
               {tab}
             </button>
@@ -457,6 +466,132 @@ export default function AdminSettings() {
                             </div>
                          </div>
                       </div>
+                   </div>
+                </div>
+              </motion.div>
+            )}
+            {/* SUPPORT TAB */}
+            {activeTab === "Support" && (
+              <motion.div 
+                key="support"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-10 pb-32"
+              >
+                <div className="bg-white p-12 rounded-[4rem] border border-gray-100 shadow-sm space-y-12 relative overflow-hidden">
+                   <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+                   
+                   <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                      <div className="flex items-center gap-6">
+                         <div className="w-16 h-16 bg-purple-600 text-white rounded-[2rem] flex items-center justify-center shadow-2xl shadow-purple-900/40"><BookOpen size={32} /></div>
+                         <div className="space-y-2">
+                            <h2 className="text-3xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Operational Manual</h2>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] italic">Governance Protocol & System Architecture Guide</p>
+                         </div>
+                      </div>
+                      <div className="w-full md:w-[400px] relative">
+                         <SearchIcon className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
+                         <input 
+                           type="text" 
+                           placeholder="Search protocols (e.g., 'Delete', 'Upload')..."
+                           value={helpSearch}
+                           onChange={(e) => setHelpSearch(e.target.value)}
+                           className="w-full bg-gray-50 border-2 border-transparent rounded-[2rem] py-5 pl-16 pr-8 text-sm font-black text-gray-900 focus:outline-none focus:border-purple-600 focus:bg-white transition-all placeholder:text-gray-300 italic"
+                         />
+                      </div>
+                   </div>
+
+                   <div className="space-y-6">
+                      {[
+                        {
+                          id: "dashboard",
+                          title: "Admin Dashboard: Live Governance",
+                          icon: <Terminal size={20} />,
+                          content: "The dashboard provides real-time telemetry from the database matrix. Total Revenue represents the SUM of all completed transactions across {Payment_Provider}. Active Participants reflects the unique COUNT of students who have committed at least one assessment node to the registry in the last 7 cycles.",
+                          link: "/admin-dashboard"
+                        },
+                        {
+                          id: "users",
+                          title: "User Management: Provisioning Protocol",
+                          icon: <User size={20} />,
+                          content: "To provision a new entity, navigate to the User Registry and select 'Authorize New User'. All placeholders must be cleared before commitment. The Green Tick indicates a validated identity with active session tokens; a Red Cross signifies a restricted or banned node. Permanent Deletion is a terminal action and cannot be reversed—always verify the {Entity_ID} before execution.",
+                          link: "/admin-dashboard/users"
+                        },
+                        {
+                          id: "quizzes-paid",
+                          title: "Quizzes (Paid): Hierarchical Workflow",
+                          icon: <Zap size={20} />,
+                          content: "Paid assessments operate on a strict nested hierarchy: 1. Create a {Series_Title} container. 2. Navigate to 'Manage Papers' to define individual assessment units. 3. Enter the MCQ Builder for each paper. IMPORTANT: The system enforces single-node editing—ensure one paper is committed before initiating the next sequence.",
+                          link: "/admin-dashboard/quizzes/paid"
+                        },
+                        {
+                          id: "quizzes-unpaid",
+                          title: "Quizzes (Unpaid): Flat Assessment Matrix",
+                          icon: <Globe size={20} />,
+                          content: "Unpaid assessments utilize a flat registry structure. Unlike paid series, these papers are listed directly and link straight to the MCQ configuration view. This bypasses the series intermediate to allow for rapid deployment of free institutional content.",
+                          link: "/admin-dashboard/quizzes/unpaid"
+                        },
+                        {
+                          id: "pdf",
+                          title: "Academic Repository: PDF & Resource Hub",
+                          icon: <Database size={20} />,
+                          content: "The repository serves as a metadata-driven hub for static academic resources. When uploading a {Resource_File}, you must assign mandatory category tags (e.g., 'Grade 10', '2026'). The search functionality indexes these tags and the {Resource_Description} to provide instantaneous retrieval in the student library.",
+                          link: "/admin-dashboard/quizzes/pdf"
+                        },
+                        {
+                          id: "analytics",
+                          title: "Payments & Analytics: Financial Intelligence",
+                          icon: <CreditCard size={20} />,
+                          content: "Financial intelligence is visualized through the Revenue Inflow and Portfolio Distribution charts. Before performing any structural cleanups or data purges, use the 'Download Registry' action to generate a secure CSV backup of all transaction nodes.",
+                          link: "/admin-dashboard/payments"
+                        }
+                      ].filter(section => 
+                        section.title.toLowerCase().includes(helpSearch.toLowerCase()) || 
+                        section.content.toLowerCase().includes(helpSearch.toLowerCase())
+                      ).map((section) => (
+                        <div key={section.id} className="group border-2 border-gray-50 rounded-[2.5rem] p-8 hover:border-purple-200 transition-all duration-500 bg-white">
+                           <div className="flex items-center justify-between mb-6">
+                              <div className="flex items-center gap-4">
+                                 <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">{section.icon}</div>
+                                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest italic">{section.title}</h3>
+                              </div>
+                              <button 
+                                onClick={() => router.push(section.link)}
+                                className="flex items-center gap-2 text-[10px] font-black text-purple-600 uppercase tracking-widest italic hover:translate-x-2 transition-transform"
+                              >
+                                Take me there <ExternalLink size={14} />
+                              </button>
+                           </div>
+                           <p className="text-[12px] text-gray-500 font-bold leading-relaxed italic uppercase tracking-tight">
+                              {section.content.split(/({.*?})/).map((part, i) => 
+                                 part.startsWith('{') ? <span key={i} className="text-[#7C3AED] font-black">{part}</span> : part
+                              )}
+                           </p>
+                        </div>
+                      ))}
+
+                      {helpSearch && ![
+                        "dashboard", "users", "quizzes-paid", "quizzes-unpaid", "pdf", "analytics"
+                      ].some(id => {
+                        // This logic is redundant because of the filter above, but useful for empty state
+                        return true; 
+                      }) && (
+                        <div className="text-center py-20 space-y-6">
+                           <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto text-gray-200"><SearchIcon size={40} /></div>
+                           <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">No protocol matches your search query in current index.</p>
+                        </div>
+                      )}
+                   </div>
+
+                   <div className="pt-8 border-t-2 border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-8">
+                      <div className="flex items-center gap-4">
+                         <div className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
+                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Manual Version 1.2.0 // Architecture Verified</p>
+                      </div>
+                      <button className="flex items-center gap-4 px-10 py-5 bg-gray-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest italic hover:bg-purple-600 transition-all shadow-xl active:scale-95 group">
+                         Download Full Admin Manual <DownloadIcon size={18} className="group-hover:translate-y-1 transition-transform" />
+                      </button>
                    </div>
                 </div>
               </motion.div>
