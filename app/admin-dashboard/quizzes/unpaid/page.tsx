@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import AdminHeader from "@/components/AdminHeader";
 import useSWR from "swr";
+import API from "@/app/lib/api";
 import { 
   Plus, 
   Search, 
@@ -20,7 +21,8 @@ import {
   Loader2, 
   X, 
   Upload,
-  FileText
+  FileText,
+  Eye
 } from "lucide-react";
 
 interface UnpaidQuiz {
@@ -36,13 +38,12 @@ interface UnpaidQuiz {
 
 export default function UnpaidQuizzes() {
   // DATABASE SYNCHRONIZATION
-  const { data: fetchedQuizzes, error, mutate } = useSWR<UnpaidQuiz[]>('/admin/quizzes/unpaid', async () => {
-    // Zero-baseline initialization
+  const { data: fetchedQuizzes, error, mutate } = useSWR<UnpaidQuiz[]>('/admin/quizzes/unpaid', async (url: string) => {
     try {
-      // In production: const res = await API.get('/admin/quizzes/unpaid'); return res.data;
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return []; 
+      const res = await API.get(url);
+      return res.data || []; 
     } catch (err) {
+      console.error("Failed to fetch unpaid quizzes:", err);
       return [];
     }
   }, { refreshInterval: 5000 });
@@ -69,6 +70,9 @@ export default function UnpaidQuizzes() {
   const [isIngesting, setIsIngesting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [previewQuiz, setPreviewQuiz] = useState<UnpaidQuiz | null>(null);
+  const [previewMCQs, setPreviewMCQs] = useState<any[]>([]);
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   
   const formRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -187,6 +191,20 @@ export default function UnpaidQuizzes() {
     }
   };
 
+  const handleOpenPreview = async (quiz: UnpaidQuiz) => {
+    setPreviewQuiz(quiz);
+    setIsPreviewLoading(true);
+    try {
+      const res = await API.get(`/admin/quizzes/unpaid/${quiz.id}`);
+      setPreviewMCQs(res.data?.questions || []);
+    } catch (err) {
+      console.error("Failed to fetch preview data:", err);
+      setPreviewMCQs([]);
+    } finally {
+      setIsPreviewLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
       <AdminHeader 
@@ -230,12 +248,12 @@ export default function UnpaidQuizzes() {
               <tbody className="divide-y divide-gray-50">
                 {quizzes.length > 0 ? quizzes.map((quiz) => (
                   <tr key={quiz.id} className="group hover:bg-gray-50 transition-all duration-500">
-                    <td className="px-10 py-8">
+                    <td className="px-10 py-8 cursor-pointer group/row" onClick={() => window.location.href = `/admin-dashboard/quizzes/unpaid/${quiz.id}`}>
                       <div className="flex items-center gap-6">
-                        <div className="w-11 h-11 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center border border-purple-100 shadow-sm">
+                        <div className="w-11 h-11 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center border border-purple-100 shadow-sm group-hover/row:bg-purple-600 group-hover/row:text-white transition-all">
                           <BookOpen size={18} />
                         </div>
-                        <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic leading-tight">{quiz.name}</p>
+                        <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic leading-tight group-hover/row:text-purple-600 transition-colors">{quiz.name}</p>
                       </div>
                     </td>
                     <td className="px-10 py-8 text-[11px] font-black text-gray-500 uppercase tracking-widest italic">{quiz.subject}</td>
@@ -252,6 +270,14 @@ export default function UnpaidQuizzes() {
                     </td>
                     <td className="px-10 py-8 text-right">
                       <div className="flex items-center justify-end gap-3 relative">
+                        <button 
+                          onClick={() => handleOpenPreview(quiz)}
+                          className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                          title="Quick Preview"
+                        >
+                          <Eye size={18} />
+                        </button>
+
                         <button 
                           onClick={() => window.location.href = `/admin-dashboard/quizzes/unpaid/${quiz.id}`}
                           className="px-6 py-2.5 bg-gray-900 text-white hover:bg-black rounded-xl text-[10px] font-black uppercase tracking-widest transition-all italic flex items-center gap-2"
@@ -451,6 +477,72 @@ export default function UnpaidQuizzes() {
            }`}>
               {toast.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
               <span className="text-[11px] font-black uppercase tracking-widest italic">{toast.message}</span>
+           </div>
+        </div>
+      )}
+
+      {/* QUICK PREVIEW MODAL */}
+      {previewQuiz && (
+        <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
+           <div className="bg-white rounded-[3rem] p-12 max-w-4xl w-full shadow-2xl space-y-10 animate-in zoom-in duration-500 relative max-h-[90vh] flex flex-col">
+              <button 
+                onClick={() => setPreviewQuiz(null)}
+                className="absolute top-8 right-8 p-2 text-gray-300 hover:text-gray-900 transition-all"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="space-y-2">
+                 <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Quick Audit: {previewQuiz.name}</h3>
+                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Read-only preview of assessment content</p>
+              </div>
+
+              <div className="flex-1 overflow-y-auto pr-4 space-y-8 no-scrollbar">
+                 {isPreviewLoading ? (
+                   <div className="h-64 flex flex-col items-center justify-center gap-4 text-gray-400">
+                      <Loader2 size={40} className="animate-spin text-purple-600" />
+                      <p className="text-[10px] font-black uppercase tracking-widest italic">Fetching MCQ Data...</p>
+                   </div>
+                 ) : previewMCQs.length > 0 ? (
+                   previewMCQs.map((mcq, idx) => (
+                     <div key={mcq.id} className="p-8 bg-gray-50 rounded-3xl border border-gray-100 space-y-6">
+                        <div className="flex items-start gap-4">
+                           <span className="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-xs font-black italic">{idx + 1}</span>
+                           <p className="text-sm font-black text-gray-900 uppercase tracking-tight italic leading-relaxed">{mcq.text}</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-12">
+                           {mcq.options.map((opt: string, i: number) => (
+                             <div key={i} className={`px-6 py-3 rounded-xl text-[11px] font-bold italic border ${i === 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-gray-100 text-gray-500'}`}>
+                                {String.fromCharCode(65 + i)}. {opt}
+                             </div>
+                           ))}
+                        </div>
+                     </div>
+                   ))
+                 ) : (
+                   <div className="h-64 flex flex-col items-center justify-center gap-4 text-gray-200">
+                      <BookOpen size={48} />
+                      <p className="text-[10px] font-black uppercase tracking-widest italic">No MCQs found for this assessment.</p>
+                   </div>
+                 )}
+              </div>
+
+              <div className="pt-8 border-t border-gray-50 flex items-center justify-between">
+                 <div className="flex items-center gap-4">
+                    <span className="px-4 py-2 bg-purple-50 text-purple-600 rounded-lg text-[9px] font-black uppercase tracking-widest italic border border-purple-100">
+                       {previewMCQs.length} Questions
+                    </span>
+                    <span className="px-4 py-2 bg-gray-50 text-gray-400 rounded-lg text-[9px] font-black uppercase tracking-widest italic border border-gray-100">
+                       Audit Mode
+                    </span>
+                 </div>
+                 <button 
+                   onClick={() => window.location.href = `/admin-dashboard/quizzes/unpaid/${previewQuiz.id}`}
+                   className="px-10 py-4 bg-gray-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest italic hover:scale-105 active:scale-95 transition-all shadow-xl shadow-black/10"
+                 >
+                   Open Full MCQ View
+                 </button>
+              </div>
            </div>
         </div>
       )}

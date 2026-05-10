@@ -35,7 +35,9 @@ API.interceptors.response.use(
       if (!isPublicPage) {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
-        window.location.href = "/login?redirect=" + encodeURIComponent(window.location.pathname);
+        const isAdminPath = window.location.pathname.startsWith("/admin-dashboard");
+        const loginUrl = isAdminPath ? "/admin-login" : "/login";
+        window.location.href = `${loginUrl}?redirect=${encodeURIComponent(window.location.pathname)}`;
       }
     }
     return Promise.reject(error);

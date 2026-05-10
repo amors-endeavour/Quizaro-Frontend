@@ -134,6 +134,25 @@ export default function AdminHeader({
            <Menu size={20} />
         </button>
 
+        {/* BREADCRUMBS & TITLE */}
+        <div className="hidden md:flex flex-col gap-1 min-w-[200px]">
+           <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-gray-400 italic">
+              {path.map((item, index) => (
+                <div key={index} className="flex items-center gap-2">
+                   {item.href ? (
+                     <button onClick={() => router.push(item.href!)} className="hover:text-blue-600 transition-colors">
+                        {item.label}
+                     </button>
+                   ) : (
+                     <span>{item.label}</span>
+                   )}
+                   {index < path.length - 1 && <ChevronRight size={10} className="text-gray-300" />}
+                </div>
+              ))}
+           </div>
+           <h1 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">{title}</h1>
+        </div>
+
         {/* SEARCH BAR (Matching Image 1) */}
         <div className="relative flex-1 max-w-xl group">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={18} />

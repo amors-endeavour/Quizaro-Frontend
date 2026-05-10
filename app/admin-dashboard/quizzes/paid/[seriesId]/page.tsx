@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
 import useSWR from "swr";
+import API from "@/app/lib/api";
 import { 
   Plus, 
   Trash2, 
@@ -39,12 +40,12 @@ export default function SeriesPapers() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // REAL-TIME DATABASE SYNCHRONIZATION
-  const { data: papers, error, mutate } = useSWR<QuizPaper[]>(`/admin/quizzes/paid/${seriesId}/papers`, async () => {
-    // Zero-baseline initialization
+  const { data: papers, error, mutate } = useSWR<QuizPaper[]>(`/admin/quizzes/paid/${seriesId}/papers`, async (url: string) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return []; 
+      const res = await API.get(url);
+      return res.data || []; 
     } catch (err) {
+      console.error("Failed to fetch series papers:", err);
       return [];
     }
   }, { refreshInterval: 5000 });
@@ -134,12 +135,12 @@ export default function SeriesPapers() {
               <tbody className="divide-y divide-gray-50">
                 {filteredPapers.length > 0 ? filteredPapers.map((paper) => (
                   <tr key={paper.id} className="group hover:bg-gray-50 transition-all duration-500">
-                    <td className="px-10 py-8">
+                    <td className="px-10 py-8 cursor-pointer group/row" onClick={() => router.push(`/admin-dashboard/quizzes/paid/${seriesId}/${paper.id}`)}>
                       <div className="flex items-center gap-6">
-                        <div className="w-11 h-11 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center border border-purple-100 shadow-sm">
+                        <div className="w-11 h-11 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center border border-purple-100 shadow-sm group-hover/row:bg-purple-600 group-hover/row:text-white transition-all">
                           <FileText size={18} />
                         </div>
-                        <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic">{paper.title}</p>
+                        <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic group-hover/row:text-purple-600 transition-colors">{paper.title}</p>
                       </div>
                     </td>
                     <td className="px-10 py-8 text-center font-black text-gray-900 italic text-sm">{paper.totalQuestions}</td>

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
 import useSWR from "swr";
+import API from "@/app/lib/api";
 import { 
   Plus, 
   Trash2, 
@@ -51,13 +52,12 @@ export default function PaidQuizzes() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // REAL-TIME DATABASE SYNCHRONIZATION
-  const { data: fetchedSeries, error, mutate } = useSWR<QuizSeries[]>('/admin/quizzes/paid', async () => {
-    // Zero-baseline initialization
+  const { data: fetchedSeries, error, mutate } = useSWR<QuizSeries[]>('/admin/quizzes/paid', async (url: string) => {
     try {
-      // In production: const res = await API.get('/admin/quizzes/paid'); return res.data;
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return []; 
+      const res = await API.get(url);
+      return res.data || []; 
     } catch (err) {
+      console.error("Failed to fetch paid series:", err);
       return [];
     }
   }, { refreshInterval: 5000 });

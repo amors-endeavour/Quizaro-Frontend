@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
 import useSWR from "swr";
+import API from "@/app/lib/api";
 import { 
   BookOpen, 
   Clock, 
@@ -34,10 +35,14 @@ export default function UnpaidMCQView() {
   const router = useRouter();
   const quizId = params.quizId;
 
-  const { data: quiz, error } = useSWR<QuizDetails>(`/admin/quizzes/unpaid/${quizId}`, async () => {
-    // In production: fetch from API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return null; // Return null to show empty state if not found
+  const { data: quiz, error } = useSWR<QuizDetails | null>(`/admin/quizzes/unpaid/${quizId}`, async (url: string) => {
+    try {
+      const res = await API.get(url);
+      return res.data;
+    } catch (err) {
+      console.error("Failed to fetch assessment details:", err);
+      return null;
+    }
   });
 
   if (!quiz && !error) {
