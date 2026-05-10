@@ -42,6 +42,7 @@ interface Result {
     title: string;
   };
   submittedAt: string;
+  attemptCount?: number;
   answers?: Array<{
     questionId: string;
     questionText: string;
@@ -194,9 +195,14 @@ function ResultContent() {
                       <div className="space-y-4 group">
                          <span className="text-[11px] font-black text-amber-600 uppercase tracking-widest italic leading-none">Global Ranking</span>
                          <div className="flex items-center gap-4">
-                            <p className="text-6xl font-black text-amber-600 leading-none group-hover:scale-110 transition-transform origin-left italic tabular-nums">#{result?.rank || "0"}</p>
+                            <p className="text-6xl font-black text-amber-600 leading-none group-hover:scale-110 transition-transform origin-left italic tabular-nums">#{result?.rank || "1"}</p>
                             <Zap size={24} className="text-amber-500 animate-pulse" />
                          </div>
+                         {result?.attemptCount && (
+                           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic mt-4">
+                             Attempted by {result.attemptCount} people
+                           </p>
+                         )}
                       </div>
                   </div>
               </div>

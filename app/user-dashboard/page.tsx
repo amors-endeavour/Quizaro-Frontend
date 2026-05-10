@@ -33,6 +33,8 @@ interface Test {
   description: string;
   duration: number;
   category: string;
+  attemptCount?: number;
+  userBestRank?: number | null;
 }
 
 interface Attempt {
@@ -207,6 +209,16 @@ export default function UserDashboard() {
                            <div className="flex flex-wrap items-center gap-10">
                               <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-6 py-2.5 rounded-full border-2 border-gray-50 italic leading-none">{pt.testId.category || "General Logic Node"}</span>
                               <div className="flex items-center gap-4 text-[11px] font-black text-gray-400 uppercase tracking-widest italic leading-none"><Clock size={18} className="text-blue-600" /> {pt.testId.duration} Min Session Duration</div>
+                              <div className="flex items-center gap-4 ml-6">
+                                 <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest italic">
+                                    {pt.testId.attemptCount ? `Attempted by ${pt.testId.attemptCount}` : "No attempts yet"}
+                                 </span>
+                                 {pt.testId.userBestRank && (
+                                    <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest italic">
+                                       • Rank: {pt.testId.userBestRank}
+                                    </span>
+                                 )}
+                              </div>
                            </div>
                         </div>
                      </div>
@@ -246,6 +258,16 @@ export default function UserDashboard() {
                            <div className="flex items-center gap-10">
                               <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-6 py-2.5 rounded-full border-2 border-gray-50 italic leading-none">{test.category || "Institutional Knowledge"}</span>
                               <div className="flex items-center gap-4 text-[11px] font-black text-gray-400 uppercase tracking-widest italic leading-none"><Clock size={18} className="text-amber-500" /> {test.duration} Min Provision Node</div>
+                              <div className="flex items-center gap-4 ml-6">
+                                 <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest italic">
+                                    {test.attemptCount ? `Attempted by ${test.attemptCount}` : "No attempts yet"}
+                                 </span>
+                                 {test.userBestRank && (
+                                    <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest italic">
+                                       • Rank: {test.userBestRank}
+                                    </span>
+                                 )}
+                              </div>
                            </div>
                         </div>
                      </div>
