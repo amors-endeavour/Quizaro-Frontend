@@ -55,7 +55,7 @@ export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; on
 
       {/* SIDEBAR CONTAINER */}
       <aside className={`
-        fixed md:sticky top-0 left-0 h-screen z-[300]
+        fixed top-0 left-0 h-screen z-[300]
         w-64 bg-white border-r border-gray-100
         flex flex-col transition-transform duration-500 shadow-xl md:shadow-none
         ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}

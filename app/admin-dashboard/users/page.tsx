@@ -23,6 +23,7 @@ import {
   Mail,
   Calendar,
   Clock,
+  Lock,
   ExternalLink,
   CheckCircle2,
   AlertCircle,
@@ -33,6 +34,7 @@ import {
   FileText,
   ChevronDown
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // FETCHERS
 const fetcher = (url: string) => API.get(url).then(res => res.data);
@@ -72,6 +74,8 @@ export default function UsersManagementPage() {
   });
   const [isExporting, setIsExporting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isReauthModalOpen, setIsReauthModalOpen] = useState(false);
+  const [reauthPassword, setReauthPassword] = useState("");
   const [newUser, setNewUser] = useState({
     name: "",
     handle: "",
@@ -143,7 +147,7 @@ export default function UsersManagementPage() {
       mutate(updatedUsers, false);
       
       await API.delete(`/admin/users/${id}`);
-      setToast({ message: "User record successfully purged from institutional registry.", type: 'success' });
+      setToast({ message: "Registry updated: User permanently removed.", type: 'success' });
     } catch (err) {
       // Revert if API fails
       mutate(previousUsers);
@@ -229,8 +233,18 @@ export default function UsersManagementPage() {
       setShowExportDropdown(false);
       return;
     }
+
+    if (type === 'csv') {
+      setIsReauthModalOpen(true);
+      setShowExportDropdown(false);
+      return;
+    }
+
+    processExport(type);
+  };
+
+  const processExport = async (type: 'csv' | 'pdf') => {
     setIsExporting(true);
-    setShowExportDropdown(false);
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     if (type === 'csv') {
@@ -255,6 +269,26 @@ export default function UsersManagementPage() {
     
     setToast({ message: `Users list exported as ${type.toUpperCase()}`, type: 'success' });
     setIsExporting(false);
+    setReauthPassword("");
+    setIsReauthModalOpen(false);
+  };
+
+  const handleVerifyBackup = async () => {
+    if (!reauthPassword) return;
+    setIsSubmitting(true);
+    try {
+      // Simulated institutional security check (consistent with settings)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (reauthPassword === "admin123") {
+        processExport('csv');
+      } else {
+        setToast({ message: "Security Error: Invalid administrative password.", type: "error" });
+      }
+    } catch (err) {
+      setToast({ message: "Security Error: Authentication channel compromised.", type: "error" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const activeFiltersCount = Object.values(filters).filter(v => v !== "All" && v !== "All Time").length;
@@ -690,6 +724,64 @@ export default function UsersManagementPage() {
            </div>
         </div>
       )}
+
+      {/* SECURITY RE-AUTH MODAL FOR BACKUP */}
+      <AnimatePresence>
+        {isReauthModalOpen && (
+          <div className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.9 }}
+               className="bg-white rounded-[3.5rem] p-16 max-w-lg w-full shadow-2xl space-y-12 text-center relative overflow-hidden"
+             >
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-600 to-indigo-600" />
+                <button 
+                   onClick={() => setIsReauthModalOpen(false)}
+                   className="absolute top-10 right-10 p-3 text-gray-300 hover:text-gray-900 transition-all"
+                >
+                   <X size={24} />
+                </button>
+
+                <div className="space-y-8">
+                   <div className="w-24 h-24 bg-red-50 text-red-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-inner">
+                      <ShieldAlert size={44} />
+                   </div>
+                   <div className="space-y-3">
+                      <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Security Check</h3>
+                      <p className="text-sm text-gray-400 font-bold uppercase tracking-widest italic">Administrative password required for registry backup.</p>
+                   </div>
+                </div>
+
+                <div className="space-y-8">
+                   <div className="space-y-3">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic text-left block ml-1">Confirm Identity</label>
+                      <input 
+                        type="password" 
+                        value={reauthPassword}
+                        onChange={(e) => setReauthPassword(e.target.value)}
+                        placeholder="••••••••" 
+                        className="w-full bg-gray-50 border border-gray-100 rounded-3xl px-8 py-6 text-xl font-black tracking-[0.5em] focus:bg-white focus:border-purple-600 outline-none transition-all text-center placeholder:tracking-widest" 
+                      />
+                   </div>
+                   <div className="flex flex-col gap-4">
+                      <button 
+                        onClick={handleVerifyBackup}
+                        disabled={isSubmitting || !reauthPassword}
+                        className="w-full py-6 bg-gray-900 text-white rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-2xl hover:scale-[1.02] active:scale-95 transition-all italic flex items-center justify-center gap-3"
+                      >
+                         {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <ShieldCheck size={18} />}
+                         Authorize Download
+                      </button>
+                      <div className="flex items-center justify-center gap-2 text-[10px] font-black text-gray-400 uppercase italic">
+                         <Lock size={14} /> secure administrative channel
+                      </div>
+                   </div>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* CUSTOM TOAST */}
       {toast && (

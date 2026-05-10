@@ -60,7 +60,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       />
       
       {/* Fluid Content Area */}
-      <div className="flex-1 h-screen overflow-y-auto transition-all duration-500 relative">
+      <div className="flex-1 h-screen overflow-y-auto transition-all duration-500 relative md:pl-64">
         <main className="min-h-full">
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             {children}
