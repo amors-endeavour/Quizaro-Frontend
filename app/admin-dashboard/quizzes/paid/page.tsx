@@ -143,6 +143,7 @@ export default function PaidQuizzes() {
 
   const handleDeleteSeries = async () => {
     if (!selectedSeries) return;
+    try {
       // API call: await API.delete(`/admin/quizzes/paid/${selectedSeries.id}`);
       await new Promise(resolve => setTimeout(resolve, 1000));
       mutate(); // Re-fetch live list after deletion
@@ -156,6 +157,7 @@ export default function PaidQuizzes() {
 
   const handleUpdateSeries = async () => {
     if (!selectedSeries) return;
+    try {
       // API call: await API.put(`/admin/quizzes/paid/${selectedSeries.id}`, selectedSeries);
       await new Promise(resolve => setTimeout(resolve, 1000));
       mutate(); // Re-fetch live data after update
