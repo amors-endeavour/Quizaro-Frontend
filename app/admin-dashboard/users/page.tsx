@@ -508,10 +508,10 @@ export default function UsersManagementPage() {
                             className="w-5 h-5 rounded-md border-gray-300 text-purple-600 focus:ring-purple-600 transition-all cursor-pointer"
                           />
                        </th>
-                       <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">User</th>
+                       <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Username</th>
                        <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Email</th>
-                       <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Status</th>
-                       <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Joined On</th>
+                       <th className="px-12 py-8 text-center text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Status</th>
+                       <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Join Date</th>
                        <th className="px-12 py-8 text-right text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Actions</th>
                     </tr>
                  </thead>
@@ -544,25 +544,23 @@ export default function UsersManagementPage() {
                               />
                            </td>
                            <td className="px-12 py-8">
-                              <div className="flex items-center gap-5">
-                                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm italic shadow-sm border border-black/5 ${user.color || "bg-gray-100 text-gray-400"}`}>
-                                    {user.avatar || user.name.charAt(0)}
-                                 </div>
-                                 <div className="space-y-1">
-                                    <p className="text-[15px] font-black text-gray-900 uppercase tracking-tighter italic leading-none">{user.name}</p>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{user.handle || `@${user.name.toLowerCase().replace(" ", ".")}`}</p>
-                                 </div>
-                              </div>
+                              <p className="text-[14px] font-black text-gray-900 uppercase tracking-tighter italic leading-none">{user.handle || `@${user.name.toLowerCase().replace(" ", ".")}`}</p>
                            </td>
                            <td className="px-12 py-8">
                               <p className="text-[13px] font-bold text-gray-500 lowercase italic">{user.email}</p>
                            </td>
-                           <td className="px-12 py-8">
-                              <span className={`px-5 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
-                                user.status === 'Active' ? "bg-green-50 text-green-600 border-green-100" : "bg-red-50 text-red-500 border-red-100"
-                              }`}>
-                                 {user.status}
-                              </span>
+                           <td className="px-12 py-8 text-center">
+                              <div className="flex justify-center">
+                                 {user.status === 'Active' ? (
+                                   <div className="w-8 h-8 bg-green-50 text-green-600 rounded-xl flex items-center justify-center shadow-sm border border-green-100">
+                                      <CheckCircle2 size={16} />
+                                   </div>
+                                 ) : (
+                                   <div className="w-8 h-8 bg-red-50 text-red-500 rounded-xl flex items-center justify-center shadow-sm border border-red-100">
+                                      <XCircle size={16} />
+                                   </div>
+                                 )}
+                              </div>
                            </td>
                            <td className="px-12 py-8">
                               <p className="text-[13px] font-black text-gray-500 uppercase italic leading-none">{user.joinedOn || new Date(user.createdAt).toLocaleDateString()}</p>
@@ -654,13 +652,13 @@ export default function UsersManagementPage() {
                        <div className="relative">
                           <User className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
                           <input 
-                            type="text" 
-                            required
-                            placeholder="Aarav Sharma"
-                            value={newUser.name}
-                            onChange={(e) => setNewUser({...newUser, name: e.target.value})}
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
-                          />
+                             type="text" 
+                             required
+                             placeholder=""
+                             value={newUser.name}
+                             onChange={(e) => setNewUser({...newUser, name: e.target.value})}
+                             className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
+                           />
                        </div>
                     </div>
                     <div className="space-y-4">
@@ -668,13 +666,13 @@ export default function UsersManagementPage() {
                        <div className="relative">
                           <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 font-bold italic">@</span>
                           <input 
-                            type="text" 
-                            required
-                            placeholder="aarav.sharma"
-                            value={newUser.handle}
-                            onChange={(e) => setNewUser({...newUser, handle: e.target.value})}
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
-                          />
+                             type="text" 
+                             required
+                             placeholder=""
+                             value={newUser.handle}
+                             onChange={(e) => setNewUser({...newUser, handle: e.target.value})}
+                             className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
+                           />
                        </div>
                     </div>
                     <div className="md:col-span-2 space-y-4">
@@ -684,7 +682,7 @@ export default function UsersManagementPage() {
                           <input 
                             type="email" 
                             required
-                            placeholder="aarav@quizaro.com"
+                            placeholder=""
                             value={newUser.email}
                             onChange={(e) => setNewUser({...newUser, email: e.target.value})}
                             className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-16 pr-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
@@ -712,12 +710,12 @@ export default function UsersManagementPage() {
                           Cancel
                        </button>
                        <button 
-                         type="submit"
-                         disabled={isSubmitting || !newUser.name || !newUser.email.includes('@')}
-                         className="flex-[2] py-5 bg-purple-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest italic shadow-xl shadow-purple-900/20 hover:bg-purple-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4"
-                       >
-                          {isSubmitting ? <><Loader2 size={18} className="animate-spin" /> Provisioning...</> : <><ShieldCheck size={18} /> Authorize & Add User</>}
-                       </button>
+                          type="submit"
+                          disabled={isSubmitting || !newUser.name || !newUser.handle || !newUser.email.includes('@')}
+                          className="flex-[2] py-5 bg-purple-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest italic shadow-xl shadow-purple-900/20 hover:bg-purple-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4"
+                        >
+                           {isSubmitting ? <><Loader2 size={18} className="animate-spin" /> Provisioning...</> : <><ShieldCheck size={18} /> Authorize & Add User</>}
+                        </button>
                     </div>
                  </form>
               </div>
