@@ -53,6 +53,15 @@ export default function AdminSettings() {
   const [isPurging, setIsPurging] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [helpSearch, setHelpSearch] = useState("");
+  const [logoClicks, setLogoClicks] = useState(0);
+  const [lastLogoClick, setLastLogoClick] = useState(0);
+  const [isDebugActive, setIsDebugActive] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsDebugActive(localStorage.getItem("advanced_debugging") === "true");
+    }
+  }, [isChanged]);
 
   // Form States
   const [profileData, setProfileData] = useState({
@@ -215,7 +224,26 @@ export default function AdminSettings() {
                    {/* Left Column: Avatar & Basic Info */}
                    <div className="lg:col-span-1 space-y-8">
                       <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm flex flex-col items-center gap-8 text-center">
-                         <div className="relative group cursor-pointer">
+                         <div 
+                           className="relative group cursor-pointer"
+                           onClick={() => {
+                             const now = Date.now();
+                             if (now - lastLogoClick < 1000) {
+                               const newCount = logoClicks + 1;
+                               if (newCount >= 5) {
+                                 localStorage.setItem("advanced_debugging", "true");
+                                 setLogoClicks(0);
+                                 setToast({ message: "Stealth Protocol Active: Debugging Enabled.", type: 'success' });
+                                 setIsChanged(!isChanged);
+                               } else {
+                                 setLogoClicks(newCount);
+                               }
+                             } else {
+                               setLogoClicks(1);
+                             }
+                             setLastLogoClick(now);
+                           }}
+                         >
                             <div className="w-32 h-32 rounded-[2.5rem] bg-purple-50 border-4 border-white shadow-xl overflow-hidden group-hover:opacity-80 transition-all">
                                <img src={profileData.avatar} alt="Avatar" className="w-full h-full object-contain p-4" />
                             </div>
@@ -302,7 +330,7 @@ export default function AdminSettings() {
                                <input 
                                  type="checkbox" 
                                  className="sr-only peer"
-                                 checked={typeof window !== 'undefined' && localStorage.getItem("advanced_debugging") === "true"}
+                                 checked={isDebugActive}
                                  onChange={(e) => {
                                     localStorage.setItem("advanced_debugging", e.target.checked.toString());
                                     setToast({ message: e.target.checked ? "Advanced Debugging Enabled. Hidden protocols revealed." : "Debugging mode deactivated.", type: 'success' });
