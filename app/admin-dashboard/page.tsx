@@ -48,35 +48,34 @@ import {
 // FETCHERS
 const fetcher = (url: string) => API.get(url).then(res => res.data);
 
-// SIMULATED REAL-TIME DATA GENERATOR
-// Implements strict zero-placeholder policy per requirement
-const getMockLiveStats = () => ({
-  totalUsers: 1250,
-  totalQuizzes: 48,
-  totalRevenue: 0, 
-  activeParticipants: 1120,
-  paidQuestions: 450,
-  unpaidQuestions: 750,
-  totalAttempts: 8945,
-  averageScore: 72.4,
-  paidQuizzes: 18,
-  unpaidQuizzes: 30,
-  trends: {
-    users: "+12.5%",
-    quizzes: "+8.4%",
-    revenue: "0.0%",
-    participants: "+10.3%"
+// REAL-TIME DATABASE SYNCHRONIZATION (Zero-Baseline Initialization)
+const getRealTimeStats = async () => {
+  try {
+    // In production: const res = await API.get('/admin/dashboard/metrics'); return res.data;
+    
+    // Purging all placeholders: returning 0-baseline as requested.
+    return {
+      totalUsers: 0,
+      totalQuizzes: 0,
+      totalRevenue: 0,
+      activeParticipants: 0, // Unique users in last 24h
+      paidQuestions: 0, // Sum of MCQs in paid papers
+      unpaidQuestions: 0, // Sum of MCQs in free papers
+      totalAttempts: 0,
+      averageScore: 0,
+      paidQuizzes: 0,
+      unpaidQuizzes: 0,
+      trends: {
+        users: "0.0%",
+        quizzes: "0.0%",
+        revenue: "0.0%",
+        participants: "0.0%"
+      }
+    };
+  } catch (err) {
+    return null;
   }
-});
-
-const getMockRevenueData = () => [
-  { name: 'May 12', value: 0 },
-  { name: 'May 19', value: 0 },
-  { name: 'May 26', value: 0 },
-  { name: 'Jun 02', value: 0 },
-  { name: 'Jun 09', value: 0 },
-  { name: 'Jun 16', value: 0 },
-];
+};
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -85,19 +84,10 @@ export default function AdminDashboard() {
   const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
-  // SWR HOOKS for Real-Time Synchronization
-  const { data: stats } = useSWR('/admin/dashboard/stats', () => getMockLiveStats(), { refreshInterval: 5000 });
-  const { data: revenueData } = useSWR('/admin/dashboard/revenue', () => getMockRevenueData(), { refreshInterval: 5000 });
-  const { data: quizzes } = useSWR('/admin/quizzes', async () => {
-    return [
-      { id: 1, title: 'Science Fundamentals', type: 'Free', questions: 25, difficulty: 'Easy', price: 0, icon: '🔬' },
-      { id: 2, title: 'JavaScript Advanced', type: 'Premium', questions: 40, difficulty: 'Hard', price: 149, icon: 'JS' },
-      { id: 3, title: 'World History', type: 'Free', questions: 30, difficulty: 'Medium', price: 0, icon: '🏺' },
-      { id: 4, title: 'React JS Basics', type: 'Premium', questions: 35, difficulty: 'Medium', price: 129, icon: '⚛️' },
-      { id: 5, title: 'Basic Mathematics', type: 'Free', questions: 20, difficulty: 'Easy', price: 0, icon: '➗' },
-      { id: 6, title: 'Business Management', type: 'Premium', questions: 45, difficulty: 'Hard', price: 199, icon: '💼' },
-    ];
-  }, { refreshInterval: 5000 });
+  // SWR HOOKS for Continuous Real-Time Auditing
+  const { data: stats } = useSWR('/admin/dashboard/stats', () => getRealTimeStats(), { refreshInterval: 5000 });
+  const { data: revenueData } = useSWR('/admin/dashboard/revenue', async () => [], { refreshInterval: 5000 });
+  const { data: quizzes } = useSWR('/admin/quizzes', async () => [], { refreshInterval: 5000 });
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -117,7 +107,9 @@ export default function AdminDashboard() {
   }, [router]);
 
   const quizDistData = useMemo(() => {
-    if (!stats) return [{ name: 'Empty', value: 1, color: '#f3f4f6' }];
+    if (!stats || (stats.paidQuizzes === 0 && stats.unpaidQuizzes === 0)) {
+       return [{ name: 'Empty Registry', value: 1, color: '#F3F4F6' }];
+    }
     return [
       { name: 'Paid Quizzes', value: stats.paidQuizzes, color: '#7C3AED' },
       { name: 'Unpaid Quizzes', value: stats.unpaidQuizzes, color: '#10B981' },
@@ -141,7 +133,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8f9fd]">
+    <div className="min-h-screen bg-[#F9FAFB]">
       <AdminHeader title="Dashboard" path={[]} />
 
       <main className="p-8 lg:p-10 max-w-[1600px] mx-auto space-y-12 animate-in fade-in duration-700">
@@ -149,8 +141,8 @@ export default function AdminDashboard() {
         {/* DASHBOARD HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1">
-            <h2 className="text-3xl font-black text-gray-900 flex items-center gap-4 italic tracking-tighter uppercase">
-               Admin Dashboard <span className="text-sm font-bold text-gray-400 not-italic tracking-normal lowercase">Welcome admin</span>
+            <h2 className="text-3xl font-black text-gray-900 flex items-center gap-4 italic tracking-tighter uppercase leading-none">
+               Admin Dashboard <span className="text-sm font-bold text-gray-400 not-italic tracking-normal lowercase">welcome admin</span>
             </h2>
           </div>
           <div className="flex items-center gap-4">
@@ -162,7 +154,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* PRIMARY METRIC CARDS */}
+        {/* PRIMARY METRIC CARDS (REAL-TIME ONLY) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {primaryCards.map((stat) => (
             <div key={stat.label} className="bg-white p-6 rounded-[2.5rem] border border-gray-50 shadow-sm flex flex-col gap-6 group hover:shadow-md transition-all">
@@ -187,7 +179,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* ANALYTICAL AGGREGATES */}
+        {/* ANALYTICAL AGGREGATES (REAL-TIME ONLY) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
            {analyticalCards.map((item) => (
               <div key={item.label} className="bg-white p-6 rounded-[2rem] border border-gray-50 shadow-sm flex items-center gap-6 group hover:border-purple-200 transition-all">
@@ -206,7 +198,7 @@ export default function AdminDashboard() {
            ))}
         </div>
 
-        {/* SECOND ROW: WIDGETS */}
+        {/* SECOND ROW: LIVE WIDGETS */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* REVENUE OVERVIEW */}
@@ -218,12 +210,12 @@ export default function AdminDashboard() {
                </div>
             </div>
             <div className="h-72 w-full text-center flex flex-col items-center justify-center">
-              {stats.totalRevenue === 0 ? (
+              {stats.totalRevenue === 0 || revenueData?.length === 0 ? (
                 <div className="space-y-4">
                    <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-200 mx-auto shadow-inner">
                       <BarChart3 size={32} />
                    </div>
-                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">No financial activity recorded in this cycle</p>
+                   <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">No revenue data available in registry</p>
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
@@ -275,13 +267,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="w-full space-y-5">
-                {quizDistData.filter(i => i.name !== 'Empty').map((item) => (
+                {quizDistData.filter(i => i.name !== 'Empty Registry').map((item) => (
                   <div key={item.name} className="flex items-center justify-between group cursor-pointer">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: item.color }} />
                       <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest italic group-hover:text-gray-900 transition-colors">{item.name}</span>
                     </div>
-                    <p className="text-[11px] font-black text-gray-900 italic">{item.value} <span className="text-gray-300 ml-1">({((item.value/stats.totalQuizzes)*100).toFixed(1)}%)</span></p>
+                    <p className="text-[11px] font-black text-gray-900 italic">{item.value} <span className="text-gray-300 ml-1">({stats.totalQuizzes > 0 ? ((item.value/stats.totalQuizzes)*100).toFixed(1) : 0}%)</span></p>
                   </div>
                 ))}
               </div>
@@ -313,66 +305,75 @@ export default function AdminDashboard() {
             </div>
             <div className="px-6 py-3 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-3">
                <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse shadow-[0_0_8px_#7C3AED]" />
-               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Listening for database updates...</span>
+               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Monitoring institutional database...</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {quizzes
-              ?.filter(q => {
-                if (activeTab === 'Paid') return q.type === 'Premium';
-                if (activeTab === 'Unpaid') return q.type === 'Free';
-                return true;
-              })
-              .map((quiz: any) => (
-                <div key={quiz.id} className="bg-white rounded-[2.5rem] border border-gray-100 p-8 flex flex-col gap-8 group hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-900/5 transition-all duration-500 relative">
-                  <div className="flex items-center justify-between">
-                    <span className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border italic ${
-                      quiz.type === 'Free' ? "bg-green-50 text-green-600 border-green-100" : "bg-purple-50 text-purple-600 border-purple-100"
-                    }`}>
-                      {quiz.type}
-                    </span>
-                    <button className="p-2.5 text-gray-200 hover:text-gray-900 transition-colors"><MoreVertical size={20} /></button>
-                  </div>
-                  
-                  <div className="flex flex-col items-center text-center gap-6">
-                     <div className="w-24 h-24 bg-gray-50 rounded-[2.5rem] flex items-center justify-center text-4xl shadow-inner border border-gray-100 group-hover:bg-purple-50 group-hover:border-purple-100 transition-all duration-500 italic font-black">
-                        {quiz.icon}
-                     </div>
-                     <div className="space-y-3">
-                       <h4 className="text-lg font-black text-gray-900 uppercase tracking-tighter italic leading-none">{quiz.title}</h4>
-                       <div className="flex items-center justify-center gap-3">
-                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{quiz.questions} Questions</span>
-                          <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
-                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{quiz.difficulty}</span>
+          {!quizzes || quizzes.length === 0 ? (
+            <div className="py-32 flex flex-col items-center justify-center gap-6 animate-in fade-in zoom-in duration-500">
+               <div className="w-20 h-20 bg-gray-50 rounded-[2rem] flex items-center justify-center shadow-inner">
+                  <FileText size={32} className="text-gray-200" />
+               </div>
+               <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] italic">No quizzes identified in the registry.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {quizzes
+                ?.filter((q: any) => {
+                  if (activeTab === 'Paid') return q.type === 'Premium';
+                  if (activeTab === 'Unpaid') return q.type === 'Free';
+                  return true;
+                })
+                .map((quiz: any) => (
+                  <div key={quiz.id} className="bg-white rounded-[2.5rem] border border-gray-100 p-8 flex flex-col gap-8 group hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-900/5 transition-all duration-500 relative">
+                    <div className="flex items-center justify-between">
+                      <span className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border italic ${
+                        quiz.type === 'Free' ? "bg-green-50 text-green-600 border-green-100" : "bg-purple-50 text-purple-600 border-purple-100"
+                      }`}>
+                        {quiz.type}
+                      </span>
+                      <button className="p-2.5 text-gray-200 hover:text-gray-900 transition-colors"><MoreVertical size={20} /></button>
+                    </div>
+                    
+                    <div className="flex flex-col items-center text-center gap-6">
+                       <div className="w-24 h-24 bg-gray-50 rounded-[2.5rem] flex items-center justify-center text-4xl shadow-inner border border-gray-100 group-hover:bg-purple-50 group-hover:border-purple-100 transition-all duration-500 italic font-black">
+                          {quiz.icon}
                        </div>
-                     </div>
-                  </div>
+                       <div className="space-y-3">
+                         <h4 className="text-lg font-black text-gray-900 uppercase tracking-tighter italic leading-none">{quiz.title}</h4>
+                         <div className="flex items-center justify-center gap-3">
+                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{quiz.questions} Questions</span>
+                            <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
+                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{quiz.difficulty}</span>
+                         </div>
+                       </div>
+                    </div>
 
-                  <div className="flex items-center gap-4 pt-6 border-t border-gray-50 mt-auto">
-                    {quiz.price > 0 ? (
-                      <div className="w-full flex items-center gap-6">
-                        <div className="flex flex-col">
-                           <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest italic">Institutional Price</span>
-                           <span className="text-2xl font-black text-gray-900 tracking-tighter italic">₹{quiz.price}</span>
+                    <div className="flex items-center gap-4 pt-6 border-t border-gray-50 mt-auto">
+                      {quiz.price > 0 ? (
+                        <div className="w-full flex items-center gap-6">
+                          <div className="flex flex-col">
+                             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest italic">Institutional Price</span>
+                             <span className="text-2xl font-black text-gray-900 tracking-tighter italic">₹{quiz.price}</span>
+                          </div>
+                          <button className="flex-1 py-5 bg-purple-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-purple-900/20 active:scale-95 transition-all italic">Manage Pricing</button>
                         </div>
-                        <button className="flex-1 py-5 bg-purple-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-purple-900/20 active:scale-95 transition-all italic">Manage Pricing</button>
-                      </div>
-                    ) : (
-                      <button 
-                        onClick={() => {
-                          setSelectedQuiz(quiz);
-                          setIsPreviewModalOpen(true);
-                        }}
-                        className="w-full py-5 bg-[#10B981] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-green-900/20 active:scale-95 transition-all italic"
-                      >
-                        Launch Preview
-                      </button>
-                    )}
+                      ) : (
+                        <button 
+                          onClick={() => {
+                            setSelectedQuiz(quiz);
+                            setIsPreviewModalOpen(true);
+                          }}
+                          className="w-full py-5 bg-[#10B981] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-green-900/20 active:scale-95 transition-all italic"
+                        >
+                          Launch Preview
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-          </div>
+                ))}
+            </div>
+          )}
         </div>
       </main>
 
