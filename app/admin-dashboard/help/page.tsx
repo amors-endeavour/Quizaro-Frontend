@@ -30,18 +30,20 @@ export default function AdminHelpPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [bugForm, setBugForm] = useState({ subject: "", description: "" });
   const [isDebugActive, setIsDebugActive] = useState(false);
+  const [showDeactivatedToast, setShowDeactivatedToast] = useState(false);
 
   useEffect(() => {
     setIsDebugActive(localStorage.getItem("advanced_debugging") === "true");
   }, []);
 
-  // Institutional Auto-Concealment (Option B: Inactivity Reset)
+  // Institutional Auto-Concealment (Silent Reset Protocol)
   useEffect(() => {
     if (isDebugActive && !bugForm.description) {
       const timer = setTimeout(() => {
         localStorage.setItem("advanced_debugging", "false");
         setIsDebugActive(false);
-        window.location.reload();
+        setShowDeactivatedToast(true);
+        setTimeout(() => setShowDeactivatedToast(false), 4000);
       }, 5000);
       return () => clearTimeout(timer);
     }
@@ -247,8 +249,10 @@ export default function AdminHelpPage() {
                                    localStorage.setItem('bug_reports_ts', JSON.stringify([...validReports, now]));
                                    alert(data.message);
                                    setBugForm({ subject: "", description: "" });
-                                   localStorage.setItem('advanced_debugging', 'false'); // Option A: Success Reset
-                                   window.location.reload();
+                                   localStorage.setItem('advanced_debugging', 'false');
+                                   setIsDebugActive(false);
+                                   setShowDeactivatedToast(true);
+                                   setTimeout(() => setShowDeactivatedToast(false), 4000);
                                 }
                              } catch (err) {
                                 console.error(err);
@@ -319,6 +323,21 @@ export default function AdminHelpPage() {
 
            </div>
         </div>
+
+        {/* DEACTIVATION TOAST */}
+        {showDeactivatedToast && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[1000] bg-white border border-green-100 rounded-full px-10 py-5 shadow-2xl flex items-center gap-4"
+          >
+             <div className="w-8 h-8 bg-green-50 text-green-500 rounded-full flex items-center justify-center">
+                <Zap size={16} />
+             </div>
+             <span className="text-[11px] font-black text-green-600 uppercase tracking-[0.2em] italic">Debugging Mode Deactivated.</span>
+          </motion.div>
+        )}
       </main>
     </div>
   );

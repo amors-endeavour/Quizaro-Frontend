@@ -320,32 +320,8 @@ export default function AdminSettings() {
                          </div>
                       </div>
 
-                      <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-10">
-                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                               <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400"><Terminal size={20} /></div>
-                               <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest italic">Institutional Debugging</h3>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                               <input 
-                                 type="checkbox" 
-                                 className="sr-only peer"
-                                 checked={isDebugActive}
-                                 onChange={(e) => {
-                                    localStorage.setItem("advanced_debugging", e.target.checked.toString());
-                                    setToast({ message: e.target.checked ? "Advanced Debugging Enabled. Hidden protocols revealed." : "Debugging mode deactivated.", type: 'success' });
-                                    setIsChanged(!isChanged); // Trigger re-render
-                                 }}
-                               />
-                               <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-purple-600"></div>
-                            </label>
-                         </div>
-                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic leading-relaxed">
-                            Activating this toggle reveals the hidden Technical Feedback protocol within the Support Manual. Use only for reporting system-level anomalies.
-                         </p>
-                      </div>
-                   </div>
-                </div>
+                    </div>
+                 </div>
               </motion.div>
             )}
 
