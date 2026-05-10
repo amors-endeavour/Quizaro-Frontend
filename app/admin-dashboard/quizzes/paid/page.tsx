@@ -31,7 +31,6 @@ export default function PaidQuizzes() {
   const [isIngesting, setIsIngesting] = useState(false);
   const [seriesName, setSeriesName] = useState("");
   const [seriesDescription, setSeriesDescription] = useState("");
-  const [papers, setPapers] = useState([{ id: 1, name: "", price: "" }]);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
@@ -82,22 +81,6 @@ export default function PaidQuizzes() {
     }, 100);
   };
 
-  const addPaper = () => {
-    setPapers([...papers, { id: Date.now(), name: "", price: "" }]);
-  };
-
-  const removePaper = (id: number) => {
-    if (papers.length > 1) {
-      setPapers(papers.filter(p => p.id !== id));
-    } else {
-      showToast("At least one paper is required.", 'error');
-    }
-  };
-
-  const updatePaper = (id: number, field: string, value: string) => {
-    setPapers(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
-  };
-
   const handleStartIngestion = async () => {
     setIsIngesting(true);
     await new Promise(resolve => setTimeout(resolve, 3000));
@@ -119,9 +102,9 @@ export default function PaidQuizzes() {
         id: Date.now(),
         name: seriesName,
         description: seriesDescription,
-        papers: validPapers.map(p => p.name),
+        papers: [], // Initialized as empty; papers are added in the next step
         created: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        total: validPapers.length
+        total: 0
       };
 
       // Synchronize with database via mutate
