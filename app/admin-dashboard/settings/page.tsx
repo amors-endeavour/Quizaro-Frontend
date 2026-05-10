@@ -174,7 +174,7 @@ export default function AdminSettings() {
         
         {/* TAB NAVIGATION */}
         <div className="bg-white p-2 rounded-[2rem] border border-gray-100 shadow-sm flex items-center gap-2 max-w-fit mx-auto">
-          {["Profile", "API Keys", "Payment Gateway", "Support", "Dev Tools"].map((tab) => (
+          {["Profile", "API Keys", "Payment Gateway", "Dev Tools"].map((tab) => (
             <button
               key={tab}
               onClick={() => handleTabChange(tab)}
@@ -193,7 +193,6 @@ export default function AdminSettings() {
               {tab === "Profile" && <User size={16} />}
               {tab === "API Keys" && <Key size={16} />}
               {tab === "Payment Gateway" && <CreditCard size={16} />}
-              {tab === "Support" && <Shield size={16} />}
               {tab === "Dev Tools" && <Terminal size={16} />}
               {tab}
             </button>
