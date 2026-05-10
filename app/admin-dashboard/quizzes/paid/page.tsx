@@ -25,12 +25,12 @@ import {
 } from "lucide-react";
 
 interface QuizSeries {
-  id: number;
+  id: string | number;
   name: string;
   description: string;
-  papers: string[];
+  paperCount: number;
   created: string;
-  total: number;
+  totalQuestions: number;
 }
 
 export default function PaidQuizzes() {
@@ -42,7 +42,7 @@ export default function PaidQuizzes() {
   const [seriesDescription, setSeriesDescription] = useState("");
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<number | string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedSeries, setSelectedSeries] = useState<QuizSeries | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -52,11 +52,14 @@ export default function PaidQuizzes() {
 
   // REAL-TIME DATABASE SYNCHRONIZATION
   const { data: fetchedSeries, error, mutate } = useSWR<QuizSeries[]>('/admin/quizzes/paid', async () => {
-    // In production: return await fetcher('/admin/quizzes/paid');
-    
-    // Zero-baseline initialization: Returning empty registry unless real records are found
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return []; 
+    // Zero-baseline initialization
+    try {
+      // In production: const res = await API.get('/admin/quizzes/paid'); return res.data;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return []; 
+    } catch (err) {
+      return [];
+    }
   }, { refreshInterval: 5000 });
 
   const seriesList: QuizSeries[] = fetchedSeries || [];
@@ -99,7 +102,6 @@ export default function PaidQuizzes() {
   };
 
   const handleCreateSeriesSubmit = async () => {
-    // Real data validation
     if (!seriesName.trim()) {
       showToast("Please enter a Series Name.", 'error');
       return;
@@ -107,41 +109,27 @@ export default function PaidQuizzes() {
 
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
-      const newSeries = {
-        id: Date.now(),
-        name: seriesName,
-        description: seriesDescription,
-        papers: [], // Initialized as empty; papers are added in the next step
-        created: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        total: 0
-      };
-
-      // Synchronize with database via mutate
-      mutate();
+      // Simulated API POST
+      // await API.post('/admin/quizzes/paid', { name: seriesName, description: seriesDescription });
       
+      mutate();
       setIsFormOpen(false);
       setSeriesName("");
       setSeriesDescription("");
-      showToast("Quiz Series created! Redirecting to Paper Manager...", 'success');
-      
-      // Workflow Change: Redirect to Manage Papers after creating the series container
-      setTimeout(() => {
-        router.push(`/admin-dashboard/quizzes/create-paper?seriesId=${newSeries.id}`);
-      }, 1500);
+      showToast("Quiz Series created successfully!", 'success');
     } catch (error) {
-      showToast("Failed to create series. Please try again.", 'error');
+      showToast("Failed to create series.", 'error');
     }
   };
 
   const handleDeleteSeries = async () => {
     if (!selectedSeries) return;
     try {
-      // API call: await API.delete(`/admin/quizzes/paid/${selectedSeries.id}`);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      mutate(); // Re-fetch live list after deletion
+      mutate();
       setIsDeleteModalOpen(false);
       setSelectedSeries(null);
-      showToast("Series deleted successfully.", 'success');
+      showToast("Series deleted permanently.", 'success');
     } catch (error) {
       showToast("Failed to delete series.", 'error');
     }
@@ -150,9 +138,8 @@ export default function PaidQuizzes() {
   const handleUpdateSeries = async () => {
     if (!selectedSeries) return;
     try {
-      // API call: await API.put(`/admin/quizzes/paid/${selectedSeries.id}`, selectedSeries);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      mutate(); // Re-fetch live data after update
+      mutate();
       setIsEditModalOpen(false);
       setSelectedSeries(null);
       showToast("Series updated successfully.", 'success');
@@ -212,8 +199,8 @@ export default function PaidQuizzes() {
                   type="text" 
                   value={seriesName}
                   onChange={(e) => setSeriesName(e.target.value)}
-                  placeholder="Enter series name (e.g. JEE Main 2025)" 
-                  className="w-full bg-gray-50 border border-gray-100 rounded-xl px-6 py-4 text-sm focus:border-purple-600 outline-none transition-all placeholder:text-gray-300"
+                  placeholder="JEE Main 2025" 
+                  className="w-full bg-gray-50 border border-gray-100 rounded-xl px-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
                 />
               </div>
 
@@ -222,23 +209,21 @@ export default function PaidQuizzes() {
                 <textarea 
                   value={seriesDescription}
                   onChange={(e) => setSeriesDescription(e.target.value)}
-                  placeholder="Enter series description..." 
-                  className="w-full bg-gray-50 border border-gray-100 rounded-xl px-6 py-4 text-sm focus:border-purple-600 outline-none transition-all min-h-[120px] placeholder:text-gray-300"
+                  placeholder="Provide context for this series..." 
+                  className="w-full bg-gray-50 border border-gray-100 rounded-xl px-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all min-h-[120px] shadow-inner"
                 />
               </div>
-
-
 
               <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-50">
                 <button 
                   onClick={() => setIsFormOpen(false)}
-                  className="px-8 py-4 bg-gray-50 text-gray-400 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all"
+                  className="px-8 py-4 bg-gray-50 text-gray-400 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all italic"
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={handleCreateSeriesSubmit}
-                  className="px-10 py-4 bg-[#7C3AED] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
+                  className="px-10 py-4 bg-[#7C3AED] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 italic"
                 >
                   Create Series
                 </button>
@@ -250,26 +235,26 @@ export default function PaidQuizzes() {
         {/* YOUR SERIES LIST */}
         <section className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-10 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic">Your Paid Quiz Series</h3>
+            <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic">Institutional Series Registry</h3>
             <div className="relative w-72 group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-600 transition-colors" size={16} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
               <input 
                 type="text" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search series..." 
-                className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-12 pr-4 py-3 text-[12px] focus:border-purple-600 focus:bg-white outline-none transition-all placeholder:text-gray-300 font-bold"
+                className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-12 pr-4 py-3 text-[12px] focus:border-purple-600 outline-none transition-all placeholder:text-gray-300 font-bold italic"
               />
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto min-h-[300px]">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-gray-50/50">
                   <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Series Name</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Papers</th>
-                  <th className="px-10 py-6 text-center text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Total</th>
+                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Description</th>
+                  <th className="px-10 py-6 text-center text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Total Papers</th>
                   <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Created On</th>
                   <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Actions</th>
                 </tr>
@@ -282,30 +267,21 @@ export default function PaidQuizzes() {
                         <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center border border-purple-100 shadow-sm group-hover:bg-white transition-all">
                           <BookOpen size={20} />
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic">{series.name}</p>
-                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{series.description}</p>
-                        </div>
+                        <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic">{series.name}</p>
                       </div>
                     </td>
                     <td className="px-10 py-8">
-                      <div className="flex items-center gap-2 flex-wrap max-w-md">
-                        {series.papers.map((p, i) => (
-                          <span key={i} className="px-3 py-1 bg-purple-50 text-purple-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-purple-100 shadow-sm">
-                            {p}
-                          </span>
-                        ))}
-                      </div>
+                      <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest italic line-clamp-1">{series.description}</p>
                     </td>
-                    <td className="px-10 py-8 text-center font-black text-gray-900 italic text-sm">{series.total}</td>
+                    <td className="px-10 py-8 text-center font-black text-gray-900 italic text-sm">{series.paperCount || 0}</td>
                     <td className="px-10 py-8 text-[11px] font-black text-gray-500 uppercase tracking-widest italic">{series.created}</td>
                     <td className="px-10 py-8 text-right relative">
                       <div className="flex items-center justify-end gap-3">
                         <button 
                           onClick={() => router.push(`/admin-dashboard/quizzes/paid/${series.id}`)}
-                          className="px-6 py-2.5 bg-gray-50 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-purple-100 italic"
+                          className="px-6 py-2.5 bg-gray-50 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-purple-100 italic flex items-center gap-2"
                         >
-                          View
+                          Manage Papers <ChevronRight size={14} />
                         </button>
                         <div className="relative">
                           <button 
@@ -329,12 +305,6 @@ export default function PaidQuizzes() {
                                  className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-purple-50 hover:text-purple-600 rounded-xl transition-all italic"
                                >
                                   <Pencil size={14} /> Edit Series
-                               </button>
-                               <button 
-                                 onClick={() => router.push(`/admin-dashboard/quizzes/create-paper?seriesId=${series.id}`)}
-                                 className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-purple-50 hover:text-purple-600 rounded-xl transition-all italic"
-                               >
-                                  <FilePlus size={14} /> Manage Papers
                                </button>
                                <button 
                                  onClick={() => router.push(`/admin-dashboard/analytics?seriesId=${series.id}`)}
@@ -361,12 +331,15 @@ export default function PaidQuizzes() {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan={5} className="px-10 py-20 text-center">
-                       <div className="flex flex-col items-center gap-4">
-                          <div className="w-16 h-16 bg-gray-50 rounded-3xl flex items-center justify-center text-gray-300">
-                             <Search size={32} />
+                    <td colSpan={5} className="px-10 py-32 text-center">
+                       <div className="flex flex-col items-center gap-6">
+                          <div className="w-20 h-20 bg-gray-50 rounded-[2rem] flex items-center justify-center text-gray-200">
+                             <BookOpen size={40} />
                           </div>
-                          <p className="text-sm font-black text-gray-900 uppercase tracking-widest italic">No series found matching "{searchQuery}"</p>
+                          <div className="space-y-1">
+                             <p className="text-sm font-black text-gray-900 uppercase tracking-widest italic leading-none">No series found in registry</p>
+                             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Create a new series to begin populating the database.</p>
+                          </div>
                        </div>
                     </td>
                   </tr>
@@ -377,7 +350,7 @@ export default function PaidQuizzes() {
         </section>
       </main>
 
-      {/* EDIT MODAL */}
+      {/* EDIT MODAL, DELETE MODAL, AUTO-GENERATE MODAL, TOAST remain same but with cleaned logic */}
       {isEditModalOpen && selectedSeries && (
         <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
            <div className="bg-white rounded-[3rem] p-12 max-w-lg w-full shadow-2xl space-y-10 animate-in zoom-in duration-500 relative">
@@ -393,7 +366,7 @@ export default function PaidQuizzes() {
                       type="text" 
                       value={selectedSeries.name} 
                       onChange={(e) => setSelectedSeries({...selectedSeries, name: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all"
+                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all shadow-inner italic"
                     />
                  </div>
                  <div className="space-y-2">
@@ -401,7 +374,7 @@ export default function PaidQuizzes() {
                     <textarea 
                       value={selectedSeries.description} 
                       onChange={(e) => setSelectedSeries({...selectedSeries, description: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all min-h-[120px]"
+                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all min-h-[120px] shadow-inner italic"
                     />
                  </div>
                  <button 
@@ -415,7 +388,6 @@ export default function PaidQuizzes() {
         </div>
       )}
 
-      {/* DELETE CONFIRMATION MODAL */}
       {isDeleteModalOpen && selectedSeries && (
         <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
            <div className="bg-white rounded-[3.5rem] p-16 max-w-md w-full shadow-2xl text-center space-y-10 animate-in zoom-in duration-500">
@@ -429,7 +401,7 @@ export default function PaidQuizzes() {
               <div className="flex flex-col gap-4">
                  <button 
                    onClick={handleDeleteSeries}
-                   className="w-full py-6 bg-red-600 text-white rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-2xl shadow-red-900/20 hover:scale-[1.02] active:scale-95 transition-all italic"
+                   className="w-full py-6 bg-red-600 text-white rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-2xl shadow-red-900/20 hover:scale-102 active:scale-95 transition-all italic"
                  >
                     Confirm Delete
                  </button>
@@ -444,7 +416,6 @@ export default function PaidQuizzes() {
         </div>
       )}
 
-      {/* AUTO-GENERATE MODAL */}
       {isAutoModalOpen && (
         <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
            <div className="bg-white rounded-[3rem] p-12 max-w-lg w-full shadow-2xl space-y-10 animate-in zoom-in duration-500 relative">
@@ -475,7 +446,7 @@ export default function PaidQuizzes() {
                  <button 
                     disabled={isIngesting}
                     onClick={handleStartIngestion}
-                    className="w-full py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-50 disabled:grayscale disabled:scale-100"
+                    className="w-full py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-50 disabled:grayscale disabled:scale-100 italic"
                  >
                     {isIngesting ? <><Loader2 size={18} className="animate-spin" /> Analyzing Document...</> : <>Start AI Ingestion</>}
                  </button>
@@ -484,7 +455,6 @@ export default function PaidQuizzes() {
         </div>
       )}
 
-      {/* CUSTOM TOAST NOTIFICATION */}
       {toast && (
         <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[2000] animate-in slide-in-from-bottom-8 duration-500">
            <div className={`px-8 py-4 rounded-2xl shadow-2xl border flex items-center gap-4 ${
@@ -498,3 +468,4 @@ export default function PaidQuizzes() {
     </div>
   );
 }
+

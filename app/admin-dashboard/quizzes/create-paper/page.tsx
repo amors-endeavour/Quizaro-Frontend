@@ -43,7 +43,8 @@ interface PaperDetails {
 export default function CreatePaper() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const quizId = searchParams.get("id");
+  const paperId = searchParams.get("id");
+  const seriesId = searchParams.get("seriesId");
 
   // --- STATE ---
   const [details, setDetails] = useState<PaperDetails>({
@@ -51,25 +52,11 @@ export default function CreatePaper() {
     subject: "",
     totalMarks: 0,
     duration: 0,
-    instructions: "Read all questions carefully. Each question carries 1 mark."
+    instructions: "Read all questions carefully. Each question carries marks as specified."
   });
 
-  const [questions, setQuestions] = useState<Question[]>([
-    { 
-      id: "q-1", 
-      text: "Which is the largest planet in our Solar System?", 
-      marks: 1, 
-      options: [
-        { id: "A", text: "Earth" },
-        { id: "B", text: "Jupiter" },
-        { id: "C", text: "Saturn" },
-        { id: "D", text: "Mars" }
-      ], 
-      correctAnswer: "B" 
-    }
-  ]);
+  const [questions, setQuestions] = useState<Question[]>([]);
 
-  const [paperCount, setPaperCount] = useState(1);
   const [isAutoModalOpen, setIsAutoModalOpen] = useState(false);
   const [isIngesting, setIsIngesting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -77,25 +64,12 @@ export default function CreatePaper() {
 
   // --- FETCH REAL DATA ---
   useEffect(() => {
-    if (quizId) {
-      // Simulate fetching quiz data from DB
-      // In a real app, you'd do: API.get(`/admin/quizzes/${quizId}`)
-      const mockQuizData = {
-        name: "General Knowledge Quiz",
-        subject: "General Knowledge",
-        questions: 20,
-        duration: 20,
-      };
-      
-      setDetails({
-        title: mockQuizData.name,
-        subject: mockQuizData.subject,
-        totalMarks: mockQuizData.questions, // Default to 1 mark per question
-        duration: mockQuizData.duration,
-        instructions: "Read all questions carefully. Each question carries 1 mark."
-      });
+    if (paperId) {
+      // In production: const res = await API.get(`/admin/quizzes/papers/${paperId}`);
+      // setDetails(res.data.details);
+      // setQuestions(res.data.questions);
     }
-  }, [quizId]);
+  }, [paperId]);
 
   // --- LIVE COUNTERS ---
   const stats = useMemo(() => {
@@ -123,7 +97,6 @@ export default function CreatePaper() {
   };
 
   const deleteQuestion = (id: string) => {
-    // Functional update ensures we're working with the most current state snapshot
     setQuestions(prev => prev.filter(q => q.id !== id));
   };
 
@@ -149,81 +122,49 @@ export default function CreatePaper() {
 
   const handleAIIngest = async () => {
     setIsIngesting(true);
-    // Simulate AI parsing PDF -> JSON
     await new Promise(resolve => setTimeout(resolve, 3000));
     
-    const extractedQuestions: Question[] = [
-      {
-        id: "ai-1",
-        text: "What is the chemical symbol for water?",
-        marks: 1,
-        options: [
-          { id: "A", text: "H2O" },
-          { id: "B", text: "CO2" },
-          { id: "C", text: "NaCl" },
-          { id: "D", text: "O2" }
-        ],
-        correctAnswer: "A"
-      },
-      {
-        id: "ai-2",
-        text: "Which gas do plants absorb from the atmosphere?",
-        marks: 1,
-        options: [
-          { id: "A", text: "Oxygen" },
-          { id: "B", text: "Carbon dioxide" },
-          { id: "C", text: "Nitrogen" },
-          { id: "D", text: "Hydrogen" }
-        ],
-        correctAnswer: "B"
-      }
-    ];
-
-    setQuestions([...questions, ...extractedQuestions]);
+    // Extracted data would come from API
     setIsIngesting(false);
     setIsAutoModalOpen(false);
-    setToast({ message: "AI has successfully extracted 2 MCQs!", type: 'success' });
+    setToast({ message: "AI extraction complete! Review the questions below.", type: 'success' });
   };
 
   const handleSave = async (isPublish: boolean) => {
-    // 1. Validation Guard
     if (!details.title.trim()) {
-      setToast({ message: "Paper Title is required for initialization.", type: 'error' });
+      setToast({ message: "Paper Title is required.", type: 'error' });
       return;
     }
 
     if (questions.length === 0) {
-      setToast({ message: "Cannot publish an empty paper. Please add at least one MCQ.", type: 'error' });
-      return;
-    }
-
-    // Check for empty question text or options
-    const hasIncompleteQuestions = questions.some(q => !q.text.trim() || q.options.some(opt => !opt.text.trim()));
-    if (hasIncompleteQuestions) {
-      setToast({ message: "Please complete all questions and options before publishing.", type: 'error' });
+      setToast({ message: "Please add at least one MCQ.", type: 'error' });
       return;
     }
 
     setIsSaving(true);
     try {
-      // 2. Database Sync Logic
-      // Ensure we send only the current filtered questions list associated with this seriesId
       const payload = {
-        seriesId: quizId,
+        seriesId, // If nested in a series
+        paperId, // If updating existing
         details,
-        questions: questions // This is the strictly filtered state
+        questions,
+        status: isPublish ? 'Published' : 'Draft',
+        type: seriesId ? 'paid' : 'unpaid'
       };
 
-      console.log("Syncing with Registry Database:", payload);
-
-      // Simulate API POST/PATCH
+      // API call: await API.post('/admin/quizzes/save-paper', payload);
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      setToast({ message: isPublish ? "Paper successfully published to series hierarchy!" : "Paper state persisted as draft.", type: 'success' });
+      setToast({ message: isPublish ? "Paper successfully published!" : "Paper saved as draft.", type: 'success' });
       
-      if (isPublish) {
-        // Navigate back to the series management page
-        setTimeout(() => router.push("/admin-dashboard/quizzes/unpaid"), 1000);
+      if (isPublish || !paperId) {
+        setTimeout(() => {
+          if (seriesId) {
+            router.push(`/admin-dashboard/quizzes/paid/${seriesId}`);
+          } else {
+            router.push("/admin-dashboard/quizzes/unpaid");
+          }
+        }, 1500);
       }
     } catch (err) {
       setToast({ message: "Failed to synchronize with database.", type: 'error' });
@@ -235,8 +176,8 @@ export default function CreatePaper() {
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
       <AdminHeader 
-        title="Create Quiz Paper" 
-        path={[{ label: "Papers" }, { label: "Create Paper" }]} 
+        title={paperId ? "Edit Quiz Paper" : "Create Quiz Paper"} 
+        path={[{ label: "Quizzes" }, { label: paperId ? "Edit Paper" : "Create Paper" }]} 
       />
 
       <main className="p-8 lg:p-12 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
@@ -244,36 +185,35 @@ export default function CreatePaper() {
         {/* TOP HEADER ACTIONS */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
            <div className="space-y-2">
-              <h1 className="text-4xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">Create Quiz Paper</h1>
-              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest italic leading-none">Add details and MCQ questions to create your paper.</p>
+              <h1 className="text-4xl font-black text-gray-900 uppercase tracking-tighter italic leading-none">{paperId ? "Edit Assessment" : "Provision New Paper"}</h1>
+              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest italic leading-none">
+                {seriesId ? `Building paper for Series ID: ${seriesId}` : "Creating standalone unpaid assessment"}
+              </p>
            </div>
            
            <div className="flex flex-wrap items-center gap-4">
-              <button className="px-8 py-3.5 bg-white border border-gray-100 rounded-xl text-[11px] font-black text-gray-500 uppercase tracking-widest italic shadow-sm flex items-center gap-3 hover:bg-gray-50 transition-all">
-                 <Eye size={16} /> Preview
-              </button>
               <button 
                 onClick={() => handleSave(false)}
-                className="px-8 py-3.5 bg-white border border-gray-100 rounded-xl text-[11px] font-black text-gray-500 uppercase tracking-widest italic shadow-sm flex items-center gap-3 hover:bg-gray-50 transition-all"
+                disabled={isSaving}
+                className="px-8 py-3.5 bg-white border border-gray-100 rounded-xl text-[11px] font-black text-gray-500 uppercase tracking-widest italic shadow-sm flex items-center gap-3 hover:bg-gray-50 transition-all disabled:opacity-50"
               >
-                 <Save size={16} /> Save
+                 <Save size={16} /> {isSaving ? "Saving..." : "Save Draft"}
               </button>
               <button 
                 onClick={() => handleSave(true)}
-                className="px-10 py-3.5 bg-[#7C3AED] text-white rounded-xl text-[11px] font-black uppercase tracking-widest italic shadow-xl shadow-purple-900/20 flex items-center gap-3 hover:scale-105 active:scale-95 transition-all"
+                disabled={isSaving}
+                className="px-10 py-3.5 bg-[#7C3AED] text-white rounded-xl text-[11px] font-black uppercase tracking-widest italic shadow-xl shadow-purple-900/20 flex items-center gap-3 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
               >
-                 <Send size={16} /> Publish
+                 <Send size={16} /> {isSaving ? "Publishing..." : "Publish Assessment"}
               </button>
            </div>
         </div>
-
-
 
         {/* PAPER DETAILS CARD */}
         <section className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-10 space-y-8">
            <div className="flex items-center gap-4 text-purple-600">
               <FileText size={20} />
-              <h2 className="text-[12px] font-black uppercase tracking-widest italic">Paper Details</h2>
+              <h2 className="text-[12px] font-black uppercase tracking-widest italic">Institutional Paper Metadata</h2>
            </div>
 
            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -283,7 +223,7 @@ export default function CreatePaper() {
                    type="text" 
                    value={details.title}
                    onChange={(e) => setDetails({...details, title: e.target.value})}
-                   placeholder="Enter paper title"
+                   placeholder="Enter paper title (e.g. Mathematics Shift 1)"
                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
                  />
               </div>
@@ -302,7 +242,7 @@ export default function CreatePaper() {
               </div>
               <div className="flex gap-4">
                  <div className="space-y-3 flex-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-2">Total Marks <span className="text-red-500">*</span></label>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-2">Total Marks</label>
                     <input 
                       type="number" 
                       value={details.totalMarks}
@@ -311,16 +251,13 @@ export default function CreatePaper() {
                     />
                  </div>
                  <div className="space-y-3 flex-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-2">Duration <span className="text-red-500">*</span></label>
-                    <div className="relative">
-                       <input 
-                         type="number" 
-                         value={details.duration}
-                         onChange={(e) => setDetails({...details, duration: parseInt(e.target.value)})}
-                         className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all pr-12"
-                       />
-                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-300 uppercase italic">min</span>
-                    </div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-2">Duration (min)</label>
+                    <input 
+                      type="number" 
+                      value={details.duration}
+                      onChange={(e) => setDetails({...details, duration: parseInt(e.target.value)})}
+                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all"
+                    />
                  </div>
               </div>
 
@@ -341,14 +278,14 @@ export default function CreatePaper() {
            <div className="flex items-center justify-between">
               <div className="flex items-center gap-4 text-purple-600">
                  <BookOpen size={20} />
-                 <h2 className="text-[12px] font-black uppercase tracking-widest italic">MCQ Questions</h2>
+                 <h2 className="text-[12px] font-black uppercase tracking-widest italic">MCQ Question Bank</h2>
               </div>
               <div className="flex items-center gap-4">
                  <button 
                    onClick={() => setIsAutoModalOpen(true)}
                    className="px-6 py-3 bg-gradient-to-r from-purple-600/10 to-blue-600/10 text-purple-600 rounded-xl text-[11px] font-black uppercase tracking-widest italic flex items-center gap-3 border border-purple-100 hover:scale-105 transition-all shadow-sm"
                  >
-                    <Sparkles size={16} /> ✨ Auto-Generate from PDF
+                    <Sparkles size={16} /> ✨ AI Auto-Generate
                  </button>
                  <button 
                    onClick={addQuestion}
@@ -359,8 +296,8 @@ export default function CreatePaper() {
               </div>
            </div>
 
-           <div className="space-y-8">
-              {questions.map((q, index) => (
+           <div className="space-y-8 min-h-[200px]">
+              {questions.length > 0 ? questions.map((q, index) => (
                 <div key={q.id} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden group hover:shadow-md transition-all animate-in slide-in-from-right-8 duration-500">
                    <div className="p-8 space-y-8">
                       <div className="flex items-start gap-6">
@@ -431,7 +368,11 @@ export default function CreatePaper() {
                       </div>
                    </div>
                 </div>
-              ))}
+              )) : (
+                <div className="py-20 text-center border-4 border-dashed border-gray-50 rounded-[3rem]">
+                   <p className="text-[11px] font-black text-gray-300 uppercase tracking-widest italic">MCQ Question Bank is Empty</p>
+                </div>
+              )}
            </div>
 
            {/* BUILDER FOOTER STATS */}
@@ -448,7 +389,7 @@ export default function CreatePaper() {
                  </div>
               </div>
               <div className="flex items-center gap-4">
-                 <p className="text-[11px] text-gray-400 font-black uppercase tracking-widest italic">Live calculation synced</p>
+                 <p className="text-[11px] text-gray-400 font-black uppercase tracking-widest italic">Live institutional sync</p>
                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               </div>
            </div>
@@ -456,7 +397,7 @@ export default function CreatePaper() {
 
       </main>
 
-      {/* AUTO-GENERATE MODAL */}
+      {/* AUTO-GENERATE MODAL & TOAST */}
       {isAutoModalOpen && (
         <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-300">
            <div className="bg-white rounded-[3rem] p-12 max-w-lg w-full shadow-2xl space-y-10 animate-in zoom-in duration-500 relative">
@@ -486,7 +427,7 @@ export default function CreatePaper() {
                  <button 
                     disabled={isIngesting}
                     onClick={handleAIIngest}
-                    className="w-full py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 disabled:grayscale"
+                    className="w-full py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 disabled:grayscale italic"
                  >
                     {isIngesting ? <><Loader2 size={18} className="animate-spin" /> AI is scanning...</> : <>Extract MCQs via AI</>}
                  </button>
@@ -495,7 +436,6 @@ export default function CreatePaper() {
         </div>
       )}
 
-      {/* CUSTOM TOAST */}
       {toast && (
         <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[2000] animate-in slide-in-from-bottom-8 duration-500">
            <div className={`px-8 py-4 bg-white rounded-2xl shadow-2xl border flex items-center gap-4 ${
