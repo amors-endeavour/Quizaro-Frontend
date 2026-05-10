@@ -28,7 +28,8 @@ import {
   XCircle,
   BarChart3,
   Zap,
-  Target
+  Target,
+  BookOpen
 } from "lucide-react";
 import { 
   LineChart, 
