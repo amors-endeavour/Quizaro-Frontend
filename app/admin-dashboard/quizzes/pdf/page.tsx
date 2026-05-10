@@ -191,7 +191,7 @@ export default function PDFManagement() {
              type="text" 
              value={searchQuery}
              onChange={(e) => setSearchQuery(e.target.value)}
-             placeholder="Search by Title, Tags, or Academic Level (e.g. 'Grade 10 2026')..." 
+             placeholder="Search by Title, Tags, or Academic Level..." 
              className="w-full bg-white border border-gray-100 rounded-[2rem] pl-16 pr-8 py-6 text-sm focus:border-purple-600 outline-none transition-all shadow-sm italic font-bold"
            />
         </section>
@@ -253,8 +253,8 @@ export default function PDFManagement() {
              <div className="col-span-full py-32 flex flex-col items-center justify-center gap-6 text-gray-300 bg-white rounded-[3rem] border border-dashed border-gray-200">
                 <FileText size={64} className="opacity-20" />
                 <div className="text-center space-y-2">
-                   <p className="text-lg font-black text-gray-900 uppercase tracking-tighter italic leading-none">No matching academic resources found</p>
-                   <p className="text-[10px] font-bold uppercase tracking-widest italic">Adjust your search or provision a new PDF to the repository.</p>
+                   <p className="text-lg font-black text-gray-900 uppercase tracking-tighter italic leading-none">No academic resources available</p>
+                   <p className="text-[10px] font-bold uppercase tracking-widest italic">Provision a new PDF to the repository to begin.</p>
                 </div>
              </div>
            )}
@@ -316,7 +316,7 @@ export default function PDFManagement() {
                          type="text" 
                          value={formData.title}
                          onChange={(e) => setFormData({...formData, title: e.target.value})}
-                         placeholder="e.g. Class 10 Mathematics Final 2026" 
+                         placeholder="" 
                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
                        />
                     </div>
@@ -326,7 +326,7 @@ export default function PDFManagement() {
                        <textarea 
                          value={formData.description}
                          onChange={(e) => setFormData({...formData, description: e.target.value})}
-                         placeholder="Include academic level, year, and specific subject details..." 
+                         placeholder="" 
                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner min-h-[120px]"
                        />
                     </div>
@@ -337,7 +337,7 @@ export default function PDFManagement() {
                          type="text" 
                          value={formData.tags}
                          onChange={(e) => setFormData({...formData, tags: e.target.value})}
-                         placeholder="Grade 10, Syllabus, 2026" 
+                         placeholder="" 
                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold italic outline-none focus:border-purple-600 transition-all shadow-inner"
                        />
                     </div>
@@ -358,9 +358,9 @@ export default function PDFManagement() {
                  </div>
 
                  <button 
-                   disabled={isSaving}
+                   disabled={isSaving || !formData.title.trim() || !formData.description.trim() || (!stagedFile && !editingPDF)}
                    onClick={handleUploadSubmit}
-                   className="w-full py-6 bg-gray-900 text-white rounded-[2rem] text-[12px] font-black uppercase tracking-widest italic shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50"
+                   className="w-full py-6 bg-gray-900 text-white rounded-[2rem] text-[12px] font-black uppercase tracking-widest italic shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-30 disabled:grayscale disabled:scale-100"
                  >
                     {isSaving ? <Loader2 size={20} className="animate-spin" /> : editingPDF ? "Update Resource Metadata" : "Authorize & Upload Resource"}
                  </button>

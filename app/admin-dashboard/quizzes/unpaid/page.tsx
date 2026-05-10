@@ -355,9 +355,9 @@ export default function UnpaidQuizzes() {
                 <Sparkles size={18} /> ✨ AI Auto-Drafter
               </button>
               <button 
-                disabled={isSaving}
+                disabled={isSaving || !formData.title.trim() || !formData.subject || !formData.questions || !formData.duration}
                 onClick={handleSubmit}
-                className="px-10 py-4 bg-[#7C3AED] text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-3"
+                className="px-10 py-4 bg-[#7C3AED] text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale disabled:scale-100 flex items-center gap-3"
               >
                 {isSaving ? <><Loader2 size={16} className="animate-spin" /> Syncing...</> : editingId ? "Update Assessment" : "Authorize & Create"}
               </button>
@@ -372,7 +372,7 @@ export default function UnpaidQuizzes() {
                 type="text" 
                 value={formData.title}
                 onChange={handleFormChange}
-                placeholder="Indian Polity Fundamentals" 
+                placeholder="" 
                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-5 text-sm focus:border-purple-600 outline-none transition-all placeholder:text-gray-300 font-bold italic shadow-inner" 
               />
             </div>
@@ -383,7 +383,7 @@ export default function UnpaidQuizzes() {
                 id="description"
                 value={formData.description}
                 onChange={handleFormChange}
-                placeholder="Enter formal assessment context..." 
+                placeholder="" 
                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-5 text-sm focus:border-purple-600 outline-none transition-all min-h-[140px] placeholder:text-gray-300 font-medium italic shadow-inner" 
               />
             </div>
@@ -411,7 +411,7 @@ export default function UnpaidQuizzes() {
                 type="number" 
                 value={formData.questions}
                 onChange={handleFormChange}
-                placeholder="25" 
+                placeholder="" 
                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-5 text-sm focus:border-purple-600 outline-none transition-all font-bold italic" 
               />
             </div>
@@ -423,7 +423,7 @@ export default function UnpaidQuizzes() {
                 type="number" 
                 value={formData.duration}
                 onChange={handleFormChange}
-                placeholder="30" 
+                placeholder="" 
                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-5 text-sm focus:border-purple-600 outline-none transition-all font-bold italic" 
               />
             </div>
