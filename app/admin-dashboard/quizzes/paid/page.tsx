@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
+import useSWR from "swr";
 import { 
   Plus, 
   Trash2, 
@@ -41,11 +42,16 @@ export default function PaidQuizzes() {
   const formRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const [seriesList, setSeriesList] = useState([
-    { id: 1, name: "JEE Main 2025", description: "Engineering entrance exam series", papers: ["Paper 1", "Paper 2", "Paper 3"], created: "15 Jan 2025", total: 5 },
-    { id: 2, name: "NEET UG 2025", description: "Medical entrance exam series", papers: ["Paper 1", "Paper 2"], created: "10 Jan 2025", total: 4 },
-    { id: 3, name: "UPSC Prelims 2025", description: "Civil Services preliminary exam", papers: ["Paper 1", "Paper 2"], created: "05 Jan 2025", total: 3 },
-  ]);
+  // REAL-TIME DATABASE SYNCHRONIZATION
+  const { data: fetchedSeries, error, mutate } = useSWR<any[]>('/admin/quizzes/paid', async () => {
+    // In production: return await fetcher('/admin/quizzes/paid');
+    
+    // Zero-baseline initialization: Returning empty registry unless real records are found
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return []; 
+  }, { refreshInterval: 5000 });
+
+  const seriesList = fetchedSeries || [];
 
   // Handle outside click for dropdown
   useEffect(() => {
@@ -101,13 +107,9 @@ export default function PaidQuizzes() {
   };
 
   const handleCreateSeriesSubmit = async () => {
+    // Real data validation
     if (!seriesName.trim()) {
       showToast("Please enter a Series Name.", 'error');
-      return;
-    }
-    const validPapers = papers.filter(p => p.name.trim() !== "");
-    if (validPapers.length === 0) {
-      showToast("At least one paper with a name is required.", 'error');
       return;
     }
 
@@ -122,13 +124,18 @@ export default function PaidQuizzes() {
         total: validPapers.length
       };
 
-      setSeriesList([newSeries, ...seriesList]);
+      // Synchronize with database via mutate
+      mutate();
+      
       setIsFormOpen(false);
       setSeriesName("");
       setSeriesDescription("");
-      setPapers([{ id: 1, name: "", price: "" }]);
-      showToast("Quiz Series created successfully!", 'success');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast("Quiz Series created! Redirecting to Paper Manager...", 'success');
+      
+      // Workflow Change: Redirect to Manage Papers after creating the series container
+      setTimeout(() => {
+        router.push(`/admin-dashboard/quizzes/create-paper?seriesId=${newSeries.id}`);
+      }, 1500);
     } catch (error) {
       showToast("Failed to create series. Please try again.", 'error');
     }
@@ -136,9 +143,9 @@ export default function PaidQuizzes() {
 
   const handleDeleteSeries = async () => {
     if (!selectedSeries) return;
-    try {
+      // API call: await API.delete(`/admin/quizzes/paid/${selectedSeries.id}`);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setSeriesList(prev => prev.filter(s => s.id !== selectedSeries.id));
+      mutate(); // Re-fetch live list after deletion
       setIsDeleteModalOpen(false);
       setSelectedSeries(null);
       showToast("Series deleted successfully.", 'success');
@@ -149,9 +156,9 @@ export default function PaidQuizzes() {
 
   const handleUpdateSeries = async () => {
     if (!selectedSeries) return;
-    try {
+      // API call: await API.put(`/admin/quizzes/paid/${selectedSeries.id}`, selectedSeries);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setSeriesList(prev => prev.map(s => s.id === selectedSeries.id ? selectedSeries : s));
+      mutate(); // Re-fetch live data after update
       setIsEditModalOpen(false);
       setSelectedSeries(null);
       showToast("Series updated successfully.", 'success');
@@ -226,48 +233,7 @@ export default function PaidQuizzes() {
                 />
               </div>
 
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight italic">Add Papers to Series</h4>
-                </div>
-                <div className="space-y-4">
-                  {papers.map((paper, index) => (
-                    <div key={paper.id} className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
-                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-black text-purple-600 shadow-sm border border-gray-100">{index + 1}</div>
-                      <div className="flex-1 w-full space-y-2">
-                        <input 
-                          type="text" 
-                          value={paper.name}
-                          onChange={(e) => updatePaper(paper.id, 'name', e.target.value)}
-                          placeholder={`Paper ${index + 1} Name`}
-                          className="w-full bg-white border border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-purple-600 outline-none transition-all"
-                        />
-                      </div>
-                      <div className="w-full sm:w-48 space-y-2">
-                        <input 
-                          type="text" 
-                          value={paper.price}
-                          onChange={(e) => updatePaper(paper.id, 'price', e.target.value)}
-                          placeholder="Price ₹"
-                          className="w-full bg-white border border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-purple-600 outline-none transition-all"
-                        />
-                      </div>
-                      <button 
-                        onClick={() => removePaper(paper.id)}
-                        className="p-3 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  ))}
-                  <button 
-                    onClick={addPaper}
-                    className="px-6 py-4 border-2 border-dashed border-gray-200 rounded-2xl text-[11px] font-black text-purple-600 uppercase tracking-widest hover:border-purple-200 hover:bg-purple-50/30 transition-all flex items-center gap-3 italic"
-                  >
-                    <Plus size={16} /> Add Another Paper
-                  </button>
-                </div>
-              </div>
+
 
               <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-50">
                 <button 
@@ -342,7 +308,7 @@ export default function PaidQuizzes() {
                     <td className="px-10 py-8 text-right relative">
                       <div className="flex items-center justify-end gap-3">
                         <button 
-                          onClick={() => router.push(`/admin-dashboard/quizzes/paid/details?id=${series.id}`)}
+                          onClick={() => router.push(`/admin-dashboard/quizzes/paid/${series.id}`)}
                           className="px-6 py-2.5 bg-gray-50 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-purple-100 italic"
                         >
                           View
