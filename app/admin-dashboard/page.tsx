@@ -94,6 +94,17 @@ const getRealTimeStats = async () => {
   }
 };
 
+interface QuizRegistry {
+  id: string;
+  seriesName: string;
+  paperTitle: string;
+  category: 'Paid' | 'Unpaid';
+  questionsCount: number;
+  attempts: number;
+  status: 'Published' | 'Draft';
+  createdAt: string;
+}
+
 interface DashboardStats {
   totalUsers: number;
   totalQuizzes: number;
@@ -117,13 +128,21 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [activeTab, setActiveTab] = useState('All');
-  const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
+  const [selectedQuiz, setSelectedQuiz] = useState<QuizRegistry | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   // SWR HOOKS for Continuous Real-Time Auditing
   const { data: stats } = useSWR<DashboardStats>('/admin/dashboard/stats', () => getRealTimeStats(), { refreshInterval: 5000 });
-  const { data: revenueData } = useSWR<any[]>('/admin/dashboard/revenue', async () => [], { refreshInterval: 5000 });
-  const { data: quizzes } = useSWR<any[]>('/admin/quizzes', async () => [], { refreshInterval: 5000 });
+  const { data: revenueData } = useSWR<any[]>('/admin/dashboard/revenue', async () => {
+    // In production: const res = await API.get('/admin/dashboard/revenue'); return res.data;
+    // Returning zero-state logic as requested
+    return []; 
+  }, { refreshInterval: 5000 });
+  const { data: quizzes } = useSWR<QuizRegistry[]>('/admin/quizzes/matrix', async () => {
+    // In production: const res = await API.get('/admin/quizzes/matrix'); return res.data;
+    // Strictly live data only: starting with zero records until publish
+    return []; 
+  }, { refreshInterval: 5000 });
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -350,66 +369,76 @@ export default function AdminDashboard() {
                <div className="w-20 h-20 bg-gray-50 rounded-[2rem] flex items-center justify-center shadow-inner">
                   <FileText size={32} className="text-gray-200" />
                </div>
-               <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] italic">No quizzes identified in the registry.</p>
+               <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] italic">No live quizzes identified in the registry.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-              {quizzes
-                ?.filter((q: any) => {
-                  if (activeTab === 'Paid') return q.type === 'Premium';
-                  if (activeTab === 'Unpaid') return q.type === 'Free';
-                  return true;
-                })
-                .map((quiz: any) => (
-                  <div key={quiz.id} className="bg-white rounded-[2.5rem] border border-gray-100 p-8 flex flex-col gap-8 group hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-900/5 transition-all duration-500 relative">
-                    <div className="flex items-center justify-between">
-                      <span className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border italic ${
-                        quiz.type === 'Free' ? "bg-green-50 text-green-600 border-green-100" : "bg-purple-50 text-purple-600 border-purple-100"
-                      }`}>
-                        {quiz.type}
-                      </span>
-                      <button className="p-2.5 text-gray-200 hover:text-gray-900 transition-colors"><MoreVertical size={20} /></button>
-                    </div>
-                    
-                    <div className="flex flex-col items-center text-center gap-6">
-                       <div className="w-24 h-24 bg-gray-50 rounded-[2.5rem] flex items-center justify-center text-4xl shadow-inner border border-gray-100 group-hover:bg-purple-50 group-hover:border-purple-100 transition-all duration-500 italic font-black">
-                          {quiz.icon}
-                       </div>
-                       <div className="space-y-3">
-                         <h4 className="text-lg font-black text-gray-900 uppercase tracking-tighter italic leading-none">{quiz.title}</h4>
-                         <div className="flex items-center justify-center gap-3">
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{quiz.questions} Questions</span>
-                            <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{quiz.difficulty}</span>
-                         </div>
-                       </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 pt-6 border-t border-gray-50 mt-auto">
-                      {quiz.price > 0 ? (
-                        <div className="w-full flex items-center gap-6">
-                          <div className="flex flex-col">
-                             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest italic">Institutional Price</span>
-                             <span className="text-2xl font-black text-gray-900 tracking-tighter italic">₹{quiz.price}</span>
+            <div className="overflow-x-auto rounded-[2rem] border border-gray-100">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-gray-50/50">
+                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Series & Paper Title</th>
+                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Category</th>
+                    <th className="px-10 py-6 text-center text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Questions</th>
+                    <th className="px-10 py-6 text-center text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Attempts</th>
+                    <th className="px-10 py-6 text-center text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Status</th>
+                    <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {quizzes
+                    ?.filter((q) => {
+                      if (activeTab === 'Paid') return q.category === 'Paid';
+                      if (activeTab === 'Unpaid') return q.category === 'Unpaid';
+                      return true;
+                    })
+                    .map((quiz) => (
+                      <tr key={quiz.id} className="group hover:bg-gray-50 transition-all duration-300">
+                        <td className="px-10 py-8">
+                          <div className="flex items-center gap-6">
+                            <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center border border-purple-100 shadow-sm group-hover:bg-white transition-all">
+                              <BookOpen size={20} />
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-sm font-black text-gray-900 uppercase tracking-tighter italic">{quiz.seriesName}</p>
+                              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">{quiz.paperTitle}</p>
+                            </div>
                           </div>
-                          <button className="flex-1 py-5 bg-purple-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-purple-900/20 active:scale-95 transition-all italic">Manage Pricing</button>
-                        </div>
-                      ) : (
-                        <button 
-                          onClick={() => {
-                            setSelectedQuiz(quiz);
-                            setIsPreviewModalOpen(true);
-                          }}
-                          className="w-full py-5 bg-[#10B981] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-green-900/20 active:scale-95 transition-all italic"
-                        >
-                          Launch Preview
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                        </td>
+                        <td className="px-10 py-8">
+                          <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border italic ${
+                            quiz.category === 'Unpaid' ? "bg-green-50 text-green-600 border-green-100" : "bg-purple-50 text-purple-600 border-purple-100"
+                          }`}>
+                            {quiz.category}
+                          </span>
+                        </td>
+                        <td className="px-10 py-8 text-center font-black text-gray-900 italic text-sm">{quiz.questionsCount}</td>
+                        <td className="px-10 py-8 text-center font-black text-gray-900 italic text-sm">{quiz.attempts}</td>
+                        <td className="px-10 py-8 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                             <div className={`w-1.5 h-1.5 rounded-full ${quiz.status === 'Published' ? 'bg-green-500' : 'bg-orange-400'} animate-pulse`} />
+                             <span className="text-[10px] font-black text-gray-500 uppercase italic tracking-widest">{quiz.status}</span>
+                          </div>
+                        </td>
+                        <td className="px-10 py-8 text-right relative">
+                          <div className="flex items-center justify-end gap-3">
+                            <button 
+                              onClick={() => {
+                                setSelectedQuiz(quiz);
+                                setIsPreviewModalOpen(true);
+                              }}
+                              className="px-6 py-2.5 bg-gray-50 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-purple-100 italic shadow-sm active:scale-95"
+                            >
+                              Manage
+                            </button>
+                            <button className="p-2.5 text-gray-200 hover:text-gray-900 transition-colors"><MoreVertical size={20} /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
-          )}
+          )}}
         </div>
       </main>
 
