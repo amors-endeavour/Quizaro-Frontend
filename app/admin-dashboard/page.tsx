@@ -49,52 +49,6 @@ import {
 // FETCHERS
 const fetcher = (url: string) => API.get(url).then(res => res.data);
 
-// REAL-TIME DATABASE SYNCHRONIZATION (Zero-Baseline Initialization)
-const getRealTimeStats = async () => {
-  try {
-    // In production: const res = await API.get('/admin/dashboard/metrics'); return res.data;
-    
-    // Purging all placeholders: returning 0-baseline as requested.
-    return {
-      totalUsers: 0,
-      totalQuizzes: 0,
-      totalRevenue: 0,
-      activeParticipants: 0, // Unique users in last 24h
-      paidQuestions: 0, // Sum of MCQs in paid papers
-      unpaidQuestions: 0, // Sum of MCQs in free papers
-      totalAttempts: 0,
-      averageScore: 0,
-      paidQuizzes: 0,
-      unpaidQuizzes: 0,
-      trends: {
-        users: "0.0%",
-        quizzes: "0.0%",
-        revenue: "0.0%",
-        participants: "0.0%"
-      }
-    };
-  } catch (err) {
-    return {
-      totalUsers: 0,
-      totalQuizzes: 0,
-      totalRevenue: 0,
-      activeParticipants: 0,
-      paidQuestions: 0,
-      unpaidQuestions: 0,
-      totalAttempts: 0,
-      averageScore: 0,
-      paidQuizzes: 0,
-      unpaidQuizzes: 0,
-      trends: {
-        users: "0.0%",
-        quizzes: "0.0%",
-        revenue: "0.0%",
-        participants: "0.0%"
-      }
-    };
-  }
-};
-
 interface QuizRegistry {
   id: string;
   seriesName: string;
@@ -134,17 +88,25 @@ export default function AdminDashboard() {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   // SWR HOOKS for Continuous Real-Time Auditing
-  const { data: stats } = useSWR<DashboardStats>('/admin/dashboard/stats', () => getRealTimeStats(), { refreshInterval: 5000 });
-  const { data: revenueData } = useSWR<any[]>('/admin/dashboard/revenue', async () => {
-    // In production: const res = await API.get('/admin/dashboard/revenue'); return res.data;
-    // Returning zero-state logic as requested
-    return []; 
-  }, { refreshInterval: 5000 });
-  const { data: quizzes } = useSWR<QuizRegistry[]>('/admin/quizzes/matrix', async () => {
-    // In production: const res = await API.get('/admin/quizzes/matrix'); return res.data;
-    // Strictly live data only: starting with zero records until publish
-    return []; 
-  }, { refreshInterval: 5000 });
+  const { data: stats } = useSWR<DashboardStats>('/admin/dashboard/stats', fetcher, { 
+    refreshInterval: 5000,
+    fallbackData: {
+      totalUsers: 0, totalQuizzes: 0, totalRevenue: 0, activeParticipants: 0,
+      paidQuestions: 0, unpaidQuestions: 0, totalAttempts: 0, averageScore: 0,
+      paidQuizzes: 0, unpaidQuizzes: 0,
+      trends: { users: '0%', quizzes: '0%', revenue: '0%', participants: '0%' }
+    }
+  });
+  
+  const { data: revenueData = [] } = useSWR<any[]>('/admin/dashboard/revenue', fetcher, { 
+    refreshInterval: 5000,
+    fallbackData: []
+  });
+  
+  const { data: quizzes = [] } = useSWR<QuizRegistry[]>('/admin/quizzes/matrix', fetcher, { 
+    refreshInterval: 5000,
+    fallbackData: []
+  });
 
   useEffect(() => {
     const checkAuth = async () => {

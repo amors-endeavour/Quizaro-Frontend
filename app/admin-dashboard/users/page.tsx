@@ -132,14 +132,22 @@ export default function UsersManagementPage() {
   }, [allUsers]);
 
   const handleDeleteUser = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+    if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone. We recommend downloading a registry backup first.")) return;
+    
+    // Optimistic UI Update
+    const previousUsers = usersData;
+    const updatedUsers = allUsers.filter(u => u.id !== id);
     
     try {
+      // Trigger mutate for immediate UI removal
+      mutate(updatedUsers, false);
+      
       await API.delete(`/admin/users/${id}`);
-      setToast({ message: "User record purged from registry.", type: 'success' });
-      mutate();
+      setToast({ message: "User record successfully purged from institutional registry.", type: 'success' });
     } catch (err) {
-      setToast({ message: "Failed to delete user.", type: "error" });
+      // Revert if API fails
+      mutate(previousUsers);
+      setToast({ message: "Administrative Error: Failed to delete user. Please verify backend connectivity.", type: "error" });
     }
   };
 
@@ -226,8 +234,14 @@ export default function UsersManagementPage() {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     if (type === 'csv') {
-      const headers = ["ID", "Name", "Email", "Status", "Joined On"];
-      const rows = filteredUsers.map(u => [u.id, u.name, u.email, u.status, u.joinedOn]);
+      const headers = ["Full Name", "Username Handle", "Email Address", "Current Status", "Joined On"];
+      const rows = filteredUsers.map(u => [
+        u.name, 
+        u.handle || `@${u.name.toLowerCase().replace(" ", ".")}`, 
+        u.email, 
+        u.status, 
+        u.joinedOn || new Date(u.createdAt).toLocaleDateString()
+      ]);
       const csvContent = [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
