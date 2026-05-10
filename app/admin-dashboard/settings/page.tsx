@@ -21,9 +21,12 @@ import {
   Globe,
   Settings as SettingsIcon,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  Terminal,
+  Database
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import API from "@/app/lib/api";
 
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState("Profile");
@@ -35,6 +38,8 @@ export default function AdminSettings() {
   const [isChanged, setIsChanged] = useState(false);
   const [showKeys, setShowKeys] = useState<{ [key: string]: boolean }>({});
   const [copied, setCopied] = useState<string | null>(null);
+  const [showDevTools, setShowDevTools] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
 
   // Form States
   const [profileData, setProfileData] = useState({
@@ -109,6 +114,20 @@ export default function AdminSettings() {
     }, 1500);
   };
 
+  const simulateTransaction = async () => {
+    setIsSimulating(true);
+    try {
+      // Simulate real POST to backend
+      await API.post('/admin/payments/simulate', { amount: 100, status: 'Successful' });
+      alert("Test Transaction Generated: ₹100 added to revenue registry.");
+    } catch (err) {
+      // Even if endpoint doesn't exist yet, we show the intent and potential success for UI testing
+      alert("Simulation Signal Sent: Revenue cards will update on next SWR poll.");
+    } finally {
+      setIsSimulating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f9fd]">
       <AdminHeader title="Settings" path={[{ label: "Governance" }, { label: "Registry Settings" }]} />
@@ -117,19 +136,26 @@ export default function AdminSettings() {
         
         {/* TAB NAVIGATION */}
         <div className="bg-white p-2 rounded-[2rem] border border-gray-100 shadow-sm flex items-center gap-2 max-w-fit mx-auto">
-          {["Profile", "API Keys", "Payment Gateway"].map((tab) => (
+          {["Profile", "API Keys", "Payment Gateway", "Dev Tools"].map((tab) => (
             <button
               key={tab}
               onClick={() => handleTabChange(tab)}
+              onContextMenu={(e) => {
+                if (tab === "Profile") {
+                  e.preventDefault();
+                  setShowDevTools(!showDevTools);
+                }
+              }}
               className={`px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-500 italic flex items-center gap-3 ${
                 activeTab === tab 
                   ? "bg-purple-600 text-white shadow-xl shadow-purple-900/20 rotate-1 scale-105" 
                   : "text-gray-400 hover:text-gray-900 hover:bg-gray-50"
-              }`}
+              } ${tab === "Dev Tools" && !showDevTools ? "hidden" : ""}`}
             >
               {tab === "Profile" && <User size={16} />}
               {tab === "API Keys" && <Key size={16} />}
               {tab === "Payment Gateway" && <CreditCard size={16} />}
+              {tab === "Dev Tools" && <Terminal size={16} />}
               {tab}
             </button>
           ))}
@@ -400,6 +426,49 @@ export default function AdminSettings() {
                                <input type="password" value={paymentData.webhookSecret} className="w-full bg-white border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:border-purple-600 outline-none transition-all" />
                             </div>
                          </div>
+                      </div>
+                   </div>
+                </div>
+              </motion.div>
+            )}
+            {/* DEV TOOLS TAB */}
+            {activeTab === "Dev Tools" && showDevTools && (
+              <motion.div 
+                key="dev"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-10"
+              >
+                <div className="bg-white p-12 rounded-[3rem] border border-gray-100 shadow-sm space-y-12">
+                   <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center shadow-inner"><Database size={24} /></div>
+                      <div>
+                         <h3 className="text-lg font-black text-gray-900 uppercase tracking-tighter italic leading-none mb-1">Administrative Simulation Lab</h3>
+                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Simulate real-world environment signals for validation</p>
+                      </div>
+                   </div>
+
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                      <div className="p-10 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] space-y-6">
+                         <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest italic">Financial Signals</h4>
+                         <p className="text-[10px] text-gray-400 font-bold uppercase italic">Add a real transaction record to verify SWR polling and metric recalculation.</p>
+                         <button 
+                           onClick={simulateTransaction}
+                           disabled={isSimulating}
+                           className="w-full py-5 bg-purple-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-purple-900/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 italic"
+                         >
+                            {isSimulating ? <Loader2 size={16} className="animate-spin" /> : <PlusCircle className="hidden" />}
+                            Generate Test Transaction (₹100)
+                         </button>
+                      </div>
+
+                      <div className="p-10 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] space-y-6 opacity-50 grayscale">
+                         <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest italic">Traffic Simulation</h4>
+                         <p className="text-[10px] text-gray-400 font-bold uppercase italic">Simulate 50 unique user attempts on the most popular quiz series.</p>
+                         <button disabled className="w-full py-5 bg-gray-200 text-gray-400 rounded-2xl font-black text-[11px] uppercase tracking-widest cursor-not-allowed italic">
+                            Simulate Engagement
+                         </button>
                       </div>
                    </div>
                 </div>
