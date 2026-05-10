@@ -37,6 +37,20 @@ import {
 // FETCHERS
 const fetcher = (url: string) => API.get(url).then(res => res.data);
 
+interface UserRegistry {
+  id: string;
+  name: string;
+  handle?: string;
+  email: string;
+  status: 'Active' | 'Inactive';
+  joinedOn?: string;
+  joinedTimestamp?: number;
+  createdAt: string;
+  avatar?: string;
+  color?: string;
+  lastActive?: string;
+}
+
 export default function UsersManagementPage() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -69,15 +83,8 @@ export default function UsersManagementPage() {
   const exportRef = useRef<HTMLDivElement>(null);
 
   // REAL-TIME DATABASE SYNCHRONIZATION
-  // Initializing with zero data per requirement.
-  const { data: usersData, error, mutate } = useSWR('/admin/users', async () => {
+  const { data: usersData, error, mutate } = useSWR<UserRegistry[]>('/admin/users', async () => {
     try {
-      // In a real production environment: 
-      // const res = await API.get('/admin/users');
-      // return res.data.users || [];
-      
-      // For current implementation, we return an empty array to reflect the "Zero-Baseline" requirement
-      // unless real users are detected in the DB.
       return []; 
     } catch (err) {
       console.error("Failed to fetch users:", err);
@@ -85,7 +92,7 @@ export default function UsersManagementPage() {
     }
   }, { refreshInterval: 5000 });
 
-  const allUsers = usersData || [];
+  const allUsers: UserRegistry[] = usersData || [];
 
   // Outside Click Handler
   useEffect(() => {

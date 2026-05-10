@@ -77,6 +77,25 @@ const getRealTimeStats = async () => {
   }
 };
 
+interface DashboardStats {
+  totalUsers: number;
+  totalQuizzes: number;
+  totalRevenue: number;
+  activeParticipants: number;
+  paidQuestions: number;
+  unpaidQuestions: number;
+  totalAttempts: number;
+  averageScore: number;
+  paidQuizzes: number;
+  unpaidQuizzes: number;
+  trends: {
+    users: string;
+    quizzes: string;
+    revenue: string;
+    participants: string;
+  };
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
@@ -85,9 +104,9 @@ export default function AdminDashboard() {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   // SWR HOOKS for Continuous Real-Time Auditing
-  const { data: stats } = useSWR('/admin/dashboard/stats', () => getRealTimeStats(), { refreshInterval: 5000 });
-  const { data: revenueData } = useSWR('/admin/dashboard/revenue', async () => [], { refreshInterval: 5000 });
-  const { data: quizzes } = useSWR('/admin/quizzes', async () => [], { refreshInterval: 5000 });
+  const { data: stats } = useSWR<DashboardStats>('/admin/dashboard/stats', () => getRealTimeStats(), { refreshInterval: 5000 });
+  const { data: revenueData } = useSWR<any[]>('/admin/dashboard/revenue', async () => [], { refreshInterval: 5000 });
+  const { data: quizzes } = useSWR<any[]>('/admin/quizzes', async () => [], { refreshInterval: 5000 });
 
   useEffect(() => {
     const checkAuth = async () => {
