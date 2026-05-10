@@ -24,6 +24,15 @@ import {
   ArrowRight
 } from "lucide-react";
 
+interface QuizSeries {
+  id: number;
+  name: string;
+  description: string;
+  papers: string[];
+  created: string;
+  total: number;
+}
+
 export default function PaidQuizzes() {
   const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -35,14 +44,14 @@ export default function PaidQuizzes() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedSeries, setSelectedSeries] = useState<any>(null);
+  const [selectedSeries, setSelectedSeries] = useState<QuizSeries | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
   const formRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // REAL-TIME DATABASE SYNCHRONIZATION
-  const { data: fetchedSeries, error, mutate } = useSWR<any[]>('/admin/quizzes/paid', async () => {
+  const { data: fetchedSeries, error, mutate } = useSWR<QuizSeries[]>('/admin/quizzes/paid', async () => {
     // In production: return await fetcher('/admin/quizzes/paid');
     
     // Zero-baseline initialization: Returning empty registry unless real records are found
@@ -50,7 +59,7 @@ export default function PaidQuizzes() {
     return []; 
   }, { refreshInterval: 5000 });
 
-  const seriesList = fetchedSeries || [];
+  const seriesList: QuizSeries[] = fetchedSeries || [];
 
   // Handle outside click for dropdown
   useEffect(() => {
