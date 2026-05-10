@@ -40,7 +40,8 @@ import { motion, AnimatePresence } from "framer-motion";
 const fetcher = (url: string) => API.get(url).then(res => res.data);
 
 interface UserRegistry {
-  id: string;
+  id?: string;
+  _id?: string;
   name: string;
   handle?: string;
   email: string;
@@ -140,13 +141,14 @@ export default function UsersManagementPage() {
     
     // Optimistic UI Update
     const previousUsers = usersData;
-    const updatedUsers = allUsers.filter(u => u.id !== id);
+    const userId = id;
+    const updatedUsers = allUsers.filter(u => (u._id || u.id) !== userId);
     
     try {
       // Trigger mutate for immediate UI removal
       mutate(updatedUsers, false);
       
-      await API.delete(`/admin/users/${id}`);
+      await API.delete(`/admin/users/${userId}`);
       setToast({ message: "Registry updated: User permanently removed.", type: 'success' });
     } catch (err) {
       // Revert if API fails
@@ -192,7 +194,7 @@ export default function UsersManagementPage() {
     if (selectedUsers.length === paginatedUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(paginatedUsers.map(u => u.id));
+      setSelectedUsers(paginatedUsers.map(u => (u._id || u.id) as string));
     }
   };
 
@@ -534,12 +536,12 @@ export default function UsersManagementPage() {
                       </tr>
                     ) : (
                       paginatedUsers.map((user) => (
-                        <tr key={user.id} className={`group hover:bg-gray-50 transition-all duration-500 cursor-pointer ${selectedUsers.includes(user.id) ? "bg-purple-50/50" : ""}`}>
+                        <tr key={user._id || user.id} className={`group hover:bg-gray-50 transition-all duration-500 cursor-pointer ${selectedUsers.includes((user._id || user.id) as string) ? "bg-purple-50/50" : ""}`}>
                            <td className="px-12 py-8">
                               <input 
                                 type="checkbox" 
-                                checked={selectedUsers.includes(user.id)}
-                                onChange={() => toggleSelectUser(user.id)}
+                                checked={selectedUsers.includes((user._id || user.id) as string)}
+                                onChange={() => toggleSelectUser((user._id || user.id) as string)}
                                 className="w-5 h-5 rounded-md border-gray-300 text-purple-600 focus:ring-purple-600 transition-all cursor-pointer"
                               />
                            </td>
@@ -568,7 +570,7 @@ export default function UsersManagementPage() {
                            <td className="px-12 py-8 text-right">
                               <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                                  <button 
-                                   onClick={() => handleDeleteUser(user.id)}
+                                   onClick={() => handleDeleteUser((user._id || user.id) as string)}
                                    className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                                  >
                                     <Trash2 size={18} />
