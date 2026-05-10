@@ -123,9 +123,8 @@ export default function CreatePaper() {
   };
 
   const deleteQuestion = (id: string) => {
-    if (questions.length > 1) {
-      setQuestions(questions.filter(q => q.id !== id));
-    }
+    // Functional update ensures we're working with the most current state snapshot
+    setQuestions(prev => prev.filter(q => q.id !== id));
   };
 
   const duplicateQuestion = (q: Question) => {
@@ -187,12 +186,50 @@ export default function CreatePaper() {
   };
 
   const handleSave = async (isPublish: boolean) => {
+    // 1. Validation Guard
+    if (!details.title.trim()) {
+      setToast({ message: "Paper Title is required for initialization.", type: 'error' });
+      return;
+    }
+
+    if (questions.length === 0) {
+      setToast({ message: "Cannot publish an empty paper. Please add at least one MCQ.", type: 'error' });
+      return;
+    }
+
+    // Check for empty question text or options
+    const hasIncompleteQuestions = questions.some(q => !q.text.trim() || q.options.some(opt => !opt.text.trim()));
+    if (hasIncompleteQuestions) {
+      setToast({ message: "Please complete all questions and options before publishing.", type: 'error' });
+      return;
+    }
+
     setIsSaving(true);
-    // Simulate API POST
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsSaving(false);
-    setToast({ message: isPublish ? "Paper published successfully!" : "Paper saved as draft.", type: 'success' });
-    if (isPublish) router.push("/admin-dashboard/quizzes/unpaid");
+    try {
+      // 2. Database Sync Logic
+      // Ensure we send only the current filtered questions list associated with this seriesId
+      const payload = {
+        seriesId: quizId,
+        details,
+        questions: questions // This is the strictly filtered state
+      };
+
+      console.log("Syncing with Registry Database:", payload);
+
+      // Simulate API POST/PATCH
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setToast({ message: isPublish ? "Paper successfully published to series hierarchy!" : "Paper state persisted as draft.", type: 'success' });
+      
+      if (isPublish) {
+        // Navigate back to the series management page
+        setTimeout(() => router.push("/admin-dashboard/quizzes/unpaid"), 1000);
+      }
+    } catch (err) {
+      setToast({ message: "Failed to synchronize with database.", type: 'error' });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -230,14 +267,7 @@ export default function CreatePaper() {
            </div>
         </div>
 
-        <div className="flex justify-end">
-           <button 
-             onClick={() => setPaperCount(prev => prev + 1)}
-             className="px-8 py-3 bg-white border border-purple-100 text-purple-600 rounded-xl text-[11px] font-black uppercase tracking-widest italic shadow-sm flex items-center gap-3 hover:bg-purple-50 transition-all border-dashed border-2"
-           >
-              <Plus size={16} /> Add Paper {paperCount + 1}
-           </button>
-        </div>
+
 
         {/* PAPER DETAILS CARD */}
         <section className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-10 space-y-8">
