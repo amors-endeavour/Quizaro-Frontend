@@ -127,13 +127,46 @@ export default function AdminSettings() {
     setShowKeys(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      // 1. Handle Profile Update (if changed)
+      // (Optional: Implement if profile fields are also being edited)
+
+      // 2. Handle Password Rotation (if any field is filled)
+      if (profileData.currentPassword || profileData.newPassword || profileData.confirmPassword) {
+        if (!profileData.currentPassword || !profileData.newPassword || !profileData.confirmPassword) {
+          throw new Error("All password fields are required for rotation.");
+        }
+        if (profileData.newPassword !== profileData.confirmPassword) {
+          throw new Error("Encryption Key mismatch: New password and confirmation do not match.");
+        }
+
+        await API.put("/user/password/update", {
+          currentPassword: profileData.currentPassword,
+          newPassword: profileData.newPassword
+        });
+      }
+
+      setToast({ message: "Security registry updated: Changes persisted successfully.", type: "success" });
       setIsChanged(false);
-      setToast({ message: "Settings updated successfully!", type: 'success' });
-    }, 1500);
+      
+      // Clear password fields after success
+      setProfileData({
+        ...profileData,
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
+
+    } catch (err: any) {
+      setToast({ 
+        message: err?.response?.data?.message || err.message || "Registry update failure.", 
+        type: "error" 
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const simulateTransaction = async () => {
@@ -305,16 +338,34 @@ export default function AdminSettings() {
                          <div className="space-y-8">
                             <div className="space-y-3">
                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Current Password</label>
-                               <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all" />
+                               <input 
+                                 type="password" 
+                                 placeholder="••••••••" 
+                                 value={profileData.currentPassword}
+                                 onChange={(e) => setProfileData({...profileData, currentPassword: e.target.value})}
+                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all" 
+                               />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                <div className="space-y-3">
                                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">New Password</label>
-                                  <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all" />
+                                  <input 
+                                    type="password" 
+                                    placeholder="••••••••" 
+                                    value={profileData.newPassword}
+                                    onChange={(e) => setProfileData({...profileData, newPassword: e.target.value})}
+                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all" 
+                                  />
                                </div>
                                <div className="space-y-3">
                                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Confirm Identity</label>
-                                  <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all" />
+                                  <input 
+                                    type="password" 
+                                    placeholder="••••••••" 
+                                    value={profileData.confirmPassword}
+                                    onChange={(e) => setProfileData({...profileData, confirmPassword: e.target.value})}
+                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-purple-600 outline-none transition-all" 
+                                  />
                                </div>
                             </div>
                          </div>
