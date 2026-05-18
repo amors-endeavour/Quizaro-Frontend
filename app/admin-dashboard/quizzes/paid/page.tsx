@@ -108,15 +108,21 @@ export default function PaidQuizzes() {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      // Simulated API POST
-      // await API.post('/admin/quizzes/paid', { name: seriesName, description: seriesDescription });
+      const res = await API.post('/admin/quizzes/paid', {
+        series_name: seriesName,
+        series_description: seriesDescription,
+        created_at: new Date().toISOString()
+      });
       
-      mutate();
-      setIsFormOpen(false);
-      setSeriesName("");
-      setSeriesDescription("");
-      showToast("Quiz Series created successfully!", 'success');
+      if (res.status === 201) {
+        await mutate();
+        setIsFormOpen(false);
+        setSeriesName("");
+        setSeriesDescription("");
+        showToast("Quiz Series created successfully!", 'success');
+      } else {
+        showToast("Failed to create series.", 'error');
+      }
     } catch (error) {
       showToast("Failed to create series.", 'error');
     }
@@ -125,11 +131,15 @@ export default function PaidQuizzes() {
   const handleDeleteSeries = async () => {
     if (!selectedSeries) return;
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      mutate();
-      setIsDeleteModalOpen(false);
-      setSelectedSeries(null);
-      showToast("Series deleted permanently.", 'success');
+      const res = await API.delete(`/admin/quizzes/paid/${selectedSeries.id}`);
+      if (res.status === 200 || res.status === 204) {
+        await mutate();
+        setIsDeleteModalOpen(false);
+        setSelectedSeries(null);
+        showToast("Series deleted permanently.", 'success');
+      } else {
+        showToast("Failed to delete series.", 'error');
+      }
     } catch (error) {
       showToast("Failed to delete series.", 'error');
     }
@@ -138,11 +148,18 @@ export default function PaidQuizzes() {
   const handleUpdateSeries = async () => {
     if (!selectedSeries) return;
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      mutate();
-      setIsEditModalOpen(false);
-      setSelectedSeries(null);
-      showToast("Series updated successfully.", 'success');
+      const res = await API.put(`/admin/quizzes/paid/${selectedSeries.id}`, {
+        series_name: selectedSeries.name,
+        series_description: selectedSeries.description
+      });
+      if (res.status === 200) {
+        await mutate();
+        setIsEditModalOpen(false);
+        setSelectedSeries(null);
+        showToast("Series updated successfully.", 'success');
+      } else {
+        showToast("Failed to update series.", 'error');
+      }
     } catch (error) {
       showToast("Failed to update series.", 'error');
     }
@@ -337,8 +354,7 @@ export default function PaidQuizzes() {
                              <BookOpen size={40} />
                           </div>
                           <div className="space-y-1">
-                             <p className="text-sm font-black text-gray-900 uppercase tracking-widest italic leading-none">No series found in registry</p>
-                             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Create a new series to begin populating the database.</p>
+                             <p className="text-sm font-black text-gray-900 uppercase tracking-widest italic leading-none">No series created yet</p>
                           </div>
                        </div>
                     </td>
